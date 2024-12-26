@@ -174,7 +174,7 @@ const ProFormaProForma = ({ companyDetails, isStaff }) => {
             <div className="w-full text-end ">
               <Link
                 className="bg-blue-500 text-white py-2 px-2 rounded-lg"
-                to="create-proForma-invoice"
+                to="create-proForma"
               >
                 + Create ProForma
               </Link>
