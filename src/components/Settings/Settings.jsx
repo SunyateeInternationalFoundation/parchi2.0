@@ -1,11 +1,16 @@
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { BiMapPin } from "react-icons/bi";
 import { BsCreditCard2FrontFill } from "react-icons/bs";
 import { CgWebsite } from "react-icons/cg";
-import { FaUser } from "react-icons/fa";
+import { FaCity, FaUser } from "react-icons/fa";
 import { HiReceiptTax } from "react-icons/hi";
-import { MdEmail, MdOutlineLocalPhone, MdOutlineLocationOn } from "react-icons/md";
+import {
+  MdEmail,
+  MdOutlineLocalPhone,
+  MdOutlineLocationOn,
+} from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { db, storage } from "../../firebase";
 import { updateCompanyDetails } from "../../store/UserSlice";
@@ -157,7 +162,7 @@ const Settings = () => {
               />
             </div>
 
-            <div className="flex-grow">
+            {/* <div className="flex-grow">
               {/* <div>
                 <label className="block text-sm font-medium text-gray-600">
                   User Name:
@@ -170,8 +175,8 @@ const Settings = () => {
                   className="bg-gray-40 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 block w-full p-2  hover:border-blue-500 hover:shadow-md hover:shadow-blue-300"
                   placeholder="User Name"
                 />
-              </div> */}
-            </div>
+              </div> 
+            </div> */}
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-4">
@@ -219,6 +224,10 @@ const Settings = () => {
               <label className="block text-sm font-medium text-gray-600">
                 Tagline:
               </label>
+              {/* <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 ">
+                  <FaHashtag />
+                </span> */}
               <textarea
                 type="text"
                 name="tagline"
@@ -228,6 +237,7 @@ const Settings = () => {
                 placeholder="Enter your tagline..."
               />
             </div>
+            {/* </div> */}
           </div>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
@@ -290,14 +300,19 @@ const Settings = () => {
               <label className="block text-sm font-medium text-gray-600">
                 PIN Code:
               </label>
-              <input
-                type="text"
-                name="zipCode"
-                value={formData.zipCode}
-                onChange={handleChange}
-                className="bg-gray-40 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 block w-full p-2  hover:border-blue-500 hover:shadow-md hover:shadow-blue-300"
-                placeholder="PIN Code"
-              />
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 ">
+                  <BiMapPin />
+                </span>
+                <input
+                  type="text"
+                  name="zipCode"
+                  value={formData.zipCode}
+                  onChange={handleChange}
+                  className="w-full pl-10 py-2 bg-gray-40 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 block w-full p-2  hover:border-blue-500 hover:shadow-md hover:shadow-blue-300"
+                  placeholder="PIN Code"
+                />
+              </div>
             </div>
           </div>
 
@@ -306,14 +321,19 @@ const Settings = () => {
               <label className="block text-sm font-medium text-gray-600">
                 City:
               </label>
-              <input
-                type="text"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                className="bg-gray-40 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 block w-full p-2  hover:border-blue-500 hover:shadow-md hover:shadow-blue-300"
-                placeholder="City"
-              />
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 ">
+                  <FaCity />
+                </span>
+                <input
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  className="w-full pl-10 py-2 bg-gray-40 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 block w-full p-2  hover:border-blue-500 hover:shadow-md hover:shadow-blue-300"
+                  placeholder="City"
+                />
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600">

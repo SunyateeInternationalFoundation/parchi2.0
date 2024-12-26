@@ -1,4 +1,3 @@
-
 import {
   matchPath,
   Outlet,
@@ -66,6 +65,7 @@ import ServiceView from "../Services/ServicesView/ServiceView";
 import Prefix from "../Settings/Prefix";
 import Settings from "../Settings/Settings";
 import SettingView from "../Settings/SettingView";
+import SubscriptionPlan from "../Settings/SubscriptionPlan";
 import UserProfile from "../Settings/UserProfile";
 import Assets from "../Staff&Payout/Assets/Assets";
 import Attendance from "../Staff&Payout/Attendance/Attendance";
@@ -91,6 +91,7 @@ const Home = () => {
     "/user/user-profile",
     "/user/company-profile",
     "/user/prefix",
+    "/user/subscription-plan",
   ];
 
   const noSideBarPagesList = match.find((path) =>
@@ -267,6 +268,10 @@ const Home = () => {
             <Route path="/user/user-profile" element={<UserProfile />}></Route>
             <Route path="/user/company-profile" element={<Settings />}></Route>
             <Route path="/user" element={<Settings />}></Route>
+            <Route
+              path="/user/subscription-plan"
+              element={<SubscriptionPlan />}
+            ></Route>
             <Route path="/user/prefix" element={<Prefix />}></Route>
           </Routes>
           <Outlet />
