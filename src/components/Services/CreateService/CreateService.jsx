@@ -250,7 +250,7 @@ function CreateService() {
 
     totalTaxableAmount = data.reduce((sum, product) => {
       const cal = sum + (product.totalAmount - product.taxAmount);
-      if (!product.includingTax) {
+      if (!product.sellPriceTaxType) {
         return sum + product.totalAmount;
       }
       return cal;
@@ -497,9 +497,9 @@ function CreateService() {
                       <tr key={service.id}>
                         <td className="px-4 py-2">{service.serviceName}</td>
                         <td className="px-4 py-2">₹{service.sellingPrice}</td>
-                        <td className="px-4 py-2">₹{service.discount}</td>
+                        <td className="px-4 py-2">{service.discount}{service.discountType? "%":"/-" }</td>
                         <td className="px-2 py-2">
-                          {service.includingTax ? "Yes" : "No"}
+                          {service.sellingPriceTaxType ? "Yes" : "No"}
                         </td>
                         <td className="px-4 py-2">₹{service.totalAmount} </td>
                       </tr>

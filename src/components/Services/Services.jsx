@@ -43,16 +43,6 @@ function Services({ companyDetails }) {
     return matchesSearch && matchesStatus;
   });
 
-  function DateFormate(timestamp) {
-    const milliseconds =
-      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
-    const date = new Date(milliseconds);
-    const getDate = String(date.getDate()).padStart(2, "0");
-    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
-    const getFullYear = date.getFullYear();
-
-    return `${getDate}/${getMonth}/${getFullYear}`;
-  }
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -67,7 +57,6 @@ function Services({ companyDetails }) {
           return {
             id: doc.id,
             ...data,
-            date: DateFormate(data.date),
           };
         });
         setServices(serviceData);
