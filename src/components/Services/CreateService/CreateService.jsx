@@ -207,7 +207,7 @@ function CreateService() {
           phoneNo: phoneNo,
         },
         subTotal: +totalAmounts.subTotalAmount,
-        total: +totalAmounts.totalAmount,
+        total: +totalAmounts.totalAmount, 
         servicesList: serviceListPayload,
         membershipStartDate: Timestamp.fromDate(membershipStartDate),
         membershipEndDate,
@@ -596,7 +596,8 @@ function CreateService() {
                 <div className="w-full ">
                   <div>Sign</div>
                   <select
-                    onChange={() => {}}
+                    onChange={() => { }}
+                    defaultValue={""}
                     className="border p-2 rounded w-full"
                   >
                     <option value="" disabled>

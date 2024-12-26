@@ -89,51 +89,10 @@ const CreditNoteView = () => {
     }
   };
 
-  //   async function fetchReturnData() {
-  //     try {
-  //       const returnsRef = collection(
-  //         db,
-  //         "companies",
-  //         companyId,
-  //         "creditnote",
-  //         id,
-  //         "returns"
-  //       );
-  //       const q = query(returnsRef, orderBy("createdAt", "desc"));
-  //       const getDataDocs = await getDocs(q);
-
-  //       const getData = getDataDocs.docs.map((doc) => {
-  //         const { createdAt, ...data } = doc.data();
-  //         return {
-  //           id: doc.id,
-  //           ...data,
-  //           createdAt: DateFormate(createdAt),
-  //         };
-  //       });
-  //       setReturnData(getData);
-  //     } catch (error) {
-  //       console.log("🚀 ~ fetchReturnData ~ error:", error);
-  //     }
-  //   }
-
-  //   useEffect(() => {
-  //     fetchReturnData();
-  //   }, [companyId]);
-
   useEffect(() => {
     fetchCreditNote();
   }, [companyId]);
 
-  //   function DateFormate(timestamp) {
-  //     const milliseconds =
-  //       timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
-  //     const date = new Date(milliseconds);
-  //     const getDate = String(date.getDate()).padStart(2, "0");
-  //     const getMonth = String(date.getMonth() + 1).padStart(2, "0");
-  //     const getFullYear = date.getFullYear();
-
-  //     return `${getDate}/${getMonth}/${getFullYear}`;
-  //   }
   console.log("credit-note", creditNote);
   return (
     <div className="px-5 pb-5 bg-gray-100" style={{ width: "100%" }}>

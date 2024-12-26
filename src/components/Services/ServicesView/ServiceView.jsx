@@ -469,7 +469,7 @@ function ServiceView() {
                             {item.quantity} pcs
                           </td>
                           <td className="  text-gray-600 whitespace-nowrap p-3">
-                            {item.discount}
+                          {!item.discountType && "₹"}{item.discount}{item.discountType && "%"}  
                           </td>
                           <td className="  text-gray-600 whitespace-nowrap p-3">
                             {item.tax}%
@@ -501,14 +501,6 @@ function ServiceView() {
                       {
                         label: "TAX(%)",
                         amount: totalTax,
-                      },
-                      {
-                        label: "Shipping",
-                        amount: "₹" + service.shippingCharges,
-                      },
-                      {
-                        label: "Packaging",
-                        amount: "₹" + service.packagingCharges,
                       },
                     ].map((item, index) => (
                       <div
@@ -583,11 +575,6 @@ function ServiceView() {
                   </div>
                 </div>
                 {Object.keys(service).length!==0 && templatesComponents[selectTemplate]}
-                {/* <Template7
-                  ref={ServiceRef}
-                  ServiceData={Service}
-                  bankDetails={bankDetails}
-                /> */}
               </div>
             </div>
           </div>

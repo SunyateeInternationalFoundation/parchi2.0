@@ -1,5 +1,6 @@
 import { deleteDoc, doc } from "firebase/firestore";
 import jsPDF from "jspdf";
+import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from "react";
 import { FaRegEye } from "react-icons/fa";
 import { IoMdClose, IoMdDownload } from "react-icons/io";
@@ -28,7 +29,6 @@ const CreditNote = ({ creditNote, bankDetails }) => {
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   const [isCreditNoteOpen, setIsCreditNoteOpen] = useState(false);
   const [totalTax, setTotalTax] = useState(0);
-  const [totalDiscount, setTotalDiscount] = useState(0);
   const [isSelectTemplateOpen, setIsSelectTemplateOpen] = useState(false);
   const [selectTemplate, setSelectTemplate] = useState("template1");
 
@@ -121,11 +121,8 @@ const CreditNote = ({ creditNote, bankDetails }) => {
       const tax = creditNote?.products.reduce((acc, cur) => {
         return acc + cur?.tax;
       }, 0);
-      const discount = creditNote?.products.reduce((acc, cur) => {
-        return acc + cur?.discount;
-      }, 0);
+   
       setTotalTax(tax);
-      setTotalDiscount(discount);
     }
   }, [creditNote]);
 
@@ -549,6 +546,10 @@ const CreditNote = ({ creditNote, bankDetails }) => {
       />
     </div>
   );
+};
+CreditNote.propTypes = {
+  creditNote: PropTypes.object.isRequired,
+  bankDetails: PropTypes.object,
 };
 
 export default CreditNote;
