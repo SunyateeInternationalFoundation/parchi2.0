@@ -376,7 +376,7 @@ function SideBar({ staff }) {
           </div>
         </div>
         <div className="border-b-2 mt-3">
-          <Link to="" className=" cursor-pointer mb-10">
+          <Link to="/documents" className=" cursor-pointer mb-10">
             <div className="text-lg font-semibold pl-3">Documents</div>
           </Link>{" "}
         </div>

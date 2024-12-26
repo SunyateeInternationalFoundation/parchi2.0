@@ -74,6 +74,7 @@ import ProductViewHome from "../Products/ProductView/ProductViewHome";
 import UserProfile from "../Settings/UserProfile";
 import Prefix from "../Settings/Prefix";
 import ServiceView from "../Services/ServicesView/ServiceView";
+import Documents from "../Documents/Documents";
 
 const Home = () => {
   const location = useLocation();
@@ -235,6 +236,7 @@ const Home = () => {
             <Route path="/po/create-po" element={<SetPO />}></Route>
             <Route path="/po/:poId/edit-po" element={<SetPO />}></Route>
             {/* <Route path="/create-po" element={<CreatePo />}></Route> */}
+            <Route path="/documents" element={<Documents/>}></Route>
             <Route path="/reminder" element={<Reminder />}></Route>
             <Route path="/expense" element={<BookList />}></Route>
             <Route path="/expense/:id" element={<Expense />}></Route>
