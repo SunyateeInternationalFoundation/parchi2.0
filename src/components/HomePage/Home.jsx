@@ -50,6 +50,7 @@ import SetDebitNote from "../DebitNote/SetDebitNote/SetDebititNote";
 import DeliveryChallanList from "../DeliveryChallan/DeliveryChallanList";
 import DeliveryChallanView from "../DeliveryChallan/DeliveryChallanView/DeliveryChallanView";
 import SetDeliveryChallan from "../DeliveryChallan/SetDeliveryChallan/SetDeliveryChallan";
+import Documents from "../Documents/Documents";
 import SetInvoice from "../Invoices/SetInvoice/SetInvoice";
 import PoView from "../PO/PoView/PoView";
 import SetPO from "../PO/SetPO/SetPO";
@@ -76,7 +77,6 @@ import Designation from "../Staff&Payout/Designation/Designation";
 import DesignationView from "../Staff&Payout/Designation/DesignationView";
 import WeekOff from "../Staff&Payout/WeekOff/WeekOff";
 import VendorPO from "../VendorDashBoard/VendorPO";
-import Documents from "../Documents/Documents";
 
 const Home = () => {
   const location = useLocation();
@@ -120,34 +120,34 @@ const Home = () => {
         <div style={{ width: "100%", height: "92vh" }} className="bg-gray-100">
           <Routes>
             <Route path="/invoice" element={<InvoiceList />}></Route>
-            <Route path="/invoice/:id" element={<InvoiceView />}></Route>
             <Route
               path="/invoice/create-invoice"
               element={<SetInvoice />}
             ></Route>
+            <Route path="/invoice/:id" element={<InvoiceView />}></Route>
             <Route
               path="/invoice/:invoiceId/edit-invoice"
               element={<SetInvoice />}
             ></Route>
             <Route path="/quotation" element={<Quotation />}></Route>
             <Route
-              path="/quotation/:id"
-              element={<QuotationViewHome />}
-            ></Route>
-            <Route
               path="/quotation/create-quotation"
               element={<SetQuotation />}
+            ></Route>
+            <Route
+              path="/quotation/:id"
+              element={<QuotationViewHome />}
             ></Route>
             <Route
               path="/quotation/:quotationId/edit-quotation"
               element={<SetQuotation />}
             ></Route>
             <Route path="/purchase" element={<Purchase />}></Route>
-            <Route path="/purchase/:id" element={<PurchaseViewHome />}></Route>
             <Route
               path="/purchase/create-purchase"
               element={<SetPurchase />}
             ></Route>
+            <Route path="/purchase/:id" element={<PurchaseViewHome />}></Route>
             <Route
               path="/purchase/:purchaseId/edit-purchase"
               element={<SetPurchase />}
@@ -156,21 +156,21 @@ const Home = () => {
               path="/pro-forma-invoice"
               element={<ProFormaInvoice />}
             ></Route>
+              <Route
+                path="/pro-forma-invoice/create-proForma"
+                element={<SetProFormaInvoice />}
+              ></Route>
             <Route
               path="/pro-forma-invoice/:id"
               element={<ProFormaView />}
-            ></Route>
-            <Route
-              path="/pro-forma-invoice/create-proForma-invoice"
-              element={<SetProFormaInvoice />}
             ></Route>
             <Route
               path="/pro-forma-invoice/:proFormaId/edit-proForma-invoice"
               element={<SetProFormaInvoice />}
             ></Route>
             <Route path="/pos" element={<POS />}></Route>
-            <Route path="/pos/:id" element={<POSView />}></Route>
             <Route path="/pos/create-pos" element={<SetPos />}></Route>
+            <Route path="/pos/:id" element={<POSView />}></Route>
             <Route path="/pos/:posId/edit-pos" element={<SetPos />}></Route>
             <Route path="/customers" element={<CustomerList />}></Route>
             <Route path="/customers/:id" element={<CustomerView />}></Route>
