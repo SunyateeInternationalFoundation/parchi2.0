@@ -1,4 +1,3 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
@@ -8,7 +7,7 @@ import StaffHome from "./components/HomePage/StaffHome";
 import VendorHome from "./components/HomePage/VendorHome";
 import LandingPage from "./components/LandingPage/LandingPage";
 
-function App(props) {
+function App() {
   const usersDetails = useSelector((state) => state.users);
   const isAuthenticated = usersDetails.isLogin;
   return (
