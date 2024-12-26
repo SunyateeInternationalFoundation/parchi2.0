@@ -44,6 +44,9 @@ import VendorView from "../Vendors/VendorView/VendorView";
 import CreditNoteList from "../CreditNote/CreditNoteList";
 import CreditNoteView from "../CreditNote/CreditNoteView/CreditNoteView";
 import SetCreditNote from "../CreditNote/SetCreditNote/SetCreditNote";
+import DebitNoteList from "../DebitNote/DebitNoteList";
+import DebitNoteView from "../DebitNote/DebitNoteView/DebitNoteView";
+import SetDebitNote from "../DebitNote/SetDebitNote/SetDebititNote";
 import DeliveryChallanList from "../DeliveryChallan/DeliveryChallanList";
 import DeliveryChallanView from "../DeliveryChallan/DeliveryChallanView/DeliveryChallanView";
 import SetDeliveryChallan from "../DeliveryChallan/SetDeliveryChallan/SetDeliveryChallan";
@@ -177,7 +180,6 @@ const Home = () => {
             <Route path="/services/:id" element={<ServiceView />}></Route>
             <Route path="/projects" element={<Projects />}></Route>
             <Route path="/products/:id" element={<ProductViewHome />}></Route>
-
             <Route
               path="/projects/create-project"
               element={<CreateProject />}
@@ -263,6 +265,16 @@ const Home = () => {
             <Route
               path="/credit-note/:creditnoteId/edit-creditnote"
               element={<SetCreditNote />}
+            ></Route>
+            <Route path="/debit-note" element={<DebitNoteList />}></Route>
+            <Route path="/debit-note/:id" element={<DebitNoteView />}></Route>
+            <Route
+              path="/debit-note/create-debitnote"
+              element={<SetDebitNote />}
+            ></Route>
+            <Route
+              path="/debit-note/:debitnoteId/edit-debitnote"
+              element={<SetDebitNote />}
             ></Route>
             <Route path="/vendor/po" element={<VendorPO />}></Route>
             <Route path="/user/user-profile" element={<UserProfile />}></Route>

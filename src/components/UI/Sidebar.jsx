@@ -60,7 +60,7 @@ function SideBar({ staff }) {
         },
         {
           name: "Debit Note",
-          path: "",
+          path: "/debit-note",
         },
       ],
     },
