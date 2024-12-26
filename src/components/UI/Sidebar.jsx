@@ -145,7 +145,7 @@ function SideBar({ staff }) {
 
   return (
     <div
-      className="border-2 h-full overflow-y-auto"
+      className="border-2 h-full overflow-y-hidden hover:overflow-y-auto"
       style={{ width: isSideBarExpend ? "15vw" : "" }}
     >
       <div className="flex justify-end cursor-pointer">
