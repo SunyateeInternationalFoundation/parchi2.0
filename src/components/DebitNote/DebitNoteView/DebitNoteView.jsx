@@ -25,7 +25,7 @@ const DebitNoteView = () => {
       let totalSgstAmount_9 = 0;
       let totalCgstAmount_9 = 0;
       let tax = 0;
-      const debitNoteRef = doc(db, "companies", companyId, "debitnote", id);
+      const debitNoteRef = doc(db, "companies", companyId, "debitNote", id);
       const { customerDetails, debitNoteNo, ...resData } = (
         await getDoc(debitNoteRef)
       ).data();
@@ -85,7 +85,7 @@ const DebitNoteView = () => {
       }
       setDebitNote(debitNoteData);
     } catch (error) {
-      console.error("Error fetching debitnote:", error);
+      console.error("Error fetching debitNote:", error);
     }
   };
 

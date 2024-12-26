@@ -151,7 +151,7 @@ const DebitNote = ({ debitNote, bankDetails }) => {
         db,
         "companies",
         companyId,
-        "debitnote",
+        "debitNote",
         debitNote.id
       );
 
@@ -222,7 +222,7 @@ const DebitNote = ({ debitNote, bankDetails }) => {
             className={
               "px-4 py-1 bg-red-300 text-white rounded-full flex items-center"
             }
-            onClick={() => navigate("edit-debitnote")}
+            onClick={() => navigate("edit-debitNote")}
           >
             <TbEdit /> &nbsp; Edit
           </button>

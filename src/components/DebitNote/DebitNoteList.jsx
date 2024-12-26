@@ -32,22 +32,22 @@ const DebitNoteList = () => {
           db,
           "companies",
           companyId,
-          "debitnote"
+          "debitNote"
         );
         const querySnapshot = await getDocs(debitNoteRef);
         const debitNoteData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        // const q = query(debitnoteRef, orderBy("date", "desc"));
+        // const q = query(debitNoteRef, orderBy("date", "desc"));
         // const querySnapshot = await getDocs(q);
-        // const debitnoteData = querySnapshot.docs.map((doc) => ({
+        // const debitNoteData = querySnapshot.docs.map((doc) => ({
         //   id: doc.id,
         //   ...doc.data(),
         // }));
         setDebitNote(debitNoteData);
       } catch (error) {
-        console.error("Error fetching debitnote:", error);
+        console.error("Error fetching debitNote:", error);
       } finally {
         setLoading(false);
       }
@@ -67,15 +67,15 @@ const DebitNoteList = () => {
         db,
         "companies",
         companyId,
-        "debitnote",
+        "debitNote",
         debitNoteId
       );
       await updateDoc(debitNoteDoc, { paymentStatus: newStatus });
-      setDebitNote((prevdebitnote) =>
-        prevdebitnote.map((debitnote) =>
-          debitnote.id === debitNoteId
-            ? { ...debitnote, paymentStatus: newStatus }
-            : debitnote
+      setDebitNote((prevdebitNote) =>
+        prevdebitNote.map((debitNote) =>
+          debitNote.id === debitNoteId
+            ? { ...debitNote, paymentStatus: newStatus }
+            : debitNote
         )
       );
     } catch (error) {
@@ -83,8 +83,8 @@ const DebitNoteList = () => {
     }
   };
 
-  const filteredDebitNote = debitNote.filter((debitnote) => {
-    const { customerDetails, debitNoteNo, paymentStatus } = debitnote;
+  const filteredDebitNote = debitNote.filter((debitNote) => {
+    const { customerDetails, debitNoteNo, paymentStatus } = debitNote;
     const customerName = customerDetails?.name || "";
     const matchesSearch =
       customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -104,16 +104,16 @@ const DebitNoteList = () => {
   });
 
   const totalAmount = filteredDebitNote.reduce(
-    (sum, debitnote) => sum + debitnote.total,
+    (sum, debitNote) => sum + debitNote.total,
     0
   );
 
   const paidAmount = filteredDebitNote
-    .filter((debitnote) => debitnote.paymentStatus === "Paid")
-    .reduce((sum, debitnote) => sum + debitnote.total, 0);
+    .filter((debitNote) => debitNote.paymentStatus === "Paid")
+    .reduce((sum, debitNote) => sum + debitNote.total, 0);
   const pendingAmount = filteredDebitNote
-    .filter((debitnote) => debitnote.paymentStatus === "Pending")
-    .reduce((sum, debitnote) => sum + debitnote.total, 0);
+    .filter((debitNote) => debitNote.paymentStatus === "Pending")
+    .reduce((sum, debitNote) => sum + debitNote.total, 0);
 
   return (
     <div className="w-full">
@@ -179,7 +179,7 @@ const DebitNoteList = () => {
             <div className="w-full text-end ">
               <Link
                 className="bg-blue-500 text-white py-2 px-2 rounded-lg"
-                to="create-debitnote"
+                to="create-debitNote"
               >
                 + Create Debit Note
               </Link>
@@ -219,32 +219,32 @@ const DebitNoteList = () => {
                   </thead>
                   <tbody>
                     {filteredDebitNote.length > 0 ? (
-                      filteredDebitNote.map((debitnote) => (
+                      filteredDebitNote.map((debitNote) => (
                         <tr
-                          key={debitnote.id}
+                          key={debitNote.id}
                           className="border-b text-center cursor-pointer text-start"
                           onClick={(e) => {
-                            navigate(debitnote.id);
+                            navigate(debitNote.id);
                           }}
                         >
                           <td className="px-5 py-3 font-bold">
-                            {debitnote.debitNoteNo}
+                            {debitNote.debitNoteNo}
                           </td>
 
                           <td className="px-5 py-3 text-start">
-                            {debitnote.customerDetails?.name} <br />
+                            {debitNote.customerDetails?.name} <br />
                             <span className="text-gray-500 text-sm">
-                              Ph.No {debitnote.customerDetails.phone}
+                              Ph.No {debitNote.customerDetails.phone}
                             </span>
                           </td>
 
                           <td className="px-5 py-3">
                             {new Date(
-                              debitnote.date.seconds * 1000 +
-                                debitnote.date.nanoseconds / 1000000
+                              debitNote.date.seconds * 1000 +
+                                debitNote.date.nanoseconds / 1000000
                             ).toLocaleString()}
                           </td>
-                          <td className="px-5 py-3 font-bold text-center">{`₹ ${debitnote.total.toFixed(
+                          <td className="px-5 py-3 font-bold text-center">{`₹ ${debitNote.total.toFixed(
                             2
                           )}`}</td>
                           <td
@@ -254,25 +254,25 @@ const DebitNoteList = () => {
                             {" "}
                             <div
                               className={`px-1 text-center py-2 rounded-lg text-xs font-bold ${
-                                debitnote.paymentStatus === "Paid"
+                                debitNote.paymentStatus === "Paid"
                                   ? "bg-green-100 "
-                                  : debitnote.paymentStatus === "Pending"
+                                  : debitNote.paymentStatus === "Pending"
                                   ? "bg-yellow-100"
                                   : "bg-red-100 "
                               }`}
                             >
                               <select
-                                value={debitnote.paymentStatus}
+                                value={debitNote.paymentStatus}
                                 onChange={(e) => {
                                   handleStatusChange(
-                                    debitnote.id,
+                                    debitNote.id,
                                     e.target.value
                                   );
                                 }}
                                 className={`${
-                                  debitnote.paymentStatus === "Paid"
+                                  debitNote.paymentStatus === "Paid"
                                     ? "bg-green-100 "
-                                    : debitnote.paymentStatus === "Pending"
+                                    : debitNote.paymentStatus === "Pending"
                                     ? "bg-yellow-100"
                                     : "bg-red-100 "
                                 }`}
@@ -284,11 +284,11 @@ const DebitNoteList = () => {
                             </div>
                           </td>
                           <td className="px-5 py-3">
-                            {debitnote.mode || "Online"}
+                            {debitNote.mode || "Online"}
                           </td>
 
                           <td className="px-5 py-3">
-                            {debitnote?.createdBy?.name == userDetails.name
+                            {debitNote?.createdBy?.name == userDetails.name
                               ? "Owner"
                               : userDetails.name}
                           </td>
