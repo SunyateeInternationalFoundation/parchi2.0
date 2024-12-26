@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase";
-import { useSelector } from "react-redux";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
   LuChevronLeft,
@@ -10,8 +8,11 @@ import {
   LuChevronsLeft,
   LuChevronsRight,
 } from "react-icons/lu";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { db } from "../../firebase";
 
-function Quotation({ companyDetails, isStaff }) {
+function Quotation({ companyDetails }) {
   const [quotations, setQuotations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -209,7 +210,7 @@ function Quotation({ companyDetails, isStaff }) {
                         <tr
                           key={quotation.id}
                           className="border-b text-center cursor-pointer text-start"
-                          onClick={(e) => {
+                          onClick={() => {
                             navigate(quotation.id);
                           }}
                         >
@@ -326,5 +327,9 @@ function Quotation({ companyDetails, isStaff }) {
     </div>
   );
 }
+Quotation.propTypes = {
+  companyDetails: PropTypes.object,
+  isStaff: PropTypes.bool,
+};
 
 export default Quotation;

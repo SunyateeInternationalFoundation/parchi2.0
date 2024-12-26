@@ -1,12 +1,32 @@
-import React, { useState, useEffect } from "react";
-import { IoMdClose } from "react-icons/io";
-import { db } from "../../firebase";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
+import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
+import { db } from "../../firebase";
 
 const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
   const userDetails = useSelector((state) => state.users);
   const [formData, setFormData] = useState({
+
+    warehouse: {},
+    discount: 0,
+    paymentStatus: "Pending",
+    notes: "",
+    purchaseNo: "",
+    packagingCharges: 0,
+    subTotal: 0,
+    tds: {},
+    total: 0,
+    shippingCharges: 0,
+    tax: 0,
+    attachments: [],
+    tcs: {},
+    terms: "",
+    mode: "Cash",
+    extraDiscount: 0,
+    extraDiscountType: "percentage",
+
     serviceName: "",
     barcode: "",
     pricing: {
@@ -357,6 +377,12 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
       </div>
     </div>
   );
+};
+CreateServiceList.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  refresh: PropTypes.func.isRequired,
+  service: PropTypes.object,
 };
 
 export default CreateServiceList;
