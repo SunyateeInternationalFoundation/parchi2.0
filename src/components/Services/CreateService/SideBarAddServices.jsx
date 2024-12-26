@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
@@ -83,10 +84,10 @@ function SideBarAddServices({
                 </div>
                 <div className="text-end">
                   <div className="font-bold">
-                    ₹ {service.unitPrice.toFixed(1)}
+                    ₹ {service.sellingPrice?.toFixed(1)}
                   </div>
-                  <div className="text-sm">Discount : {service.discount}</div>
-                  <div className="text-sm"> Tax ₹ {service.taxSlab}</div>
+                  <div className="text-sm">Discount : {service.discount}  {service.discountType ?"%":"/-"}</div>
+                  <div className="text-sm"> Tax ₹ {service.tax}</div>
                 </div>
               </div>
             ))}
@@ -102,5 +103,11 @@ function SideBarAddServices({
     </div>
   );
 }
+SideBarAddServices.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  servicesList: PropTypes.array,
+  onSubmitService: PropTypes.func.isRequired,
+};
 
 export default SideBarAddServices;

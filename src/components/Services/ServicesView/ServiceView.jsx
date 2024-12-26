@@ -28,8 +28,7 @@ import Template9 from "../../Templates/Template9";
 
 function ServiceView() {
   const { id } = useParams();
-  const [service, setService] = useState("");
-  const [bankDetails, setBankDetails] = useState({});
+  const [service, setService] = useState({});
   const navigate = useNavigate();
   const userDetails = useSelector((state) => state.users);
   const companyId =
@@ -50,17 +49,17 @@ function ServiceView() {
       let totalSgstAmount_9 = 0;
       let totalCgstAmount_9 = 0;
       let tax = 0;
-      const ServiceRef = doc(db, "companies", companyId, "Services", id);
-      const { customerDetails, ServiceNo, ...resData } = (
-        await getDoc(ServiceRef)
+      const serviceRef = doc(db, "companies", companyId, "services", id);
+      const { customerDetails, serviceNo, ...resData } = (
+        await getDoc(serviceRef)
       ).data();
-      const ServicesData = {
+      const servicesData = {
         id,
         ...resData,
         type: "Service",
-        no: ServiceNo,
+        no: serviceNo,
         userTo: customerDetails,
-        products: resData.servicesList.map((item) => {
+        items: resData.servicesList.map((item) => {
           let discount = +item.discount || 0;
 
           if (item.discountType) {
@@ -103,14 +102,9 @@ function ServiceView() {
         totalSgstAmount_9,
         totalCgstAmount_9,
       };
-
-      if (ServicesData.book.bookRef) {
-        const bankData = (await getDoc(ServicesData.book.bookRef)).data();
-        setBankDetails(bankData);
-      }
-      setService(ServicesData);
+      setService(servicesData);
     } catch (error) {
-      console.error("Error fetching Services:", error);
+      console.error("Error fetching services:", error);
     }
   };
 
@@ -120,54 +114,53 @@ function ServiceView() {
 
   const templatesComponents = {
     template1: (
-      <Template1 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
+      <Template1 ref={ServiceRef} dataSet={service} />
     ),
 
     template2: (
-      <Template2 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
+      <Template2 ref={ServiceRef} dataSet={service}  />
     ),
 
     template3: (
-      <Template3 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
+      <Template3 ref={ServiceRef} dataSet={service}  />
     ),
 
     template4: (
-      <Template4 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
+      <Template4 ref={ServiceRef} dataSet={service}  />
     ),
     template5: (
-      <Template5 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
+      <Template5 ref={ServiceRef} dataSet={service}  />
     ),
 
     template6: (
-      <Template6 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
+      <Template6 ref={ServiceRef} dataSet={service}  />
     ),
     template7: (
-      <Template7 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
+      <Template7 ref={ServiceRef} dataSet={service}  />
     ),
     template8: (
-      <Template8 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
+      <Template8 ref={ServiceRef} dataSet={service}  />
     ),
     template9: (
-      <Template9 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
+      <Template9 ref={ServiceRef} dataSet={service}  />
     ),
     template10: (
       <Template10
         ref={ServiceRef}
         dataSet={service}
-        bankDetails={bankDetails}
+        
       />
     ),
     template11: (
       <Template11
         ref={ServiceRef}
         dataSet={service}
-        bankDetails={bankDetails}
       />
     ),
   };
   // useEffect(() => {
-  //   if (service.products) {
-  //     const tax = service?.products.reduce((acc, cur) => {
+  //   if (service.items) {
+  //     const tax = service?.items.reduce((acc, cur) => {
   //       return acc + cur?.tax;
   //     }, 0);
   //     setTotalTax(tax);
@@ -202,7 +195,7 @@ function ServiceView() {
           const pdfBlob = doc.output("blob");
 
           // Create a reference to the file in Firebase Storage
-          const fileName = `Services/${id}.pdf`;
+          const fileName = `services/${id}.pdf`;
           const fileRef = ref(storage, fileName);
 
           // Upload the file
@@ -240,7 +233,7 @@ function ServiceView() {
           const pdfBlob = doc.output("blob");
 
           // Create a reference to the file in Firebase Storage
-          const fileName = `Services/${id}.pdf`;
+          const fileName = `services/${id}.pdf`;
           const fileRef = ref(storage, fileName);
 
           // Upload the file to Firebase Storage
@@ -463,10 +456,10 @@ function ServiceView() {
                     </tr>
                   </thead>
                   <tbody className="[&_tr:last-child]:border-1 ">
-                    {service?.products?.length > 0 &&
-                      service?.products.map((item) => (
+                    {service?.items?.length > 0 &&
+                      service?.items.map((item) => (
                         <tr
-                          key={`Service-description-${item.productRef.id}`}
+                          key={`Service-description-${item.serviceRef.id}`}
                           className="border-b-2 p-3 [&_td:last-child]:text-end"
                         >
                           <td className="  text-gray-600 max-w-[200px] truncate p-3">
@@ -589,7 +582,7 @@ function ServiceView() {
                     </div>
                   </div>
                 </div>
-                {templatesComponents[selectTemplate]}
+                {Object.keys(service).length!==0 && templatesComponents[selectTemplate]}
                 {/* <Template7
                   ref={ServiceRef}
                   ServiceData={Service}

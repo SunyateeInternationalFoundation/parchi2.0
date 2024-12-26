@@ -94,12 +94,8 @@ function CreateService() {
           const cgstAmount = netAmount * (cgst / 100);
           return {
             id: doc.id,
-            serviceName: data.serviceName || "N/A",
-            sellingPrice: data.sellingPrice ?? 0,
-            discount: data.discount ?? 0,
-            discountType: data.discountType,
+            ...data,
             totalAmount: netAmount,
-            sellingPriceTaxType: data.sellingPriceTaxType,
             sgst,
             cgst,
             sgstAmount,
@@ -191,12 +187,9 @@ function CreateService() {
           description: service.description,
           discount: service.discount,
           discountType: service.discountType,
-          purchasePrice: service.purchasePrice,
-          purchasePriceTaxType: service.purchasePriceTaxType,
           sellingPrice: service.sellingPrice,
           sellingPriceTaxType: service.sellingPriceTaxType,
           tax: service.tax,
-          quantity: service.actionQty,
           serviceRef: serviceRef,
         });
       }
@@ -688,7 +681,7 @@ function CreateService() {
                       onChange={(e) => {
                         setFormData((val) => ({
                           ...val,
-                          extraDiscountType: e.target.value == "true"? true: false ,
+                          extraDiscountType: e.target.value == "true" ? true : false,
                         }));
                       }}
                     >
@@ -752,10 +745,10 @@ function CreateService() {
                       <span>Extra Discount Amount</span>
                       <span>
                         ₹{" "}
-                        {formData.extraDiscountType === "percentage"
+                        {formData.extraDiscountType
                           ? (+totalAmounts.subTotalAmount *
-                              formData.extraDiscount) /
-                            100
+                            formData.extraDiscount) /
+                          100
                           : formData.extraDiscount}
                       </span>
                     </div>
