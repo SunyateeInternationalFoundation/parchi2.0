@@ -84,8 +84,7 @@ function CreateService() {
           if (data.discountType) {
             discount = (+data.sellingPrice / 100) * data.discount;
           }
-          const netAmount =
-            +data.sellingPrice - discount;
+          const netAmount = +data.sellingPrice - discount;
           const taxRate = data.tax || 0;
           const sgst = taxRate / 2;
           const cgst = taxRate / 2;
@@ -143,8 +142,6 @@ function CreateService() {
         console.error("Error fetching data:", error);
       }
     };
-
- 
 
     fetchServicesNumbers();
     customerDetails();
@@ -207,7 +204,7 @@ function CreateService() {
           phoneNo: phoneNo,
         },
         subTotal: +totalAmounts.subTotalAmount,
-        total: +totalAmounts.totalAmount, 
+        total: +totalAmounts.totalAmount,
         servicesList: serviceListPayload,
         membershipStartDate: Timestamp.fromDate(membershipStartDate),
         membershipEndDate,
@@ -250,7 +247,7 @@ function CreateService() {
 
     totalTaxableAmount = data.reduce((sum, product) => {
       const cal = sum + (product.totalAmount - product.taxAmount);
-      if (!product.sellPriceTaxType) {
+      if (!product.sellingPriceTaxType) {
         return sum + product.totalAmount;
       }
       return cal;
@@ -313,8 +310,6 @@ function CreateService() {
       totalAmount,
     });
   }
-
-
 
   useEffect(() => {
     let discountAmount = formData.extraDiscount || 0;
@@ -497,7 +492,10 @@ function CreateService() {
                       <tr key={service.id}>
                         <td className="px-4 py-2">{service.serviceName}</td>
                         <td className="px-4 py-2">₹{service.sellingPrice}</td>
-                        <td className="px-4 py-2">{service.discount}{service.discountType? "%":"/-" }</td>
+                        <td className="px-4 py-2">
+                          {service.discount}
+                          {service.discountType ? "%" : "/-"}
+                        </td>
                         <td className="px-2 py-2">
                           {service.sellingPriceTaxType ? "Yes" : "No"}
                         </td>
@@ -596,7 +594,7 @@ function CreateService() {
                 <div className="w-full ">
                   <div>Sign</div>
                   <select
-                    onChange={() => { }}
+                    onChange={() => {}}
                     defaultValue={""}
                     className="border p-2 rounded w-full"
                   >
@@ -682,7 +680,8 @@ function CreateService() {
                       onChange={(e) => {
                         setFormData((val) => ({
                           ...val,
-                          extraDiscountType: e.target.value == "true" ? true : false,
+                          extraDiscountType:
+                            e.target.value == "true" ? true : false,
                         }));
                       }}
                     >
@@ -748,8 +747,8 @@ function CreateService() {
                         ₹{" "}
                         {formData.extraDiscountType
                           ? (+totalAmounts.subTotalAmount *
-                            formData.extraDiscount) /
-                          100
+                              formData.extraDiscount) /
+                            100
                           : formData.extraDiscount}
                       </span>
                     </div>

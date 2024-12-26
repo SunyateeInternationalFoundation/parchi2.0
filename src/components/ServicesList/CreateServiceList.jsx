@@ -10,12 +10,12 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
   const [formData, setFormData] = useState({
     serviceName: "",
     barcode: "",
-      sellingPrice: 0,
-       sellingPriceTaxType: true,
-      discount: 0,
-      discountType: "Percentage",
+    sellingPrice: 0,
+    sellingPriceTaxType: true,
+    discount: 0,
+    discountType: "Percentage",
     description: "",
-    tax:0,
+    tax: 0,
     monthDuration: "1", // New field for month duration
   });
 
@@ -23,13 +23,13 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
     setFormData({
       serviceName: "",
       barcode: "",
-        sellingPrice: 0,
-         sellingPriceTaxType: true,
-        discount: 0,
-        discountType: true,
+      sellingPrice: 0,
+      sellingPriceTaxType: true,
+      discount: 0,
+      discountType: true,
       description: "",
-      tax:0,
-      monthDuration: "1",// Reset month duration
+      tax: 0,
+      monthDuration: "1", // Reset month duration
     });
   }
 
@@ -139,7 +139,7 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
                 onChange={(e) =>
                   setFormData((val) => ({
                     ...val,
-                      sellingPrice:+e.target.value,
+                    sellingPrice: +e.target.value,
                   }))
                 }
               />
@@ -150,7 +150,8 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
                 onChange={(e) =>
                   setFormData((val) => ({
                     ...val,
-                      sellingPriceTaxType: e.target.value === "true" ? true : false,
+                    sellingPriceTaxType:
+                      e.target.value === "true" ? true : false,
                   }))
                 }
               >
@@ -170,7 +171,7 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
                 onChange={(e) =>
                   setFormData((val) => ({
                     ...val,
-                      discount: +e.target.value || 0,
+                    discount: +e.target.value || 0,
                   }))
                 }
               />
@@ -180,8 +181,7 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
                 onChange={(e) =>
                   setFormData((val) => ({
                     ...val,
-                      discountType:
-                         e.target.value,
+                    discountType: e.target.value,
                   }))
                 }
               >
@@ -199,7 +199,7 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
               onChange={(e) =>
                 setFormData((val) => ({
                   ...val,
-                      tax: +e.target.value,
+                  tax: +e.target.value,
                 }))
               }
             >
