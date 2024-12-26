@@ -8,6 +8,25 @@ import { db } from "../../firebase";
 const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
   const userDetails = useSelector((state) => state.users);
   const [formData, setFormData] = useState({
+
+    warehouse: {},
+    discount: 0,
+    paymentStatus: "Pending",
+    notes: "",
+    purchaseNo: "",
+    packagingCharges: 0,
+    subTotal: 0,
+    tds: {},
+    total: 0,
+    shippingCharges: 0,
+    tax: 0,
+    attachments: [],
+    tcs: {},
+    terms: "",
+    mode: "Cash",
+    extraDiscount: 0,
+    extraDiscountType: "percentage",
+
     serviceName: "",
     barcode: "",
       sellingPrice: 0,
