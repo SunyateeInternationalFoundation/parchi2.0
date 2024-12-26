@@ -1,11 +1,8 @@
-import {
-  deleteDoc,
-  doc,
-  getDoc
-} from "firebase/firestore";
+import { deleteDoc, doc, getDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import jsPDF from "jspdf";
 import { useEffect, useRef, useState } from "react";
+import { AiOutlineArrowLeft } from "react-icons/ai";
 import { FaRegEye } from "react-icons/fa";
 import { IoMdClose, IoMdDownload } from "react-icons/io";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -53,6 +50,7 @@ function ServiceView() {
       const { customerDetails, serviceNo, ...resData } = (
         await getDoc(serviceRef)
       ).data();
+
       const servicesData = {
         id,
         ...resData,
@@ -113,52 +111,23 @@ function ServiceView() {
   }, []);
 
   const templatesComponents = {
-    template1: (
-      <Template1 ref={ServiceRef} dataSet={service} />
-    ),
+    template1: <Template1 ref={ServiceRef} dataSet={service} />,
 
-    template2: (
-      <Template2 ref={ServiceRef} dataSet={service}  />
-    ),
+    template2: <Template2 ref={ServiceRef} dataSet={service} />,
 
-    template3: (
-      <Template3 ref={ServiceRef} dataSet={service}  />
-    ),
+    template3: <Template3 ref={ServiceRef} dataSet={service} />,
 
-    template4: (
-      <Template4 ref={ServiceRef} dataSet={service}  />
-    ),
-    template5: (
-      <Template5 ref={ServiceRef} dataSet={service}  />
-    ),
+    template4: <Template4 ref={ServiceRef} dataSet={service} />,
+    template5: <Template5 ref={ServiceRef} dataSet={service} />,
 
-    template6: (
-      <Template6 ref={ServiceRef} dataSet={service}  />
-    ),
-    template7: (
-      <Template7 ref={ServiceRef} dataSet={service}  />
-    ),
-    template8: (
-      <Template8 ref={ServiceRef} dataSet={service}  />
-    ),
-    template9: (
-      <Template9 ref={ServiceRef} dataSet={service}  />
-    ),
-    template10: (
-      <Template10
-        ref={ServiceRef}
-        dataSet={service}
-        
-      />
-    ),
-    template11: (
-      <Template11
-        ref={ServiceRef}
-        dataSet={service}
-      />
-    ),
+    template6: <Template6 ref={ServiceRef} dataSet={service} />,
+    template7: <Template7 ref={ServiceRef} dataSet={service} />,
+    template8: <Template8 ref={ServiceRef} dataSet={service} />,
+    template9: <Template9 ref={ServiceRef} dataSet={service} />,
+    template10: <Template10 ref={ServiceRef} dataSet={service} />,
+    template11: <Template11 ref={ServiceRef} dataSet={service} />,
   };
-  
+
   useEffect(() => {
     if (service.items) {
       const tax = service?.items.reduce((acc, cur) => {
@@ -297,27 +266,34 @@ function ServiceView() {
       id: 1,
       label: "NAME",
     },
-   
     {
-      id: 3,
+      id: 4,
       label: "DISCOUNT",
     },
     {
-      id: 4,
+      id: 5,
       label: "TAX",
     },
     {
-      id: 5,
+      id: 6,
       label: "isTax Included",
     },
     {
-      id: 6,
+      id: 7,
       label: "PRICE",
     },
   ];
 
   return (
     <div>
+      <div className="">
+        <Link
+          className="flex items-center w-fit bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
+          to={"./../"}
+        >
+          <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
+        </Link>
+      </div>
       <div className="p-3 flex justify-between bg-white rounded-lg my-3">
         <div className="space-x-4 flex">
           <button
@@ -463,9 +439,10 @@ function ServiceView() {
                           <td className="  text-gray-600 max-w-[200px] truncate p-3">
                             {item.name}
                           </td>
-                          
                           <td className="  text-gray-600 whitespace-nowrap p-3">
-                          {!item.discountType && "₹"}{item.discount}{item.discountType && "%"}  
+                            {!item.discountType && "₹"}
+                            {item.discount}
+                            {item.discountType && "%"}
                           </td>
                           <td className="  text-gray-600 whitespace-nowrap p-3">
                             {item.tax}%
@@ -570,7 +547,8 @@ function ServiceView() {
                     </div>
                   </div>
                 </div>
-                {Object.keys(service).length!==0 && templatesComponents[selectTemplate]}
+                {Object.keys(service).length !== 0 &&
+                  templatesComponents[selectTemplate]}
                 {/* <Template7
                   ref={ServiceRef}
                   ServiceData={Service}
