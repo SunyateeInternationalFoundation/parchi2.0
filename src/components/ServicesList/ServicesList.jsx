@@ -129,7 +129,7 @@ const ServicesList = () => {
                   </td>
                   <td className="px-6 py-4 font-semibold text-gray-600">
                     {service.discount}
-                    {service.discount.type  ? "%" : "/-"}
+                    {service.discountType === "Percentage" ? "%" : "/-"}
                   </td>
                   <td className="px-6 py-4 font-semibold text-gray-600">
                     {service.tax}%

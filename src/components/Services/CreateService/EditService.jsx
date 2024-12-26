@@ -7,7 +7,7 @@ import {
   query,
   Timestamp,
   updateDoc,
-  where
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
@@ -120,7 +120,7 @@ function EditService() {
         );
         const getData = (await getDoc(docRef)).data();
         setServiceDate(getData.date);
-        setServiceDueDate(getData.dueDate)
+        setServiceDueDate(getData.dueDate);
         const customerData = (
           await getDoc(getData.customerDetails.customerRef)
         ).data();
@@ -136,7 +136,6 @@ function EditService() {
         console.log("🚀 ~ fetchInvoiceData ~ error:", error);
       }
     }
-
     const fetchServices = async () => {
       try {
         const companyRef = doc(db, "companies", companyDetails.companyId);
@@ -150,8 +149,7 @@ function EditService() {
           if (data.discountType) {
             discount = (+data.sellingPrice / 100) * data.discount;
           }
-          const netAmount =
-            +data.sellingPrice - discount;
+          const netAmount = +data.sellingPrice - discount;
           const taxRate = data.tax || 0;
           const sgst = taxRate / 2;
           const cgst = taxRate / 2;
@@ -193,7 +191,6 @@ function EditService() {
       }
     }
 
- 
     fetchServiceData();
     customerDetails();
     fetchServices();
@@ -243,7 +240,7 @@ function EditService() {
       const payload = {
         ...formData,
         date: serviceDate,
-        dueDate:serviceDueDate,
+        dueDate: serviceDueDate,
         subTotal: +totalAmounts.subTotalAmount,
         total: +totalAmounts.totalAmount,
         customerDetails: {
@@ -277,7 +274,7 @@ function EditService() {
   }
 
   function DateFormate(timestamp) {
-    if (!timestamp.seconds || timestamp.nanoseconds) {
+    if (!timestamp.seconds || !timestamp.nanoseconds) {
       return;
     }
     const milliseconds =
@@ -309,7 +306,7 @@ function EditService() {
 
     const totalTaxableAmount = data.reduce((sum, product) => {
       const cal = sum + (product.totalAmount - product.taxAmount);
-      if (!product.sellPriceTaxType) {
+      if (!product.sellingPriceTaxType) {
         return sum + product.totalAmount;
       }
       return cal;
@@ -400,7 +397,8 @@ function EditService() {
     }
     setMembershipDate();
   }, [membershipStartDate, membershipPeriod]);
-
+  console.log("serviceDate", serviceDate);
+  console.log("serviceDueDate", serviceDueDate);
   return (
     <div
       className="w-full px-5 pb-5 bg-gray-100 overflow-y-auto"
@@ -549,7 +547,10 @@ function EditService() {
                       <tr key={service.id}>
                         <td className="px-4 py-2">{service.serviceName}</td>
                         <td className="px-4 py-2">₹{service.sellingPrice}</td>
-                        <td className="px-4 py-2">{service.discount}{service.discountType? "%":"/-" }</td>
+                        <td className="px-4 py-2">
+                          {service.discount}
+                          {service.discountType ? "%" : "/-"}
+                        </td>
                         <td className="px-2 py-2">
                           {service.sellingPriceTaxType ? "Yes" : "No"}
                         </td>
@@ -631,10 +632,13 @@ function EditService() {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="w-full ">
                   <div>Sign</div>
-                  <select className="border p-2 rounded w-full" defaultValue={""}>
+                  <select
+                    className="border p-2 rounded w-full"
+                    defaultValue={""}
+                  >
                     <option value="" disabled>
                       Select Sign
                     </option>
@@ -713,7 +717,8 @@ function EditService() {
                       onChange={(e) => {
                         setFormData((val) => ({
                           ...val,
-                          extraDiscountType: e.target.value == "true" ? true : false,
+                          extraDiscountType:
+                            e.target.value == "true" ? true : false,
                         }));
                       }}
                     >
@@ -779,7 +784,19 @@ function EditService() {
                       </span>
                     </div>
                   )}
-
+                  {formData.extraDiscount > 0 && (
+                    <div className="flex justify-between text-gray-700 mb-2">
+                      <span>Extra Discount Amount</span>
+                      <span>
+                        ₹
+                        {formData.extraDiscountType
+                          ? (+totalAmounts.subTotalAmount *
+                              formData.extraDiscount) /
+                            100
+                          : formData.extraDiscount}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between font-bold text-xl mb-2">
                     <span>Total Amount</span>
                     <span>₹ {(totalAmounts?.totalAmount || 0).toFixed(2)}</span>

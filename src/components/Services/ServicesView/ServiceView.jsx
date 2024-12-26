@@ -227,7 +227,7 @@ function ServiceView() {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
     try {
       if (!id) {
         return;
@@ -466,10 +466,9 @@ function ServiceView() {
                       },
                       {
                         label: "Extra Discount",
-                        amount:
-                          service?.extraDiscountType === "percentage"
-                            ? `${service?.extraDiscount || 0}%`
-                            : `₹${service?.extraDiscount || 0}`,
+                        amount: service?.extraDiscountType
+                          ? `${service?.extraDiscount || 0}%`
+                          : `₹${service?.extraDiscount || 0}`,
                       },
                       {
                         label: "TAX(%)",
