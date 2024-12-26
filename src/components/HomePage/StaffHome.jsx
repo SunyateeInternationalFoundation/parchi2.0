@@ -1,65 +1,64 @@
-import React, { useState, useEffect } from "react";
-import Navbar from "../UI/Navbar";
-import SideBar from "../UI/Sidebar";
 import {
-  Routes,
-  Route,
-  Outlet,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+    collection,
+    getDoc,
+    getDocs,
+    query,
+    where
+} from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
-  collection,
-  query,
-  where,
-  getDocs,
-  doc,
-  getDoc,
-} from "firebase/firestore";
+    Outlet,
+    Route,
+    Routes,
+    useLocation,
+    useNavigate,
+} from "react-router-dom";
 import { db } from "../../firebase";
-import InvoiceList from "../Invoices/InvoiceList";
-import InvoiceView from "../Invoices/InvoiceView/InvoiceView";
-import SetInvoice from "../Invoices/SetInvoice/SetInvoice";
-import Quotation from "../Quotation/Quotation";
-import QuotationViewHome from "../Quotation/QuotationView/QuotationViewHome";
-import SetQuotation from "../Quotation/SetQuotation/SetQuotation";
-import CreateProject from "../Projects/CreateProject/CreateProject";
-import ProjectView from "../Projects/ProjectView/ProjectView";
-import Users from "../Projects/ProjectView/Users/Users";
-import Tasks from "../Projects/ProjectView/Tasks/Tasks";
-import Milestone from "../Projects/ProjectView/Milestone/Milestone";
-import Files from "../Projects/ProjectView/Files/Files";
-import Approval from "../Projects/ProjectView/Approvals/Approval";
-import Payment from "../Projects/ProjectView/Payment/Payment";
-import Items from "../Projects/ProjectView/Items/Items";
-import Chats from "../Projects/ProjectView/Chats/Chats";
-import CustomerList from "../Customers/CustomerList";
-import CustomerView from "../Customers/CustomerView/CustomerView";
-import VendorList from "../Vendors/VendorList";
-import VendorView from "../Vendors/VendorView/VendorView";
-import Purchase from "../Purchase/Purchase";
-import PurchaseViewHome from "../Purchase/PurchaseView/PurchaseViewHome";
-import SetPurchase from "../Purchase/SetPurchase/SetPurchase";
-import Projects from "../Projects/Projects";
-import PO from "../PO/PO";
-import PoView from "../PO/PoView/PoView";
-import SetPO from "../PO/SetPO/SetPO";
-import Services from "../Services/Services";
-import CreateService from "../Services/CreateService/CreateService";
-import EditService from "../Services/CreateService/EditService";
-import DeliveryChallanList from "../DeliveryChallan/DeliveryChallanList";
-import DeliveryChallanView from "../DeliveryChallan/DeliveryChallanView/DeliveryChallanView";
-import SetDeliveryChallan from "../DeliveryChallan/SetDeliveryChallan/SetDeliveryChallan";
 import CreditNoteList from "../CreditNote/CreditNoteList";
 import CreditNoteView from "../CreditNote/CreditNoteView/CreditNoteView";
 import SetCreditNote from "../CreditNote/SetCreditNote/SetCreditNote";
+import CustomerList from "../Customers/CustomerList";
+import CustomerView from "../Customers/CustomerView/CustomerView";
+import DeliveryChallanList from "../DeliveryChallan/DeliveryChallanList";
+import DeliveryChallanView from "../DeliveryChallan/DeliveryChallanView/DeliveryChallanView";
+import SetDeliveryChallan from "../DeliveryChallan/SetDeliveryChallan/SetDeliveryChallan";
+import InvoiceList from "../Invoices/InvoiceList";
+import InvoiceView from "../Invoices/InvoiceView/InvoiceView";
+import SetInvoice from "../Invoices/SetInvoice/SetInvoice";
+import PO from "../PO/PO";
+import PoView from "../PO/PoView/PoView";
+import SetPO from "../PO/SetPO/SetPO";
 import POS from "../POS/POS";
 import POSView from "../POS/POSView/POSView";
 import SetPos from "../POS/SetPos/SetPos";
 import ProFormaInvoice from "../ProFormaInvoice/ProFormaInvoice";
 import ProFormaView from "../ProFormaInvoice/ProFormaInvoiceView/ProFormaView";
 import SetProFormaInvoice from "../ProFormaInvoice/SetProFormaInvoice/SetProFormaInvoice";
+import CreateProject from "../Projects/CreateProject/CreateProject";
+import Projects from "../Projects/Projects";
+import Approval from "../Projects/ProjectView/Approvals/Approval";
+import Chats from "../Projects/ProjectView/Chats/Chats";
+import Files from "../Projects/ProjectView/Files/Files";
+import Items from "../Projects/ProjectView/Items/Items";
+import Milestone from "../Projects/ProjectView/Milestone/Milestone";
+import Payment from "../Projects/ProjectView/Payment/Payment";
+import ProjectView from "../Projects/ProjectView/ProjectView";
+import Tasks from "../Projects/ProjectView/Tasks/Tasks";
+import Users from "../Projects/ProjectView/Users/Users";
+import Purchase from "../Purchase/Purchase";
+import PurchaseViewHome from "../Purchase/PurchaseView/PurchaseViewHome";
+import SetPurchase from "../Purchase/SetPurchase/SetPurchase";
+import Quotation from "../Quotation/Quotation";
+import QuotationViewHome from "../Quotation/QuotationView/QuotationViewHome";
+import SetQuotation from "../Quotation/SetQuotation/SetQuotation";
+import CreateService from "../Services/CreateService/CreateService";
+import EditService from "../Services/CreateService/EditService";
+import Services from "../Services/Services";
+import Navbar from "../UI/Navbar";
+import SideBar from "../UI/Sidebar";
+import VendorList from "../Vendors/VendorList";
+import VendorView from "../Vendors/VendorView/VendorView";
 
 const Modal = ({
   companyDetails,

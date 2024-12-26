@@ -1,9 +1,9 @@
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
-import { IoSearch } from "react-icons/io5";
 function Projects({ companyDetails, isStaff }) {
   const userDetails = useSelector((state) => state.users);
   const [filterStatus, setFilterStatus] = useState("All");

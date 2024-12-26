@@ -1,12 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import ProForma from "./ProForma";
-import Returns from "./Returns";
-import { Link, useParams } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
-import { doc, getDoc } from "firebase/firestore";
+import { Link, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
-import jsPDF from "jspdf";
+import ProForma from "./ProForma";
 
 function ProFormaView() {
   const { id } = useParams();
@@ -44,7 +42,7 @@ function ProFormaView() {
         type: "Pro Forma Invoice",
         no: proFormaNo,
         userTo: customerDetails,
-        products: resData.products.map((item) => {
+        items: resData.products.map((item) => {
           let discount = +item.discount || 0;
 
           if (item.discountType) {

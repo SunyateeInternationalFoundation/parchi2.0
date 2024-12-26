@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { AiOutlineArrowLeft } from "react-icons/ai";
-import { Link, useParams } from "react-router-dom";
 import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    query,
+    where,
 } from "firebase/firestore";
-import { db } from "../../../firebase";
+import { useEffect, useState } from "react";
+import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
+import { Link, useParams } from "react-router-dom";
+import { db } from "../../../firebase";
 import VendorBills from "./VendorBills";
 import VendorProfile from "./VendorProfile";
 import VendorProject from "./VendorProject";

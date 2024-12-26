@@ -1,13 +1,13 @@
 import {
-  addDoc,
-  getDocs,
-  collection,
-  doc,
-  Timestamp,
-  query,
-  where,
+    addDoc,
+    collection,
+    doc,
+    getDocs,
+    query,
+    Timestamp,
+    where,
 } from "firebase/firestore";
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { db } from "../../../firebase";

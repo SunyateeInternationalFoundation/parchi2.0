@@ -1,5 +1,3 @@
-import React, { useEffect, useState } from "react";
-import { db } from "../../../firebase";
 import {
   addDoc,
   collection,
@@ -7,8 +5,11 @@ import {
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
+import PropTypes from 'prop-types';
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { db } from "../../../firebase";
 
 function Returns({ invoice }) {
   const { id } = useParams();
@@ -17,7 +18,7 @@ function Returns({ invoice }) {
   const [isAllReturnsChecked, setIsAllReturnsChecked] = useState(false);
 
   useEffect(() => {
-    setProducts([...invoice.products]);
+    setProducts([...invoice.items]);
   }, [invoice]);
 
   const userDetails = useSelector((state) => state.users);
@@ -251,5 +252,8 @@ function Returns({ invoice }) {
     </div>
   );
 }
+Returns.propTypes = {
+  invoice: PropTypes.object.isRequired,
+};
 
 export default Returns;

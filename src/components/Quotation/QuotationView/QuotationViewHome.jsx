@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
-import { doc, getDoc } from "firebase/firestore";
+import { Link, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
 import QuotationView from "./QuotationView";
 
@@ -36,7 +36,7 @@ function QuotationViewHome() {
         ...resData,
         no: quotationNo,
         userTo: customerDetails,
-        products: resData.products.map((item) => {
+        items: resData.products.map((item) => {
           let discount = +item.discount || 0;
           if (item.discountType) {
             discount = (+item.sellingPrice / 100) * item.discount;

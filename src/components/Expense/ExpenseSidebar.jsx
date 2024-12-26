@@ -1,5 +1,5 @@
 import { addDoc, collection, doc, Timestamp } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { db } from "../../firebase";

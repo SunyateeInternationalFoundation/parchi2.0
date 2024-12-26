@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { IoMdDownload } from "react-icons/io";
-import { db } from "../../firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { IoMdDownload } from "react-icons/io";
 import { useSelector } from "react-redux";
+import { db } from "../../firebase";
 
 const VendorPO = () => {
   const [loading, setLoading] = useState(false);

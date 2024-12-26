@@ -1,20 +1,18 @@
-import React, { useEffect, useState } from "react";
-import QuickAddSideBar from "./QuickAddSideBar";
-import InventoryAddSideBar from "./InventoryAddSideBar";
-import { Link, useParams } from "react-router-dom";
-import { AiOutlineArrowLeft } from "react-icons/ai";
-import { useSelector } from "react-redux";
 import {
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  query,
-  where,
+    collection,
+    deleteDoc,
+    doc,
+    getDocs
 } from "firebase/firestore";
-import { db } from "../../../../firebase";
+import { useEffect, useState } from "react";
+import { AiOutlineArrowLeft } from "react-icons/ai";
 import { MdDelete } from "react-icons/md";
+import { useSelector } from "react-redux";
+import { Link, useParams } from "react-router-dom";
+import { db } from "../../../../firebase";
+import InventoryAddSideBar from "./InventoryAddSideBar";
 import ItemView from "./ItemView";
+import QuickAddSideBar from "./QuickAddSideBar";
 
 function Items() {
   const { id } = useParams();

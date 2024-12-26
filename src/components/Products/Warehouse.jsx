@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { IoMdClose } from "react-icons/io";
-import { db, storage } from "../../firebase";
 import {
-  doc,
-  collection,
-  getDocs,
-  addDoc,
-  deleteDoc,
-  Timestamp,
+    addDoc,
+    collection,
+    deleteDoc,
+    doc,
+    getDocs,
+    Timestamp,
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useEffect, useState } from "react";
+import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
+import { db } from "../../firebase";
 
 const Warehouse = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

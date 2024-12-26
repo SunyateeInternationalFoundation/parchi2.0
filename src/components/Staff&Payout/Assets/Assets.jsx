@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { IoMdClose } from "react-icons/io";
-import { db, storage } from "../../../firebase";
 import {
-  doc,
-  collection,
-  getDocs,
-  addDoc,
-  deleteDoc,
-  Timestamp,
-  query,
-  where,
+    addDoc,
+    collection,
+    deleteDoc,
+    doc,
+    getDocs,
+    query,
+    Timestamp,
+    where,
 } from "firebase/firestore";
-import { useSelector } from "react-redux";
-import { IoSearch } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { IoMdClose } from "react-icons/io";
+import { IoSearch } from "react-icons/io5";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { db, storage } from "../../../firebase";
 
 const Assets = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

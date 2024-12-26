@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import PropTypes from "prop-types";
+import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import template1 from "../../assets/templates/template1.png";
+import template10 from "../../assets/templates/template10.png";
+import template11 from "../../assets/templates/template11.png";
 import template2 from "../../assets/templates/template2.png";
 import template3 from "../../assets/templates/template3.png";
 import template4 from "../../assets/templates/template4.png";
@@ -9,8 +12,6 @@ import template6 from "../../assets/templates/template6.png";
 import template7 from "../../assets/templates/template7.png";
 import template8 from "../../assets/templates/template8.png";
 import template9 from "../../assets/templates/template9.png";
-import template10 from "../../assets/templates/template10.png";
-import template11 from "../../assets/templates/template11.png";
 function SelectTemplateSideBar({
   isOpen,
   onClose,
@@ -96,5 +97,11 @@ function SelectTemplateSideBar({
     </div>
   );
 }
+SelectTemplateSideBar.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSelectedTemplate: PropTypes.func.isRequired,
+  preSelectedTemplate: PropTypes.string,
+};
 
 export default SelectTemplateSideBar;

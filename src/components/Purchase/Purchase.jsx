@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase";
-import { useSelector } from "react-redux";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
-  LuChevronLeft,
-  LuChevronRight,
-  LuChevronsLeft,
-  LuChevronsRight,
+    LuChevronLeft,
+    LuChevronRight,
+    LuChevronsLeft,
+    LuChevronsRight,
 } from "react-icons/lu";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { db } from "../../firebase";
 
 const Purchase = ({ companyDetails, isStaff }) => {
   const [purchases, setPurchases] = useState([]);

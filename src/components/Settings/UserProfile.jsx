@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
-import SettingsView from "./SettingView";
-import { FaUser } from "react-icons/fa";
-import { MdOutlineLocalPhone } from "react-icons/md";
-import { MdEmail } from "react-icons/md";
-import { useSelector, useDispatch } from "react-redux";
-import { db, storage } from "../../firebase";
-import { updateDoc, doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { useEffect, useState } from "react";
+import { FaUser } from "react-icons/fa";
+import { MdEmail, MdOutlineLocalPhone } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { db, storage } from "../../firebase";
 import { updateUserDetails } from "../../store/UserSlice";
 const Prefix = () => {
   const dispatch = useDispatch();

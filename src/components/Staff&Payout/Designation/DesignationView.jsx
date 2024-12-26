@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { collection, doc, getDocs, query, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { AiOutlineArrowLeft } from "react-icons/ai";
-import { doc, collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../../firebase";
 
 const DesignationView = () => {

@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { IoMdClose } from "react-icons/io";
 import {
-  addDoc,
-  collection,
-  serverTimestamp,
-  doc,
-  updateDoc,
+    addDoc,
+    collection,
+    doc,
+    serverTimestamp
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../../firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { useEffect, useState } from "react";
+import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { FaUserEdit } from "react-icons/fa";
+import { db, storage } from "../../firebase";
 
 const CreateVendor = ({ isOpen, onClose, onVendorAdded }) => {
   const userDetails = useSelector((state) => state.users);

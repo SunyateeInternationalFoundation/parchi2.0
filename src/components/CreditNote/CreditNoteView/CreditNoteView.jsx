@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from "react";
-import CreditNote from "./CreditNote";
-import { Link, useParams } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
-import { collection, doc, getDoc } from "firebase/firestore";
+import { Link, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
+import CreditNote from "./CreditNote";
 
 const CreditNoteView = () => {
   const { id } = useParams();
-  const [activeTab, setActiveTab] = useState("CreditNote");
   const [creditNote, setCreditNote] = useState({});
   const userDetails = useSelector((state) => state.users);
   const [bankDetails, setBankDetails] = useState({});
-  const [returnData, setReturnData] = useState([]);
 
   const companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
@@ -37,7 +35,7 @@ const CreditNoteView = () => {
         type: "Credit Note",
         no: creditNoteNo,
         userTo: customerDetails,
-        products: resData.products.map((item) => {
+        items: resData.products.map((item) => {
           let discount = +item.discount || 0;
 
           if (item.discountType) {
@@ -91,51 +89,10 @@ const CreditNoteView = () => {
     }
   };
 
-  //   async function fetchReturnData() {
-  //     try {
-  //       const returnsRef = collection(
-  //         db,
-  //         "companies",
-  //         companyId,
-  //         "creditnote",
-  //         id,
-  //         "returns"
-  //       );
-  //       const q = query(returnsRef, orderBy("createdAt", "desc"));
-  //       const getDataDocs = await getDocs(q);
-
-  //       const getData = getDataDocs.docs.map((doc) => {
-  //         const { createdAt, ...data } = doc.data();
-  //         return {
-  //           id: doc.id,
-  //           ...data,
-  //           createdAt: DateFormate(createdAt),
-  //         };
-  //       });
-  //       setReturnData(getData);
-  //     } catch (error) {
-  //       console.log("🚀 ~ fetchReturnData ~ error:", error);
-  //     }
-  //   }
-
-  //   useEffect(() => {
-  //     fetchReturnData();
-  //   }, [companyId]);
-
   useEffect(() => {
     fetchCreditNote();
   }, [companyId]);
 
-  //   function DateFormate(timestamp) {
-  //     const milliseconds =
-  //       timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
-  //     const date = new Date(milliseconds);
-  //     const getDate = String(date.getDate()).padStart(2, "0");
-  //     const getMonth = String(date.getMonth() + 1).padStart(2, "0");
-  //     const getFullYear = date.getFullYear();
-
-  //     return `${getDate}/${getMonth}/${getFullYear}`;
-  //   }
   console.log("credit-note", creditNote);
   return (
     <div className="px-5 pb-5 bg-gray-100" style={{ width: "100%" }}>
@@ -149,60 +106,12 @@ const CreditNoteView = () => {
         <h1 className="text-2xl font-bold">{creditNote.creditNoteNo}</h1>
       </header>
 
-      <div>
-        <nav className="flex space-x-4 mt-3 mb-3">
-          {/* <button
-            className={
-              "px-4 py-1" +
-              (activeTab === "CreditNote"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
-            }
-            onClick={() => setActiveTab("CreditNote")}
-          >
-            CreditNote View
-          </button> */}
-          {/* <button
-            className={
-              "px-4 py-1" +
-              (activeTab === "Returns"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
-            }
-            onClick={() => setActiveTab("Returns")}
-          >
-            Returns
-          </button>
-          <button
-            className={
-              "px-4 py-1" +
-              (activeTab === "ReturnsHistory"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
-            }
-            onClick={() => setActiveTab("ReturnsHistory")}
-          >
-            ReturnsHistory
-          </button> */}
-        </nav>
-      </div>
+      
       <hr />
       <div className="w-full">
-        {activeTab === "CreditNote" && (
           <div>
             <CreditNote creditNote={creditNote} bankDetails={bankDetails} />
           </div>
-        )}
-        {/* {activeTab === "Returns" && (
-          <div>
-            <Returns creditNote={creditNote} />
-          </div>
-        )}
-        {activeTab === "ReturnsHistory" && (
-          <div>
-            <ReturnsHistory products={returnData} refresh={fetchReturnData} />
-          </div>
-        )} */}
       </div>
     </div>
   );

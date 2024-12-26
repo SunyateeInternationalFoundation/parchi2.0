@@ -1,9 +1,3 @@
-import React, { useEffect, useRef, useState } from "react";
-import Invoice from "./Invoice";
-import Returns from "./Returns";
-import { Link, useParams } from "react-router-dom";
-import { AiOutlineArrowLeft } from "react-icons/ai";
-import { useSelector } from "react-redux";
 import {
   collection,
   doc,
@@ -12,7 +6,13 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { AiOutlineArrowLeft } from "react-icons/ai";
+import { useSelector } from "react-redux";
+import { Link, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
+import Invoice from "./Invoice";
+import Returns from "./Returns";
 import ReturnsHistory from "./ReturnsHistory";
 
 function InvoiceView() {
@@ -46,7 +46,7 @@ function InvoiceView() {
         type: "Invoice",
         no: invoiceNo,
         userTo: customerDetails,
-        products: resData.products.map((item) => {
+        items: resData.products.map((item) => {
           let discount = +item.discount || 0;
 
           if (item.discountType) {

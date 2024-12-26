@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../firebase";
-import { Link, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { useSelector } from "react-redux";
+import { Link, useParams } from "react-router-dom";
+import { db } from "../../firebase";
 
 const Files = () => {
   const [files, setFiles] = useState([]);

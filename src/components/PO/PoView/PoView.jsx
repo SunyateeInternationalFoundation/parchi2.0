@@ -1,22 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
-import Po from "./Po";
-import { Link, useParams } from "react-router-dom";
+import {
+  doc,
+  getDoc
+} from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  orderBy,
-  query,
-  where,
-} from "firebase/firestore";
+import { Link, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
+import Po from "./Po";
 
 const PoView = () => {
   const { id } = useParams();
-  const [activeTab, setActiveTab] = useState("PO");
   const [po, setPo] = useState({});
   const userDetails = useSelector((state) => state.users);
   const [bankDetails, setBankDetails] = useState({});
@@ -42,7 +36,7 @@ const PoView = () => {
         type: "PO",
         no: poNo,
         userTo: vendorDetails,
-        products: resData.products.map((item) => {
+        items: resData.products.map((item) => {
           let discount = +item.discount || 0;
 
           if (item.discountType) {
@@ -104,16 +98,6 @@ const PoView = () => {
     fechPO();
   }, [companyId]);
 
-  function DateFormate(timestamp) {
-    const milliseconds =
-      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
-    const date = new Date(milliseconds);
-    const getDate = String(date.getDate()).padStart(2, "0");
-    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
-    const getFullYear = date.getFullYear();
-
-    return `${getDate}/${getMonth}/${getFullYear}`;
-  }
 
   return (
     <div className="px-5 pb-5 bg-gray-100" style={{ width: "100%" }}>
@@ -129,11 +113,7 @@ const PoView = () => {
 
       <hr />
       <div className="w-full">
-        {activeTab === "PO" && (
-          <div>
             <Po Po={po} bankDetails={bankDetails} />
-          </div>
-        )}
       </div>
     </div>
   );

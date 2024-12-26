@@ -1,10 +1,8 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { AiOutlineArrowLeft } from "react-icons/ai";
-import ProductList from "./ProductList";
+import { useState } from "react";
 import Categories from "./Categories";
-import Warehouse from "./Warehouse";
+import ProductList from "./ProductList";
 import Stock from "./Stock";
+import Warehouse from "./Warehouse";
 
 const ProductHome = () => {
   const [activeTab, setActiveTab] = useState("Products");

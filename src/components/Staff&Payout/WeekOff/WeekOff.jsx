@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
 import {
-  collection,
-  doc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
+    collection,
+    doc,
+    getDocs,
+    query,
+    updateDoc,
+    where,
 } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { db } from "../../../firebase";
-import { useDispatch, useSelector } from "react-redux";
 import { updateCompanyDetails } from "../../../store/UserSlice";
 
 const WeekOff = () => {

@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { collection, doc, getDocs, query, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { AiOutlineArrowLeft } from "react-icons/ai";
 import { FaArrowDown, FaArrowUp, FaFilter } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
-import { Link, useParams } from "react-router-dom";
-import PaymentSidebar from "./PaymentSidebar";
-import { collection, doc, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../../../firebase";
 import { useSelector } from "react-redux";
-import { AiOutlineArrowLeft } from "react-icons/ai";
+import { Link, useParams } from "react-router-dom";
+import { db } from "../../../../firebase";
+import PaymentSidebar from "./PaymentSidebar";
 
 const Payment = () => {
   const { id } = useParams();

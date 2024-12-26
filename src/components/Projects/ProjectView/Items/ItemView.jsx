@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { IoMdClose } from "react-icons/io";
 import {
-  collection,
-  doc,
-  getDocs,
-  Timestamp,
-  writeBatch,
+    collection,
+    doc,
+    getDocs,
+    Timestamp,
+    writeBatch,
 } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { IoMdClose } from "react-icons/io";
 import { db } from "../../../../firebase";
 
 function ItemView({ isOpen, onClose, ItemData, onRefresh }) {

@@ -1,8 +1,9 @@
-import React, { forwardRef } from "react";
+import PropTypes from "prop-types";
+import { forwardRef } from "react";
 
 const Template8 = forwardRef((props, ref) => {
   const { dataSet, bankDetails } = props;
-  if (!dataSet) {
+  if (!Object.keys(dataSet).length===0) {
     return;
   }
   function DateFormate(timestamp) {
@@ -96,7 +97,7 @@ const Template8 = forwardRef((props, ref) => {
                 </tr>
               </thead>
               <tbody>
-                {dataSet.products.map((item, index) => (
+                {dataSet.items.map((item, index) => (
                   <tr key={index}>
                     <td className="text-left border-r border-black  pl-1">
                       {index + 1}
@@ -177,7 +178,7 @@ const Template8 = forwardRef((props, ref) => {
           </div>
 
           {/* Footer Section */}
-          <div className="flex justify-between">
+         {bankDetails && <div className="flex justify-between">
             <div className="w-full border-r-2 border-black px-2">
               <h3 className="font-bold text-gray-800">Bank Details:</h3>
               <p>Bank: {bankDetails?.bankName}</p>
@@ -193,11 +194,16 @@ const Template8 = forwardRef((props, ref) => {
               </div>
               <p>{dataSet.terms || "No Terms & Conditions"}</p>
             </div>
-          </div>
+          </div>}
         </div>
       </div>
     </div>
   );
 });
+Template8.propTypes = {
+  dataSet: PropTypes.object.isRequired,
+  bankDetails: PropTypes.object,
+};
 
+Template8.displayName = "Template8";
 export default Template8;

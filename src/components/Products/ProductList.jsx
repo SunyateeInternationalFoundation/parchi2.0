@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { db } from "../../firebase";
 import {
-  collection,
-  deleteDoc,
-  getDocs,
-  doc,
+    collection,
+    deleteDoc,
+    doc,
+    getDocs,
 } from "firebase/firestore";
-import CreateProduct from "./CreateProduct";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { db } from "../../firebase";
+import CreateProduct from "./CreateProduct";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);

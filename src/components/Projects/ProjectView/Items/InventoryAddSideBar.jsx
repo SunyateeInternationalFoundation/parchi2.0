@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
 import {
-  collection,
-  getDocs,
-  query,
-  where,
-  doc,
-  addDoc,
-  updateDoc,
-  Timestamp,
+    addDoc,
+    collection,
+    doc,
+    getDocs,
+    query,
+    Timestamp,
+    updateDoc,
+    where,
 } from "firebase/firestore";
-import { db } from "../../../../firebase";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
+import { useSelector } from "react-redux";
+import { db } from "../../../../firebase";
 
 function InventoryAddSideBar({ projectId, isOpen, onClose, isMaterialAdd }) {
   const [itemList, setItemList] = useState([]);

@@ -12,7 +12,7 @@ import { FaTruck, FaIndustry, FaSchool } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { MdEmail } from "react-icons/md";
-import React, { useState } from "react";
+import  { useState } from "react";
 import { db } from "../../firebase";
 import { setCompanyData } from "../../store/UserSlice";
 

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
 import { doc, updateDoc } from "firebase/firestore";
-import { FaUserEdit } from "react-icons/fa";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { useEffect, useState } from "react";
+import { FaUserEdit } from "react-icons/fa";
 import { db, storage } from "../../../../firebase";
 
 const Profile = ({ staffData, refresh }) => {

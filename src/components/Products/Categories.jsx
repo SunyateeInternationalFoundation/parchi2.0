@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { db } from "../../firebase";
 import {
-  doc,
-  collection,
-  getDocs,
-  addDoc,
-  deleteDoc,
+    addDoc,
+    collection,
+    deleteDoc,
+    doc,
+    getDocs,
 } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { db } from "../../firebase";
 
 const Categories = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

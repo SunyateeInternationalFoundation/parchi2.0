@@ -1,18 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import jsPDF from "jspdf";
-import { useSelector } from "react-redux";
-import { FaRegEye } from "react-icons/fa";
-import { IoMdClose, IoMdDownload } from "react-icons/io";
+import { useEffect, useRef, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
-  LuChevronLeft,
-  LuChevronRight,
-  LuChevronsLeft,
-  LuChevronsRight,
+    LuChevronLeft,
+    LuChevronRight,
+    LuChevronsLeft,
+    LuChevronsRight,
 } from "react-icons/lu";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { db } from "../../firebase";
 
 const DeliveryChallanList = ({ companyDetails, isStaff }) => {
   const [deliveryChallan, setDeliveryChallan] = useState([]);

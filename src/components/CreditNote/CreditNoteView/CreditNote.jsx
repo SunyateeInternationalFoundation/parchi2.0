@@ -1,14 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
+import { deleteDoc, doc } from "firebase/firestore";
+import jsPDF from "jspdf";
+import PropTypes from 'prop-types';
+import { useEffect, useRef, useState } from "react";
+import { FaRegEye } from "react-icons/fa";
 import { IoMdClose, IoMdDownload } from "react-icons/io";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { TbEdit } from "react-icons/tb";
-import jsPDF from "jspdf";
-import { FaRegEye } from "react-icons/fa";
-import { db } from "../../../firebase";
 import { useSelector } from "react-redux";
-import { doc, deleteDoc } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
+import { db } from "../../../firebase";
+import SelectTemplateSideBar from "../../Templates/SelectTemplateSideBar";
 import Template1 from "../../Templates/Template1";
+import Template10 from "../../Templates/Template10";
+import Template11 from "../../Templates/Template11";
 import Template2 from "../../Templates/Template2";
 import Template3 from "../../Templates/Template3";
 import Template4 from "../../Templates/Template4";
@@ -17,9 +21,6 @@ import Template6 from "../../Templates/Template6";
 import Template7 from "../../Templates/Template7";
 import Template8 from "../../Templates/Template8";
 import Template9 from "../../Templates/Template9";
-import Template10 from "../../Templates/Template10";
-import Template11 from "../../Templates/Template11";
-import SelectTemplateSideBar from "../../Templates/SelectTemplateSideBar";
 
 const CreditNote = ({ creditNote, bankDetails }) => {
   const navigate = useNavigate();
@@ -28,7 +29,6 @@ const CreditNote = ({ creditNote, bankDetails }) => {
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   const [isCreditNoteOpen, setIsCreditNoteOpen] = useState(false);
   const [totalTax, setTotalTax] = useState(0);
-  const [totalDiscount, setTotalDiscount] = useState(0);
   const [isSelectTemplateOpen, setIsSelectTemplateOpen] = useState(false);
   const [selectTemplate, setSelectTemplate] = useState("template1");
 
@@ -121,11 +121,8 @@ const CreditNote = ({ creditNote, bankDetails }) => {
       const tax = creditNote?.products.reduce((acc, cur) => {
         return acc + cur?.tax;
       }, 0);
-      const discount = creditNote?.products.reduce((acc, cur) => {
-        return acc + cur?.discount;
-      }, 0);
+   
       setTotalTax(tax);
-      setTotalDiscount(discount);
     }
   }, [creditNote]);
 
@@ -549,6 +546,10 @@ const CreditNote = ({ creditNote, bankDetails }) => {
       />
     </div>
   );
+};
+CreditNote.propTypes = {
+  creditNote: PropTypes.object.isRequired,
+  bankDetails: PropTypes.object,
 };
 
 export default CreditNote;

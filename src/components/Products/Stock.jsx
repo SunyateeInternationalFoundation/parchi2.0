@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { collection, doc, getDocs } from "firebase/firestore";
-import { db } from "../../firebase";
 import { useNavigate } from "react-router-dom";
+import { db } from "../../firebase";
 
 const Stock = () => {
   const [lowStockItems, setLowStockItems] = useState([]);

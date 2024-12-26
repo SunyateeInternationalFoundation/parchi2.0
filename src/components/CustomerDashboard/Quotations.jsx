@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { IoMdDownload } from "react-icons/io";
 import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
+    collection,
+    getDocs,
+    query,
+    where
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { useEffect, useState } from "react";
+import { IoMdDownload } from "react-icons/io";
 import { useSelector } from "react-redux";
+import { db } from "../../firebase";
 
 function Quotations() {
   const [loading, setLoading] = useState(false);

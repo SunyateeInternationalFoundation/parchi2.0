@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import { forwardRef } from "react";
 
 const Template = forwardRef((props, ref) => {
   const { deliveryChallanData } = props;

@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { IoMdClose } from "react-icons/io";
-import { db } from "../../../firebase";
 import {
-  doc,
-  collection,
-  getDocs,
-  addDoc,
-  deleteDoc,
-  Timestamp,
-  query,
-  where,
+    addDoc,
+    collection,
+    deleteDoc,
+    doc,
+    getDocs,
+    query,
+    Timestamp,
+    where,
 } from "firebase/firestore";
-import { useSelector } from "react-redux";
-import { IoSearch } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { IoMdClose } from "react-icons/io";
+import { IoSearch } from "react-icons/io5";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { db } from "../../../firebase";
 
 const Branches = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

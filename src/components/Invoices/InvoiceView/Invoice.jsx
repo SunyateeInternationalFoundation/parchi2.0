@@ -1,15 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+import { deleteDoc, doc, increment, updateDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import jsPDF from "jspdf";
+import PropTypes from 'prop-types';
+import { useEffect, useRef, useState } from "react";
+import { FaRegEye } from "react-icons/fa";
 import { IoMdClose, IoMdDownload } from "react-icons/io";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { TbEdit } from "react-icons/tb";
-import jsPDF from "jspdf";
-import { FaRegEye } from "react-icons/fa";
-import { db, storage } from "../../../firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useSelector } from "react-redux";
-import { doc, deleteDoc, increment, updateDoc } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
+import { db, storage } from "../../../firebase";
+import SelectTemplateSideBar from "../../Templates/SelectTemplateSideBar";
 import Template1 from "../../Templates/Template1";
+import Template10 from "../../Templates/Template10";
+import Template11 from "../../Templates/Template11";
 import Template2 from "../../Templates/Template2";
 import Template3 from "../../Templates/Template3";
 import Template4 from "../../Templates/Template4";
@@ -18,9 +22,6 @@ import Template6 from "../../Templates/Template6";
 import Template7 from "../../Templates/Template7";
 import Template8 from "../../Templates/Template8";
 import Template9 from "../../Templates/Template9";
-import SelectTemplateSideBar from "../../Templates/SelectTemplateSideBar";
-import Template10 from "../../Templates/Template10";
-import Template11 from "../../Templates/Template11";
 
 function Invoice({ invoice, bankDetails }) {
   const navigate = useNavigate();
@@ -562,5 +563,9 @@ function Invoice({ invoice, bankDetails }) {
     </div>
   );
 }
+Invoice.propTypes = {
+  invoice: PropTypes.object.isRequired,
+  bankDetails: PropTypes.object,
+};
 
 export default Invoice;

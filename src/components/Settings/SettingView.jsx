@@ -1,7 +1,5 @@
-import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 const SettingsView = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -59,7 +57,19 @@ const SettingsView = () => {
                 }}
               >
                 Prefix
-              </li>{" "}
+              </li>
+              <li
+                className={`mt-3 font-medium ${
+                  location.pathname === "/user/subscription-plan"
+                    ? "text-blue-600"
+                    : "text-gray-500"
+                }`}
+                onClick={() => {
+                  navigate("/user/subscription-plan");
+                }}
+              >
+                Subscription Plan
+              </li>
             </ul>
           </ul>
         </div>

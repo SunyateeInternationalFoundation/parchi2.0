@@ -1,17 +1,16 @@
 import {
-  addDoc,
-  collection,
-  doc,
-  getDocs,
-  query,
-  Timestamp,
-  where,
+    addDoc,
+    collection,
+    doc,
+    getDocs,
+    query,
+    Timestamp,
+    where,
 } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
-import { db, storage } from "../../../../firebase";
 import { useSelector } from "react-redux";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { db } from "../../../../firebase";
 
 function CreateApproval({ isOpen, projectId, onClose, newApprovalAdded }) {
   const userDetails = useSelector((state) => state.users);

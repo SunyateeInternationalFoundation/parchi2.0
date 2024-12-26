@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { AiOutlineArrowLeft } from "react-icons/ai";
 import {
-  collection,
-  query,
-  where,
-  getDocs,
-  doc,
-  getDoc,
-  addDoc,
-  orderBy,
-  Timestamp,
+    addDoc,
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    orderBy,
+    query,
+    Timestamp,
+    where,
 } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { AiOutlineArrowLeft } from "react-icons/ai";
+import { Link, useParams } from "react-router-dom";
 import { db } from "../../../../firebase";
 import CreateGroupSideBar from "./CreateGroupSideBar";
 

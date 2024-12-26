@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { IoSearch } from "react-icons/io5";
-import CreateStaff from "./CreateStaff";
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
-import { useSelector } from "react-redux";
-import { db } from "../../../firebase";
-import { useNavigate, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { IoSearch } from "react-icons/io5";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { db } from "../../../firebase";
+import CreateStaff from "./CreateStaff";
 
 function Staff() {
   const userDetails = useSelector((state) => state.users);

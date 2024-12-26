@@ -1,45 +1,38 @@
 import {
-  addDoc,
+  arrayUnion,
   collection,
   doc,
+  getDoc,
   getDocs,
   query,
-  updateDoc,
-  arrayUnion,
   Timestamp,
-  where,
-  getDoc,
+  updateDoc,
+  where
 } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { AiOutlineArrowLeft } from "react-icons/ai";
+import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
-import { useSelector } from "react-redux";
-import { AiOutlineArrowLeft } from "react-icons/ai";
 import SideBarAddServices from "./SideBarAddServices";
 
 function EditService() {
   const { id } = useParams();
   const userDetails = useSelector((state) => state.users);
-
   const companyDetails =
     userDetails.companies[userDetails.selectedCompanyIndex];
-
-  const phoneNo = userDetails.phone;
-
   const [serviceDate, setServiceDate] = useState(new Date());
+  const [serviceDueDate, setServiceDueDate] = useState(new Date());
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const [membershipPeriod, setMembershipPeriod] = useState("");
   const [membershipEndDate, setMembershipEndDate] = useState("");
   const [membershipStartDate, setMembershipStartDate] = useState(new Date());
-  const [books, setBooks] = useState([]);
 
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    extraDiscount: {
-      amount: 0,
-      type: "percentage",
-    },
+    extraDiscount: 0,
+    extraDiscountType: true,
     status: "Active",
     notes: "",
     serviceNo: "",
@@ -80,7 +73,7 @@ function EditService() {
       }
       let serviceData = [];
 
-      for (let ele of formData?.servicesList) {
+      for (let ele of formData.servicesList) {
         serviceData.push(
           ...servicesList.filter((ser) => {
             return ser.id === ele.serviceRef.id;
@@ -127,11 +120,12 @@ function EditService() {
         );
         const getData = (await getDoc(docRef)).data();
         setServiceDate(getData.date);
+        setServiceDueDate(getData.dueDate)
         const customerData = (
-          await getDoc(getData.customerDetails.custRef)
+          await getDoc(getData.customerDetails.customerRef)
         ).data();
         handleSelectCustomer({
-          customerId: getData.customerDetails.custRef.id,
+          customerId: getData.customerDetails.customerRef.id,
           ...customerData,
         });
         setMembershipStartDate(getData.membershipStartDate);
@@ -151,34 +145,29 @@ function EditService() {
         const getData = await getDocs(q);
         const serviceData = getData.docs.map((doc) => {
           const data = doc.data();
-          const netAmount =
-            +data.pricing.sellingPrice?.amount -
-            (+data.pricing.discount?.fieldValue || 0);
-          const taxRate = data.pricing.gstTax || 0;
-          let sgst = 0;
-          let cgst = 0;
-          let sgstAmount = 0;
-          let cgstAmount = 0;
+          let discount = +data.discount || 0;
 
-          // if (!data.pricing.sellingPrice?.includingTax) {
-          sgst = taxRate / 2;
-          cgst = taxRate / 2;
-          sgstAmount = netAmount * (sgst / 100);
-          cgstAmount = netAmount * (cgst / 100);
-          // }
+          if (data.discountType) {
+            discount = (+data.sellingPrice / 100) * data.discount;
+          }
+          const netAmount =
+            +data.sellingPrice - discount;
+          const taxRate = data.tax || 0;
+          const sgst = taxRate / 2;
+          const cgst = taxRate / 2;
+          const taxAmount = netAmount * (taxRate / 100);
+          const sgstAmount = netAmount * (sgst / 100);
+          const cgstAmount = netAmount * (cgst / 100);
           return {
             id: doc.id,
-            serviceName: data.serviceName || "N/A",
-            unitPrice: data.pricing.sellingPrice?.amount ?? 0,
-            discount: data.pricing.discount?.fieldValue ?? 0,
+            ...data,
             totalAmount: netAmount,
-            includingTax: data.pricing.sellingPrice?.includingTax,
             sgst,
             cgst,
             sgstAmount,
             cgstAmount,
-            taxAmount: data.pricing.sellingPrice?.taxAmount,
-            taxSlab: data.pricing.sellingPrice?.taxSlab,
+            taxAmount,
+            tax: data.tax,
             isSelected: false,
           };
         });
@@ -187,7 +176,6 @@ function EditService() {
         console.error("Error fetching services:", error);
       }
     };
-
     async function customerDetails() {
       try {
         const customersRef = collection(db, "customers");
@@ -205,27 +193,7 @@ function EditService() {
       }
     }
 
-    async function fetchBooks() {
-      try {
-        const bookRef = collection(
-          db,
-          "companies",
-          companyDetails.companyId,
-          "books"
-        );
-        const getBookData = await getDocs(bookRef);
-        const fetchBooks = getBookData.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        console.log("🚀 ~ fetchBooks ~ fetchBooks:", fetchBooks);
-        setBooks(fetchBooks);
-      } catch (error) {
-        console.log("🚀 ~ fetchBooks ~ error:", error);
-      }
-    }
-
-    fetchBooks();
+ 
     fetchServiceData();
     customerDetails();
     fetchServices();
@@ -261,21 +229,13 @@ function EditService() {
       for (const service of selectedServicesList) {
         const serviceRef = doc(db, "services", service.id);
         serviceListPayload.push({
-          pricing: {
-            gstTax: 5,
-            servicePrice: {
-              amount: service.unitPrice,
-              taxAmount: service.totalAmount,
-              taxSlab: service.taxSlab,
-              includingTax: true,
-            },
-            discount: {
-              amount: service.discount,
-              fieldValue: 10,
-              type: "Percentage",
-            },
-          },
           name: service.serviceName,
+          description: service.description,
+          discount: service.discount,
+          discountType: service.discountType,
+          sellingPrice: service.sellingPrice,
+          sellingPriceTaxType: service.sellingPriceTaxType,
+          tax: service.tax,
           serviceRef: serviceRef,
         });
       }
@@ -283,13 +243,16 @@ function EditService() {
       const payload = {
         ...formData,
         date: serviceDate,
+        dueDate:serviceDueDate,
         subTotal: +totalAmounts.subTotalAmount,
         total: +totalAmounts.totalAmount,
         customerDetails: {
-          gstNumber: "",
-          custRef: customerRef,
-          address: selectedCustomerData.address,
-          phoneNumber: selectedCustomerData.phone,
+          gstNumber: selectedCustomerData.gstNumber ?? "",
+          customerRef: customerRef,
+          address: selectedCustomerData.address ?? "",
+          city: selectedCustomerData.city ?? "",
+          zipCode: selectedCustomerData.zipCode ?? "",
+          phone: selectedCustomerData.phone ?? "",
           name: selectedCustomerData.name,
         },
         servicesList: serviceListPayload,
@@ -346,7 +309,7 @@ function EditService() {
 
     const totalTaxableAmount = data.reduce((sum, product) => {
       const cal = sum + (product.totalAmount - product.taxAmount);
-      if (!product.includingTax) {
+      if (!product.sellPriceTaxType) {
         return sum + product.totalAmount;
       }
       return cal;
@@ -388,8 +351,8 @@ function EditService() {
       totalSgstAmount_9 +
       totalCgstAmount_9;
 
-    let discountAmount = formData.extraDiscount.amount || 0;
-    if (formData.extraDiscount.type === "percentage") {
+    let discountAmount = formData.extraDiscount || 0;
+    if (formData.extraDiscountType) {
       discountAmount = (+subTotalAmount * discountAmount) / 100;
     }
     const totalAmount = +subTotalAmount - discountAmount;
@@ -407,29 +370,14 @@ function EditService() {
     });
   }
 
-  function onSelectBook(e) {
-    const { value } = e.target;
-    const data = books.find((ele) => ele.id === value);
-    const bookRef = doc(
-      db,
-      "companies",
-      companyDetails.companyId,
-      "books",
-      value
-    );
-    setFormData((val) => ({
-      ...val,
-      book: { id: value, name: data.name, bookRef },
-    }));
-  }
   useEffect(() => {
-    let discountAmount = formData.extraDiscount.amount || 0;
-    if (formData.extraDiscount.type === "percentage") {
+    let discountAmount = formData.extraDiscount || 0;
+    if (formData.extraDiscountType) {
       discountAmount = (+totalAmounts.subTotalAmount * discountAmount) / 100;
     }
     const totalAmount = +totalAmounts.subTotalAmount - discountAmount;
     setTotalAmounts((val) => ({ ...val, totalAmount }));
-  }, [formData.extraDiscount]);
+  }, [formData.extraDiscount, formData.extraDiscountType]);
 
   useEffect(() => {
     function setMembershipDate() {
@@ -461,7 +409,7 @@ function EditService() {
       <header className="flex items-center space-x-3  my-2">
         <Link
           className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-          to={"/services"}
+          to={"./../"}
         >
           <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
         </Link>
@@ -509,7 +457,7 @@ function EditService() {
           </div>
           <div className="flex-1">
             <h2 className="font-semibold mb-2">Other Details</h2>
-            <div className="grid grid-cols-2 gap-4 bg-pink-50 p-4 rounded-lg">
+            <div className="grid grid-cols-3 gap-4 bg-pink-50 p-4 rounded-lg">
               <div>
                 <label className="text-sm text-gray-600">
                   Service Date <span className="text-red-500">*</span>
@@ -524,6 +472,21 @@ function EditService() {
                     );
                   }}
                   required
+                />
+              </div>
+              <div>
+                <label className="text-sm text-gray-600">
+                  Due Date <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  value={DateFormate(serviceDueDate)}
+                  className="border p-1 rounded w-full mt-1"
+                  onChange={(e) => {
+                    setServiceDueDate(
+                      Timestamp.fromDate(new Date(e.target.value))
+                    );
+                  }}
                 />
               </div>
               <div>
@@ -585,10 +548,10 @@ function EditService() {
                     selectedServicesList.map((service) => (
                       <tr key={service.id}>
                         <td className="px-4 py-2">{service.serviceName}</td>
-                        <td className="px-4 py-2">₹{service.unitPrice}</td>
-                        <td className="px-4 py-2">₹{service.discount}</td>
+                        <td className="px-4 py-2">₹{service.sellingPrice}</td>
+                        <td className="px-4 py-2">{service.discount}{service.discountType? "%":"/-" }</td>
                         <td className="px-2 py-2">
-                          {service.includingTax ? "Yes" : "No"}
+                          {service.sellingPriceTaxType ? "Yes" : "No"}
                         </td>
                         <td className="px-4 py-2">₹{service.totalAmount} </td>
                       </tr>
@@ -668,43 +631,15 @@ function EditService() {
                     </div>
                   )}
                 </div>
-                <div className="w-full ">
-                  <div>Bank/Book</div>
-                  <select
-                    value={formData.book?.id || ""}
-                    onChange={onSelectBook}
-                    className="border p-2 rounded w-full"
-                  >
-                    <option value="" disabled>
-                      Select Bank/Book
-                    </option>
-                    {books.length > 0 &&
-                      books.map((book) => (
-                        <option value={book.id} key={book.id}>
-                          {`${book.name} - ${book.bankName} - ${book.branch}`}
-                        </option>
-                      ))}
-                  </select>
-                </div>
+                
                 <div className="w-full ">
                   <div>Sign</div>
-                  <select className="border p-2 rounded w-full">
+                  <select className="border p-2 rounded w-full" defaultValue={""}>
                     <option value="" disabled>
                       Select Sign
                     </option>
                   </select>
                 </div>
-
-                {/* <div className="w-full ">
-                  <div>Attach Files</div>
-                  <input
-                    type="file"
-                    className="flex h-10 w-full rounded-md border border-input
-                bg-white px-3 py-2 text-sm text-gray-400 file:border-0
-                file:bg-transparent file:text-gray-600 file:text-sm
-                file:font-medium"
-                  />
-                </div> */}
                 <div className="w-full ">
                   <div>Payment Mode</div>
                   <select
@@ -763,33 +698,27 @@ function EditService() {
                   <div>
                     <input
                       type="number"
-                      value={formData?.extraDiscount?.amount || ""}
+                      value={formData?.extraDiscount || ""}
                       className="border p-2 rounded"
                       onChange={(e) => {
                         setFormData((val) => ({
                           ...val,
-                          extraDiscount: {
-                            ...val.extraDiscount,
-                            amount: +e.target.value,
-                          },
+                          extraDiscount: +e.target.value,
                         }));
                       }}
                     />
                     <select
                       className="border p-2 rounded"
-                      value={formData?.extraDiscount?.type || ""}
+                      value={formData?.extraDiscountType || ""}
                       onChange={(e) => {
                         setFormData((val) => ({
                           ...val,
-                          extraDiscount: {
-                            ...val.extraDiscount,
-                            type: e.target.value,
-                          },
+                          extraDiscountType: e.target.value == "true" ? true : false,
                         }));
                       }}
                     >
-                      <option value="percentage">%</option>
-                      <option value="fixed">Fixed</option>
+                      <option value="true">%</option>
+                      <option value="false">Fixed</option>
                     </select>
                   </div>
                 </div>

@@ -1,9 +1,9 @@
-import { addDoc, collection, doc, Timestamp, getDoc } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { addDoc, collection, doc, getDoc, Timestamp } from "firebase/firestore";
+import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { db } from "../../../../firebase";
 import { useParams } from "react-router-dom";
+import { db } from "../../../../firebase";
 
 function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
   const { id } = useParams();

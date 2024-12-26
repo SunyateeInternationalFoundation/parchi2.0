@@ -1,21 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+import { deleteDoc, doc, getDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import jsPDF from "jspdf";
+import { useEffect, useRef, useState } from "react";
+import { AiOutlineArrowLeft } from "react-icons/ai";
+import { FaRegEye } from "react-icons/fa";
 import { IoMdClose, IoMdDownload } from "react-icons/io";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { TbEdit } from "react-icons/tb";
-import jsPDF from "jspdf";
-import { FaRegEye } from "react-icons/fa";
-import { db, storage } from "../../../firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useSelector } from "react-redux";
-import {
-  doc,
-  deleteDoc,
-  increment,
-  updateDoc,
-  getDoc,
-} from "firebase/firestore";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { db, storage } from "../../../firebase";
+import SelectTemplateSideBar from "../../Templates/SelectTemplateSideBar";
 import Template1 from "../../Templates/Template1";
+import Template10 from "../../Templates/Template10";
+import Template11 from "../../Templates/Template11";
 import Template2 from "../../Templates/Template2";
 import Template3 from "../../Templates/Template3";
 import Template4 from "../../Templates/Template4";
@@ -24,14 +22,10 @@ import Template6 from "../../Templates/Template6";
 import Template7 from "../../Templates/Template7";
 import Template8 from "../../Templates/Template8";
 import Template9 from "../../Templates/Template9";
-import SelectTemplateSideBar from "../../Templates/SelectTemplateSideBar";
-import Template10 from "../../Templates/Template10";
-import Template11 from "../../Templates/Template11";
 
 function ServiceView() {
   const { id } = useParams();
-  const [service, setService] = useState("");
-  const [bankDetails, setBankDetails] = useState({});
+  const [service, setService] = useState({});
   const navigate = useNavigate();
   const userDetails = useSelector((state) => state.users);
   const companyId =
@@ -52,17 +46,18 @@ function ServiceView() {
       let totalSgstAmount_9 = 0;
       let totalCgstAmount_9 = 0;
       let tax = 0;
-      const ServiceRef = doc(db, "companies", companyId, "Services", id);
-      const { customerDetails, ServiceNo, ...resData } = (
-        await getDoc(ServiceRef)
+      const serviceRef = doc(db, "companies", companyId, "services", id);
+      const { customerDetails, serviceNo, ...resData } = (
+        await getDoc(serviceRef)
       ).data();
-      const ServicesData = {
+
+      const servicesData = {
         id,
         ...resData,
         type: "Service",
-        no: ServiceNo,
+        no: serviceNo,
         userTo: customerDetails,
-        products: resData.servicesList.map((item) => {
+        items: resData.servicesList.map((item) => {
           let discount = +item.discount || 0;
 
           if (item.discountType) {
@@ -78,13 +73,13 @@ function ServiceView() {
           tax += item.tax || 0;
           item.returnQty = 0;
 
-          totalTaxableAmount += netAmount * item.quantity;
-          totalSgstAmount_2_5 += sgst === 2.5 ? sgstAmount * item.quantity : 0;
-          totalCgstAmount_2_5 += cgst === 2.5 ? cgstAmount * item.quantity : 0;
-          totalSgstAmount_6 += sgst === 6 ? sgstAmount * item.quantity : 0;
-          totalCgstAmount_6 += cgst === 6 ? cgstAmount * item.quantity : 0;
-          totalSgstAmount_9 += sgst === 9 ? sgstAmount * item.quantity : 0;
-          totalCgstAmount_9 += cgst === 9 ? cgstAmount * item.quantity : 0;
+          totalTaxableAmount += netAmount;
+          totalSgstAmount_2_5 += sgst === 2.5 ? sgstAmount : 0;
+          totalCgstAmount_2_5 += cgst === 2.5 ? cgstAmount : 0;
+          totalSgstAmount_6 += sgst === 6 ? sgstAmount : 0;
+          totalCgstAmount_6 += cgst === 6 ? cgstAmount : 0;
+          totalSgstAmount_9 += sgst === 9 ? sgstAmount : 0;
+          totalCgstAmount_9 += cgst === 9 ? cgstAmount : 0;
           return {
             ...item,
             sgst,
@@ -92,7 +87,7 @@ function ServiceView() {
             taxAmount,
             sgstAmount,
             cgstAmount,
-            totalAmount: netAmount * item.quantity,
+            totalAmount: netAmount,
             netAmount,
           };
         }),
@@ -105,14 +100,9 @@ function ServiceView() {
         totalSgstAmount_9,
         totalCgstAmount_9,
       };
-
-      if (ServicesData.book.bookRef) {
-        const bankData = (await getDoc(ServicesData.book.bookRef)).data();
-        setBankDetails(bankData);
-      }
-      setService(ServicesData);
+      setService(servicesData);
     } catch (error) {
-      console.error("Error fetching Services:", error);
+      console.error("Error fetching services:", error);
     }
   };
 
@@ -121,60 +111,31 @@ function ServiceView() {
   }, []);
 
   const templatesComponents = {
-    template1: (
-      <Template1 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
-    ),
+    template1: <Template1 ref={ServiceRef} dataSet={service} />,
 
-    template2: (
-      <Template2 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
-    ),
+    template2: <Template2 ref={ServiceRef} dataSet={service} />,
 
-    template3: (
-      <Template3 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
-    ),
+    template3: <Template3 ref={ServiceRef} dataSet={service} />,
 
-    template4: (
-      <Template4 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
-    ),
-    template5: (
-      <Template5 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
-    ),
+    template4: <Template4 ref={ServiceRef} dataSet={service} />,
+    template5: <Template5 ref={ServiceRef} dataSet={service} />,
 
-    template6: (
-      <Template6 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
-    ),
-    template7: (
-      <Template7 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
-    ),
-    template8: (
-      <Template8 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
-    ),
-    template9: (
-      <Template9 ref={ServiceRef} dataSet={service} bankDetails={bankDetails} />
-    ),
-    template10: (
-      <Template10
-        ref={ServiceRef}
-        dataSet={service}
-        bankDetails={bankDetails}
-      />
-    ),
-    template11: (
-      <Template11
-        ref={ServiceRef}
-        dataSet={service}
-        bankDetails={bankDetails}
-      />
-    ),
+    template6: <Template6 ref={ServiceRef} dataSet={service} />,
+    template7: <Template7 ref={ServiceRef} dataSet={service} />,
+    template8: <Template8 ref={ServiceRef} dataSet={service} />,
+    template9: <Template9 ref={ServiceRef} dataSet={service} />,
+    template10: <Template10 ref={ServiceRef} dataSet={service} />,
+    template11: <Template11 ref={ServiceRef} dataSet={service} />,
   };
-  // useEffect(() => {
-  //   if (service.products) {
-  //     const tax = service?.products.reduce((acc, cur) => {
-  //       return acc + cur?.tax;
-  //     }, 0);
-  //     setTotalTax(tax);
-  //   }
-  // }, [Service]);
+
+  useEffect(() => {
+    if (service.items) {
+      const tax = service?.items.reduce((acc, cur) => {
+        return acc + cur?.tax;
+      }, 0);
+      setTotalTax(tax);
+    }
+  }, [service]);
 
   const handleDownloadPdf = () => {
     if (id) {
@@ -204,7 +165,7 @@ function ServiceView() {
           const pdfBlob = doc.output("blob");
 
           // Create a reference to the file in Firebase Storage
-          const fileName = `Services/${id}.pdf`;
+          const fileName = `services/${id}.pdf`;
           const fileRef = ref(storage, fileName);
 
           // Upload the file
@@ -242,7 +203,7 @@ function ServiceView() {
           const pdfBlob = doc.output("blob");
 
           // Create a reference to the file in Firebase Storage
-          const fileName = `Services/${id}.pdf`;
+          const fileName = `services/${id}.pdf`;
           const fileRef = ref(storage, fileName);
 
           // Upload the file to Firebase Storage
@@ -306,29 +267,33 @@ function ServiceView() {
       label: "NAME",
     },
     {
-      id: 2,
-      label: "QUANTITY",
-    },
-    {
-      id: 3,
+      id: 4,
       label: "DISCOUNT",
     },
     {
-      id: 4,
+      id: 5,
       label: "TAX",
     },
     {
-      id: 5,
+      id: 6,
       label: "isTax Included",
     },
     {
-      id: 6,
+      id: 7,
       label: "PRICE",
     },
   ];
 
   return (
     <div>
+      <div className="">
+        <Link
+          className="flex items-center w-fit bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
+          to={"./../"}
+        >
+          <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
+        </Link>
+      </div>
       <div className="p-3 flex justify-between bg-white rounded-lg my-3">
         <div className="space-x-4 flex">
           <button
@@ -465,20 +430,19 @@ function ServiceView() {
                     </tr>
                   </thead>
                   <tbody className="[&_tr:last-child]:border-1 ">
-                    {service?.products?.length > 0 &&
-                      service?.products.map((item) => (
+                    {service?.items?.length > 0 &&
+                      service?.items.map((item) => (
                         <tr
-                          key={`Service-description-${item.productRef.id}`}
+                          key={`Service-description-${item.serviceRef.id}`}
                           className="border-b-2 p-3 [&_td:last-child]:text-end"
                         >
                           <td className="  text-gray-600 max-w-[200px] truncate p-3">
                             {item.name}
                           </td>
-                          <td className="  text-gray-600 p-3">
-                            {item.quantity} pcs
-                          </td>
                           <td className="  text-gray-600 whitespace-nowrap p-3">
+                            {!item.discountType && "₹"}
                             {item.discount}
+                            {item.discountType && "%"}
                           </td>
                           <td className="  text-gray-600 whitespace-nowrap p-3">
                             {item.tax}%
@@ -510,14 +474,6 @@ function ServiceView() {
                       {
                         label: "TAX(%)",
                         amount: totalTax,
-                      },
-                      {
-                        label: "Shipping",
-                        amount: "₹" + service.shippingCharges,
-                      },
-                      {
-                        label: "Packaging",
-                        amount: "₹" + service.packagingCharges,
                       },
                     ].map((item, index) => (
                       <div
@@ -591,7 +547,8 @@ function ServiceView() {
                     </div>
                   </div>
                 </div>
-                {templatesComponents[selectTemplate]}
+                {Object.keys(service).length !== 0 &&
+                  templatesComponents[selectTemplate]}
                 {/* <Template7
                   ref={ServiceRef}
                   ServiceData={Service}

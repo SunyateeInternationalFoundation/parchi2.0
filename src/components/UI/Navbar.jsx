@@ -1,19 +1,24 @@
-import React, { useState } from "react";
-import { FaBolt, FaBell, FaBullhorn, FaUserCircle } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import {
+  FaBell,
+  FaBolt,
+  FaBullhorn,
+  FaStore,
+  FaUserCircle,
+} from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
+import { HiUsers } from "react-icons/hi";
+import { IoMdSettings } from "react-icons/io";
+import { IoBusiness } from "react-icons/io5";
+import { RiCustomerService2Fill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import SunyaLogo from "../../assets/SunyaLogo.jpg";
 import {
   setUserLogin,
   setUserLogout,
   updateUserDetails,
 } from "../../store/UserSlice";
-import SunyaLogo from "../../assets/SunyaLogo.jpg";
-import { IoMdSettings } from "react-icons/io";
-import { HiUsers } from "react-icons/hi";
-import { RiCustomerService2Fill } from "react-icons/ri";
-import { FaStore } from "react-icons/fa";
-import { IoBusiness } from "react-icons/io5";
 
 const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -72,29 +77,29 @@ const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
 
   const dashboardOptions = [
     {
-     value: "",
+      value: "",
       label: "Business Dashboard",
-      icon: <IoBusiness  className="text-gray-500" size={24} />,
-      description: "Select dashboard to view"
+      icon: <IoBusiness className="text-gray-500" size={24} />,
+      description: "Select dashboard to view",
     },
     {
       value: "customer",
       label: "Customer Dashboard",
       icon: <RiCustomerService2Fill className="text-blue-500" size={24} />,
-      description: "Manage customer relationships"
+      description: "Manage customer relationships",
     },
     {
       value: "vendor",
       label: "Vendor Dashboard",
       icon: <FaStore className="text-green-500" size={24} />,
-      description: "Handle vendor operations"
+      description: "Handle vendor operations",
     },
     {
       value: "staff",
       label: "Staff Dashboard",
       icon: <HiUsers className="text-purple-500" size={24} />,
-      description: "Staff management portal"
-    }
+      description: "Staff management portal",
+    },
   ];
 
   return (
@@ -109,41 +114,51 @@ const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
             </Link>
 
             <div
-  className="flex items-center space-x-4 group relative cursor-pointer"
-  onClick={() => setIsCompanyOpen(!isCompanyOpen)}
->
-  {/* Company Initials Circle */}
-  <div className="bg-orange-400 text-white font-bold w-10 h-10 flex items-center justify-center rounded-full border border-gray-500 shadow-lg group-hover:shadow-gray-500/50 transition-shadow duration-300">
-    {companyName?.slice(0, 2).toUpperCase() || "YB"}
-  </div>
+              className="flex items-center space-x-4 group relative cursor-pointer"
+              onClick={() => setIsCompanyOpen(!isCompanyOpen)}
+            >
+              {/* Company Initials Circle */}
+              <div className="bg-orange-400 text-white font-bold w-10 h-10 flex items-center justify-center rounded-full border border-gray-500 shadow-lg group-hover:shadow-gray-500/50 transition-shadow duration-300">
+                {companyName?.slice(0, 2).toUpperCase() || "YB"}
+              </div>
 
-  {/* Company Name */}
-  <div>
-    <span className="font-bold text-gray-800 text-sm group-hover:text-gray-500 transition-colors duration-300">
-      {companyName}
-    </span>
-  </div>
+              {/* Company Name */}
+              <div>
+                <span className="font-bold text-gray-800 text-sm group-hover:text-gray-500 transition-colors duration-300">
+                  {companyName}
+                </span>
+              </div>
 
-  {/* Tooltip */}
-  <div className="absolute z-10 left-0 top-12 w-max px-3 py-2 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transform group-hover:translate-y-1 transition-all duration-300">
-    Change Company
-  </div>
-</div>
+              {/* Tooltip */}
+              <div className="absolute z-10 left-0 top-6 w-max px-1 py-1 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transform group-hover:translate-y-1 transition-all duration-300">
+                Change Company
+              </div>
+            </div>
 
-
-            <div 
+            <div
               className="relative group cursor-pointer text-black px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
               onClick={() => setIsDashboardOpen(!isDashboardOpen)}
             >
               <div className="flex items-center space-x-2">
                 <span className="font-medium">
-                  {userDetails.selectedDashboard ? 
-                    dashboardOptions.find(opt => opt.value === userDetails.selectedDashboard)?.label : 
-                    "Select Dashboard"
-                  }
+                  {userDetails.selectedDashboard
+                    ? dashboardOptions.find(
+                        (opt) => opt.value === userDetails.selectedDashboard
+                      )?.label
+                    : "Select Dashboard"}
                 </span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </div>
             </div>
@@ -152,7 +167,7 @@ const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
           {userDetails.selectedDashboard === "staff" && (
             <div> You Logged as a Staff in {selectedCompany}'s Company</div>
           )}
-          
+
           <div className="flex items-center">
             <button
               type="button"
@@ -211,15 +226,18 @@ const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-4 space-y-1">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">Switch Dashboard</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-4">
+                Switch Dashboard
+              </h3>
               <div className="space-y-1">
                 {dashboardOptions.map((option) => (
                   <div
                     key={option.value}
                     className={`flex items-center space-x-2 p-2 rounded-xl cursor-pointer transition-all duration-300 
-                      ${userDetails.selectedDashboard === option.value ? 
-                        'bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-500' : 
-                        'hover:bg-gray-50 border-2 border-transparent'
+                      ${
+                        userDetails.selectedDashboard === option.value
+                          ? "bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-500"
+                          : "hover:bg-gray-50 border-2 border-transparent"
                       }`}
                     onClick={() => onSwitchDashboard(option.value)}
                   >
@@ -227,8 +245,12 @@ const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
                       {option.icon}
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-800">{option.label}</h4>
-                      <p className="text-sm text-gray-500">{option.description}</p>
+                      <h4 className="font-semibold text-gray-800">
+                        {option.label}
+                      </h4>
+                      <p className="text-sm text-gray-500">
+                        {option.description}
+                      </p>
                     </div>
                     {userDetails.selectedDashboard === option.value && (
                       <div className="ml-auto">
@@ -341,6 +363,7 @@ const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
                   className="flex items-center space-x-2 text-gray-600 hover:text-black my-2"
                   onClick={() => {
                     dispatch(setUserLogout());
+                    navigate("/");
                   }}
                 >
                   <FiLogOut />
@@ -352,52 +375,53 @@ const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
         </div>
       )}
       {isCompanyOpen && (
-  <div
-    className="fixed pr-3 pl-40 inset-0 bg-black bg-opacity-10 z-20"
-    onClick={() => setIsCompanyOpen(false)}
-    onWheel={() => setIsCompanyOpen(false)}
-  >
-    <div
-      className="w-64 bg-white shadow-2xl rounded-lg"
-      style={{ marginTop: "8vh" }}
-    >
-      <div className="p-4" onClick={(e) => e.stopPropagation()}>
-        <div className="grid grid-cols-2 gap-3">
-          {companiesList?.length > 0 &&
-            companiesList.map((company, index) => (
-              <div
-                key={company.companyId}
-                className="flex flex-col items-center justify-center p-1 cursor-pointer hover:bg-blue-100 rounded-lg"
-                onClick={() => {
-                  if (!isStaff) {
-                    navigate("/");
-                    onSwitchCompany(index);
-                  }
-                }}
-              >
-                <div className="bg-orange-400 text-white font-bold w-10 h-10 flex items-center justify-center rounded-full border border-gray-500">
-                  {company.name?.slice(0, 2).toUpperCase() || "YB"}
-                </div>
-                <span className="mt-2 text-center text-sm font-medium text-gray-800">
-                  {company.name}
-                </span>
+        <div
+          className="fixed pr-3 pl-40 inset-0 bg-black bg-opacity-10 z-20"
+          onClick={() => setIsCompanyOpen(false)}
+          onWheel={() => setIsCompanyOpen(false)}
+        >
+          <div
+            className="w-64 bg-white shadow-2xl rounded-lg"
+            style={{ marginTop: "8vh" }}
+          >
+            <div className="p-4" onClick={(e) => e.stopPropagation()}>
+              <div className="grid grid-cols-2 gap-3">
+                {companiesList?.length > 0 &&
+                  companiesList.map((company, index) => (
+                    <div
+                      key={company.companyId}
+                      className="flex flex-col items-center justify-center p-1 cursor-pointer hover:bg-blue-100 rounded-lg"
+                      onClick={() => {
+                        if (!isStaff) {
+                          navigate("/");
+                          onSwitchCompany(index);
+                        }
+                      }}
+                    >
+                      <div className="bg-orange-400 text-white font-bold w-10 h-10 flex items-center justify-center rounded-full border border-gray-500">
+                        {company.name?.slice(0, 2).toUpperCase() || "YB"}
+                      </div>
+                      <span className="mt-2 text-center text-sm font-medium text-gray-800">
+                        {company.name}
+                      </span>
+                    </div>
+                  ))}
+                {/* Add Company Section */}
+                {!isStaff && (
+                  <div className="col-span-2 flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-blue-100 rounded-lg border border-dashed border-gray-300">
+                    <div className="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full mb-2">
+                      <span className="text-lg text-gray-600">+</span>
+                    </div>
+                    <span className="text-sm text-gray-600 font-medium tracking-tight">
+                      Add Another Company
+                    </span>
+                  </div>
+                )}
               </div>
-            ))}
-          {/* Add Company Section */}
-          {!isStaff && (
-            <div className="col-span-2 flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-blue-100 rounded-lg border border-dashed border-gray-300">
-              <div className="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full mb-2">
-                <span className="text-lg text-gray-600">+</span>
-              </div>
-              <span className="text-sm text-gray-600 font-medium tracking-tight">Add Another Company</span>
             </div>
-          )}
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-)}
-
+      )}
     </>
   );
 };

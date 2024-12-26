@@ -1,17 +1,15 @@
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
-import { FaRegEye } from "react-icons/fa";
-import { IoMdDownload } from "react-icons/io";
+import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
+import {
+    LuChevronLeft,
+    LuChevronRight,
+    LuChevronsLeft,
+    LuChevronsRight,
+} from "react-icons/lu";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
-import {
-  LuChevronLeft,
-  LuChevronRight,
-  LuChevronsLeft,
-  LuChevronsRight,
-} from "react-icons/lu";
 
 function PO({ companyDetails, isStaff }) {
   const [filterStatus, setFilterStatus] = useState("All");

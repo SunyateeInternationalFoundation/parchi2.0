@@ -1,6 +1,6 @@
-import React from "react";
+
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { useLocation, Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Breadcrumbs = () => {
   const location = useLocation();
