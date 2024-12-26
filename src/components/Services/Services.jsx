@@ -51,7 +51,6 @@ function Services({ companyDetails }) {
         const getData = await getDocs(
           collection(db, "companies", companyId, "services")
         );
-
         const serviceData = getData.docs.map((doc) => {
           const data = doc.data();
           return {

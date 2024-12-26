@@ -3,10 +3,11 @@ import { forwardRef } from "react";
 
 const Template1 = forwardRef((props, ref) => {
   const { dataSet, bankDetails } = props;
-  console.log("🚀 ~ Template1 ~ dataSet:", dataSet)
   if (Object.keys(dataSet).length===0) {
     return;
   }
+  const removedColumn = { service: ["QUANTITY"] }
+  
 
   function DateFormate(timestamp) {
     const milliseconds =
@@ -69,7 +70,7 @@ const Template1 = forwardRef((props, ref) => {
                 <th className="border border-black pb-2">Product</th>
                 <th className="border border-black pb-2">Unit Price</th>
                 <th className="border border-black pb-2">Discount</th>
-                <th className="border border-black pb-2">Qty</th>
+                {(!removedColumn[dataSet?.type.toLowerCase()]?.includes("QUANTITY"))  && <th className="border border-black pb-2">Qty</th>}
                 <th className="border border-black pb-2">Net Amount</th>
                 <th className="border border-black pb-2">Tax Rate</th>
                 <th className="border border-black pb-2">Tax Type</th>
@@ -92,9 +93,9 @@ const Template1 = forwardRef((props, ref) => {
                   <td className="border border-black pt-2 pb-2 pl-1">
                     {item.discount.toFixed(1)}
                   </td>
-                  <td className="border border-black pt-2 pb-2 pl-1">
+                  {(!removedColumn[dataSet?.type.toLowerCase()]?.includes("QUANTITY")) && <td className="border border-black pt-2 pb-2 pl-1">
                     {item.quantity}
-                  </td>
+                  </td>}
                   <td className="border border-black pt-2 pb-2 pl-1">
                     {item.sellingPrice.toFixed(1)}
                   </td>

@@ -1,5 +1,5 @@
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
   LuChevronLeft,
@@ -11,76 +11,71 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
 
-const ProFormaProForma = ({ companyDetails, isStaff }) => {
-  const [proForma, setProForma] = useState([]);
-  const [isProFormaOpen, setIsProFormaOpen] = useState(false);
+const DebitNoteList = () => {
+  const [debitNote, setDebitNote] = useState([]);
+  const debitNoteRef = useRef();
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedProFormaData, setSelectedProFormaData] = useState(null);
   const [filterStatus, setFilterStatus] = useState("All");
 
   const userDetails = useSelector((state) => state.users);
 
-  let companyId;
-  if (!companyDetails) {
-    companyId =
-      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  } else {
-    companyId = companyDetails.id;
-  }
+  const companyId =
+    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   const navigate = useNavigate();
+
   useEffect(() => {
-    const fetchProForma = async () => {
+    const fetchDebitNote = async () => {
       setLoading(true);
       try {
-        const proFormaRef = collection(
+        const debitNoteRef = collection(
           db,
           "companies",
           companyId,
-          "proFormaInvoice"
+          "debitNote"
         );
-        const querySnapshot = await getDocs(proFormaRef);
-        const proFormaData = querySnapshot.docs.map((doc) => ({
+        const querySnapshot = await getDocs(debitNoteRef);
+        const debitNoteData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-
-        // const q = query(proFormaRef, orderBy("date", "desc"));
+        // const q = query(debitNoteRef, orderBy("date", "desc"));
         // const querySnapshot = await getDocs(q);
-        // const proFormaData = querySnapshot.docs.map((doc) => ({
+        // const debitNoteData = querySnapshot.docs.map((doc) => ({
         //   id: doc.id,
         //   ...doc.data(),
         // }));
-        setSelectedProFormaData(proFormaData[0]);
-        setProForma(proFormaData);
+        setDebitNote(debitNoteData);
       } catch (error) {
-        console.error("Error fetching proForma:", error);
+        console.error("Error fetching debitNote:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchProForma();
+    fetchDebitNote();
   }, [companyId]);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
 
-  const handleStatusChange = async (invoiceId, newStatus) => {
+ 
+
+  const handleStatusChange = async (debitNoteId, newStatus) => {
     try {
-      const invoiceDoc = doc(
+      const debitNoteDoc = doc(
         db,
         "companies",
         companyId,
-        "proFormaInvoice",
-        invoiceId
+        "debitNote",
+        debitNoteId
       );
-      await updateDoc(invoiceDoc, { paymentStatus: newStatus });
-      setProForma((prevProForma) =>
-        prevProForma.map((invoice) =>
-          invoice.id === invoiceId
-            ? { ...invoice, paymentStatus: newStatus }
-            : invoice
+      await updateDoc(debitNoteDoc, { paymentStatus: newStatus });
+      setDebitNote((prevdebitNote) =>
+        prevdebitNote.map((debitNote) =>
+          debitNote.id === debitNoteId
+            ? { ...debitNote, paymentStatus: newStatus }
+            : debitNote
         )
       );
     } catch (error) {
@@ -88,12 +83,19 @@ const ProFormaProForma = ({ companyDetails, isStaff }) => {
     }
   };
 
-  const filteredProForma = proForma.filter((proForma) => {
-    const { customerDetails, proFormaNo, paymentStatus } = proForma;
+  const filteredDebitNote = debitNote.filter((debitNote) => {
+    const { customerDetails, debitNoteNo, paymentStatus } = debitNote;
     const customerName = customerDetails?.name || "";
     const matchesSearch =
       customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      proFormaNo?.toString().toLowerCase().includes(searchTerm.toLowerCase());
+      debitNoteNo
+        ?.toString()
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      customerDetails?.phone
+        .toString()
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
 
     const matchesStatus =
       filterStatus === "All" || paymentStatus === filterStatus;
@@ -101,16 +103,17 @@ const ProFormaProForma = ({ companyDetails, isStaff }) => {
     return matchesSearch && matchesStatus;
   });
 
-  const totalAmount = filteredProForma.reduce(
-    (sum, proForma) => sum + proForma.total,
+  const totalAmount = filteredDebitNote.reduce(
+    (sum, debitNote) => sum + debitNote.total,
     0
   );
-  const paidAmount = filteredProForma
-    .filter((proForma) => proForma.paymentStatus === "Paid")
-    .reduce((sum, proForma) => sum + proForma.total, 0);
-  const pendingAmount = filteredProForma
-    .filter((proForma) => proForma.paymentStatus === "Pending")
-    .reduce((sum, proForma) => sum + proForma.total, 0);
+
+  const paidAmount = filteredDebitNote
+    .filter((debitNote) => debitNote.paymentStatus === "Paid")
+    .reduce((sum, debitNote) => sum + debitNote.total, 0);
+  const pendingAmount = filteredDebitNote
+    .filter((debitNote) => debitNote.paymentStatus === "Pending")
+    .reduce((sum, debitNote) => sum + debitNote.total, 0);
 
   return (
     <div className="w-full">
@@ -119,11 +122,13 @@ const ProFormaProForma = ({ companyDetails, isStaff }) => {
         style={{ height: "92vh" }}
       >
         <div className="bg-white rounded-lg shadow mt-4 h-48">
-          <h1 className="text-2xl font-bold py-3 px-10 ">ProForma Overview</h1>
+          <h1 className="text-2xl font-bold py-3 px-10 ">
+            Debit Note Overview
+          </h1>
           <div className="grid grid-cols-4 gap-12  px-10 ">
             <div className="rounded-lg p-5 bg-[hsl(240,100%,98%)] ">
               <div className="text-lg">Total Amount</div>
-              <div className="text-3xl text-[hsl(240,92.20%,70.00%)] font-bold">
+              <div className="text-3xl text-indigo-600 font-bold">
                 ₹ {totalAmount}
               </div>
             </div>
@@ -135,13 +140,13 @@ const ProFormaProForma = ({ companyDetails, isStaff }) => {
               </div>
             </div>
             <div className="rounded-lg p-5 bg-orange-50 ">
-              <div className="text-lg">Pending Amount</div>
+              <div className="text-lg"> Pending Amount</div>
               <div className="text-3xl text-orange-600 font-bold">
                 ₹ {pendingAmount}
               </div>
             </div>
             <div className="rounded-lg p-5 bg-red-50 ">
-              <div className="text-lg">UnPaid Amount</div>
+              <div className="text-lg"> UnPaid Amount</div>
               <div className="text-3xl text-red-600 font-bold">
                 ₹ {totalAmount - paidAmount}
               </div>
@@ -155,7 +160,7 @@ const ProFormaProForma = ({ companyDetails, isStaff }) => {
               <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg w-full">
                 <input
                   type="text"
-                  placeholder="Search by proForma #..."
+                  placeholder="Search by Debit Note #..."
                   className=" w-full focus:outline-none"
                   value={searchTerm}
                   onChange={handleSearch}
@@ -174,15 +179,15 @@ const ProFormaProForma = ({ companyDetails, isStaff }) => {
             <div className="w-full text-end ">
               <Link
                 className="bg-blue-500 text-white py-2 px-2 rounded-lg"
-                to="create-proForma-invoice"
+                to="create-debitNote"
               >
-                + Create ProForma
+                + Create Debit Note
               </Link>
             </div>
           </nav>
 
           {loading ? (
-            <div className="text-center py-6">Loading proForma...</div>
+            <div className="text-center py-6">Loading Debit Notes...</div>
           ) : (
             <div className="" style={{ height: "80vh" }}>
               <div className="" style={{ height: "74vh" }}>
@@ -190,7 +195,7 @@ const ProFormaProForma = ({ companyDetails, isStaff }) => {
                   <thead className="sticky top-0 z-10 bg-white">
                     <tr className="border-b">
                       <td className="px-5 py-1 text-gray-600 font-semibold text-start">
-                        ProForma No
+                        Debit Note No
                       </td>
                       <td className="px-5 py-1 text-gray-600 font-semibold text-start">
                         Customer
@@ -198,7 +203,7 @@ const ProFormaProForma = ({ companyDetails, isStaff }) => {
                       <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
                         Date
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-center ">
+                      <td className="px-5 py-1 text-gray-600 font-semibold  text-center ">
                         Amount
                       </td>
                       <td className="px-5 py-1 text-gray-600 font-semibold text-center ">
@@ -213,33 +218,33 @@ const ProFormaProForma = ({ companyDetails, isStaff }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredProForma.length > 0 ? (
-                      filteredProForma.map((proForma) => (
+                    {filteredDebitNote.length > 0 ? (
+                      filteredDebitNote.map((debitNote) => (
                         <tr
-                          key={proForma.id}
+                          key={debitNote.id}
                           className="border-b text-center cursor-pointer text-start"
                           onClick={(e) => {
-                            navigate(proForma.id);
+                            navigate(debitNote.id);
                           }}
                         >
                           <td className="px-5 py-3 font-bold">
-                            {proForma.proFormaNo}
+                            {debitNote.debitNoteNo}
                           </td>
 
                           <td className="px-5 py-3 text-start">
-                            {proForma.customerDetails?.name} <br />
+                            {debitNote.customerDetails?.name} <br />
                             <span className="text-gray-500 text-sm">
-                              Ph.No {proForma.customerDetails.phone}
+                              Ph.No {debitNote.customerDetails.phone}
                             </span>
                           </td>
 
                           <td className="px-5 py-3">
                             {new Date(
-                              proForma.date.seconds * 1000 +
-                                proForma.date.nanoseconds / 1000000
+                              debitNote.date.seconds * 1000 +
+                                debitNote.date.nanoseconds / 1000000
                             ).toLocaleString()}
                           </td>
-                          <td className="px-5 py-3 font-bold text-center">{`₹ ${proForma.total.toFixed(
+                          <td className="px-5 py-3 font-bold text-center">{`₹ ${debitNote.total.toFixed(
                             2
                           )}`}</td>
                           <td
@@ -249,26 +254,26 @@ const ProFormaProForma = ({ companyDetails, isStaff }) => {
                             {" "}
                             <div
                               className={`px-1 text-center py-2 rounded-lg text-xs font-bold ${
-                                proForma.paymentStatus === "Paid"
+                                debitNote.paymentStatus === "Paid"
                                   ? "bg-green-100 "
-                                  : proForma.paymentStatus === "Pending"
-                                  ? "bg-yellow-100 "
+                                  : debitNote.paymentStatus === "Pending"
+                                  ? "bg-yellow-100"
                                   : "bg-red-100 "
                               }`}
                             >
                               <select
-                                value={proForma.paymentStatus}
+                                value={debitNote.paymentStatus}
                                 onChange={(e) => {
                                   handleStatusChange(
-                                    proForma.id,
+                                    debitNote.id,
                                     e.target.value
                                   );
                                 }}
-                                className={` ${
-                                  proForma.paymentStatus === "Paid"
+                                className={`${
+                                  debitNote.paymentStatus === "Paid"
                                     ? "bg-green-100 "
-                                    : proForma.paymentStatus === "Pending"
-                                    ? "bg-yellow-100 "
+                                    : debitNote.paymentStatus === "Pending"
+                                    ? "bg-yellow-100"
                                     : "bg-red-100 "
                                 }`}
                               >
@@ -279,11 +284,11 @@ const ProFormaProForma = ({ companyDetails, isStaff }) => {
                             </div>
                           </td>
                           <td className="px-5 py-3">
-                            {proForma.mode || "Online"}
+                            {debitNote.mode || "Online"}
                           </td>
 
                           <td className="px-5 py-3">
-                            {proForma?.createdBy?.name == userDetails.name
+                            {debitNote?.createdBy?.name == userDetails.name
                               ? "Owner"
                               : userDetails.name}
                           </td>
@@ -292,7 +297,7 @@ const ProFormaProForma = ({ companyDetails, isStaff }) => {
                     ) : (
                       <tr>
                         <td colSpan="6" className="h-24 text-center py-4">
-                          No proForma found
+                          No Debit Notes found
                         </td>
                       </tr>
                     )}
@@ -336,4 +341,4 @@ const ProFormaProForma = ({ companyDetails, isStaff }) => {
   );
 };
 
-export default ProFormaProForma;
+export default DebitNoteList;
