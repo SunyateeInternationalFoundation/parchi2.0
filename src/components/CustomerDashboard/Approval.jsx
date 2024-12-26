@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { db } from "../../firebase"; // Ensure Firebase is configured correctly
-import { collection, getDocs, query, where, doc, updateDoc } from "firebase/firestore";
-import { Link, useParams } from "react-router-dom";
+import { collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
+import { Link, useParams } from "react-router-dom";
+import { db } from "../../firebase"; // Ensure Firebase is configured correctly
 
 const Approval = () => {
   const { id } = useParams();

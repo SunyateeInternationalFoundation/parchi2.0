@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { db } from "../../../firebase";
 import {
-  doc,
-  collection,
-  getDocs,
-  addDoc,
-  deleteDoc,
-  Timestamp,
-  query,
-  where,
+    addDoc,
+    collection,
+    deleteDoc,
+    doc,
+    getDocs,
+    query,
+    Timestamp,
+    where,
 } from "firebase/firestore";
-import { useSelector } from "react-redux";
-import { IoSearch } from "react-icons/io5";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { IoSearch } from "react-icons/io5";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { db } from "../../../firebase";
 
 const Designation = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from "react";
 import {
-  collection,
-  addDoc,
-  getDocs,
-  serverTimestamp,
-  query,
-  where,
-  doc,
+    addDoc,
+    collection,
+    doc,
+    getDocs,
+    query,
+    serverTimestamp,
+    where,
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../../../../firebase";
-import { Link, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { IoMdClose } from "react-icons/io";
+import { useSelector } from "react-redux";
+import { Link, useParams } from "react-router-dom";
+import { db } from "../../../../firebase";
 
 const Files = () => {
   const [loading, setLoading] = useState(false);

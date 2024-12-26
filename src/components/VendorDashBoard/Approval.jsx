@@ -1,5 +1,5 @@
 import { collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";

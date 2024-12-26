@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import POSViewHome from "./POSViewHome";
-import { Link, useParams } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
-import { doc, getDoc } from "firebase/firestore";
+import { Link, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
+import POSViewHome from "./POSViewHome";
 
 function POSView() {
   const { id } = useParams();

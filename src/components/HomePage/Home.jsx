@@ -1,79 +1,78 @@
-import React from "react";
-import SideBar from "../UI/Sidebar";
-import Navbar from "../UI/Navbar";
-import InvoiceList from "../Invoices/InvoiceList";
+
 import {
-  Routes,
-  Route,
-  Outlet,
-  useLocation,
-  matchPath,
+    matchPath,
+    Outlet,
+    Route,
+    Routes,
+    useLocation,
 } from "react-router-dom";
-import VendorList from "../Vendors/VendorList";
-import ProductHome from "../Products/ProductHome";
-import Projects from "../Projects/Projects";
-import ProjectView from "../Projects/ProjectView/ProjectView";
-import CreateProject from "../Projects/CreateProject/CreateProject";
 import CustomerList from "../Customers/CustomerList";
-import Tasks from "../Projects/ProjectView/Tasks/Tasks";
-import Milestone from "../Projects/ProjectView/Milestone/Milestone";
-import Files from "../Projects/ProjectView/Files/Files";
-import Approval from "../Projects/ProjectView/Approvals/Approval";
-import Users from "../Projects/ProjectView/Users/Users";
-import StaffPayout from "../Staff&Payout/StaffPayout";
-import Staff from "../Staff&Payout/Staff/Staff";
-import Items from "../Projects/ProjectView/Items/Items";
-import Chats from "../Projects/ProjectView/Chats/Chats";
 import CustomerView from "../Customers/CustomerView/CustomerView";
-import VendorView from "../Vendors/VendorView/VendorView";
-import StaffView from "../Staff&Payout/Staff/StaffView/StaffView";
-import PO from "../PO/PO";
-import CreatePo from "../PO/CreatePo";
-import Branches from "../Staff&Payout/Branches/Branches";
-import Roles from "../Staff&Payout/Roles/Roles";
-import Services from "../Services/Services";
-import ServicesList from "../ServicesList/ServicesList";
-import CreateService from "../Services/CreateService/CreateService";
-import InvoiceView from "../Invoices/InvoiceView/InvoiceView";
-import Expense from "../Expense/Expense";
 import BookList from "../Expense/Book/BookList";
-import Quotation from "../Quotation/Quotation";
-import QuotationViewHome from "../Quotation/QuotationView/QuotationViewHome";
+import Expense from "../Expense/Expense";
+import InvoiceList from "../Invoices/InvoiceList";
+import InvoiceView from "../Invoices/InvoiceView/InvoiceView";
+import PO from "../PO/PO";
 import POS from "../POS/POS";
 import POSView from "../POS/POSView/POSView";
+import ProductHome from "../Products/ProductHome";
 import ProFormaInvoice from "../ProFormaInvoice/ProFormaInvoice";
+import CreateProject from "../Projects/CreateProject/CreateProject";
+import Projects from "../Projects/Projects";
+import Approval from "../Projects/ProjectView/Approvals/Approval";
+import Chats from "../Projects/ProjectView/Chats/Chats";
+import Files from "../Projects/ProjectView/Files/Files";
+import Items from "../Projects/ProjectView/Items/Items";
+import Milestone from "../Projects/ProjectView/Milestone/Milestone";
+import ProjectView from "../Projects/ProjectView/ProjectView";
+import Tasks from "../Projects/ProjectView/Tasks/Tasks";
+import Users from "../Projects/ProjectView/Users/Users";
+import Quotation from "../Quotation/Quotation";
+import QuotationViewHome from "../Quotation/QuotationView/QuotationViewHome";
+import CreateService from "../Services/CreateService/CreateService";
+import Services from "../Services/Services";
+import ServicesList from "../ServicesList/ServicesList";
+import Branches from "../Staff&Payout/Branches/Branches";
+import Roles from "../Staff&Payout/Roles/Roles";
+import Staff from "../Staff&Payout/Staff/Staff";
+import StaffView from "../Staff&Payout/Staff/StaffView/StaffView";
+import StaffPayout from "../Staff&Payout/StaffPayout";
+import Navbar from "../UI/Navbar";
+import SideBar from "../UI/Sidebar";
+import VendorList from "../Vendors/VendorList";
+import VendorView from "../Vendors/VendorView/VendorView";
 // import CreateProFormaInvoice from "../ProFormaInvoice/CreateProFormaInvoice/CreateProFormaInvoice";
-import ProFormaView from "../ProFormaInvoice/ProFormaInvoiceView/ProFormaView";
-import Reminder from "../Reminder/Reminder";
-import Designation from "../Staff&Payout/Designation/Designation";
-import Assets from "../Staff&Payout/Assets/Assets";
-import Attendance from "../Staff&Payout/Attendance/Attendance";
-import DesignationView from "../Staff&Payout/Designation/DesignationView";
-import WeekOff from "../Staff&Payout/WeekOff/WeekOff";
-import EditService from "../Services/CreateService/EditService";
-import SetInvoice from "../Invoices/SetInvoice/SetInvoice";
-import SetQuotation from "../Quotation/SetQuotation/SetQuotation";
-import VendorPO from "../VendorDashBoard/VendorPO";
-import Payment from "../Projects/ProjectView/Payment/Payment";
 import CreditNoteList from "../CreditNote/CreditNoteList";
 import CreditNoteView from "../CreditNote/CreditNoteView/CreditNoteView";
 import SetCreditNote from "../CreditNote/SetCreditNote/SetCreditNote";
 import DeliveryChallanList from "../DeliveryChallan/DeliveryChallanList";
 import DeliveryChallanView from "../DeliveryChallan/DeliveryChallanView/DeliveryChallanView";
 import SetDeliveryChallan from "../DeliveryChallan/SetDeliveryChallan/SetDeliveryChallan";
+import SetInvoice from "../Invoices/SetInvoice/SetInvoice";
 import PoView from "../PO/PoView/PoView";
 import SetPO from "../PO/SetPO/SetPO";
-import SetProFormaInvoice from "../ProFormaInvoice/SetProFormaInvoice/SetProFormaInvoice";
 import SetPos from "../POS/SetPos/SetPos";
+import ProductViewHome from "../Products/ProductView/ProductViewHome";
+import ProFormaView from "../ProFormaInvoice/ProFormaInvoiceView/ProFormaView";
+import SetProFormaInvoice from "../ProFormaInvoice/SetProFormaInvoice/SetProFormaInvoice";
+import Payment from "../Projects/ProjectView/Payment/Payment";
 import Purchase from "../Purchase/Purchase";
 import PurchaseViewHome from "../Purchase/PurchaseView/PurchaseViewHome";
 import SetPurchase from "../Purchase/SetPurchase/SetPurchase";
+import SetQuotation from "../Quotation/SetQuotation/SetQuotation";
+import Reminder from "../Reminder/Reminder";
+import EditService from "../Services/CreateService/EditService";
+import ServiceView from "../Services/ServicesView/ServiceView";
+import Prefix from "../Settings/Prefix";
 import Settings from "../Settings/Settings";
 import SettingView from "../Settings/SettingView";
-import ProductViewHome from "../Products/ProductView/ProductViewHome";
 import UserProfile from "../Settings/UserProfile";
-import Prefix from "../Settings/Prefix";
-import ServiceView from "../Services/ServicesView/ServiceView";
+import Assets from "../Staff&Payout/Assets/Assets";
+import Attendance from "../Staff&Payout/Attendance/Attendance";
+import Designation from "../Staff&Payout/Designation/Designation";
+import DesignationView from "../Staff&Payout/Designation/DesignationView";
+import WeekOff from "../Staff&Payout/WeekOff/WeekOff";
+import VendorPO from "../VendorDashBoard/VendorPO";
 
 const Home = () => {
   const location = useLocation();

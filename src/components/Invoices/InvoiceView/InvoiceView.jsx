@@ -1,18 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
-import Invoice from "./Invoice";
-import Returns from "./Returns";
-import { Link, useParams } from "react-router-dom";
+import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    orderBy,
+    query,
+} from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  orderBy,
-  query,
-} from "firebase/firestore";
+import { Link, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
+import Invoice from "./Invoice";
+import Returns from "./Returns";
 import ReturnsHistory from "./ReturnsHistory";
 
 function InvoiceView() {

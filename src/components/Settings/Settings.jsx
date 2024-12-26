@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { db, storage } from "../../firebase";
-import { collection, addDoc, updateDoc, doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { useSelector, useDispatch } from "react-redux";
-import SettingsView from "./SettingView";
-import { FaUser } from "react-icons/fa";
-import { MdOutlineLocationOn, MdOutlineLocalPhone } from "react-icons/md";
-import { MdEmail } from "react-icons/md";
-import { updateCompanyDetails } from "../../store/UserSlice";
-import { CgWebsite } from "react-icons/cg";
-import { HiReceiptTax } from "react-icons/hi";
+import { useEffect, useState } from "react";
 import { BsCreditCard2FrontFill } from "react-icons/bs";
+import { CgWebsite } from "react-icons/cg";
+import { FaUser } from "react-icons/fa";
+import { HiReceiptTax } from "react-icons/hi";
+import { MdEmail, MdOutlineLocalPhone, MdOutlineLocationOn } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { db, storage } from "../../firebase";
+import { updateCompanyDetails } from "../../store/UserSlice";
 
 const Settings = () => {
   const userDetails = useSelector((state) => state.users);

@@ -1,9 +1,9 @@
 import { doc, getDoc } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
-import { db } from "../../../../firebase";
-import { Link, useParams } from "react-router-dom";
-import UserSidebar from "./UserSidebar";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { Link, useParams } from "react-router-dom";
+import { db } from "../../../../firebase";
+import UserSidebar from "./UserSidebar";
 
 function Users() {
   const { id } = useParams();

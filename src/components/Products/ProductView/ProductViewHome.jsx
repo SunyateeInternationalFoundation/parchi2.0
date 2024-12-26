@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
+import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    query,
+    where,
+} from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
-import ProductView from "./ProductView";
-import ProductReturns from "./ProductReturns";
 import ProductLogs from "./ProductLogs";
+import ProductReturns from "./ProductReturns";
+import ProductView from "./ProductView";
 
 function ProductViewHome() {
   const [activeTab, setActiveTab] = useState("Product");

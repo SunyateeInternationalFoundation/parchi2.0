@@ -1,12 +1,12 @@
-import React from "react";
+
+import { Outlet, Route, Routes } from "react-router-dom";
+import Approval from "../CustomerDashboard/Approval";
 import Navbar from "../UI/Navbar";
 import SideBar from "../UI/Sidebar";
-import { Outlet, Route, Routes } from "react-router-dom";
-import VendorPO from "../VendorDashBoard/VendorPO";
-import Projects from "../VendorDashBoard/Projects";
 import Files from "../VendorDashBoard/Files";
-import Approval from "../CustomerDashboard/Approval";
+import Projects from "../VendorDashBoard/Projects";
 import ProjectView from "../VendorDashBoard/ProjectView";
+import VendorPO from "../VendorDashBoard/VendorPO";
 
 function VendorHome() {
   return (

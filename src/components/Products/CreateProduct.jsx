@@ -1,18 +1,16 @@
 import {
-  addDoc,
-  collection,
-  doc,
-  getDocs,
-  setDoc,
-  Timestamp,
-  getDoc,
-  updateDoc,
+    addDoc,
+    collection,
+    doc,
+    getDocs,
+    setDoc,
+    Timestamp,
+    updateDoc
 } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
-import { db, storage } from "../../firebase";
 import { useSelector } from "react-redux";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { db } from "../../firebase";
 
 function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
   const userDetails = useSelector((state) => state.users);

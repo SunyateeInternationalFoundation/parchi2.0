@@ -1,20 +1,19 @@
 import {
-  addDoc,
-  collection,
-  doc,
-  getDocs,
-  query,
-  updateDoc,
-  arrayUnion,
-  Timestamp,
-  where,
-  getDoc,
+    arrayUnion,
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    query,
+    Timestamp,
+    updateDoc,
+    where
 } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { AiOutlineArrowLeft } from "react-icons/ai";
+import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
-import { useSelector } from "react-redux";
-import { AiOutlineArrowLeft } from "react-icons/ai";
 import SideBarAddServices from "./SideBarAddServices";
 
 function EditService() {

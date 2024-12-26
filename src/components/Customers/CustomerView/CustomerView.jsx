@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from "react";
+import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    query,
+    where,
+} from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
+import { db } from "../../../firebase";
 import Bills from "./Bills";
+import Profile from "./Profile";
 import Projects from "./Projects";
 import Services from "./Services";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
-import { db } from "../../../firebase";
-import { useSelector } from "react-redux";
-import Profile from "./Profile";
 
 function CustomerView() {
   const { id } = useParams();

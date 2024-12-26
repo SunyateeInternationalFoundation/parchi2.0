@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import { GrMenu } from "react-icons/gr";
-import { FaAngleUp } from "react-icons/fa6";
-import { FaAngleDown } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
+import { Link, useLocation } from "react-router-dom";
 
 function SideBar({ staff }) {
   const location = useLocation();

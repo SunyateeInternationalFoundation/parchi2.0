@@ -1,5 +1,5 @@
 import { doc } from "firebase/firestore";
-import React, { useState } from "react";
+import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { db } from "../../../../firebase";
 

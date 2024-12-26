@@ -1,21 +1,21 @@
 import {
+  Timestamp,
   addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   query,
   updateDoc,
   where,
-  Timestamp,
-  getDoc,
 } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { AiOutlineArrowLeft } from "react-icons/ai";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
-import { useDispatch, useSelector } from "react-redux";
-import { AiOutlineArrowLeft } from "react-icons/ai";
-import Sidebar from "./Sidebar";
 import { setAllCustomersDetails } from "../../../store/CustomerSlice";
+import Sidebar from "./Sidebar";
 
 const SetInvoice = () => {
   const { invoiceId } = useParams();
@@ -291,18 +291,13 @@ const SetInvoice = () => {
           }
           const netAmount = +data.sellingPrice - discount;
           const taxRate = data.tax || 0;
-          let sgst = 0;
-          let cgst = 0;
-          let taxAmount = 0;
-          let sgstAmount = 0;
-          let cgstAmount = 0;
-
-          sgst = taxRate / 2;
-          cgst = taxRate / 2;
-          taxAmount = netAmount * (taxRate / 100);
-          sgstAmount = netAmount * (sgst / 100);
-          cgstAmount = netAmount * (cgst / 100);
-
+    
+          const sgst = taxRate / 2;
+          const cgst = taxRate / 2;
+          const taxAmount = netAmount * (taxRate / 100);
+          const sgstAmount = netAmount * (sgst / 100);
+          const cgstAmount = netAmount * (cgst / 100);
+          
           return {
             id: doc.id,
             description: data.description ?? "",

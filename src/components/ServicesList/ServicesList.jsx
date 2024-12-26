@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { db } from "../../firebase";
 import {
   collection,
-  query,
-  getDocs,
-  where,
-  doc,
   deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where,
 } from "firebase/firestore";
-import CreateServiceList from "./CreateServiceList";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { useSelector } from "react-redux";
+import { db } from "../../firebase";
+import CreateServiceList from "./CreateServiceList";
 
 const ServicesList = () => {
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
@@ -125,14 +125,14 @@ const ServicesList = () => {
                     {service.description}
                   </td>
                   <td className="px-6 py-4 font-semibold text-gray-600">
-                    ₹{service.pricing.sellingPrice.amount}
+                    ₹{service.sellingPrice}
                   </td>
                   <td className="px-6 py-4 font-semibold text-gray-600">
-                    {service.pricing.discount.amount}
-                    {service.pricing.discount.type == "Percentage" ? "%" : "/-"}
+                    {service.discount}
+                    {service.discount.type  ? "%" : "/-"}
                   </td>
                   <td className="px-6 py-4 font-semibold text-gray-600">
-                    {service.pricing.gstTax}%
+                    {service.tax}%
                   </td>
                   <td
                     className="py-3 px-6"

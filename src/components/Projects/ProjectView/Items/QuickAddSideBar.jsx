@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import { IoMdClose } from "react-icons/io";
-import { db } from "../../../../firebase";
 import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  setDoc,
-  Timestamp,
+    addDoc,
+    collection,
+    doc,
+    getDoc,
+    setDoc,
+    Timestamp,
 } from "firebase/firestore";
+import { useState } from "react";
+import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { db } from "../../../../firebase";
 
 function QuickAddSideBar({ isOpen, onClose, isMaterialAdd }) {
   const { id } = useParams();

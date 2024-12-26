@@ -1,21 +1,20 @@
-import React, { useEffect, useState } from "react";
 import {
-  collection,
-  getDocs,
-  query,
-  where,
-  doc,
-  updateDoc,
-  deleteDoc,
+    collection,
+    deleteDoc,
+    doc,
+    getDocs,
+    query,
+    where
 } from "firebase/firestore";
-import { db } from "../../firebase";
-import { useDispatch, useSelector } from "react-redux";
-import { FaSearch, FaRegEye } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { FaSearch } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { db } from "../../firebase";
 import {
-  deleteCustomerDetails,
-  setAllCustomersDetails,
+    deleteCustomerDetails,
+    setAllCustomersDetails,
 } from "../../store/CustomerSlice";
 import CreateCustomer from "./CreateCustomer";
 

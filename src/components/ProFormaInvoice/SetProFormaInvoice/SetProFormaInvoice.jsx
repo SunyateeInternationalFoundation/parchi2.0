@@ -1,21 +1,21 @@
 import {
-  addDoc,
-  collection,
-  doc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-  getDoc,
-  Timestamp,
+    addDoc,
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    query,
+    Timestamp,
+    updateDoc,
+    where,
 } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { AiOutlineArrowLeft } from "react-icons/ai";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
-import { useSelector, useDispatch } from "react-redux";
-import { AiOutlineArrowLeft } from "react-icons/ai";
-import Sidebar from "./Sidebar";
 import { setAllCustomersDetails } from "../../../store/CustomerSlice";
+import Sidebar from "./Sidebar";
 
 const SetProFormaInvoice = () => {
   const { proFormaId } = useParams();

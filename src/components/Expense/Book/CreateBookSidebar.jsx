@@ -1,8 +1,8 @@
 import { addDoc, collection, Timestamp } from "firebase/firestore";
-import React, { useState } from "react";
+import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
-import { db } from "../../../firebase";
 import { useSelector } from "react-redux";
+import { db } from "../../../firebase";
 
 function CreateBookSidebar({ onClose, isOpen, refresh }) {
   const userDetails = useSelector((state) => state.users);

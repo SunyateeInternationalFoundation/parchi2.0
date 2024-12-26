@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { AiOutlineArrowLeft } from "react-icons/ai";
 import {
-  addDoc,
-  collection,
-  doc,
-  Timestamp,
-  getDocs,
+    addDoc,
+    collection,
+    doc,
+    getDocs,
+    Timestamp,
 } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { AiOutlineArrowLeft } from "react-icons/ai";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { db } from "../../../firebase";
 
 function CreateProject() {

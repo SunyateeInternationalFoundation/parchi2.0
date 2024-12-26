@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { MdDateRange } from "react-icons/md";
-import { BsFolderPlus } from "react-icons/bs";
-import { BsFileEarmarkCheck } from "react-icons/bs";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../firebase";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { BsFileEarmarkCheck, BsFolderPlus } from "react-icons/bs";
+import { MdDateRange } from "react-icons/md";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { db } from "../../firebase";
 
 function ProjectView() {
   const { id } = useParams();

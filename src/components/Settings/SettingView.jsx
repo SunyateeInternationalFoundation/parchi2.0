@@ -1,7 +1,6 @@
-import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 const SettingsView = () => {
   const navigate = useNavigate();
   const location = useLocation();

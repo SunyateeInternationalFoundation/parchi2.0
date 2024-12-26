@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
 import { doc, updateDoc } from "firebase/firestore";
-import { db, storage } from "../../../firebase";
-import { FaUserEdit } from "react-icons/fa";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { useEffect, useState } from "react";
+import { FaUserEdit } from "react-icons/fa";
 import { useDispatch } from "react-redux";
+import { db, storage } from "../../../firebase";
 import { updateCustomerDetails } from "../../../store/CustomerSlice";
 
 const Profile = ({ customerData, refresh }) => {

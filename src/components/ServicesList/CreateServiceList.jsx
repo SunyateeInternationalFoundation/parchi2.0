@@ -8,29 +8,10 @@ import { db } from "../../firebase";
 const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
   const userDetails = useSelector((state) => state.users);
   const [formData, setFormData] = useState({
-
-    warehouse: {},
-    discount: 0,
-    paymentStatus: "Pending",
-    notes: "",
-    purchaseNo: "",
-    packagingCharges: 0,
-    subTotal: 0,
-    tds: {},
-    total: 0,
-    shippingCharges: 0,
-    tax: 0,
-    attachments: [],
-    tcs: {},
-    terms: "",
-    mode: "Cash",
-    extraDiscount: 0,
-    extraDiscountType: "percentage",
-
     serviceName: "",
     barcode: "",
       sellingPrice: 0,
-      includingTax: true,
+       sellingPriceTaxType: true,
       discount: 0,
       discountType: "Percentage",
     description: "",
@@ -42,43 +23,19 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
     setFormData({
       serviceName: "",
       barcode: "",
-      pricing: {
-        sellingPrice: {
-          taxAmount: 0,
-          includingTax: true,
-          amount: 0,
-          taxSlab: 0,
-        },
-        discount: {
-          amount: 0,
-          type: "Percentage",
-          fieldValue: 0,
-        },
-        gstTax: 0,
-      },
+        sellingPrice: 0,
+         sellingPriceTaxType: true,
+        discount: 0,
+        discountType: true,
       description: "",
-      tax: {
-        taxSlab: 0,
-        taxAmount: 0,
-      },
-      monthDuration: "1", // Reset month duration
+      tax:0,
+      monthDuration: "1",// Reset month duration
     });
   }
 
   useEffect(() => {
     if (service) {
-      setFormData({
-        serviceName: service.serviceName,
-        barcode: service.barcode,
-        pricing: {
-          sellingPrice: service.pricing.sellingPrice,
-          discount: service.pricing.discount,
-          gstTax: service.pricing.gstTax,
-        },
-        description: service.description,
-        tax: service.tax,
-        monthDuration: service.monthDuration || "1", // Populate existing duration or default
-      });
+      setFormData(service);
     } else {
       ResetForm();
     }
@@ -87,46 +44,14 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
   const onCreateService = async (e) => {
     e.preventDefault();
     try {
-      let fieldValue = formData.pricing.discount.amount;
-
-      if (formData.pricing.discount.type === "Percentage") {
-        fieldValue =
-          (formData.pricing.sellingPrice.amount / 100) *
-          formData.pricing.discount.amount;
-      }
-
-      const amount = formData.pricing.sellingPrice.amount - fieldValue;
-      let sellingPriceTaxAmount =
-        amount * (formData.pricing.sellingPrice.taxSlab / 100);
       const companyRef = doc(
         db,
         "companies",
         userDetails.companies[userDetails.selectedCompanyIndex].companyId
       );
 
-      if (!formData.pricing.sellingPrice.includingTax) {
-        sellingPriceTaxAmount =
-          amount * (formData.pricing.sellingPrice.taxSlab / 100);
-      }
-
       const payload = {
         ...formData,
-        pricing: {
-          ...formData.pricing,
-          discount: {
-            ...formData.pricing.discount,
-            fieldValue,
-          },
-          sellingPrice: {
-            ...formData.pricing.sellingPrice,
-            fieldValue,
-            taxAmount: sellingPriceTaxAmount,
-          },
-        },
-        tax: {
-          taxSlab: formData.pricing.gstTax,
-          taxAmount: sellingPriceTaxAmount,
-        },
         companyRef,
       };
 
@@ -206,38 +131,26 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
             <div className="flex items-center justify-center">
               <input
                 type="number"
-                value={+formData.pricing?.sellingPrice?.amount || ""}
-                name="pricing.sellingPrice.amount"
+                value={+formData.sellingPrice || ""}
+                name="pricing.sellingPrice"
                 className="w-full border border-gray-300 p-2 rounded-l-lg"
                 placeholder="Service Price"
                 required
                 onChange={(e) =>
                   setFormData((val) => ({
                     ...val,
-                    pricing: {
-                      ...val.pricing,
-                      sellingPrice: {
-                        ...val.pricing.sellingPrice,
-                        amount: +e.target.value,
-                      },
-                    },
+                      sellingPrice:+e.target.value,
                   }))
                 }
               />
               <select
                 className="w-full  border border-gray-300 p-2 rounded-r-lg"
-                name="pricing.sellingPrice.includingTax"
-                value={formData.pricing.sellingPrice.includingTax}
+                name="pricing.sellingPrice"
+                value={formData.sellingPriceTaxType}
                 onChange={(e) =>
                   setFormData((val) => ({
                     ...val,
-                    pricing: {
-                      ...val.pricing,
-                      sellingPrice: {
-                        ...val.pricing.sellingPrice,
-                        includingTax: e.target.value === "true" ? true : false,
-                      },
-                    },
+                      sellingPriceTaxType: e.target.value === "true" ? true : false,
                   }))
                 }
               >
@@ -253,33 +166,22 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
                 name="discount"
                 className="w-full border border-gray-300 p-2 rounded-l-lg"
                 placeholder="Discount"
-                value={formData.pricing.discount.amount || ""}
+                value={formData.discount || ""}
                 onChange={(e) =>
                   setFormData((val) => ({
                     ...val,
-                    pricing: {
-                      ...val.pricing,
-                      discount: {
-                        ...val.pricing.discount,
-                        amount: +e.target.value || 0,
-                      },
-                    },
+                      discount: +e.target.value || 0,
                   }))
                 }
               />
               <select
                 className="w-full border border-gray-300 p-2 rounded-r-lg"
-                defaultValue={formData.pricing.discount.type}
+                defaultValue={formData.discountType}
                 onChange={(e) =>
                   setFormData((val) => ({
                     ...val,
-                    pricing: {
-                      ...val.pricing,
-                      discount: {
-                        ...val.pricing.discount,
-                        type: e.target.value,
-                      },
-                    },
+                      discountType:
+                         e.target.value,
                   }))
                 }
               >
@@ -293,18 +195,11 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
             <label className="text-sm block font-semibold">GST Tax</label>
             <select
               className="w-full border border-gray-300 p-2 rounded-lg"
-              value={formData.pricing.gstTax}
+              value={formData.tax}
               onChange={(e) =>
                 setFormData((val) => ({
                   ...val,
-                  pricing: {
-                    ...val.pricing,
-                    gstTax: +e.target.value,
-                    sellingPrice: {
-                      ...val.pricing.sellingPrice,
-                      taxSlab: +e.target.value,
-                    },
-                  },
+                      tax: +e.target.value,
                 }))
               }
             >

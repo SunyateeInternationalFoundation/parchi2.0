@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { RiDeleteBin6Line } from "react-icons/ri";
 import {
-  addDoc,
-  collection,
-  doc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-  Timestamp,
-  deleteDoc,
+    Timestamp,
+    addDoc,
+    collection,
+    deleteDoc,
+    doc,
+    getDocs,
+    query,
+    updateDoc,
+    where,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { useEffect, useState } from "react";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
+import { db } from "../../firebase";
 
 function Reminder() {
   const [activeTab, setActiveTab] = useState("Reminder");

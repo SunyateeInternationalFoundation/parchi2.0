@@ -1,15 +1,15 @@
 import {
-  collection,
-  doc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
+    collection,
+    doc,
+    getDocs,
+    query,
+    updateDoc,
+    where,
 } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
-import { db } from "../../../../firebase";
 import { useSelector } from "react-redux";
+import { db } from "../../../../firebase";
 
 function UserSidebar({ isOpen, onClose, projectId, projectDetails, Refresh }) {
   console.log("🚀 ~ UserSidebar ~ projectDetails:", projectDetails);

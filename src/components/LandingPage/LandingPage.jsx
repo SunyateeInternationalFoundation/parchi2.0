@@ -1,20 +1,19 @@
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
-import React, { useEffect, useState } from "react";
-import { auth, db } from "../../firebase";
-import { setUserLogin } from "../../store/UserSlice";
 import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  setDoc,
-  Timestamp,
-  where,
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    query,
+    setDoc,
+    Timestamp,
+    where
 } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { auth, db } from "../../firebase";
+import { setUserLogin } from "../../store/UserSlice";
 import CompanyForm from "./CompanyForm";
 
 const LandingPage = () => {

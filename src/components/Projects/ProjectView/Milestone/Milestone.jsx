@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { db } from "../../../../firebase"; // Ensure Firebase is initialized and configured
 import {
-  collection,
-  getDocs,
-  addDoc,
-  serverTimestamp,
-  doc,
-  query,
-  where,
+    addDoc,
+    collection,
+    doc,
+    getDocs,
+    query,
+    serverTimestamp,
+    where,
 } from "firebase/firestore";
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { Link, useParams } from "react-router-dom";
+import { db } from "../../../../firebase"; // Ensure Firebase is initialized and configured
 
 const Milestone = () => {
   const [milestones, setMilestones] = useState([]);

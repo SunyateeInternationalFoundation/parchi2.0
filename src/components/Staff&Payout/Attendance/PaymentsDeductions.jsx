@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 
 function PaymentsDeductions({ onClose, staff, addPaymentDeductionToStaff }) {

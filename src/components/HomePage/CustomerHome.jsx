@@ -1,14 +1,14 @@
-import React from "react";
-import Navbar from "../UI/Navbar";
-import SideBar from "../UI/Sidebar";
+
 import { Outlet, Route, Routes } from "react-router-dom";
+import Approval from "../CustomerDashboard/Approval";
+import Files from "../CustomerDashboard/Files";
 import Invoice from "../CustomerDashboard/Invoice";
-import Quotations from "../CustomerDashboard/Quotations";
 import Projects from "../CustomerDashboard/Projects";
 import ProjectView from "../CustomerDashboard/ProjectView";
-import Files from "../CustomerDashboard/Files";
-import Approval from "../CustomerDashboard/Approval";
+import Quotations from "../CustomerDashboard/Quotations";
 import Settings from "../Settings/Settings";
+import Navbar from "../UI/Navbar";
+import SideBar from "../UI/Sidebar";
 
 function CustomerHome() {
   return (

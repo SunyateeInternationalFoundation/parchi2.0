@@ -1,32 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { MdDateRange } from "react-icons/md";
-import { BsFolderPlus } from "react-icons/bs";
-import { RiDeleteBin6Line, RiUserAddLine } from "react-icons/ri";
-import { FaTasks } from "react-icons/fa";
-import { IoWalletOutline } from "react-icons/io5";
-import { HiOutlineShoppingCart } from "react-icons/hi2";
-import { BsCalendar4 } from "react-icons/bs";
-import { BsFileEarmarkCheck } from "react-icons/bs";
-import { FaArrowUp } from "react-icons/fa";
-import { FaArrowDown } from "react-icons/fa";
-import { FaFilter } from "react-icons/fa6";
 import {
-  updateDoc,
-  doc,
-  getDoc,
-  Timestamp,
-  deleteDoc,
-  collection,
-  getDocs,
-  where,
-  query,
+    collection,
+    deleteDoc,
+    doc,
+    getDoc,
+    getDocs,
+    query,
+    Timestamp,
+    updateDoc,
+    where,
 } from "firebase/firestore";
-import { db } from "../../../firebase";
-import { TiMessages } from "react-icons/ti";
+import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { BsCalendar4, BsFileEarmarkCheck, BsFolderPlus } from "react-icons/bs";
+import { FaArrowDown, FaArrowUp, FaTasks } from "react-icons/fa";
+import { FaFilter } from "react-icons/fa6";
+import { HiOutlineShoppingCart } from "react-icons/hi2";
+import { IoWalletOutline } from "react-icons/io5";
+import { MdDateRange } from "react-icons/md";
+import { RiDeleteBin6Line, RiUserAddLine } from "react-icons/ri";
 import { TbEdit } from "react-icons/tb";
+import { TiMessages } from "react-icons/ti";
 import { useSelector } from "react-redux";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { db } from "../../../firebase";
 
 function ProjectView() {
   const { id } = useParams();

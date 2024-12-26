@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
-import SettingsView from "./SettingView";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { db } from "../../firebase";
-import { updateDoc, doc, getDoc } from "firebase/firestore";
 
 const PREFIX_FIELDS = [
   { name: "invoice", label: "Invoice", placeholder: "Prefix for Invoice" },

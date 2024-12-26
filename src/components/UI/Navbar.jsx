@@ -1,19 +1,18 @@
-import React, { useState } from "react";
-import { FaBolt, FaBell, FaBullhorn, FaUserCircle } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { FaBell, FaBolt, FaBullhorn, FaStore, FaUserCircle } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  setUserLogin,
-  setUserLogout,
-  updateUserDetails,
-} from "../../store/UserSlice";
-import SunyaLogo from "../../assets/SunyaLogo.jpg";
-import { IoMdSettings } from "react-icons/io";
 import { HiUsers } from "react-icons/hi";
-import { RiCustomerService2Fill } from "react-icons/ri";
-import { FaStore } from "react-icons/fa";
+import { IoMdSettings } from "react-icons/io";
 import { IoBusiness } from "react-icons/io5";
+import { RiCustomerService2Fill } from "react-icons/ri";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import SunyaLogo from "../../assets/SunyaLogo.jpg";
+import {
+    setUserLogin,
+    setUserLogout,
+    updateUserDetails,
+} from "../../store/UserSlice";
 
 const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);

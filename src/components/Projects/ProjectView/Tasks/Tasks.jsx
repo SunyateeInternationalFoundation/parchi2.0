@@ -1,22 +1,22 @@
 import {
-  addDoc,
-  collection,
-  doc,
-  getDocs,
-  orderBy,
-  query,
-  Timestamp,
-  updateDoc,
+    addDoc,
+    collection,
+    doc,
+    getDocs,
+    orderBy,
+    query,
+    Timestamp,
+    updateDoc,
 } from "firebase/firestore";
-import React, { useEffect, useRef, useState } from "react";
-import { FaFilter } from "react-icons/fa";
-import { MdOutlineShowChart } from "react-icons/md";
-import { db } from "../../../../firebase";
-import { Link, useParams } from "react-router-dom";
-import { IoMdClose, IoMdSend } from "react-icons/io";
-import TaskSideBar from "./TaskSideBar";
+import { useEffect, useRef, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { FaFilter } from "react-icons/fa";
+import { IoMdClose, IoMdSend } from "react-icons/io";
+import { MdOutlineShowChart } from "react-icons/md";
 import { useSelector } from "react-redux";
+import { Link, useParams } from "react-router-dom";
+import { db } from "../../../../firebase";
+import TaskSideBar from "./TaskSideBar";
 
 function Tasks() {
   const { id } = useParams();

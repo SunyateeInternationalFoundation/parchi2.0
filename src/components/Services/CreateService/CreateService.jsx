@@ -1,19 +1,19 @@
 import {
   addDoc,
+  arrayUnion,
   collection,
   doc,
   getDocs,
   query,
-  updateDoc,
-  arrayUnion,
   Timestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { AiOutlineArrowLeft } from "react-icons/ai";
+import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../../../firebase";
-import { useSelector } from "react-redux";
-import { AiOutlineArrowLeft } from "react-icons/ai";
 import SideBarAddServices from "./SideBarAddServices";
 
 function CreateService() {
@@ -24,20 +24,18 @@ function CreateService() {
 
   const phoneNo = userDetails.phone;
 
-  const [serviceDate, setServiceDate] = useState(new Date());
+  const [date, setDate] = useState(new Date());
+  const [dueDate, setDueDate] = useState(new Date());
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const [membershipPeriod, setMembershipPeriod] = useState("");
   const [membershipEndDate, setMembershipEndDate] = useState("");
   const [membershipStartDate, setMembershipStartDate] = useState(new Date());
-  const [books, setBooks] = useState([]);
 
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    extraDiscount: {
-      amount: 0,
-      type: "percentage",
-    },
+    extraDiscount: 0,
+    extraDiscountType: true,
     status: "Active",
     notes: "",
     serviceNo: "",
@@ -58,6 +56,7 @@ function CreateService() {
     totalAmount: 0,
     subTotalAmount: 0,
   });
+
   const [preServicesList, setPreServicesList] = useState([]);
 
   const [servicesList, setServicesList] = useState([]);
@@ -80,32 +79,33 @@ function CreateService() {
         const getData = await getDocs(q);
         const serviceData = getData.docs.map((doc) => {
           const data = doc.data();
-          const netAmount =
-            +data.pricing.sellingPrice?.amount -
-            (+data.pricing.discount?.fieldValue || 0);
-          const taxRate = data.pricing.gstTax || 0;
-          let sgst = 0;
-          let cgst = 0;
-          let sgstAmount = 0;
-          let cgstAmount = 0;
+          let discount = +data.discount || 0;
 
-          sgst = taxRate / 2;
-          cgst = taxRate / 2;
-          sgstAmount = netAmount * (sgst / 100);
-          cgstAmount = netAmount * (cgst / 100);
+          if (data.discountType) {
+            discount = (+data.sellingPrice / 100) * data.discount;
+          }
+          const netAmount =
+            +data.sellingPrice - discount;
+          const taxRate = data.tax || 0;
+          const sgst = taxRate / 2;
+          const cgst = taxRate / 2;
+          const taxAmount = netAmount * (taxRate / 100);
+          const sgstAmount = netAmount * (sgst / 100);
+          const cgstAmount = netAmount * (cgst / 100);
           return {
             id: doc.id,
             serviceName: data.serviceName || "N/A",
-            unitPrice: data.pricing.sellingPrice?.amount ?? 0,
-            discount: data.pricing.discount?.fieldValue ?? 0,
+            sellingPrice: data.sellingPrice ?? 0,
+            discount: data.discount ?? 0,
+            discountType: data.discountType,
             totalAmount: netAmount,
-            includingTax: data.pricing.sellingPrice?.includingTax,
+            sellingPriceTaxType: data.sellingPriceTaxType,
             sgst,
             cgst,
             sgstAmount,
             cgstAmount,
-            taxAmount: data.pricing.sellingPrice?.taxAmount,
-            taxSlab: data.pricing.sellingPrice?.taxSlab,
+            taxAmount,
+            tax: data.tax,
             isSelected: false,
           };
         });
@@ -148,26 +148,8 @@ function CreateService() {
       }
     };
 
-    async function fetchBooks() {
-      try {
-        const bookRef = collection(
-          db,
-          "companies",
-          companyDetails.companyId,
-          "books"
-        );
-        const getBookData = await getDocs(bookRef);
-        const fetchBooks = getBookData.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setBooks(fetchBooks);
-      } catch (error) {
-        console.log("🚀 ~ fetchBooks ~ error:", error);
-      }
-    }
+ 
 
-    // fetchBooks();
     fetchServicesNumbers();
     customerDetails();
     fetchServices();
@@ -205,48 +187,47 @@ function CreateService() {
       for (const service of SelectedServicesList) {
         const serviceRef = doc(db, "services", service.id);
         serviceListPayload.push({
-          pricing: {
-            gstTax: 5,
-            servicePrice: {
-              amount: service.unitPrice,
-              taxAmount: service.totalAmount,
-              taxSlab: service.taxSlab,
-              includingTax: true,
-            },
-            discount: {
-              amount: service.discount,
-              fieldValue: 10,
-              type: "Percentage",
-            },
-          },
           name: service.serviceName,
+          description: service.description,
+          discount: service.discount,
+          discountType: service.discountType,
+          purchasePrice: service.purchasePrice,
+          purchasePriceTaxType: service.purchasePriceTaxType,
+          sellingPrice: service.sellingPrice,
+          sellingPriceTaxType: service.sellingPriceTaxType,
+          tax: service.tax,
+          quantity: service.actionQty,
           serviceRef: serviceRef,
         });
       }
 
       const payload = {
         ...formData,
-        date: Timestamp.fromDate(new Date(serviceDate)),
+        date,
+        dueDate,
         createdBy: {
           companyRef: companyRef,
           name: companyDetails.name,
-          address: {},
+          address: companyDetails.address ?? "",
+          city: companyDetails.city ?? "",
+          zipCode: companyDetails.zipCode ?? "",
           phoneNo: phoneNo,
         },
         subTotal: +totalAmounts.subTotalAmount,
         total: +totalAmounts.totalAmount,
-        customerDetails: {
-          gstNumber: "",
-          custRef: customerRef,
-          address: selectedCustomerData.address,
-          phoneNumber: selectedCustomerData.phone,
-          name: selectedCustomerData.name,
-        },
-
         servicesList: serviceListPayload,
         membershipStartDate: Timestamp.fromDate(membershipStartDate),
         membershipEndDate,
         typeOfEndMembership: membershipPeriod,
+        customerDetails: {
+          gstNumber: selectedCustomerData.gstNumber ?? "",
+          customerRef: customerRef,
+          address: selectedCustomerData.address ?? "",
+          city: selectedCustomerData.city ?? "",
+          zipCode: selectedCustomerData.zipCode ?? "",
+          phone: selectedCustomerData.phone ?? "",
+          name: selectedCustomerData.name,
+        },
       };
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "services"),
@@ -321,8 +302,8 @@ function CreateService() {
       totalSgstAmount_9 +
       totalCgstAmount_9;
 
-    let discountAmount = formData.extraDiscount.amount || 0;
-    if (formData.extraDiscount.type === "percentage") {
+    let discountAmount = formData.extraDiscount || 0;
+    if (formData.extraDiscountType) {
       discountAmount = (+subTotalAmount * discountAmount) / 100;
     }
     const totalAmount = +subTotalAmount - discountAmount;
@@ -340,29 +321,16 @@ function CreateService() {
     });
   }
 
-  function onSelectBook(e) {
-    const { value } = e.target;
-    const data = books.find((ele) => ele.id === value);
-    const bookRef = doc(
-      db,
-      "companies",
-      companyDetails.companyId,
-      "books",
-      value
-    );
-    setFormData((val) => ({
-      ...val,
-      book: { id: value, name: data.name, bookRef },
-    }));
-  }
+
+
   useEffect(() => {
-    let discountAmount = formData.extraDiscount.amount || 0;
-    if (formData.extraDiscount.type === "percentage") {
+    let discountAmount = formData.extraDiscount || 0;
+    if (formData.extraDiscountType) {
       discountAmount = (+totalAmounts.subTotalAmount * discountAmount) / 100;
     }
     const totalAmount = +totalAmounts.subTotalAmount - discountAmount;
     setTotalAmounts((val) => ({ ...val, totalAmount }));
-  }, [formData.extraDiscount]);
+  }, [formData.extraDiscount, formData.extraDiscountType]);
 
   useEffect(() => {
     function setMembershipDate() {
@@ -449,19 +417,32 @@ function CreateService() {
           </div>
           <div className="flex-1">
             <h2 className="font-semibold mb-2">Other Details</h2>
-            <div className="grid grid-cols-2 gap-4 bg-pink-50 p-4 rounded-lg">
+            <div className="grid grid-cols-3 gap-4 bg-pink-50 p-4 rounded-lg">
               <div>
                 <label className="text-sm text-gray-600">
                   Service Date <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
-                  value={setCurrentDate(serviceDate)}
+                  value={setCurrentDate(date)}
                   className="border p-1 rounded w-full mt-1"
                   onChange={(e) => {
-                    setServiceDate(e.target.value);
+                    setDate(e.target.value);
                   }}
                   required
+                />
+              </div>
+              <div>
+                <label className="text-sm text-gray-600">
+                  Due Date <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  value={setCurrentDate(dueDate)}
+                  className="border p-1 rounded w-full mt-1"
+                  onChange={(e) => {
+                    setDueDate(e.target.value);
+                  }}
                 />
               </div>
               <div>
@@ -522,7 +503,7 @@ function CreateService() {
                     SelectedServicesList.map((service) => (
                       <tr key={service.id}>
                         <td className="px-4 py-2">{service.serviceName}</td>
-                        <td className="px-4 py-2">₹{service.unitPrice}</td>
+                        <td className="px-4 py-2">₹{service.sellingPrice}</td>
                         <td className="px-4 py-2">₹{service.discount}</td>
                         <td className="px-2 py-2">
                           {service.includingTax ? "Yes" : "No"}
@@ -614,7 +595,7 @@ function CreateService() {
                     {books.length > 0 &&
                       books.map((book) => (
                         <option value={book.id} key={book.id}>
-                          {`${book.name} - ${book.bankName} - ${book.branch}`}
+                          {${book.name} - ${book.bankName} - ${book.branch}}
                         </option>
                       ))}
                   </select>
@@ -697,10 +678,7 @@ function CreateService() {
                       onChange={(e) => {
                         setFormData((val) => ({
                           ...val,
-                          extraDiscount: {
-                            ...val.extraDiscount,
-                            amount: +e.target.value,
-                          },
+                          extraDiscount: +e.target.value,
                         }));
                       }}
                     />
@@ -710,15 +688,12 @@ function CreateService() {
                       onChange={(e) => {
                         setFormData((val) => ({
                           ...val,
-                          extraDiscount: {
-                            ...val.extraDiscount,
-                            type: e.target.value,
-                          },
+                          extraDiscountType: e.target.value == "true"? true: false ,
                         }));
                       }}
                     >
-                      <option value="percentage">%</option>
-                      <option value="fixed">Fixed</option>
+                      <option value="true">%</option>
+                      <option value="false">Fixed</option>
                     </select>
                   </div>
                 </div>
@@ -772,16 +747,16 @@ function CreateService() {
                       <span>₹ {totalAmounts.totalCgstAmount_9.toFixed(2)}</span>
                     </div>
                   )}
-                  {formData.extraDiscount.amount > 0 && (
+                  {formData.extraDiscount > 0 && (
                     <div className="flex justify-between text-gray-700 mb-2">
                       <span>Extra Discount Amount</span>
                       <span>
                         ₹{" "}
-                        {formData.extraDiscount.type === "percentage"
+                        {formData.extraDiscountType === "percentage"
                           ? (+totalAmounts.subTotalAmount *
-                              formData.extraDiscount.amount) /
+                              formData.extraDiscount) /
                             100
-                          : formData.extraDiscount.amount}
+                          : formData.extraDiscount}
                       </span>
                     </div>
                   )}

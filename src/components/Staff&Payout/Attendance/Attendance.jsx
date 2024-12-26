@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { AiOutlineArrowLeft } from "react-icons/ai";
-import { Link } from "react-router-dom";
-import AddAttendanceSidebar from "./AddAttendanceSidebar";
 import {
-  collection,
-  doc,
-  getDocs,
-  orderBy,
-  query,
-  where,
+    collection,
+    doc,
+    getDocs,
+    orderBy,
+    query,
+    where,
 } from "firebase/firestore";
-import { db } from "../../../firebase";
+import { useEffect, useState } from "react";
+import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { db } from "../../../firebase";
+import AddAttendanceSidebar from "./AddAttendanceSidebar";
 
 function Attendance() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
