@@ -1,18 +1,17 @@
 import { addDoc, collection, updateDoc } from "firebase/firestore";
-import { FaUser } from "react-icons/fa";
+import { useState } from "react";
+import { FaIndustry, FaSchool, FaTruck, FaUser } from "react-icons/fa";
 import {
-  MdOutlineShoppingBag,
-  MdOutlineHotel,
-  MdOutlineRestaurant,
+  MdEmail,
   MdOutlineBusinessCenter,
-  MdOutlineLocationOn,
+  MdOutlineHotel,
   MdOutlineLocalPhone,
+  MdOutlineLocationOn,
+  MdOutlineRestaurant,
+  MdOutlineShoppingBag,
 } from "react-icons/md";
-import { FaTruck, FaIndustry, FaSchool } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { MdEmail } from "react-icons/md";
-import  { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
 import { setCompanyData } from "../../store/UserSlice";
 
@@ -46,7 +45,7 @@ const CompanyForm = ({ userRef }) => {
     }
     e.preventDefault();
     try {
-      await addDoc(collection(db, "companies"), {
+      const companyRef=await addDoc(collection(db, "companies"), {
         ...formData,
         userRef,
       });
@@ -54,7 +53,7 @@ const CompanyForm = ({ userRef }) => {
         isCompanyProfileDone: true,
       });
       alert("Successfully Created!");
-      dispatch(setCompanyData(formData));
+      dispatch(setCompanyData({companyId:companyRef.id, ...formData}));
       navigate("/expense");
     } catch (error) {
       console.log("🚀 ~ Submit ~ error:", error);

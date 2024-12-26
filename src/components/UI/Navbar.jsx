@@ -31,7 +31,7 @@ const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
   let companiesList = userDetails.companies;
 
   let companyName =
-    userDetails.companies[userDetails.selectedCompanyIndex].name;
+    userDetails.companies[userDetails.selectedCompanyIndex]?.name;
 
   if (isStaff) {
     companiesList = companyDetails ?? [];

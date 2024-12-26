@@ -7,6 +7,7 @@ let initialState = {
   phone: "",
   token: "",
   companies: [],
+  isCompanyProfileDone: false,
   selectedCompanyIndex: 0,
   isLogin: false,
   selectedDashboard: "",
@@ -27,6 +28,7 @@ if (localStorage.getItem("user")) {
     companies,
     selectedCompanyIndex,
     selectedDashboard,
+    isCompanyProfileDone,
   } = JSON.parse(localStorage.getItem("user"));
 
   initialState = {
@@ -38,6 +40,7 @@ if (localStorage.getItem("user")) {
     isLogin: true,
     selectedCompanyIndex,
     companies,
+    isCompanyProfileDone,
     selectedDashboard: selectedDashboard,
 
     userAsOtherCompanies: {
@@ -63,6 +66,7 @@ const userSlice = createSlice({
         selectedCompanyIndex,
         selectedDashboard,
         userAsOtherCompanies,
+        isCompanyProfileDone,
       } = action.payload;
       localStorage.setItem("user", JSON.stringify(action.payload));
       state.userId = userId;
@@ -72,6 +76,7 @@ const userSlice = createSlice({
       state.token = token;
       state.isLogin = true;
       state.companies = companies;
+      state.isCompanyProfileDone = isCompanyProfileDone;
       state.selectedDashboard = selectedDashboard;
       state.userAsOtherCompanies = userAsOtherCompanies;
       state.selectedCompanyIndex = selectedCompanyIndex;

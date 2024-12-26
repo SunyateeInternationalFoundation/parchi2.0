@@ -1,13 +1,13 @@
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import {
-    collection,
-    doc,
-    getDoc,
-    getDocs,
-    query,
-    setDoc,
-    Timestamp,
-    where
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  Timestamp,
+  where
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -109,6 +109,8 @@ const LandingPage = () => {
         const userDoc = await getDoc(docRef);
         let user = {};
         let companiesData = [];
+        console.log("🚀 ~ handleOtpSubmit ~ isLogin:", isLogin)
+        let isCompanyProfileDone= false
         if (!isLogin) {
           user = {
             uid: authUser.uid,
@@ -118,16 +120,18 @@ const LandingPage = () => {
             phone_number: "+91" + phoneNumber,
             photoURL: "",
             createdAt: Timestamp.fromDate(new Date()),
-            isCompanyProfileDone: false,
+            isCompanyProfileDone: isCompanyProfileDone,
           };
           await setDoc(docRef, user);
           setIsCompanyProfileDone(false);
+
         } else {
           user = userDoc.data();
           if (!user.isCompanyProfileDone) {
             setIsCompanyProfileDone(false);
             return;
           }
+          isCompanyProfileDone=true
           const companiesRef = collection(db, "companies");
           const q = query(companiesRef, where("userRef", "==", docRef));
           const company = await getDocs(q);
@@ -140,6 +144,7 @@ const LandingPage = () => {
           });
           navigate("/invoice");
         }
+        
         const payload = {
           userId: user.uid,
           name: user.displayName || "",
@@ -150,6 +155,7 @@ const LandingPage = () => {
           selectedCompanyIndex: 0,
           token,
           selectedDashboard: "",
+          isCompanyProfileDone: isCompanyProfileDone,
         };
 
         dispatch(setUserLogin(payload));

@@ -260,7 +260,7 @@ function ProjectView() {
     setFormData((val) => ({ ...val, book: payload }));
   }
   return (
-    <div className="w-full" style={{ width: "100%" }}>
+    <div className="w-full overflow-y-auto" style={{ width: "100%", height:"92vh" }}>
       <div className="px-8 pb-8 pt-2 bg-gray-100" style={{ width: "100%" }}>
         <div className="flex justify-between mt-5">
           <div className="flex">

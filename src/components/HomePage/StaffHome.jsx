@@ -1,18 +1,18 @@
 import {
-    collection,
-    getDoc,
-    getDocs,
-    query,
-    where
+  collection,
+  getDoc,
+  getDocs,
+  query,
+  where
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
-    Outlet,
-    Route,
-    Routes,
-    useLocation,
-    useNavigate,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
 } from "react-router-dom";
 import { db } from "../../firebase";
 import CreditNoteList from "../CreditNote/CreditNoteList";
@@ -60,13 +60,13 @@ import SideBar from "../UI/Sidebar";
 import VendorList from "../Vendors/VendorList";
 import VendorView from "../Vendors/VendorView/VendorView";
 
+
 const Modal = ({
   companyDetails,
   onClose,
   setSelectedCompanyName,
   setSelectedCompany,
 }) => {
-  console.log("Company details:", companyDetails);
   const navigate = useNavigate();
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
@@ -75,19 +75,22 @@ const Modal = ({
           Company Details{" "}
         </h2>
         {companyDetails && companyDetails.length > 0 ? (
-          <div>
+          <div className="grid grid-cols-3"> 
             {companyDetails.map((company, index) => (
               <div
                 key={company.id}
-                className="p-2 border-b last:border-none cursor-pointer hover:bg-gray-100"
+                className="p-2 cursor-pointer hover:bg-gray-100 border-2 rounded-lg h-32 "
                 onClick={() => {
                   navigate("invoice");
                   setSelectedCompanyName(company.name);
                   setSelectedCompany(company);
                 }}
               >
-                <p>
-                  <strong>{index + 1}. Name:</strong> {company.name}
+              <div className="font-bold text-5xl text-center h-3/4 flex items-center justify-center rounded-full bg-sky-100">
+                    {company.name?.slice(0, 2).toUpperCase() || "YC"}
+                  </div>
+                <p className="h-1/4 text-center">
+                   {company.name}
                 </p>
               </div>
             ))}
@@ -113,12 +116,12 @@ const Modal = ({
 const StaffHome = () => {
   const location = useLocation();
   const phone = useSelector((state) => +state.users.phone);
-  // User's phone number from Redux
   const [showModal, setShowModal] = useState(false);
   const [companyDetails, setCompanyDetails] = useState(null);
   const [roles, setRoles] = useState([]);
   const [selectedCompanyName, setSelectedCompanyName] = useState("");
   const [selectedCompany, setSelectedCompany] = useState(null);
+
   useEffect(() => {
     if (location.pathname === "/staff") {
       setShowModal(true);
@@ -176,7 +179,6 @@ const StaffHome = () => {
     setShowModal(false);
   };
 
-  console.log("selected company", selectedCompany);
   return (
     <div>
       <div style={{ height: "8vh" }}>
