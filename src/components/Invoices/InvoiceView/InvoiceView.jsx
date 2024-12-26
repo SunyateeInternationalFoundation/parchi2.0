@@ -1,10 +1,10 @@
 import {
-    collection,
-    doc,
-    getDoc,
-    getDocs,
-    orderBy,
-    query,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
@@ -46,7 +46,7 @@ function InvoiceView() {
         type: "Invoice",
         no: invoiceNo,
         userTo: customerDetails,
-        products: resData.products.map((item) => {
+        items: resData.products.map((item) => {
           let discount = +item.discount || 0;
 
           if (item.discountType) {

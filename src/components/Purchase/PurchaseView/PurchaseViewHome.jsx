@@ -36,7 +36,7 @@ function PurchaseViewHome() {
         type: "Purchase",
         no: purchaseNo,
         userTo: vendorDetails,
-        products: resData.products.map((item) => {
+        items: resData.products.map((item) => {
           let discount = +item.discount || 0;
 
           if (item.discountType) {

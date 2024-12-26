@@ -1,8 +1,9 @@
+import PropTypes from 'prop-types';
 import { forwardRef } from "react";
 
 const Template4 = forwardRef((props, ref) => {
-  const { dataSet, bankDetails } = props;
-  if (!dataSet) {
+  const { dataSet } = props;
+  if (Object.keys(dataSet).length===0) {
     return;
   }
   function DateFormate(timestamp) {
@@ -72,7 +73,7 @@ const Template4 = forwardRef((props, ref) => {
               </tr>
             </thead>
             <tbody>
-              {dataSet?.products.map((item, index) => (
+              {dataSet?.items.map((item, index) => (
                 <tr key={index} className="border-t-2">
                   <td className="py-2 pl-1">{index + 1}</td>
                   <td className="py-2 pl-1">{item.name}</td>
@@ -193,5 +194,9 @@ const Template4 = forwardRef((props, ref) => {
     </div>
   );
 });
+Template4.displayName = "Template4";
 
+Template4.propTypes = {
+  dataSet: PropTypes.object.isRequired,
+};
 export default Template4;

@@ -1,10 +1,11 @@
 import {
-    addDoc,
-    collection,
-    increment,
-    Timestamp,
-    updateDoc,
+  addDoc,
+  collection,
+  increment,
+  Timestamp,
+  updateDoc,
 } from "firebase/firestore";
+import PropTypes from 'prop-types';
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -17,7 +18,7 @@ function Returns({ invoice }) {
   const [isAllReturnsChecked, setIsAllReturnsChecked] = useState(false);
 
   useEffect(() => {
-    setProducts([...invoice.products]);
+    setProducts([...invoice.items]);
   }, [invoice]);
 
   const userDetails = useSelector((state) => state.users);
@@ -251,5 +252,8 @@ function Returns({ invoice }) {
     </div>
   );
 }
+Returns.propTypes = {
+  invoice: PropTypes.object.isRequired,
+};
 
 export default Returns;

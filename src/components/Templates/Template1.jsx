@@ -1,8 +1,9 @@
+import PropTypes from "prop-types";
 import { forwardRef } from "react";
 
 const Template1 = forwardRef((props, ref) => {
   const { dataSet, bankDetails } = props;
-  if (!dataSet) {
+  if (Object.keys(dataSet).length===0) {
     return;
   }
 
@@ -37,8 +38,8 @@ const Template1 = forwardRef((props, ref) => {
         <div className="flex justify-between text-start">
           <div className="mt-2 text-start">
             <strong>Bill To :</strong>
-            <div>{dataSet?.userTo.name}</div>
-            <div>Ph : {dataSet?.userTo.phone}</div>
+            <div>{dataSet?.userTo?.name}</div>
+            <div>Ph : {dataSet?.userTo?.phone}</div>
           </div>
           <div>
             <div>
@@ -76,7 +77,7 @@ const Template1 = forwardRef((props, ref) => {
               </tr>
             </thead>
             <tbody>
-              {dataSet?.products.map((item, index) => (
+              {dataSet?.items.map((item, index) => (
                 <tr key={index}>
                   <td className="border border-black pt-2 pb-2 pl-1">
                     {index + 1}
@@ -129,16 +130,16 @@ const Template1 = forwardRef((props, ref) => {
         </div>
 
         <div className="mt-4 mb-3 text-end">
-          {dataSet?.tcs.isTcsApplicable && (
+          {dataSet?.tcs?.isTcsApplicable && (
             <div>
               TCS :
-              <span className="ml-5">{dataSet?.tcs.tcs_amount.toFixed(2)}</span>
+              <span className="ml-5">{dataSet?.tcs?.tcs_amount.toFixed(2)}</span>
             </div>
           )}
-          {dataSet?.tds.isTdsApplicable && (
+          {dataSet?.tds?.isTdsApplicable && (
             <div>
               TDS :
-              <span className="ml-5">{dataSet?.tds.tds_amount.toFixed(2)}</span>
+              <span className="ml-5">{dataSet?.tds?.tds_amount.toFixed(2)}</span>
             </div>
           )}
           {dataSet?.totalCgstAmount_9 > 0 && (
@@ -195,7 +196,7 @@ const Template1 = forwardRef((props, ref) => {
           <h3>Total : ₹ {+dataSet?.total?.toFixed(2)}</h3>
         </div>
 
-        <div className=" flex justify-between">
+      {bankDetails &&  <div className=" flex justify-between">
           <div>
             <div>
               <strong>Bank Details</strong>
@@ -218,10 +219,16 @@ const Template1 = forwardRef((props, ref) => {
           <div className="mt-24">
             <div>Authorized Signatory</div>
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   );
 });
+Template1.propTypes = {
+  dataSet: PropTypes.object,
+  bankDetails: PropTypes.object,
+};
+
+Template1.displayName = "Template1";
 
 export default Template1;

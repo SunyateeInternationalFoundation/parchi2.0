@@ -42,7 +42,7 @@ function ProFormaView() {
         type: "Pro Forma Invoice",
         no: proFormaNo,
         userTo: customerDetails,
-        products: resData.products.map((item) => {
+        items: resData.products.map((item) => {
           let discount = +item.discount || 0;
 
           if (item.discountType) {

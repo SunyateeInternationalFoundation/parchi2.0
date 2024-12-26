@@ -36,7 +36,7 @@ function QuotationViewHome() {
         ...resData,
         no: quotationNo,
         userTo: customerDetails,
-        products: resData.products.map((item) => {
+        items: resData.products.map((item) => {
           let discount = +item.discount || 0;
           if (item.discountType) {
             discount = (+item.sellingPrice / 100) * item.discount;

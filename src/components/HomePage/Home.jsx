@@ -1,10 +1,10 @@
 
 import {
-    matchPath,
-    Outlet,
-    Route,
-    Routes,
-    useLocation,
+  matchPath,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
 } from "react-router-dom";
 import CustomerList from "../Customers/CustomerList";
 import CustomerView from "../Customers/CustomerView/CustomerView";
@@ -173,7 +173,7 @@ const Home = () => {
             <Route path="/vendors/:id" element={<VendorView />}></Route>
             <Route path="/products" element={<ProductHome />}></Route>
             <Route path="/services-list" element={<ServicesList />}></Route>
-            <Route path="/service/:id" element={<ServiceView />}></Route>
+            <Route path="/services/:id" element={<ServiceView />}></Route>
             <Route path="/projects" element={<Projects />}></Route>
             <Route path="/products/:id" element={<ProductViewHome />}></Route>
 

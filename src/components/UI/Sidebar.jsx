@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useEffect, useState } from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import { GrMenu } from "react-icons/gr";
@@ -17,9 +18,7 @@ function SideBar({ staff }) {
       ? staff[0]?.map((s) => s.toString().replace(/^Create/, ""))
       : [],
   };
-  console.log("staff", staff);
 
-  console.log("viewdashboard", viewDashBoardList);
   const constSideBarDetails = {
     //
     sales: {
@@ -449,5 +448,8 @@ function SideBar({ staff }) {
     </div>
   );
 }
+SideBar.propTypes = {
+  staff: PropTypes.array
+};
 
 export default SideBar;

@@ -1,8 +1,9 @@
+import PropTypes from "prop-types";
 import { forwardRef } from "react";
 
-const Template2 = forwardRef((props, ref) => {
+const Template2 = forwardRef(function Template2(props, ref) {
   const { dataSet, bankDetails } = props;
-  if (!dataSet) {
+  if (Object.keys(dataSet).length===0) {
     return;
   }
   function DateFormate(timestamp) {
@@ -88,7 +89,7 @@ const Template2 = forwardRef((props, ref) => {
             </tr>
           </thead>
           <tbody>
-            {dataSet?.products.map((item, index) => (
+            {dataSet?.items.map((item, index) => (
               <tr key={index}>
                 <td className="border py-2 pl-1">{index + 1}</td>
                 <td className="border py-2 pl-1">{item.name}</td>
@@ -175,7 +176,7 @@ const Template2 = forwardRef((props, ref) => {
         </div>
 
         {/* Footer */}
-        <div className="border-t pt-4 flex justify-between">
+        {bankDetails && <div className="border-t pt-4 flex justify-between">
           <div className=" text-gray-600">
             <p>Terms & Conditions</p>
             <p>{dataSet?.terms || "No Terms & Conditions"}</p>
@@ -199,10 +200,16 @@ const Template2 = forwardRef((props, ref) => {
               Branch : <span className="font-bold">{bankDetails?.branch}</span>
             </div>
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   );
 });
+Template2.propTypes = {
+  dataSet: PropTypes.object.isRequired,
+  bankDetails: PropTypes.object,
+};
+
+Template2.displayName = "Template2";
 
 export default Template2;

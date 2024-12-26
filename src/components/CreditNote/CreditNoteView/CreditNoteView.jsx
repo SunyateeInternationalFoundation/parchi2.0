@@ -8,11 +8,9 @@ import CreditNote from "./CreditNote";
 
 const CreditNoteView = () => {
   const { id } = useParams();
-  const [activeTab, setActiveTab] = useState("CreditNote");
   const [creditNote, setCreditNote] = useState({});
   const userDetails = useSelector((state) => state.users);
   const [bankDetails, setBankDetails] = useState({});
-  const [returnData, setReturnData] = useState([]);
 
   const companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
@@ -37,7 +35,7 @@ const CreditNoteView = () => {
         type: "Credit Note",
         no: creditNoteNo,
         userTo: customerDetails,
-        products: resData.products.map((item) => {
+        items: resData.products.map((item) => {
           let discount = +item.discount || 0;
 
           if (item.discountType) {
@@ -149,60 +147,12 @@ const CreditNoteView = () => {
         <h1 className="text-2xl font-bold">{creditNote.creditNoteNo}</h1>
       </header>
 
-      <div>
-        <nav className="flex space-x-4 mt-3 mb-3">
-          {/* <button
-            className={
-              "px-4 py-1" +
-              (activeTab === "CreditNote"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
-            }
-            onClick={() => setActiveTab("CreditNote")}
-          >
-            CreditNote View
-          </button> */}
-          {/* <button
-            className={
-              "px-4 py-1" +
-              (activeTab === "Returns"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
-            }
-            onClick={() => setActiveTab("Returns")}
-          >
-            Returns
-          </button>
-          <button
-            className={
-              "px-4 py-1" +
-              (activeTab === "ReturnsHistory"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
-            }
-            onClick={() => setActiveTab("ReturnsHistory")}
-          >
-            ReturnsHistory
-          </button> */}
-        </nav>
-      </div>
+      
       <hr />
       <div className="w-full">
-        {activeTab === "CreditNote" && (
           <div>
             <CreditNote creditNote={creditNote} bankDetails={bankDetails} />
           </div>
-        )}
-        {/* {activeTab === "Returns" && (
-          <div>
-            <Returns creditNote={creditNote} />
-          </div>
-        )}
-        {activeTab === "ReturnsHistory" && (
-          <div>
-            <ReturnsHistory products={returnData} refresh={fetchReturnData} />
-          </div>
-        )} */}
       </div>
     </div>
   );

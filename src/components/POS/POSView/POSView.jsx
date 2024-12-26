@@ -8,7 +8,6 @@ import POSViewHome from "./POSViewHome";
 
 function POSView() {
   const { id } = useParams();
-  const [activeTab, setActiveTab] = useState("POS");
   const [POS, setPOS] = useState({});
   const userDetails = useSelector((state) => state.users);
   const [bankDetails, setBankDetails] = useState({});
@@ -36,7 +35,7 @@ function POSView() {
         type: "POS",
         no: posNo,
         userTo: customerDetails,
-        products: resData.products.map((item) => {
+        items: resData.products.map((item) => {
           let discount = +item.discount || 0;
 
           if (item.discountType) {
@@ -106,43 +105,11 @@ function POSView() {
       </header>
       <hr />
       <div>
-        {/* <nav className="flex space-x-4 mt-3 mb-3">
-          <button
-            className={
-              "px-4 py-1" +
-              (activeTab === "POS"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
-            }
-            onClick={() => setActiveTab("POS")}
-          >
-            POS View
-          </button>
-          <button
-            className={
-              "px-4 py-1" +
-              (activeTab === "Returns"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
-            }
-            onClick={() => setActiveTab("Returns")}
-          >
-            Returns
-          </button>
-        </nav> */}
+       
       </div>
       <hr />
       <div className="w-full">
-        {activeTab === "POS" && (
-          <div>
             <POSViewHome POS={POS} bankDetails={bankDetails} />
-          </div>
-        )}
-        {/* {activeTab === "Returns" && (
-          <div>
-            <Returns />
-          </div>
-        )} */}
       </div>
     </div>
   );

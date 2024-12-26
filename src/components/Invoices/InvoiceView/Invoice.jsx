@@ -1,6 +1,7 @@
 import { deleteDoc, doc, increment, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import jsPDF from "jspdf";
+import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from "react";
 import { FaRegEye } from "react-icons/fa";
 import { IoMdClose, IoMdDownload } from "react-icons/io";
@@ -562,5 +563,9 @@ function Invoice({ invoice, bankDetails }) {
     </div>
   );
 }
+Invoice.propTypes = {
+  invoice: PropTypes.object.isRequired,
+  bankDetails: PropTypes.object,
+};
 
 export default Invoice;

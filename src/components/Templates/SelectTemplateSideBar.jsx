@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import template1 from "../../assets/templates/template1.png";
@@ -96,5 +97,11 @@ function SelectTemplateSideBar({
     </div>
   );
 }
+SelectTemplateSideBar.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSelectedTemplate: PropTypes.func.isRequired,
+  preSelectedTemplate: PropTypes.string,
+};
 
 export default SelectTemplateSideBar;
