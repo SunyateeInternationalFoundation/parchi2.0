@@ -3,6 +3,7 @@ import { forwardRef } from "react";
 
 const Template1 = forwardRef((props, ref) => {
   const { dataSet, bankDetails } = props;
+  console.log("🚀 ~ Template1 ~ dataSet:", dataSet)
   if (Object.keys(dataSet).length===0) {
     return;
   }

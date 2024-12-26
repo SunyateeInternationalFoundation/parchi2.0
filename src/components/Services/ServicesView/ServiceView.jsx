@@ -75,13 +75,13 @@ function ServiceView() {
           tax += item.tax || 0;
           item.returnQty = 0;
 
-          totalTaxableAmount += netAmount * item.quantity;
-          totalSgstAmount_2_5 += sgst === 2.5 ? sgstAmount * item.quantity : 0;
-          totalCgstAmount_2_5 += cgst === 2.5 ? cgstAmount * item.quantity : 0;
-          totalSgstAmount_6 += sgst === 6 ? sgstAmount * item.quantity : 0;
-          totalCgstAmount_6 += cgst === 6 ? cgstAmount * item.quantity : 0;
-          totalSgstAmount_9 += sgst === 9 ? sgstAmount * item.quantity : 0;
-          totalCgstAmount_9 += cgst === 9 ? cgstAmount * item.quantity : 0;
+          totalTaxableAmount += netAmount;
+          totalSgstAmount_2_5 += sgst === 2.5 ? sgstAmount : 0;
+          totalCgstAmount_2_5 += cgst === 2.5 ? cgstAmount : 0;
+          totalSgstAmount_6 += sgst === 6 ? sgstAmount : 0;
+          totalCgstAmount_6 += cgst === 6 ? cgstAmount : 0;
+          totalSgstAmount_9 += sgst === 9 ? sgstAmount : 0;
+          totalCgstAmount_9 += cgst === 9 ? cgstAmount : 0;
           return {
             ...item,
             sgst,
@@ -89,7 +89,7 @@ function ServiceView() {
             taxAmount,
             sgstAmount,
             cgstAmount,
-            totalAmount: netAmount * item.quantity,
+            totalAmount: netAmount,
             netAmount,
           };
         }),
@@ -158,14 +158,14 @@ function ServiceView() {
       />
     ),
   };
-  // useEffect(() => {
-  //   if (service.items) {
-  //     const tax = service?.items.reduce((acc, cur) => {
-  //       return acc + cur?.tax;
-  //     }, 0);
-  //     setTotalTax(tax);
-  //   }
-  // }, [Service]);
+  useEffect(() => {
+    if (service.items) {
+      const tax = service?.items.reduce((acc, cur) => {
+        return acc + cur?.tax;
+      }, 0);
+      setTotalTax(tax);
+    }
+  }, [service]);
 
   const handleDownloadPdf = () => {
     if (id) {
@@ -296,10 +296,7 @@ function ServiceView() {
       id: 1,
       label: "NAME",
     },
-    {
-      id: 2,
-      label: "QUANTITY",
-    },
+   
     {
       id: 3,
       label: "DISCOUNT",
@@ -465,9 +462,7 @@ function ServiceView() {
                           <td className="  text-gray-600 max-w-[200px] truncate p-3">
                             {item.name}
                           </td>
-                          <td className="  text-gray-600 p-3">
-                            {item.quantity} pcs
-                          </td>
+                          
                           <td className="  text-gray-600 whitespace-nowrap p-3">
                           {!item.discountType && "₹"}{item.discount}{item.discountType && "%"}  
                           </td>
@@ -575,6 +570,11 @@ function ServiceView() {
                   </div>
                 </div>
                 {Object.keys(service).length!==0 && templatesComponents[selectTemplate]}
+                {/* <Template7
+                  ref={ServiceRef}
+                  ServiceData={Service}
+                  bankDetails={bankDetails}
+                /> */}
               </div>
             </div>
           </div>

@@ -9,9 +9,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import SunyaLogo from "../../assets/SunyaLogo.jpg";
 import {
-    setUserLogin,
-    setUserLogout,
-    updateUserDetails,
+  setUserLogin,
+  setUserLogout,
+  updateUserDetails,
 } from "../../store/UserSlice";
 
 const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
@@ -340,6 +340,7 @@ const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
                   className="flex items-center space-x-2 text-gray-600 hover:text-black my-2"
                   onClick={() => {
                     dispatch(setUserLogout());
+                    navigate("/")
                   }}
                 >
                   <FiLogOut />
