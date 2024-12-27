@@ -196,6 +196,9 @@ function Tasks() {
       }
     }
     fetchTaskMessagesData();
+    // setInterval(() => {
+    //   fetchTaskMessagesData();
+    // },3000)
     setProgressRange(0);
     setIsProgressOpen(false);
     setTaskMessage("");
