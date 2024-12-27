@@ -1,21 +1,28 @@
 import {
-    collection,
-    deleteDoc,
-    doc,
-    getDoc,
-    getDocs,
-    query,
-    Timestamp,
-    updateDoc,
-    where,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  Timestamp,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { BsCalendar4, BsFileEarmarkCheck, BsFolderPlus } from "react-icons/bs";
+import {
+  BsBank,
+  BsCalendar4,
+  BsFileEarmarkCheck,
+  BsFolderPlus,
+} from "react-icons/bs";
 import { FaArrowDown, FaArrowUp, FaTasks } from "react-icons/fa";
 import { FaFilter } from "react-icons/fa6";
+import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import { HiOutlineShoppingCart } from "react-icons/hi2";
 import { IoWalletOutline } from "react-icons/io5";
+import { LuUsersRound } from "react-icons/lu";
 import { MdDateRange } from "react-icons/md";
 import { RiDeleteBin6Line, RiUserAddLine } from "react-icons/ri";
 import { TbEdit } from "react-icons/tb";
@@ -29,7 +36,9 @@ function ProjectView() {
   const [filter, setFilter] = useState("All");
   const [project, setProject] = useState({});
   const [isEdit, setIsEdit] = useState(false);
+  const [isOutlineDotsOpen, setIsOutlineDotsOpen] = useState(false);
   const [bankBooks, setBankBooks] = useState([]);
+  const [totalPersons, setTotalPersons] = useState(0);
   const [totalAmounts, setTotalAmounts] = useState({
     income: 0,
     expense: 0,
@@ -102,6 +111,11 @@ function ProjectView() {
       book: payload.book,
     });
     setProject(payload);
+    setTotalPersons(
+      (payload.vendorRef?.length || 0) +
+        (payload.customerRef?.length || 0) +
+        (payload.staffRef?.length || 0)
+    );
   }
 
   async function fetchBankBooks() {
@@ -147,7 +161,6 @@ function ProjectView() {
       console.log("Error in fetching total balance:", error);
     }
   }
-  console.log("total amounts", totalAmounts);
   const manageProjectItems = [
     {
       name: "Users",
@@ -260,144 +273,225 @@ function ProjectView() {
     setFormData((val) => ({ ...val, book: payload }));
   }
   return (
-    <div className="w-full overflow-y-auto" style={{ width: "100%", height:"92vh" }}>
+    <div
+      className="w-full overflow-y-auto"
+      style={{ width: "100%", height: "92vh" }}
+      onClick={() => {
+        if (isOutlineDotsOpen) {
+          setIsOutlineDotsOpen(false);
+        }
+      }}
+    >
       <div className="px-8 pb-8 pt-2 bg-gray-100" style={{ width: "100%" }}>
-        <div className="flex justify-between mt-5">
-          <div className="flex">
-            <div className="mr-5">
-              <Link
-                className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-                to="./../"
-              >
+        <div className="bg-white rounded-lg">
+          <div className="flex justify-between items-center p-4">
+            <div className="text-2xl font-semibold flex">
+              <Link className="flex items-center px-2" to="./../">
                 <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
               </Link>
+              {project.name}
             </div>
-            {!isEdit ? (
-              <div className="flex items-center ">
-                <MdDateRange size={30} className="text-gray-700" />
-                <span className="text-gray-700">Start Date : </span>{" "}
-                {project.startDate}
+            <div className="relative">
+              <div
+                className="bg-gray-100 p-2 rounded-lg"
+                onClick={() => {
+                  setIsOutlineDotsOpen(!isOutlineDotsOpen);
+                }}
+              >
+                <HiOutlineDotsHorizontal className="w-6 h-6 " />
               </div>
-            ) : (
-              <div className="flex items-center">
-                <MdDateRange size={30} className="text-gray-700" />
-                <input
-                  type="date"
-                  value={formData.startDate}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      startDate: e.target.value,
-                    }))
-                  }
-                  className="border px-2 py-1 rounded"
-                />
-              </div>
-            )}
-
-            {!isEdit ? (
-              <div className="flex items-center mx-10">
-                <MdDateRange size={30} className="text-gray-700" />{" "}
-                <span className="text-gray-700">End Date : </span>{" "}
-                {project.dueDate}
-              </div>
-            ) : (
-              <div className="flex items-center mx-10">
-                <MdDateRange size={30} className="text-gray-700" />
-                <input
-                  type="date"
-                  value={formData.dueDate}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      dueDate: e.target.value,
-                    }))
-                  }
-                  className="border px-2 py-1 rounded"
-                />
-              </div>
-            )}
+              {isOutlineDotsOpen && (
+                <div className="absolute bg-white  p-1 right-1 cursor-pointer border-2 rounded-lg">
+                  <div
+                    className="pe-14 py-1 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
+                    onClick={() => setIsEdit(true)}
+                  >
+                    <TbEdit className="text-green-600" />
+                    <div>Edit</div>
+                  </div>
+                  <div
+                    className="py-1 pe-14 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
+                    onClick={handleDelete}
+                  >
+                    <RiDeleteBin6Line className="text-red-500" />
+                    <div> Delete</div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-
-          <div>
-            <select
-              className="border-b-4 px-2 py-1 bg-transparent"
-              onChange={onChangeStatus}
-              defaultValue={project.status}
-            >
-              <option value="On-Going">On-Going</option>
-              <option value="Delay">Delay</option>
-              <option value="Completed">Completed</option>
-            </select>
+          <div className="border-t-2 px-6 py-4 flex">
+            <div className="uppercase rounded-lg border p-8 text-6xl bg-[rgb(159,142,247)] flex justify-center items-center">
+              {project.name?.slice(0, 2)}
+            </div>
+            <div className="px-3 w-full">
+              <div className="flex">
+                <div className="text-xl font-semibold w-full">
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className={
+                      "w-full px-2 py-1 rounded focus:outline-none " +
+                      (isEdit && "border-2")
+                    }
+                    readOnly={!isEdit}
+                  />
+                </div>
+                {!isEdit ? (
+                  <div className="w-24 flex item-center justify-center text-xs h-fit ">
+                    <div className="bg-blue-100 rounded-full px-2 py-1 font-bold">
+                      {project.status}
+                    </div>
+                  </div>
+                ) : (
+                  <select
+                    className="px-2 py-1 border-2 rounded-lg ms-2"
+                    onChange={onChangeStatus}
+                    defaultValue={project.status}
+                  >
+                    <option value="On-Going">On-Going</option>
+                    <option value="Delay">Delay</option>
+                    <option value="Completed">Completed</option>
+                  </select>
+                )}
+              </div>
+              <div className="text-sm text-gray-500">
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  className={
+                    "w-full px-2 py-1 rounded focus:outline-none mt-1 max-h-12 min-h-12 resize-none  " +
+                    (isEdit
+                      ? "border-2"
+                      : "overflow-y-hidden hover:overflow-y-auto")
+                  }
+                  readOnly={!isEdit}
+                />
+              </div>
+              <div className="flex items-center space-x-5 mt-3">
+                <div className="flex items-center space-x-2 border-2 p-2 rounded-lg border-dashed w-44">
+                  <MdDateRange size={30} className="text-gray-700" />
+                  <div>
+                    <div className="text-gray-700 text-sm">Assigned Date</div>
+                    <div className="font-semibold text-sm">
+                      {!isEdit ? (
+                        project.startDate
+                      ) : (
+                        <input
+                          type="date"
+                          value={formData.startDate}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              startDate: e.target.value,
+                            }))
+                          }
+                          className={
+                            "w-full rounded focus:outline-none border-2"
+                          }
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2 border-2 p-2 rounded-lg border-dashed w-44">
+                  <MdDateRange size={30} className="text-gray-700" />
+                  <div>
+                    <div className="text-gray-700 text-sm">Due Date</div>
+                    <div className="font-semibold text-sm">
+                      {!isEdit ? (
+                        project.dueDate
+                      ) : (
+                        <input
+                          type="date"
+                          value={formData.dueDate}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              dueDate: e.target.value,
+                            }))
+                          }
+                          className="w-full rounded focus:outline-none border-2"
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2 border-2 p-2 rounded-lg border-dashed w-44">
+                  <BsBank size={30} className="text-gray-700" />
+                  <div>
+                    <div className="text-gray-700 text-sm">Bank</div>
+                    <div className="font-semibold text-sm">
+                      {!isEdit ? (
+                        project?.book?.name || "-"
+                      ) : (
+                        <select
+                          value={formData.book?.id || ""}
+                          onChange={onSelectBook}
+                          className={
+                            "w-full px-2 py-1 rounded focus:outline-none " +
+                            (isEdit && "border-2")
+                          }
+                        >
+                          <option value="" disabled>
+                            Select Bank
+                          </option>
+                          {bankBooks.map((book) => (
+                            <option key={book.id} value={book.id}>
+                              {book.name}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2 border-2 p-2 rounded-lg border-dashed w-44">
+                  <LuUsersRound size={30} className="text-gray-700" />
+                  <div>
+                    <div className="text-gray-700 text-sm">Total Person</div>
+                    <div className="font-semibold text-sm">{totalPersons}</div>
+                  </div>
+                </div>
+                <div>
+                  <div>
+                    <div className="relative w-max-content flex -space-x-3 avatarGroup items-center">
+                      <span className="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full ring-1 ring-white ring-offset-[2px] ring-offset-white hover:z-10">
+                        {/* <img className="aspect-square h-full w-full" src="/_next/static/media/avatar-5.55d8974c.jpg"> */}
+                        <span className="flex h-full w-full items-center justify-center rounded-full bg-muted text-sm bg-red-200">
+                          A
+                        </span>
+                      </span>
+                      <span className="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full ring-1 ring-white ring-offset-[2px] ring-offset-white hover:z-10">
+                        {/* <img className="aspect-square h-full w-full" src="/_next/static/media/avatar-6.513b01f7.jpg"> */}
+                        <span className="flex h-full w-full items-center justify-center rounded-full bg-muted text-sm bg-blue-200">
+                          B
+                        </span>
+                      </span>
+                      <span className="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full ring-1 ring-white ring-offset-[2px] ring-offset-white hover:z-10">
+                        {/* <img className="aspect-square h-full w-full" src="/_next/static/media/avatar-7.82cf057d.jpg"> */}
+                        <span className="flex h-full w-full items-center justify-center rounded-full bg-muted text-sm bg-green-300">
+                          C
+                        </span>
+                      </span>
+                      <span className="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full ring-1 ring-white ring-offset-[2px] ring-offset-white">
+                        <span className="flex h-full w-full items-center justify-center rounded-full bg-muted text-sm bg-gray-300">
+                          +4
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {!isEdit ? (
-          <div className="bg-white p-4 rounded-lg shadow my-4">
-            <div className="border-b pb-3 h-8">Name: {project.name}</div>
-            <div className="py-3 border-b">
-              Description: {project.description || "-"}
-            </div>
-            {project?.book?.name ? (
-              <div className="py-3 text-gray-600">
-                Bank Book: {project.book.name}
-              </div>
-            ) : (
-              <div className="py-3 text-gray-600">No Bank Book</div>
-            )}
-          </div>
-        ) : (
-          <div className="bg-white p-4 rounded-lg shadow my-4">
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="border w-full px-2 py-1 rounded"
-            />
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="border w-full px-2 py-1 rounded mt-3"
-            />
-            <div className="py-3">
-              <label className="block text-sm font-medium text-gray-700">
-                Select Bank Book
-              </label>
-              <select
-                value={formData.book?.id || ""}
-                onChange={onSelectBook}
-                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              >
-                <option value="">Select Bank Book</option>
-                {bankBooks.map((book) => (
-                  <option key={book.id} value={book.id}>
-                    {book.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        )}
-
-        <div className="grid justify-items-end">
-          {!isEdit ? (
-            <div className="flex space-x-3">
-              <button
-                className="px-4 py-1 bg-blue-500 text-white rounded-full flex items-center"
-                onClick={() => setIsEdit(true)}
-              >
-                <TbEdit /> &nbsp; Edit
-              </button>
-              <button
-                className="px-4 py-1 bg-red-500 text-white rounded-full flex items-center"
-                onClick={handleDelete}
-              >
-                <RiDeleteBin6Line />
-              </button>
-            </div>
-          ) : (
+        <div className="grid justify-items-end pt-2">
+          {isEdit && (
             <div>
               <button
                 className="px-4 py-1 bg-green-500 text-white rounded-full"
