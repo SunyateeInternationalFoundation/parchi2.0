@@ -209,7 +209,7 @@ const InvoiceList = ({ companyDetails, isStaff }) => {
                       filteredInvoices.map((invoice) => (
                         <tr
                           key={invoice.id}
-                          className="border-b border-gray-200 text-center cursor-pointer  text-start"
+                          className="border-b border-gray-200 text-center cursor-pointer"
                           onClick={(e) => {
                             navigate(invoice.id);
                           }}

@@ -6,26 +6,31 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../../../firebase";
 import Attendance from "./Attendance";
-import Documents from "./Documents";
 import Payments from "./Payments";
 import Profile from "./Profile";
 import Projects from "./Projects";
+import StaffDocuments from "./StaffDocuments";
 
-function StaffView() {
+function StaffView({ staffCompanyId }) {
   const { id } = useParams();
   const userDetails = useSelector((state) => state.users);
-  const companyId =
+  let companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  if (staffCompanyId) {
+    companyId = staffCompanyId;
+  }
 
   const [activeTab, setActiveTab] = useState("Profile");
   const [projectsData, setProjectsData] = useState([]);
   const [staffData, setStaffData] = useState([]);
+  const [attendanceData, setAttendanceData] = useState([]);
 
   function DateFormate(timestamp) {
     const milliseconds =
@@ -44,10 +49,25 @@ function StaffView() {
     if (id) {
       try {
         const staffDoc = await getDoc(StaffRef);
+        const staffAttendanceGetDocs = await getDocs(
+          collection(db, "companies", companyId, "staffAttendance")
+        );
         if (staffDoc.exists()) {
           const data = { id: staffDoc.id, ...staffDoc.data() };
           setStaffData(data);
         }
+        const staffAttendance = staffAttendanceGetDocs.docs.map((doc) => {
+          const { date, staffs } = doc.data();
+          console.log("🚀 ~ staffAttendance ~ staffs:", doc.id, doc.data());
+          const attendanceStaffData = staffs.find((item) => item.id == id);
+          return {
+            attendanceId: doc.id,
+            date,
+            ...attendanceStaffData,
+          };
+        });
+        console.log("🚀 ~ staffAttendance ~ staffAttendance:", staffAttendance);
+        setAttendanceData(staffAttendance);
       } catch (error) {
         console.error("Error fetching staff data:", error);
       }
@@ -173,17 +193,20 @@ function StaffView() {
         )}
         {activeTab === "Attendance" && (
           <div>
-            <Attendance />
+            <Attendance attendanceData={attendanceData} />
           </div>
         )}
         {activeTab === "Documents" && (
           <div>
-            <Documents />
+            <StaffDocuments staffData={staffData} />
           </div>
         )}
       </div>
     </div>
   );
 }
+StaffView.propTypes = {
+  staffCompanyId: PropTypes.string,
+};
 
 export default StaffView;

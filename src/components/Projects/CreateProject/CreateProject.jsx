@@ -1,9 +1,9 @@
 import {
-    addDoc,
-    collection,
-    doc,
-    getDocs,
-    Timestamp,
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  Timestamp,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
@@ -30,13 +30,19 @@ function CreateProject() {
   const [books, setBooks] = useState([]);
 
   const onSelectBook = (e) => {
-    const{value}=e.target;
-    const bookRef=doc(db, "companies", companyDetails.companyId, "books", value);
-const bankBookName= books.find((book) => book.id === value).name;
-console.log(bankBookName, bookRef)
-setProjectForm((prevData) => ({
+    const { value } = e.target;
+    const bookRef = doc(
+      db,
+      "companies",
+      companyDetails.companyId,
+      "books",
+      value
+    );
+    const bankBookName = books.find((book) => book.id === value).name;
+    console.log(bankBookName, bookRef);
+    setProjectForm((prevData) => ({
       ...prevData,
-      book: { bookRef,  id: value ,name:bankBookName},
+      book: { bookRef, id: value, name: bankBookName },
     }));
   };
 
@@ -122,7 +128,7 @@ setProjectForm((prevData) => ({
             <input
               type="text"
               placeholder="Enter Project Name"
-              className="text-base text-gray-900 font-semibold border p-1 rounded w-full mt-1"
+              className="text-base text-gray-900 font-semibold border p-1 rounded-lg w-full mt-1"
               value={projectForm.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
               required
@@ -130,12 +136,12 @@ setProjectForm((prevData) => ({
           </div>
           <div className="my-5">
             <h2 className="mb-2">Timelines</h2>
-            <div className="grid grid-cols-2 gap-4 rounded-lg">
+            <div className="grid grid-cols-3 gap-4 rounded-lg">
               <div>
                 <label className="text-gray-600">Start Date</label>
                 <input
                   type="date"
-                  className="border p-1 rounded w-full mt-1"
+                  className="border p-1 rounded-lg w-full mt-1"
                   defaultValue={projectForm.startDate || ""}
                   onChange={(e) =>
                     handleDateChange("startDate", e.target.value)
@@ -146,10 +152,23 @@ setProjectForm((prevData) => ({
                 <label className="text-gray-600">Due Date</label>
                 <input
                   type="date"
-                  className="border p-1 rounded w-full mt-1"
+                  className="border p-1 rounded-lg w-full mt-1"
                   defaultValue={projectForm.dueDate || ""}
                   onChange={(e) => handleDateChange("dueDate", e.target.value)}
                 />
+              </div>
+              <div>
+                <label className="text-gray-600">Priority</label>
+                <select
+                  className="border p-1 rounded-lg w-full mt-1"
+                  onChange={(e) => {
+                    handleInputChange("priority", e.target.value);
+                  }}
+                >
+                  <option value={"Low"}>Low</option>
+                  <option value={"Medium"}>Medium</option>
+                  <option value={"High"}>High</option>
+                </select>
               </div>
             </div>
           </div>
@@ -178,7 +197,7 @@ setProjectForm((prevData) => ({
               <select
                 onChange={onSelectBook}
                 defaultValue=""
-                className="border p-2 rounded w-full mt-1"
+                className="border p-2 rounded-lg w-full mt-1"
               >
                 <option value="" disabled>
                   Select Bank/Book
@@ -196,7 +215,7 @@ setProjectForm((prevData) => ({
               <input
                 type="text"
                 placeholder="Enter Location"
-                className="text-base text-gray-900 font-semibold border p-1 rounded w-full mt-1"
+                className="text-base text-gray-900 font-semibold border p-1 rounded-lg w-full mt-1"
                 value={projectForm.location}
                 onChange={(e) => handleInputChange("location", e.target.value)}
               />
@@ -206,7 +225,7 @@ setProjectForm((prevData) => ({
               <input
                 type="text"
                 placeholder="Enter Description"
-                className="text-base text-gray-900 font-semibold border p-1 rounded w-full mt-1"
+                className="text-base text-gray-900 font-semibold border p-1 rounded-lg w-full mt-1"
                 value={projectForm.description}
                 onChange={(e) =>
                   handleInputChange("description", e.target.value)

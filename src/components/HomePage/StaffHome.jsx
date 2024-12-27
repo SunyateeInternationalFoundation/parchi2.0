@@ -133,6 +133,7 @@ const StaffHome = () => {
     useState(null);
   const [staffIdSelectedCompany, setStaffIdSelectedCompany] = useState(null);
 
+  console.log("🚀 ~ StaffHome ~ selectedCompany:", selectedCompany);
   useEffect(() => {
     if (location.pathname === "/staff") {
       setShowModal(true);
@@ -211,7 +212,10 @@ const StaffHome = () => {
         </div>
         <div style={{ width: "100%", height: "92vh" }} className="bg-gray-100">
           <Routes>
-            <Route path="/profile/:id" element={<StaffView />}></Route>
+            <Route
+              path="/profile/:id"
+              element={<StaffView staffCompanyId={selectedCompany?.id} />}
+            ></Route>
             {roles.length > 0 && roles[0].includes("Invoice") && (
               <>
                 <Route

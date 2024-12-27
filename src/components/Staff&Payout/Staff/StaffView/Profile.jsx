@@ -6,6 +6,7 @@ import { db, storage } from "../../../../firebase";
 import { useSelector } from "react-redux";
 
 const Profile = ({ staffData, refresh }) => {
+  console.log(staffData);
   const [isEdit, setIsEdit] = useState(false);
   const [UpdatedData, setUpdatedData] = useState(staffData);
   const [progress, setProgress] = useState(0);
