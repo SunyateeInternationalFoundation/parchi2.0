@@ -383,7 +383,9 @@ const Documents = () => {
                   e.stopPropagation();
                   setFiles(
                     files.map((ele) => {
-                      ele.isOutlineDotsOpen = !ele.isOutlineDotsOpen;
+                      if (ele.id == file.id) {
+                        ele.isOutlineDotsOpen = !ele.isOutlineDotsOpen;
+                      }
                       return ele;
                     })
                   );

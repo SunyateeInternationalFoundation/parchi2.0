@@ -47,6 +47,7 @@ function ProjectView() {
   const userDetails = useSelector((state) => state.users);
   const companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+
   const handleUpdate = async () => {
     try {
       const projectDoc = doc(db, "projects", id);
