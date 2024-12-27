@@ -231,18 +231,6 @@ function ProjectView() {
     setFormData({ ...formData, [name]: value });
   };
 
-  async function onChangeStatus(e) {
-    try {
-      const projectRef = doc(db, "projects", id);
-      await updateDoc(projectRef, {
-        status: e.target.value,
-      });
-      alert("Successfully Updated Status");
-    } catch (error) {
-      console.log("🚀 ~ onChangeStatus ~ error:", error);
-    }
-  }
-
   async function handleDelete() {
     try {
       const confirmDelete = window.confirm(
@@ -272,6 +260,7 @@ function ProjectView() {
     };
     setFormData((val) => ({ ...val, book: payload }));
   }
+
   return (
     <div
       className="w-full overflow-y-auto"
@@ -341,14 +330,51 @@ function ProjectView() {
                 </div>
                 {!isEdit ? (
                   <div className="w-24 flex item-center justify-center text-xs h-fit ">
-                    <div className="bg-blue-100 rounded-full px-2 py-1 font-bold">
+                    <div
+                      className={
+                        "rounded-full px-2 py-1 font-bold " +
+                        (project.priority == "Low"
+                          ? "bg-green-100"
+                          : project.priority == "Medium"
+                          ? "bg-blue-100"
+                          : "bg-red-100")
+                      }
+                    >
+                      {project.priority}
+                    </div>
+                  </div>
+                ) : (
+                  <select
+                    className="px-2 py-1 border-2 rounded-lg ms-2"
+                    name="priority"
+                    defaultValue={project.priority}
+                    onChange={handleChange}
+                  >
+                    <option value={"Low"}>Low</option>
+                    <option value={"Medium"}>Medium</option>
+                    <option value={"High"}>High</option>
+                  </select>
+                )}
+                {!isEdit ? (
+                  <div className="w-24 flex item-center justify-center text-xs h-fit ">
+                    <div
+                      className={
+                        "rounded-full px-2 py-1 font-bold " +
+                        (project.status == "Completed"
+                          ? "bg-green-100"
+                          : project.status == "On-Going"
+                          ? "bg-blue-100"
+                          : "bg-red-100")
+                      }
+                    >
                       {project.status}
                     </div>
                   </div>
                 ) : (
                   <select
                     className="px-2 py-1 border-2 rounded-lg ms-2"
-                    onChange={onChangeStatus}
+                    name="status"
+                    onChange={handleChange}
                     defaultValue={project.status}
                   >
                     <option value="On-Going">On-Going</option>
@@ -358,18 +384,24 @@ function ProjectView() {
                 )}
               </div>
               <div className="text-sm text-gray-500">
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  className={
-                    "w-full px-2 py-1 rounded focus:outline-none mt-1 max-h-12 min-h-12 resize-none  " +
-                    (isEdit
-                      ? "border-2"
-                      : "overflow-y-hidden hover:overflow-y-auto")
-                  }
-                  readOnly={!isEdit}
-                />
+                {!isEdit ? (
+                  <div className="text-ellipsis mt-1 max-h-12 min-h-12 w-full px-2 py-1">
+                    {formData.description}
+                  </div>
+                ) : (
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    className={
+                      "w-full px-2 py-1 rounded focus:outline-none mt-1 max-h-12 min-h-12 resize-none " +
+                      (isEdit
+                        ? "border-2"
+                        : "overflow-y-hidden hover:overflow-y-auto")
+                    }
+                    readOnly={!isEdit}
+                  />
+                )}
               </div>
               <div className="flex items-center space-x-5 mt-3">
                 <div className="flex items-center space-x-2 border-2 p-2 rounded-lg border-dashed w-44">
@@ -508,6 +540,7 @@ function ProjectView() {
             </div>
           )}
         </div>
+
         <div className=" bg-white shadow rounded-lg mt-4">
           <div className="p-4">
             <div className="flex justify-between mb-2">
@@ -578,6 +611,7 @@ function ProjectView() {
             <div>{totalAmounts.balance}</div>
           </div>
         </div>
+
         <div className="p-5 bg-white shadow rounded-lg mt-4">
           <div className="mb-4">Manage Project</div>
           <div className="grid grid-cols-4 gap-4 gap-y-8">
