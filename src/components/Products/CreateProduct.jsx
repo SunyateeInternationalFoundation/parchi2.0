@@ -1,16 +1,17 @@
 import {
-    addDoc,
-    collection,
-    doc,
-    getDocs,
-    setDoc,
-    Timestamp,
-    updateDoc
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  Timestamp,
+  updateDoc,
 } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { db } from "../../firebase";
+import { db, storage } from "../../firebase";
 
 function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
   const userDetails = useSelector((state) => state.users);
@@ -25,7 +26,7 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
     description: "",
     discount: 0,
     discountType: true,
-    image: "",
+    imageUrl: "",
     name: "",
     purchasePrice: 0,
     purchasePriceTaxType: true,
@@ -79,7 +80,7 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
       setFormData({
         ...onProductUpdated,
       });
-      // setProductImage(onProductUpdated.image || "");
+      setProductImage(onProductUpdated.imageUrl || "");
     }
   }, [onProductUpdated, userDetails]);
 
@@ -92,7 +93,7 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
       description: "",
       discount: 0,
       discountType: true,
-      image: "",
+      imageUrl: "",
       name: "",
       purchasePrice: 0,
       purchasePriceTaxType: true,
@@ -107,18 +108,18 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
     setProductImage("");
   }
 
-  // const handleFileChange = async (file) => {
-  //   if (file) {
-  //     try {
-  //       const storageRef = ref(storage, `productImages/${file.name}`);
-  //       await uploadBytes(storageRef, file);
-  //       const productImageUrl = await getDownloadURL(storageRef);
-  //       return productImageUrl;
-  //     } catch (error) {
-  //       console.error("Error uploading file:", error);
-  //     }
-  //   }
-  // };
+  const handleFileChange = async (file) => {
+    if (file) {
+      try {
+        const storageRef = ref(storage, `productImages/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const productImageUrl = await getDownloadURL(storageRef);
+        return productImageUrl;
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
+    }
+  };
 
   async function onCreateProduct(e) {
     e.preventDefault();
@@ -144,13 +145,14 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
           "products",
           onProductUpdated.id
         );
-        // const productImageUrl = productImage.name
-        //   ? await handleFileChange(productImage)
-        //   : formData.image;
+
+        const productImageUrl = productImage
+          ? await handleFileChange(productImage)
+          : formData.imageUrl;
         const { id, includingTax, unitPrice, taxAmount, ...rest } = formData;
         const payload = {
           ...rest,
-          // image: productImageUrl,
+          imageUrl: productImageUrl,
           // companyRef: doc(
           //   db,
           //   "companies",
@@ -162,10 +164,10 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
         alert("Product successfully updated.");
       } else {
         let productDocRef;
-        // let productImageUrl = "";
-        // if (productImage?.name) {
-        //   productImageUrl = await handleFileChange(productImage);
-        // }
+        let productImageUrl = "";
+        if (productImage) {
+          productImageUrl = await handleFileChange(productImage);
+        }
         const companyRef = doc(
           db,
           "companies",
@@ -175,7 +177,7 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
 
         const payload = {
           ...formData,
-          // image: productImageUrl,
+          imageUrl: productImageUrl,
           createdAt: Timestamp.fromDate(new Date()),
           companyRef,
           userRef,
@@ -208,7 +210,7 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
       console.log("🚀 ~ onCreateProduct ~ error:", error);
     }
   }
-
+  console.log("formData", formData);
   return (
     <div
       className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
