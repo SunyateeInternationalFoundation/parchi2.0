@@ -65,7 +65,7 @@ function Attendance({ attendanceData }) {
         }
       }
       cells.push(
-        <div key={week} className="grid grid-cols-7 gap-0">
+        <div key={`week-${week}`} className="grid grid-cols-7 gap-0">
           {row}
         </div>
       );
