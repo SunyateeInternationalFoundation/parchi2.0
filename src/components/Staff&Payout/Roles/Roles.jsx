@@ -99,7 +99,7 @@ const Roles = () => {
     "Customers",
     "Vendors",
     "Project",
-    "Po",
+    "PO",
     "POS",
     "ProFormaInvoice",
     "CreditNote",
