@@ -1,9 +1,4 @@
-import {
-    collection,
-    deleteDoc,
-    doc,
-    getDocs,
-} from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -35,7 +30,7 @@ const ProductList = () => {
         return {
           id: doc.id,
           name: data.name || "N/A",
-          image: data.image || "",
+          imageUrl: data.imageUrl || "",
           description: data.description || "No description available",
           unitPrice: data.sellingPrice ?? 0,
           discount: data.discount ?? 0,
@@ -133,9 +128,9 @@ const ProductList = () => {
                     onClick={() => handleProductClick(product.id)}
                   >
                     <td className="px-4 py-3">
-                      {product.image ? (
+                      {product?.imageUrl ? (
                         <img
-                          src={product.image}
+                          src={product.imageUrl}
                           alt={product.name || "Product"}
                           className="w-12 h-12 rounded-full object-cover"
                         />
