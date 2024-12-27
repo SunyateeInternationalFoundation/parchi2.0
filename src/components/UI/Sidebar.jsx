@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import { GrMenu } from "react-icons/gr";
@@ -101,20 +101,20 @@ function SideBar({ staff, staffId }) {
       ],
     },
 
-     more: {
-    //   // image: <CgMoreVerticalO size={30} />,
-    //   isExpend: true,
-    //   items: [
-    //     {
-    //       name: "Insights",
-    //       path: "",
-    //     },
-    //     {
-    //       name: "Report",
-    //       path: "",
-    //     },
-    //   ],
-     },
+    more: {
+      //   // image: <CgMoreVerticalO size={30} />,
+      //   isExpend: true,
+      //   items: [
+      //     {
+      //       name: "Insights",
+      //       path: "",
+      //     },
+      //     {
+      //       name: "Report",
+      //       path: "",
+      //     },
+      //   ],
+    },
   };
 
   const [sideBarDetails, setSideBarDetails] = useState(constSideBarDetails);
@@ -177,21 +177,28 @@ function SideBar({ staff, staffId }) {
         </div>
       </div>
       <div className="p-1">
-       {(selectedDashboardUser==="staff") && <div className="border-b-2 ">
-          <Link to={"/staff/profile/"+staffId} className=" cursor-pointer mb-10">
-            <div className="text-lg font-semibold pl-3">Profile</div>
-          </Link>
-        </div>}
+        {selectedDashboardUser === "staff" && (
+          <div className="border-b-2 ">
+            <Link
+              to={"/staff/profile/" + staffId}
+              className=" cursor-pointer mb-10"
+            >
+              <div className="text-lg font-semibold pl-3">Profile</div>
+            </Link>
+          </div>
+        )}
         <div className="border-b-2 ">
           <Link to="" className=" cursor-pointer mb-10">
             <div className="text-lg font-semibold pl-3">Home</div>
           </Link>
         </div>
-        {(selectedDashboardUser==="") &&<div className="border-b-2 mt-3">
-          <Link to="/expense" className=" cursor-pointer mb-10">
-            <div className="text-lg font-semibold pl-3">Expense</div>
-          </Link>
-        </div>}
+        {selectedDashboardUser === "" && (
+          <div className="border-b-2 mt-3">
+            <Link to="/expense" className=" cursor-pointer mb-10">
+              <div className="text-lg font-semibold pl-3">Expense</div>
+            </Link>
+          </div>
+        )}
         <div className=" border-b-2 mt-3">
           <div
             className="flex items-center justify-between"
@@ -249,11 +256,13 @@ function SideBar({ staff, staffId }) {
               ))}
           </div>
         </div>
-       {(selectedDashboardUser==="") && <div className="border-b-2 mt-3">
-          <Link to="/pos" className=" cursor-pointer mb-10">
-            <div className="text-lg font-semibold pl-3">POS</div>
-          </Link>
-        </div>}
+        {selectedDashboardUser === "" && (
+          <div className="border-b-2 mt-3">
+            <Link to="/pos" className=" cursor-pointer mb-10">
+              <div className="text-lg font-semibold pl-3">POS</div>
+            </Link>
+          </div>
+        )}
         <div className="mt-3  border-b-2">
           <div
             className="flex items-center justify-between"
@@ -314,80 +323,85 @@ function SideBar({ staff, staffId }) {
               ))}
           </div>
         </div>
-       {(selectedDashboardUser==="") && <><div className="mt-3  border-b-2">
-          <div
-            className="flex items-center justify-between"
-            onClick={() =>
-              setSideBarDetails({
-                ...sideBarDetails,
-                parties: {
-                  ...sideBarDetails.parties,
-                  isExpend: !sideBarDetails.parties.isExpend,
-                },
-              })
-            }
-          >
-            <div className="flex items-center">
-              {/* <div>{sideBarDetails.manage.image}</div> */}
+        {selectedDashboardUser === "" && (
+          <>
+            <div className="mt-3  border-b-2">
               <div
-                className="text-lg font-semibold pl-3"
-                hidden={!isSideBarExpend}
+                className="flex items-center justify-between"
+                onClick={() =>
+                  setSideBarDetails({
+                    ...sideBarDetails,
+                    parties: {
+                      ...sideBarDetails.parties,
+                      isExpend: !sideBarDetails.parties.isExpend,
+                    },
+                  })
+                }
               >
-                Parties
+                <div className="flex items-center">
+                  {/* <div>{sideBarDetails.manage.image}</div> */}
+                  <div
+                    className="text-lg font-semibold pl-3"
+                    hidden={!isSideBarExpend}
+                  >
+                    Parties
+                  </div>
+                </div>
+                <div hidden={!isSideBarExpend}>
+                  {sideBarDetails.parties.isExpend ? (
+                    <FaAngleUp />
+                  ) : (
+                    <FaAngleDown />
+                  )}
+                </div>
+              </div>
+              <div
+                className={
+                  "" +
+                  (isSideBarExpend
+                    ? ""
+                    : "absolute left-full ml-2 mt-2 bg-white rounded-lg shadow-lg")
+                }
+              >
+                {sideBarDetails.parties.isExpend &&
+                  sideBarDetails.parties.items.map((item, index) => (
+                    <Link
+                      key={index}
+                      to={
+                        (selectedDashboardUser
+                          ? "/" + selectedDashboardUser
+                          : "") + item.path
+                      }
+                      className=" cursor-pointer"
+                    >
+                      <div
+                        className={
+                          "w-full py-2 px-3 border-t hover:bg-gray-300 hover:rounded-lg  " +
+                          (location.pathname
+                            .split("/")
+                            .includes(item.path.split("/")[1])
+                            ? "bg-gray-300 rounded-lg"
+                            : "")
+                        }
+                      >
+                        {item.name}
+                      </div>
+                    </Link>
+                  ))}
               </div>
             </div>
-            <div hidden={!isSideBarExpend}>
-              {sideBarDetails.parties.isExpend ? (
-                <FaAngleUp />
-              ) : (
-                <FaAngleDown />
-              )}
+            <div className="border-b-2 mt-3">
+              <Link to="/documents" className=" cursor-pointer mb-10">
+                <div className="text-lg font-semibold pl-3">Documents</div>
+              </Link>{" "}
             </div>
-          </div>
-          <div
-            className={
-              "" +
-              (isSideBarExpend
-                ? ""
-                : "absolute left-full ml-2 mt-2 bg-white rounded-lg shadow-lg")
-            }
-          >
-            {sideBarDetails.parties.isExpend &&
-              sideBarDetails.parties.items.map((item, index) => (
-                <Link
-                  key={index}
-                  to={
-                    (selectedDashboardUser ? "/" + selectedDashboardUser : "") +
-                    item.path
-                  }
-                  className=" cursor-pointer"
-                >
-                  <div
-                    className={
-                      "w-full py-2 px-3 border-t hover:bg-gray-300 hover:rounded-lg  " +
-                      (location.pathname
-                        .split("/")
-                        .includes(item.path.split("/")[1])
-                        ? "bg-gray-300 rounded-lg"
-                        : "")
-                    }
-                  >
-                    {item.name}
-                  </div>
-                </Link>
-              ))}
-          </div>
-        </div>
-        <div className="border-b-2 mt-3">
-          <Link to="/documents" className=" cursor-pointer mb-10">
-            <div className="text-lg font-semibold pl-3">Documents</div>
-          </Link>{" "}
-        </div>
-        <div className="border-b-2 mt-3">
-          <Link to="/reminder" className=" cursor-pointer mb-10">
-            <div className="text-lg font-semibold pl-3">Reminder</div>
-          </Link>
-        </div></>}
+            <div className="border-b-2 mt-3">
+              <Link to="/reminder" className=" cursor-pointer mb-10">
+                <div className="text-lg font-semibold pl-3">Reminder</div>
+              </Link>
+            </div>
+          </>
+        )}
         {/* <div className="mt-3  border-b-2 ">
           <div
             className="flex items-center justify-between"
@@ -444,18 +458,20 @@ function SideBar({ staff, staffId }) {
               ))}
           </div>
         </div> */}
-        {(selectedDashboardUser==="") &&<div className="border-b-2 mt-3">
-          <Link to="" className=" cursor-pointer mb-10">
-            <div className="text-lg font-semibold pl-3">Business Card</div>
-          </Link>
-        </div>}
+        {selectedDashboardUser === "" && (
+          <div className="border-b-2 mt-3">
+            <Link to="/business-card" className=" cursor-pointer mb-10">
+              <div className="text-lg font-semibold pl-3">Business Card</div>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 SideBar.propTypes = {
   staff: PropTypes.array,
-  staffId:PropTypes.string,
+  staffId: PropTypes.string,
 };
 
 export default SideBar;

@@ -41,6 +41,7 @@ import SideBar from "../UI/Sidebar";
 import VendorList from "../Vendors/VendorList";
 import VendorView from "../Vendors/VendorView/VendorView";
 // import CreateProFormaInvoice from "../ProFormaInvoice/CreateProFormaInvoice/CreateProFormaInvoice";
+import BusinessCard from "../BusinessCard/BusinessCard";
 import CreditNoteList from "../CreditNote/CreditNoteList";
 import CreditNoteView from "../CreditNote/CreditNoteView/CreditNoteView";
 import SetCreditNote from "../CreditNote/SetCreditNote/SetCreditNote";
@@ -156,10 +157,10 @@ const Home = () => {
               path="/pro-forma-invoice"
               element={<ProFormaInvoice />}
             ></Route>
-              <Route
-                path="/pro-forma-invoice/create-proForma"
-                element={<SetProFormaInvoice />}
-              ></Route>
+            <Route
+              path="/pro-forma-invoice/create-proForma"
+              element={<SetProFormaInvoice />}
+            ></Route>
             <Route
               path="/pro-forma-invoice/:id"
               element={<ProFormaView />}
@@ -238,7 +239,7 @@ const Home = () => {
             <Route path="/po/create-po" element={<SetPO />}></Route>
             <Route path="/po/:poId/edit-po" element={<SetPO />}></Route>
             {/* <Route path="/create-po" element={<CreatePo />}></Route> */}
-            <Route path="/documents" element={<Documents/>}></Route>
+            <Route path="/documents" element={<Documents />}></Route>
             <Route path="/reminder" element={<Reminder />}></Route>
             <Route path="/expense" element={<BookList />}></Route>
             <Route path="/expense/:id" element={<Expense />}></Route>
@@ -287,6 +288,7 @@ const Home = () => {
               element={<SubscriptionPlan />}
             ></Route>
             <Route path="/user/prefix" element={<Prefix />}></Route>
+            <Route path="/business-card" element={<BusinessCard />}></Route>
           </Routes>
           <Outlet />
         </div>
