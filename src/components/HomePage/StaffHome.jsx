@@ -115,7 +115,7 @@ const Modal = ({
 
 const StaffHome = () => {
   const location = useLocation();
-  const phone = useSelector((state) => +state.users.phone);
+  const phone = useSelector((state) => state.users.phone);
   const [showModal, setShowModal] = useState(false);
   const [companyDetails, setCompanyDetails] = useState(null);
   const [roles, setRoles] = useState([]);
