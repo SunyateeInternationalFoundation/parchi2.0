@@ -113,7 +113,7 @@ const CompanyForm = ({ userRef }) => {
                 key={option.id}
                 type="button"
                 className={`flex flex-col items-center justify-center p-4 border-2 rounded-lg ${
-                  formData.businessNature === option.id
+                  formData.nature === option.id
                     ? "border-blue-600 bg-blue-100"
                     : "border-gray-300"
                 } hover:shadow-md`}
@@ -133,12 +133,12 @@ const CompanyForm = ({ userRef }) => {
             </button>
             <button
               className={`px-4 py-2 rounded-md ${
-                formData.businessNature
+                formData.nature
                   ? "bg-blue-600 text-white hover:bg-blue-700"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }`}
               onClick={() => setIsActive("company")}
-              disabled={!formData.businessNature}
+              disabled={!formData.nature}
             >
               Next
             </button>
