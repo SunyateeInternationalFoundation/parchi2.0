@@ -50,7 +50,7 @@ const Pricing = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {plans.map((plan) => (
             <div
-              key={plan.id}
+              key={plan.name}
               className={`h-[500px] transform transition duration-300 ${
                 plan.featured
                   ? "bg-yellow-400 text-white hover:scale-105 hover:shadow-xl"

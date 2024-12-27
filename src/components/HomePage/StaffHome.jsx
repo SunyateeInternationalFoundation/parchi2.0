@@ -1,11 +1,5 @@
-import {
-  collection,
-  getDoc,
-  getDocs,
-  query,
-  where
-} from "firebase/firestore";
-import PropTypes from 'prop-types';
+import { collection, getDoc, getDocs, query, where } from "firebase/firestore";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
@@ -62,14 +56,13 @@ import SideBar from "../UI/Sidebar";
 import VendorList from "../Vendors/VendorList";
 import VendorView from "../Vendors/VendorView/VendorView";
 
-
 const Modal = ({
   companyDetails,
   onClose,
   setSelectedCompanyName,
   setSelectedCompany,
   staffProfileDetailsAllCompany,
-  setStaffProfileDetailsSelectedCompany
+  setStaffProfileDetailsSelectedCompany,
 }) => {
   const navigate = useNavigate();
   return (
@@ -79,7 +72,7 @@ const Modal = ({
           Company Details{" "}
         </h2>
         {companyDetails && companyDetails.length > 0 ? (
-          <div className="grid grid-cols-3"> 
+          <div className="grid grid-cols-3">
             {companyDetails.map((company) => (
               <div
                 key={company.id}
@@ -88,15 +81,17 @@ const Modal = ({
                   navigate("invoice");
                   setSelectedCompanyName(company.name);
                   setSelectedCompany(company);
-                  setStaffProfileDetailsSelectedCompany(staffProfileDetailsAllCompany.find(ele=>ele.companyRef.id==company.id).id)
+                  setStaffProfileDetailsSelectedCompany(
+                    staffProfileDetailsAllCompany.find(
+                      (ele) => ele.companyRef.id == company.id
+                    ).id
+                  );
                 }}
               >
-              <div className="font-bold text-5xl text-center h-3/4 flex items-center justify-center rounded-full bg-sky-100">
-                    {company.name?.slice(0, 2).toUpperCase() || "YC"}
-                  </div>
-                <p className="h-1/4 text-center">
-                   {company.name}
-                </p>
+                <div className="font-bold text-5xl text-center h-3/4 flex items-center justify-center rounded-full bg-sky-100">
+                  {company.name?.slice(0, 2).toUpperCase() || "YC"}
+                </div>
+                <p className="h-1/4 text-center">{company.name}</p>
               </div>
             ))}
           </div>
@@ -134,7 +129,8 @@ const StaffHome = () => {
   const [roles, setRoles] = useState([]);
   const [selectedCompanyName, setSelectedCompanyName] = useState("");
   const [selectedCompany, setSelectedCompany] = useState(null);
-  const [staffProfileDetailsAllCompany, setStaffProfileDetailsAllCompany] = useState(null);
+  const [staffProfileDetailsAllCompany, setStaffProfileDetailsAllCompany] =
+    useState(null);
   const [staffIdSelectedCompany, setStaffIdSelectedCompany] = useState(null);
 
   useEffect(() => {
@@ -157,8 +153,11 @@ const StaffHome = () => {
       const staffSnapshot = await getDocs(staffQuery);
 
       if (!staffSnapshot.empty) {
-        const staffDoc = staffSnapshot.docs.map((doc) => ({id:doc.id, ...doc.data()}));
-        setStaffProfileDetailsAllCompany(staffDoc)
+        const staffDoc = staffSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setStaffProfileDetailsAllCompany(staffDoc);
         const staffSidebar = staffDoc.map((staff) => {
           if (staff.roles) {
             console.log("role", staff.roles);
@@ -205,11 +204,15 @@ const StaffHome = () => {
         />
       </div>
       <div className="flex" style={{ height: "92vh" }}>
-        <div>{!showModal && <SideBar staff={roles}  staffId={staffIdSelectedCompany} />}</div>
+        <div>
+          {!showModal && (
+            <SideBar staff={roles} staffId={staffIdSelectedCompany} />
+          )}
+        </div>
         <div style={{ width: "100%", height: "92vh" }} className="bg-gray-100">
           <Routes>
-            <Route path="/profile/:id" element={<StaffView/>}></Route>
-            {roles.length > 0 && roles[0].includes("CreateInvoice") && (
+            <Route path="/profile/:id" element={<StaffView />}></Route>
+            {roles.length > 0 && roles[0].includes("Invoice") && (
               <>
                 <Route
                   path="/invoice"
@@ -231,7 +234,7 @@ const StaffHome = () => {
                 ></Route>
               </>
             )}
-            {roles.length > 0 && roles[0].includes("CreateQuotation") && (
+            {roles.length > 0 && roles[0].includes("Quotation") && (
               <>
                 <Route
                   path="/quotation"
@@ -256,7 +259,7 @@ const StaffHome = () => {
                 ></Route>
               </>
             )}
-            {roles.length > 0 && roles[0].includes("CreatePurchase") && (
+            {roles.length > 0 && roles[0].includes("Purchase") && (
               <>
                 <Route
                   path="/purchase"
@@ -278,7 +281,7 @@ const StaffHome = () => {
                 ></Route>
               </>
             )}
-            {roles.length > 0 && roles[0].includes("CreateProject") && (
+            {roles.length > 0 && roles[0].includes("Project") && (
               <>
                 <Route
                   path="/projects"
@@ -310,7 +313,7 @@ const StaffHome = () => {
                 <Route path="/projects/:id/chats" element={<Chats />}></Route>
               </>
             )}
-            {roles.length > 0 && roles[0].includes("CreateCustomers") && (
+            {roles.length > 0 && roles[0].includes("Customers") && (
               <>
                 <Route
                   path="/customers"
@@ -324,7 +327,7 @@ const StaffHome = () => {
                 <Route path="/customers/:id" element={<CustomerView />}></Route>
               </>
             )}
-            {roles.length > 0 && roles[0].includes("CreateVendors") && (
+            {roles.length > 0 && roles[0].includes("Vendors") && (
               <>
                 <Route
                   path="/vendors"
@@ -338,7 +341,7 @@ const StaffHome = () => {
                 <Route path="/vendors/:id" element={<VendorView />}></Route>
               </>
             )}
-            {roles.length > 0 && roles[0].includes("CreatePo") && (
+            {roles.length > 0 && roles[0].includes("PO") && (
               <>
                 <Route path="/po" element={<PO />}></Route>
 
@@ -347,7 +350,7 @@ const StaffHome = () => {
                 <Route path="/po/:poId/edit-po" element={<SetPO />}></Route>
               </>
             )}
-            {roles.length > 0 && roles[0].includes("CreateServices") && (
+            {roles.length > 0 && roles[0].includes("Services") && (
               <>
                 <Route path="/services" element={<Services />}></Route>
                 <Route
@@ -360,7 +363,7 @@ const StaffHome = () => {
                 ></Route>
               </>
             )}
-            {roles.length > 0 && roles[0].includes("CreateDeliveryChallan") && (
+            {roles.length > 0 && roles[0].includes("DeliveryChallan") && (
               <>
                 <Route
                   path="/delivery-challan"
@@ -380,7 +383,7 @@ const StaffHome = () => {
                 ></Route>
               </>
             )}
-            {roles.length > 0 && roles[0].includes("CreateCreditNote") && (
+            {roles.length > 0 && roles[0].includes("CreditNote") && (
               <>
                 <Route path="/credit-note" element={<CreditNoteList />}></Route>
                 <Route
@@ -397,7 +400,7 @@ const StaffHome = () => {
                 ></Route>
               </>
             )}
-            {roles.length > 0 && roles[0].includes("CreatePOS") && (
+            {roles.length > 0 && roles[0].includes("POS") && (
               <>
                 <Route path="/pos" element={<POS />}></Route>
                 <Route path="/pos/:id" element={<POSView />}></Route>
@@ -406,7 +409,7 @@ const StaffHome = () => {
               </>
             )}
 
-            {roles.length > 0 && roles[0].includes("CreateProFormaInvoice") && (
+            {roles.length > 0 && roles[0].includes("ProFormaInvoice") && (
               <>
                 <Route
                   path="/pro-forma-invoice"

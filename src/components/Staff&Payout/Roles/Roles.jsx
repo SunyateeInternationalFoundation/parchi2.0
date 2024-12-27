@@ -1,13 +1,14 @@
 import {
-    collection,
-    doc,
-    getDocs,
-    query,
-    updateDoc,
-    where
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { TbEdit } from "react-icons/tb";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { db } from "../../../firebase";
@@ -16,6 +17,7 @@ const Roles = () => {
   const [loading, setLoading] = useState(true);
   const userDetails = useSelector((state) => state.users);
   const [staffData, setStaffData] = useState([]);
+  const [tempRoles, setTempRoles] = useState({});
 
   const companyDetails =
     userDetails.companies[userDetails.selectedCompanyIndex];
@@ -30,49 +32,59 @@ const Roles = () => {
         where("companyRef", "==", companyRef)
       );
       const getData = await getDocs(q);
-      const staffData = await getData.docs.map((doc) => {
+      const staffData = getData.docs.map((doc) => {
         const staffId = doc.id;
         const staff = doc.data();
-
+        const roles = staff.roles || {};
         return {
           id: staffId,
           ...staff,
+          roles,
           isExpand: false,
         };
       });
       setStaffData(staffData);
+
+      const initialTempRoles = staffData.reduce((acc, staff) => {
+        acc[staff.id] = { ...staff.roles };
+        return acc;
+      }, {});
+      setTempRoles(initialTempRoles);
     } catch (error) {
       console.log("🚀 ~ fetchStaffData ~ error:", error);
     }
     setLoading(false);
   }
 
-  async function handleRoleToggle(staff, roleName, action, isChecked) {
+  async function handleUpdateRoles(staff) {
     try {
       const staffRef = doc(db, "staff", staff.id);
-      const updatedRoles = {
-        ...staff.roles,
-        [roleName]: {
-          ...staff.roles[roleName],
-          [action]: isChecked,
-        },
-      };
+      const updatedRoles = tempRoles[staff.id];
       await updateDoc(staffRef, { roles: updatedRoles });
 
       setStaffData((prevData) =>
-        prevData.map((item) => {
-          if (item.id === staff.id) {
-            return {
-              ...item,
-              roles: updatedRoles,
-            };
-          }
-          return item;
-        })
+        prevData.map((item) =>
+          item.id === staff.id ? { ...item, roles: updatedRoles } : item
+        )
       );
+
+      console.log("Roles updated successfully!");
     } catch (error) {
-      console.log("Error in handleRoleToggle:", error);
+      console.log("Error in handleUpdateRoles:", error);
     }
+  }
+
+  function handleRoleChange(staffId, roleName, action, isChecked) {
+    setTempRoles((prevRoles) => ({
+      ...prevRoles,
+      [staffId]: {
+        ...prevRoles[staffId],
+        [roleName]: {
+          ...prevRoles[staffId][roleName],
+          [action]: isChecked,
+        },
+      },
+    }));
   }
 
   useEffect(() => {
@@ -80,115 +92,185 @@ const Roles = () => {
   }, [companyDetails.companyId]);
 
   const rolesList = [
-    "CreateInvoice",
-    "CreateServices",
-    "CreateQuotation",
-    "CreatePurchase",
-    "CreateCustomers",
-    "CreateVendors",
-    "CreateProject",
-    "CreatePo",
-    "CreatePOS",
-    "CreateProFormaInvoice",
-    "CreateCreditNote",
-    "CreateDeliveryChallan",
+    "Invoice",
+    "Services",
+    "Quotation",
+    "Purchase",
+    "Customers",
+    "Vendors",
+    "Project",
+    "PO",
+    "POS",
+    "ProFormaInvoice",
+    "CreditNote",
+    "DeliveryChallan",
   ];
+
+  const projectsList = ["Users", "Milestones", "Tasks", "Files", "Approvals"];
 
   const actions = ["create", "edit", "view", "delete"];
 
   return (
-    <div className="w-full" style={{ width: "100%", height: "92vh" }}>
-      <div
-        className="px-8 pb-8 pt-5 bg-gray-100"
-        style={{ width: "100%", height: "92vh" }}
-      >
-        <header className="flex items-center justify-between mb-3">
-          <div className="flex space-x-3">
-            <Link
-              className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-              to={"./../"}
-            >
-              <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
-            </Link>
+    <div className="w-full h-full bg-gray-100 p-8 overflow-y-auto">
+      <header className="flex items-center mb-6">
+        <Link
+          to={"./../"}
+          className="flex items-center bg-gray-300 text-gray-700 py-2 px-4 rounded-full hover:bg-gray-400 hover:text-white transition duration-200"
+        >
+          <AiOutlineArrowLeft className="mr-2" />
+          Back
+        </Link>
+        <h1 className="text-2xl font-bold ml-3">Roles</h1>
+      </header>
 
-            <h1 className="text-2xl font-bold">Roles</h1>
-          </div>
-        </header>
-        <div>
-          {loading ? (
-            <div className="text-center py-6">Loading Roles...</div>
-          ) : staffData.length > 0 ? (
-            staffData.map((ele) => (
-              <div
-                className="border-2 shadow bg-white cursor-pointer rounded-lg p-3 mt-3"
-                key={ele.id}
-              >
-                <div className="px-5 space-y-3">
-                  <div
-                    className="font-bold"
-                    onClick={() =>
-                      setStaffData((prevData) =>
-                        prevData.map((staff) => {
-                          if (staff.id === ele.id) {
-                            return { ...staff, isExpand: !staff.isExpand };
-                          }
-                          return staff;
-                        })
-                      )
-                    }
-                  >
-                    {ele.name}
-                  </div>
-
-                  {ele.isExpand &&
-                    rolesList.map((roleName) => (
-                      <div key={roleName} className="mt-3">
-                        <h2 className="font-semibold">{roleName}</h2>
-                        <div className="grid grid-cols-4 gap-4 mt-2">
-                          {actions.map((action) => (
-                            <div
-                              key={action}
-                              className="flex justify-between items-center"
-                            >
-                              <span className="capitalize">{action}</span>
-                              <label className="relative inline-block w-14 h-8">
-                                <input
-                                  type="checkbox"
-                                  className="sr-only peer"
-                                  checked={
-                                    ele.roles?.[roleName]?.[action] || false
-                                  }
-                                  onChange={(e) => {
-                                    e.stopPropagation();
-                                    handleRoleToggle(
-                                      ele,
-                                      roleName,
-                                      action,
-                                      e.target.checked
-                                    );
-                                  }}
-                                />
-                                <span className="absolute cursor-pointer inset-0 bg-[#9fccfa] rounded-full transition-all duration-400 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] peer-focus:ring-2 peer-focus:ring-[#0974f1] peer-checked:bg-[#0974f1]"></span>
-                                <span className="absolute top-0 left-0 h-8 w-8 bg-white rounded-full shadow-[0_10px_20px_rgba(0,0,0,0.4)] transition-all duration-400 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] flex items-center justify-center peer-checked:translate-x-[1.6em]"></span>
-                              </label>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+      {loading ? (
+        <div className="text-center py-6">Loading Roles...</div>
+      ) : staffData.length > 0 ? (
+        staffData.map((staff) => (
+          <div
+            key={staff.id}
+            className="mb-6 bg-white shadow-lg rounded-lg px-8 pb-3 pt-5"
+            onClick={() =>
+              setStaffData((prevData) =>
+                prevData.map((pre) => {
+                  if (staff.id === pre.id) {
+                    return { ...pre, isExpand: !pre.isExpand };
+                  }
+                  return pre;
+                })
+              )
+            }
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">{staff.name}</h2>
+              {staff.isExpand && (
+                <button
+                  onClick={() => handleUpdateRoles(staff)}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition"
+                >
+                  <TbEdit className="inline mr-2" />
+                  Update Roles
+                </button>
+              )}
+            </div>
+            {staff.isExpand && (
+              <div className="overflow-x-auto">
+                <table className="min-w-full table-auto border-collapse border border-gray-200">
+                  <thead>
+                    <tr className="bg-gray-200">
+                      <th className="border border-gray-300 px-4 py-2 text-left">
+                        Role
+                      </th>
+                      {actions.map((action) => (
+                        <th
+                          key={action}
+                          className="border border-gray-300 px-4 py-2"
+                        >
+                          {action.charAt(0).toUpperCase() + action.slice(1)}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rolesList.map((role) => (
+                      <tr key={role} className="hover:bg-gray-100">
+                        <td
+                          className="border border-gray-300 px-4 py-2"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {role}
+                        </td>
+                        {actions.map((action) => (
+                          <td
+                            key={action}
+                            className="border border-gray-300 px-4 py-2 text-center"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={
+                                tempRoles[staff.id]?.[role]?.[action] || false
+                              }
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) =>
+                                handleRoleChange(
+                                  staff.id,
+                                  role,
+                                  action,
+                                  e.target.checked
+                                )
+                              }
+                            />
+                          </td>
+                        ))}
+                      </tr>
                     ))}
+                  </tbody>
+                </table>
+                <div className="mt-6">
+                  <h3 className="font-semibold text-xl mb-4">Projects</h3>
+                  <table className="min-w-full table-auto border-collapse border border-gray-200">
+                    <thead>
+                      <tr className="bg-gray-200">
+                        <th className="border border-gray-300 px-4 py-2 text-left">
+                          Role
+                        </th>
+                        {["Access"].map((action) => (
+                          <th
+                            key={action}
+                            className="border border-gray-300 px-4 py-2"
+                          >
+                            {action.charAt(0).toUpperCase() + action.slice(1)}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {projectsList.map((role) => (
+                        <tr key={role} className="hover:bg-gray-100">
+                          <td
+                            className="border border-gray-300 px-4 py-2"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {role}
+                          </td>
+                          {["Access"].map((action) => (
+                            <td
+                              key={action}
+                              className="border border-gray-300 px-4 py-2 text-center"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={
+                                  tempRoles[staff.id]?.[role]?.[action] || false
+                                }
+                                onClick={(e) => e.stopPropagation()}
+                                onChange={(e) =>
+                                  handleRoleChange(
+                                    staff.id,
+                                    role,
+                                    action,
+                                    e.target.checked
+                                  )
+                                }
+                              />
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
-            ))
-          ) : (
-            <div className="text-center border-2 shadow cursor-pointer rounded-lg p-3 mt-3">
-              No Staff
-            </div>
-          )}
-        </div>
-      </div>
+            )}
+          </div>
+        ))
+      ) : (
+        <div className="text-center text-gray-500">No Staff Found</div>
+      )}
     </div>
   );
 };
 
 export default Roles;
-

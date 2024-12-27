@@ -1,9 +1,4 @@
-import {
-    collection,
-    getDocs,
-    query,
-    where
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdDownload } from "react-icons/io";
 import { useSelector } from "react-redux";
@@ -20,7 +15,9 @@ function Quotations() {
     async function fetchCustomerCompanies() {
       try {
         const customerRef = collection(db, "customers");
+        console.log("🚀 ~ fetchCustomerCompanies ~ customerRef", customerRef);
         const q = query(customerRef, where("phone", "==", userDetails.phone));
+        console.log("🚀 ~ fetchCustomerCompanies ~ q", q);
         const getData = await getDocs(q);
         const getCompaniesId = getData.docs.map((doc) => {
           const { name, companyRef } = doc.data();
@@ -56,7 +53,7 @@ function Quotations() {
           );
           const q = query(
             quotationRef,
-            where("customerDetails.phoneNumber", "==", userDetails.phone)
+            where("customerDetails.phone", "==", userDetails.phone)
           );
           const getData = await getDocs(q);
           const getAllQuotations = getData.docs.map((doc) => {
