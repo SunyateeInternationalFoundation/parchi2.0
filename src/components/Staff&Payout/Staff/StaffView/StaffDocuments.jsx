@@ -1,11 +1,10 @@
-import { addDoc, collection, getDocs, query, Timestamp, where } from 'firebase/firestore';
+import { addDoc, collection, doc, getDocs, query, where, Timestamp } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import React, { useEffect, useState } from 'react';
 import { AiFillFolder, AiOutlineArrowLeft, AiOutlineFile } from 'react-icons/ai';
-import { db, storage } from '../../firebase';
-import { useSelector } from 'react-redux';
+import { db, storage } from '../../../../firebase';
 
-const Documents = () => {
+const StaffDocuments = (StaffData) => {
   const [folders, setFolders] = useState([]);
   const [files, setFiles] = useState([]);
   const [currentPath, setCurrentPath] = useState([]);
@@ -13,9 +12,11 @@ const Documents = () => {
   const [folderName, setFolderName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [pathnames, setPathnames] = useState([]);
-  const userDetails = useSelector((state) => state.users);
-  const companyId =  userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  const companyRef = doc(db, 'companies', companyId);
+  const staffId = StaffData?.staffData?.id;
+  const staffRef = doc(db, 'staff', staffId);
+
+  
+
   useEffect(() => {
     fetchFoldersAndFiles();
   }, [currentFolder]);
@@ -26,7 +27,8 @@ const Documents = () => {
       const foldersQuery = query(
         collection(db, 'folders'),
         where('parentId', '==', currentFolder?.id || null),
-        where('companyRef', '==', companyRef)
+        where('staffRef', '==', staffRef) 
+        
       );
       const foldersSnapshot = await getDocs(foldersQuery);
       const fetchedFolders = foldersSnapshot.docs.map(doc => ({
@@ -38,7 +40,7 @@ const Documents = () => {
       const filesQuery = query(
         collection(db, 'files'),
         where('folderId', '==', currentFolder?.id || null),
-        where('companyRef', '==', companyRef)
+        where('staffRef', '==', staffRef)
       );
       const filesSnapshot = await getDocs(filesQuery);
       const fetchedFiles = filesSnapshot.docs.map(doc => ({
@@ -58,21 +60,20 @@ const Documents = () => {
   const addFolder = async () => {
     if (!folderName) return;
     try {
-      const folderRef = await addDoc(collection(db, 'folders'), {
-        name: folderName,
-        parentId: currentFolder?.id || null,
-        createdAt: Timestamp.now(),
-      });
-
+    
+    if (!staffId) {
+      console.error('Staff ID is missing.');
+      return;
+    }
       const newFolder = {
-        id: folderRef.id,
         name: folderName,
         parentId: currentFolder?.id || null,
         createdAt: Timestamp.now(),
         type: 'folder',
-        companyRef
+        staffRef: staffRef
       };
 
+      const folderRef = await addDoc(collection(db, 'folders'), newFolder);
       setFolders(prev => [...prev, newFolder]);
       setFolderName('');
     } catch (error) {
@@ -84,7 +85,7 @@ const Documents = () => {
     if (!file) return;
     setIsLoading(true);
     try {
-      const fileRef = ref(storage, `files/${currentFolder?.id || 'root'}/${file.name}`);
+      const fileRef = ref(storage, `staff/files/${currentFolder?.id || 'root'}/${file.name}`);
       const uploadTask = uploadBytesResumable(fileRef, file);
 
       uploadTask.on(
@@ -96,6 +97,10 @@ const Documents = () => {
         },
         async () => {
           const fileUrl = await getDownloadURL(uploadTask.snapshot.ref);
+          if (!staffId) {
+            console.error('Staff ID is missing.');
+            return;
+          }
           const fileData = {
             name: file.name,
             folderId: currentFolder?.id || null,
@@ -104,7 +109,7 @@ const Documents = () => {
             type: 'file',
             size: file.size,
             contentType: file.type,
-            companyRef
+            staffRef: staffRef
           };
 
           const fileRef = await addDoc(collection(db, 'files'), fileData);
@@ -155,10 +160,6 @@ const Documents = () => {
               <AiOutlineArrowLeft className="w-5 h-5" />
             </button>
           )} 
-          <h1 className="text-2xl font-bold">
-          Documents
-            {/* {currentPath.length === 0 ? 'Documents' : currentFolder.name} */}
-          </h1>
           {isLoading && <span className="text-gray-500">Loading...</span>}
         </div>
         <div className="flex gap-4">
@@ -205,25 +206,6 @@ const Documents = () => {
         </div>
       </div>
       <div>
-      <nav>
-      <ul style={{ display: "flex", listStyle: "none" }}>
-        <li>
-              <div className='cursor-pointer' onClick={() => {
-                setCurrentPath([])
-                setCurrentFolder([])
-                setPathnames([])
-              }
-          }>Home</div>
-        </li>
-        {pathnames.map((value, index) => {
-          return (
-            <li key={index} className='flex cursor-pointer' style={{ marginLeft: "3px" }}>
-              {">"} <div>{value}</div>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
 </div>
       <div className="grid grid-cols-10 gap-4">
         {folders.map((folder) => (
@@ -263,4 +245,4 @@ const Documents = () => {
   );
 };
 
-export default Documents;
+export default StaffDocuments;

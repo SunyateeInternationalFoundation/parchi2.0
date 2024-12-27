@@ -12,10 +12,10 @@ import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../../../firebase";
 import Attendance from "./Attendance";
-import Documents from "./Documents";
 import Payments from "./Payments";
 import Profile from "./Profile";
 import Projects from "./Projects";
+import StaffDocuments from "./StaffDocuments";
 
 function StaffView() {
   const { id } = useParams();
@@ -178,7 +178,7 @@ function StaffView() {
         )}
         {activeTab === "Documents" && (
           <div>
-            <Documents />
+            <StaffDocuments staffData={staffData} />
           </div>
         )}
       </div>
