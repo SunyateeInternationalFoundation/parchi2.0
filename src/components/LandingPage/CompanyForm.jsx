@@ -45,7 +45,7 @@ const CompanyForm = ({ userRef }) => {
     }
     e.preventDefault();
     try {
-      const companyRef=await addDoc(collection(db, "companies"), {
+      const companyRef = await addDoc(collection(db, "companies"), {
         ...formData,
         userRef,
       });
@@ -53,7 +53,7 @@ const CompanyForm = ({ userRef }) => {
         isCompanyProfileDone: true,
       });
       alert("Successfully Created!");
-      dispatch(setCompanyData({companyId:companyRef.id, ...formData}));
+      dispatch(setCompanyData({ companyId: companyRef.id, ...formData }));
       navigate("/expense");
     } catch (error) {
       console.log("🚀 ~ Submit ~ error:", error);
