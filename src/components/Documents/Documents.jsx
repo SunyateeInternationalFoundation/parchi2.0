@@ -106,19 +106,19 @@ const Documents = () => {
         `files/${currentFolder?.id || "root"}/${file.name}`
       );
       const uploadTask = uploadBytesResumable(fileRef, file);
-  
+
       uploadTask.on(
         "state_changed",
         (snapshot) => {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setUploadProgress(progress); 
+          setUploadProgress(progress);
           console.log(`Upload is ${progress}% done`);
         },
         (error) => {
           console.error("File upload error:", error.message);
           setIsLoading(false);
-          setUploadProgress(null); 
+          setUploadProgress(null);
         },
         async () => {
           try {
@@ -133,26 +133,26 @@ const Documents = () => {
               contentType: file.type,
               companyRef,
             };
-  
+
             const fileRef = await addDoc(collection(db, "files"), fileData);
             const newFile = { ...fileData, id: fileRef.id };
-  
+
             setFiles((prev) => [...prev, newFile]);
           } catch (uploadError) {
             console.error("Error saving file metadata:", uploadError.message);
           } finally {
             setIsLoading(false);
-            setUploadProgress(null); 
+            setUploadProgress(null);
           }
         }
       );
     } catch (error) {
       console.error("File upload error:", error);
       setIsLoading(false);
-      setUploadProgress(null); =
+      setUploadProgress(null);
     }
   };
-  
+
   const navigateToFolder = (folder) => {
     setCurrentFolder(folder);
     setCurrentPath((prev) => [...prev, folder]);
@@ -179,9 +179,13 @@ const Documents = () => {
   const renameFolderOrFile = async (item, newName) => {
     if (!newName) return;
     try {
-      const itemRef = doc(db, item.type === "folder" ? "folders" : "files", item.id);
+      const itemRef = doc(
+        db,
+        item.type === "folder" ? "folders" : "files",
+        item.id
+      );
       await updateDoc(itemRef, { name: newName });
-       if (item.type === "folder") {
+      if (item.type === "folder") {
         setFolders((prev) =>
           prev.map((folder) =>
             folder.id === item.id ? { ...folder, name: newName } : folder
@@ -194,7 +198,7 @@ const Documents = () => {
           )
         );
       }
-      setEditingItem(null); 
+      setEditingItem(null);
     } catch (error) {
       console.error("Error renaming item:", error);
     }
@@ -203,11 +207,18 @@ const Documents = () => {
   const deleteFolderOrFile = async (item) => {
     try {
       if (item.type === "file") {
-        const fileRef = ref(storage, `files/${item.folderId || "root"}/${item.name}`);
+        const fileRef = ref(
+          storage,
+          `files/${item.folderId || "root"}/${item.name}`
+        );
         await deleteObject(fileRef);
       }
 
-      const itemRef = doc(db, item.type === "folder" ? "folders" : "files", item.id);
+      const itemRef = doc(
+        db,
+        item.type === "folder" ? "folders" : "files",
+        item.id
+      );
       await deleteDoc(itemRef);
 
       if (item.type === "folder") {
@@ -219,7 +230,6 @@ const Documents = () => {
       console.error("Error deleting item:", error);
     }
   };
-
 
   return (
     <div className="p-6">
@@ -266,37 +276,35 @@ const Documents = () => {
             Add File
           </button> */}
           <div>
-  {uploadProgress !== null ? (
-    <button
-      disabled
-      className="cursor-pointer bg-green-500 text-white border-gray-300 inline-block w-48 py-2 text-center rounded-lg hover:bg-green-600"
-      style={{ height: '40px' }}
-    >
-      <div className="flex justify-center items-center h-full">
-        <div className="w-6 h-6 border-4 border-t-4 border-white border-solid rounded-full animate-spin"></div>
-      </div>
-    </button>
-  ) : (
-    <label
-      htmlFor="file-upload"
-      className="cursor-pointer bg-green-500 text-white border-gray-300 inline-block w-48 py-2 text-center rounded-lg hover:bg-green-600"
-      style={{ height: '40px' }} // Fixed height
-    >
-      📄 Upload File
-      <input
-        id="file-upload"
-        type="file"
-        className="hidden"
-        onChange={(e) => addFile(e.target.files[0])}
-      />
-    </label>
-  )}
-</div>
-
-
+            {uploadProgress !== null ? (
+              <button
+                disabled
+                className="cursor-pointer bg-green-500 text-white border-gray-300 inline-block w-48 py-2 text-center rounded-lg hover:bg-green-600"
+                style={{ height: "40px" }}
+              >
+                <div className="flex justify-center items-center h-full">
+                  <div className="w-6 h-6 border-4 border-t-4 border-white border-solid rounded-full animate-spin"></div>
+                </div>
+              </button>
+            ) : (
+              <label
+                htmlFor="file-upload"
+                className="cursor-pointer bg-green-500 text-white border-gray-300 inline-block w-48 py-2 text-center rounded-lg hover:bg-green-600"
+                style={{ height: "40px" }} // Fixed height
+              >
+                📄 Upload File
+                <input
+                  id="file-upload"
+                  type="file"
+                  className="hidden"
+                  onChange={(e) => addFile(e.target.files[0])}
+                />
+              </label>
+            )}
+          </div>
         </div>
       </div>
-      
+
       <div>
         <nav>
           <ul style={{ display: "flex", listStyle: "none" }}>
@@ -343,7 +351,7 @@ const Documents = () => {
           </div>
         ))}
 
-{files.map((file) => (
+        {files.map((file) => (
           <div
             key={file.id}
             onClick={() => handleFileClick(file.fileUrl)}

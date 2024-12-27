@@ -3,8 +3,6 @@ import { useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 function Attendance({ attendanceData }) {
-  console.log("🚀 ~ Attendance ~ attendanceData:", attendanceData);
-  const [attendance, setAttendance] = useState({});
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
 
@@ -28,7 +26,6 @@ function Attendance({ attendanceData }) {
           ).padStart(2, "0")}${currentYear}`;
           const dayStatus =
             attendanceData.find((ele) => ele.attendanceId == date) || null;
-          console.log("🚀 ~ ).padStart ~ dayStatus:", dayStatus);
 
           row.push(
             <div className=" border">
@@ -47,7 +44,7 @@ function Attendance({ attendanceData }) {
                 }`}
               >
                 <div className="flex space-x-5">
-                  <div>{dayCounter}</div>
+                  <div className="text-black">{dayCounter}</div>
                   <div className="text-sm uppercase font-bold">
                     {dayStatus?.status}
                   </div>

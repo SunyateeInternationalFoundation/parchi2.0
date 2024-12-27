@@ -17,11 +17,15 @@ import Profile from "./Profile";
 import Projects from "./Projects";
 import StaffDocuments from "./StaffDocuments";
 
-function StaffView() {
+function StaffView({ staffCompanyId }) {
   const { id } = useParams();
   const userDetails = useSelector((state) => state.users);
-  const companyId =
+  let companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  if (staffCompanyId) {
+    companyId = staffCompanyId;
+  }
+
   const [activeTab, setActiveTab] = useState("Profile");
   const [projectsData, setProjectsData] = useState([]);
   const [staffData, setStaffData] = useState([]);
@@ -53,6 +57,7 @@ function StaffView() {
         }
         const staffAttendance = staffAttendanceGetDocs.docs.map((doc) => {
           const { date, staffs } = doc.data();
+          console.log("🚀 ~ staffAttendance ~ staffs:", doc.id, doc.data());
           const attendanceStaffData = staffs.find((item) => item.id == id);
           return {
             attendanceId: doc.id,
@@ -60,6 +65,7 @@ function StaffView() {
             ...attendanceStaffData,
           };
         });
+        console.log("🚀 ~ staffAttendance ~ staffAttendance:", staffAttendance);
         setAttendanceData(staffAttendance);
       } catch (error) {
         console.error("Error fetching staff data:", error);
