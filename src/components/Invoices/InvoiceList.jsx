@@ -1,9 +1,9 @@
-import  { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase";
-import { useSelector } from "react-redux";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { db } from "../../firebase";
 
 import {
   LuChevronLeft,
@@ -102,7 +102,8 @@ const InvoiceList = ({ companyDetails, isStaff }) => {
   const pendingAmount = filteredInvoices
     .filter((invoice) => invoice.paymentStatus === "Pending")
     .reduce((sum, invoice) => sum + invoice.total, 0);
-
+  console.log("userDetails", userDetails);
+  console.log("filteredInvoices", filteredInvoices);
   return (
     <div className="w-full">
       <div
