@@ -112,7 +112,7 @@ const Roles = () => {
 
   return (
     <div className="w-full h-full bg-gray-100 p-8 overflow-y-auto">
-      <header className="flex items-center justify-between mb-6">
+      <header className="flex items-center mb-6">
         <Link
           to={"./../"}
           className="flex items-center bg-gray-300 text-gray-700 py-2 px-4 rounded-full hover:bg-gray-400 hover:text-white transition duration-200"
@@ -120,7 +120,7 @@ const Roles = () => {
           <AiOutlineArrowLeft className="mr-2" />
           Back
         </Link>
-        <h1 className="text-2xl font-bold">Roles</h1>
+        <h1 className="text-2xl font-bold ml-3">Roles</h1>
       </header>
 
       {loading ? (
