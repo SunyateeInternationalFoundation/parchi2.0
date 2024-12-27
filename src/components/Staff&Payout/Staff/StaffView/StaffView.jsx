@@ -1,10 +1,10 @@
 import {
-    collection,
-    doc,
-    getDoc,
-    getDocs,
-    query,
-    where,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
@@ -22,6 +22,7 @@ function StaffView() {
   const userDetails = useSelector((state) => state.users);
   const companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+
   const [activeTab, setActiveTab] = useState("Profile");
   const [projectsData, setProjectsData] = useState([]);
   const [staffData, setStaffData] = useState([]);

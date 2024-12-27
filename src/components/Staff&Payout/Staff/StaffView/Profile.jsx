@@ -3,12 +3,14 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { FaUserEdit } from "react-icons/fa";
 import { db, storage } from "../../../../firebase";
+import { useSelector } from "react-redux";
 
 const Profile = ({ staffData, refresh }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [UpdatedData, setUpdatedData] = useState(staffData);
   const [progress, setProgress] = useState(0);
-
+  const userDetails = useSelector((state) => state.users);
+  const selectedDashboardUser = userDetails.selectedDashboard;
   useEffect(() => {
     setUpdatedData(staffData);
   }, [staffData]);
@@ -109,7 +111,7 @@ const Profile = ({ staffData, refresh }) => {
                     UpdatedData.name || "N/A"
                   )}
                 </div>
-                {!isEdit && (
+                {(!isEdit && selectedDashboardUser !="staff") && (
                   <button
                     className="flex items-center space-x-2 text-purple-600 hover:text-purple-800 mt-2"
                     onClick={() => setIsEdit(true)}

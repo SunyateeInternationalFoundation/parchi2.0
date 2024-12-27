@@ -6,7 +6,7 @@ import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 
-function SideBar({ staff }) {
+function SideBar({ staff, staffId }) {
   const location = useLocation();
   const [isSideBarExpend, setIsSideBarExpend] = useState(true);
   const userDetails = useSelector((state) => state.users);
@@ -101,20 +101,20 @@ function SideBar({ staff }) {
       ],
     },
 
-    more: {
-      // image: <CgMoreVerticalO size={30} />,
-      isExpend: true,
-      items: [
-        {
-          name: "Insights",
-          path: "",
-        },
-        {
-          name: "Report",
-          path: "",
-        },
-      ],
-    },
+     more: {
+    //   // image: <CgMoreVerticalO size={30} />,
+    //   isExpend: true,
+    //   items: [
+    //     {
+    //       name: "Insights",
+    //       path: "",
+    //     },
+    //     {
+    //       name: "Report",
+    //       path: "",
+    //     },
+    //   ],
+     },
   };
 
   const [sideBarDetails, setSideBarDetails] = useState(constSideBarDetails);
@@ -177,16 +177,21 @@ function SideBar({ staff }) {
         </div>
       </div>
       <div className="p-1">
+       {(selectedDashboardUser==="staff") && <div className="border-b-2 ">
+          <Link to={"/staff/profile/"+staffId} className=" cursor-pointer mb-10">
+            <div className="text-lg font-semibold pl-3">Profile</div>
+          </Link>
+        </div>}
         <div className="border-b-2 ">
           <Link to="" className=" cursor-pointer mb-10">
             <div className="text-lg font-semibold pl-3">Home</div>
           </Link>
         </div>
-        <div className="border-b-2 mt-3">
+        {(selectedDashboardUser==="") &&<div className="border-b-2 mt-3">
           <Link to="/expense" className=" cursor-pointer mb-10">
             <div className="text-lg font-semibold pl-3">Expense</div>
           </Link>
-        </div>
+        </div>}
         <div className=" border-b-2 mt-3">
           <div
             className="flex items-center justify-between"
@@ -244,11 +249,11 @@ function SideBar({ staff }) {
               ))}
           </div>
         </div>
-        <div className="border-b-2 mt-3">
+       {(selectedDashboardUser==="") && <div className="border-b-2 mt-3">
           <Link to="/pos" className=" cursor-pointer mb-10">
             <div className="text-lg font-semibold pl-3">POS</div>
           </Link>
-        </div>
+        </div>}
         <div className="mt-3  border-b-2">
           <div
             className="flex items-center justify-between"
@@ -309,7 +314,7 @@ function SideBar({ staff }) {
               ))}
           </div>
         </div>
-        <div className="mt-3  border-b-2">
+       {(selectedDashboardUser==="") && <><div className="mt-3  border-b-2">
           <div
             className="flex items-center justify-between"
             onClick={() =>
@@ -382,8 +387,8 @@ function SideBar({ staff }) {
           <Link to="/reminder" className=" cursor-pointer mb-10">
             <div className="text-lg font-semibold pl-3">Reminder</div>
           </Link>
-        </div>
-        <div className="mt-3  border-b-2 ">
+        </div></>}
+        {/* <div className="mt-3  border-b-2 ">
           <div
             className="flex items-center justify-between"
             onClick={() =>
@@ -438,18 +443,19 @@ function SideBar({ staff }) {
                 </Link>
               ))}
           </div>
-        </div>
-        <div className="border-b-2 mt-3">
+        </div> */}
+        {(selectedDashboardUser==="") &&<div className="border-b-2 mt-3">
           <Link to="" className=" cursor-pointer mb-10">
             <div className="text-lg font-semibold pl-3">Business Card</div>
           </Link>
-        </div>
+        </div>}
       </div>
     </div>
   );
 }
 SideBar.propTypes = {
-  staff: PropTypes.array
+  staff: PropTypes.array,
+  staffId:PropTypes.string,
 };
 
 export default SideBar;

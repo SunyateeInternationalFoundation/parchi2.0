@@ -5,6 +5,7 @@ import {
   query,
   where
 } from "firebase/firestore";
+import PropTypes from 'prop-types';
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
@@ -55,6 +56,7 @@ import SetQuotation from "../Quotation/SetQuotation/SetQuotation";
 import CreateService from "../Services/CreateService/CreateService";
 import EditService from "../Services/CreateService/EditService";
 import Services from "../Services/Services";
+import StaffView from "../Staff&Payout/Staff/StaffView/StaffView";
 import Navbar from "../UI/Navbar";
 import SideBar from "../UI/Sidebar";
 import VendorList from "../Vendors/VendorList";
@@ -66,6 +68,8 @@ const Modal = ({
   onClose,
   setSelectedCompanyName,
   setSelectedCompany,
+  staffProfileDetailsAllCompany,
+  setStaffProfileDetailsSelectedCompany
 }) => {
   const navigate = useNavigate();
   return (
@@ -76,7 +80,7 @@ const Modal = ({
         </h2>
         {companyDetails && companyDetails.length > 0 ? (
           <div className="grid grid-cols-3"> 
-            {companyDetails.map((company, index) => (
+            {companyDetails.map((company) => (
               <div
                 key={company.id}
                 className="p-2 cursor-pointer hover:bg-gray-100 border-2 rounded-lg h-32 "
@@ -84,6 +88,7 @@ const Modal = ({
                   navigate("invoice");
                   setSelectedCompanyName(company.name);
                   setSelectedCompany(company);
+                  setStaffProfileDetailsSelectedCompany(staffProfileDetailsAllCompany.find(ele=>ele.companyRef.id==company.id).id)
                 }}
               >
               <div className="font-bold text-5xl text-center h-3/4 flex items-center justify-center rounded-full bg-sky-100">
@@ -112,6 +117,14 @@ const Modal = ({
     </div>
   );
 };
+Modal.propTypes = {
+  companyDetails: PropTypes.array,
+  onClose: PropTypes.func.isRequired,
+  setSelectedCompanyName: PropTypes.func.isRequired,
+  setSelectedCompany: PropTypes.func.isRequired,
+  staffProfileDetailsAllCompany: PropTypes.array,
+  setStaffProfileDetailsSelectedCompany: PropTypes.func.isRequired,
+};
 
 const StaffHome = () => {
   const location = useLocation();
@@ -121,6 +134,8 @@ const StaffHome = () => {
   const [roles, setRoles] = useState([]);
   const [selectedCompanyName, setSelectedCompanyName] = useState("");
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const [staffProfileDetailsAllCompany, setStaffProfileDetailsAllCompany] = useState(null);
+  const [staffIdSelectedCompany, setStaffIdSelectedCompany] = useState(null);
 
   useEffect(() => {
     if (location.pathname === "/staff") {
@@ -142,7 +157,8 @@ const StaffHome = () => {
       const staffSnapshot = await getDocs(staffQuery);
 
       if (!staffSnapshot.empty) {
-        const staffDoc = staffSnapshot.docs.map((doc) => doc.data());
+        const staffDoc = staffSnapshot.docs.map((doc) => ({id:doc.id, ...doc.data()}));
+        setStaffProfileDetailsAllCompany(staffDoc)
         const staffSidebar = staffDoc.map((staff) => {
           if (staff.roles) {
             console.log("role", staff.roles);
@@ -189,9 +205,10 @@ const StaffHome = () => {
         />
       </div>
       <div className="flex" style={{ height: "92vh" }}>
-        <div>{!showModal && <SideBar staff={roles} />}</div>
+        <div>{!showModal && <SideBar staff={roles}  staffId={staffIdSelectedCompany} />}</div>
         <div style={{ width: "100%", height: "92vh" }} className="bg-gray-100">
           <Routes>
+            <Route path="/profile/:id" element={<StaffView/>}></Route>
             {roles.length > 0 && roles[0].includes("CreateInvoice") && (
               <>
                 <Route
@@ -321,7 +338,6 @@ const StaffHome = () => {
                 <Route path="/vendors/:id" element={<VendorView />}></Route>
               </>
             )}
-
             {roles.length > 0 && roles[0].includes("CreatePo") && (
               <>
                 <Route path="/po" element={<PO />}></Route>
@@ -421,6 +437,8 @@ const StaffHome = () => {
           onClose={closeModal}
           setSelectedCompanyName={setSelectedCompanyName}
           setSelectedCompany={setSelectedCompany}
+          staffProfileDetailsAllCompany={staffProfileDetailsAllCompany}
+          setStaffProfileDetailsSelectedCompany={setStaffIdSelectedCompany}
         />
       )}
     </div>
