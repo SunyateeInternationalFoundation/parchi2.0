@@ -22,10 +22,10 @@ function StaffView() {
   const userDetails = useSelector((state) => state.users);
   const companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-
   const [activeTab, setActiveTab] = useState("Profile");
   const [projectsData, setProjectsData] = useState([]);
   const [staffData, setStaffData] = useState([]);
+  const [attendanceData, setAttendanceData] = useState([]);
 
   function DateFormate(timestamp) {
     const milliseconds =
@@ -44,10 +44,23 @@ function StaffView() {
     if (id) {
       try {
         const staffDoc = await getDoc(StaffRef);
+        const staffAttendanceGetDocs = await getDocs(
+          collection(db, "companies", companyId, "staffAttendance")
+        );
         if (staffDoc.exists()) {
           const data = { id: staffDoc.id, ...staffDoc.data() };
           setStaffData(data);
         }
+        const staffAttendance = staffAttendanceGetDocs.docs.map((doc) => {
+          const { date, staffs } = doc.data();
+          const attendanceStaffData = staffs.find((item) => item.id == id);
+          return {
+            attendanceId: doc.id,
+            date,
+            ...attendanceStaffData,
+          };
+        });
+        setAttendanceData(staffAttendance);
       } catch (error) {
         console.error("Error fetching staff data:", error);
       }
@@ -173,7 +186,7 @@ function StaffView() {
         )}
         {activeTab === "Attendance" && (
           <div>
-            <Attendance />
+            <Attendance attendanceData={attendanceData} />
           </div>
         )}
         {activeTab === "Documents" && (

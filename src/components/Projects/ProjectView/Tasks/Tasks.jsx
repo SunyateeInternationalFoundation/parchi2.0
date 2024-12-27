@@ -1,12 +1,12 @@
 import {
-    addDoc,
-    collection,
-    doc,
-    getDocs,
-    orderBy,
-    query,
-    Timestamp,
-    updateDoc,
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  Timestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
@@ -516,6 +516,11 @@ function Tasks() {
                   value={taskMessage}
                   onChange={(e) => {
                     setTaskMessage(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      onSendProgress();
+                    }
                   }}
                 />
                 <button className="ml-3 w-5 text-4xl" onClick={onSendProgress}>
