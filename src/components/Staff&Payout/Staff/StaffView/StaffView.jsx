@@ -6,6 +6,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
@@ -204,5 +205,8 @@ function StaffView({ staffCompanyId }) {
     </div>
   );
 }
+StaffView.propTypes = {
+  staffCompanyId: PropTypes.string,
+};
 
 export default StaffView;

@@ -1,22 +1,23 @@
 import {
   addDoc,
   collection,
+  doc,
   getDocs,
   query,
   Timestamp,
+  updateDoc,
   where,
-  doc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AiFillFolder,
   AiOutlineArrowLeft,
   AiOutlineFile,
-  AiOutlineMore,
 } from "react-icons/ai";
-import { db, storage } from "../../firebase";
+import { HiDotsVertical } from "react-icons/hi";
 import { useSelector } from "react-redux";
+import { db, storage } from "../../firebase";
 
 const Documents = () => {
   const [folders, setFolders] = useState([]);
@@ -62,6 +63,7 @@ const Documents = () => {
         id: doc.id,
         ...doc.data(),
         type: "file",
+        isOutlineDotsOpen: false,
       }));
 
       setFolders(fetchedFolders);
@@ -167,7 +169,9 @@ const Documents = () => {
   };
 
   const handleFileClick = (fileUrl) => {
-    window.open(fileUrl, "_blank");
+    if (!editingItem) {
+      window.open(fileUrl, "_blank");
+    }
   };
 
   const formatDate = (timestamp) => {
@@ -354,11 +358,12 @@ const Documents = () => {
         {files.map((file) => (
           <div
             key={file.id}
-            onClick={() => handleFileClick(file.fileUrl)}
             className="flex justify-center items-center gap-3 rounded-lg cursor-pointer hover:bg-gray-200 relative"
           >
-            <div>
-              <AiOutlineFile className="w-24 h-24 text-blue-500" />
+            <div className="px-2 py-1 text-xs">
+              <div onClick={() => handleFileClick(file.fileUrl)}>
+                <AiOutlineFile className="w-24 h-24 text-blue-500" />
+              </div>
               {editingItem === file.id ? (
                 <input
                   type="text"
@@ -369,30 +374,63 @@ const Documents = () => {
                   className="w-full text-center bg-transparent border-b-2 border-gray-400"
                 />
               ) : (
-                <p className="text-center font-medium truncate">{file.name}</p>
+                <p className="text-center font-medium ">{file.name}</p>
               )}
             </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation(); // Prevent opening the file
-                setEditingItem(file.id); // Start editing the name
-                setNewName(file.name); // Set the current name as the initial value
-              }}
-              className="absolute top-2 right-2 p-2 text-gray-500 hover:text-black"
-            >
-              <AiOutlineMore />
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (window.confirm(`Are you sure to delete "${file.name}"?`)) {
-                  deleteFolderOrFile(file);
-                }
-              }}
-              className="absolute top-2 right-8 p-2 text-gray-500 hover:text-red-600"
-            >
-              🗑️
-            </button>
+            <div className="absolute top-2 right-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFiles(
+                    files.map((ele) => {
+                      ele.isOutlineDotsOpen = !ele.isOutlineDotsOpen;
+                      return ele;
+                    })
+                  );
+                }}
+              >
+                <HiDotsVertical className="font-bold" />
+              </button>
+              {file.isOutlineDotsOpen && (
+                <div className="absolute bg-white  p-1 right-0 cursor-pointer border-2 rounded-lg text-xs">
+                  <div
+                    className="pe-2 py-1 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingItem(file.id);
+                      setNewName(file.name);
+                      setFiles(
+                        files.map((ele) => {
+                          ele.isOutlineDotsOpen = false;
+                          return ele;
+                        })
+                      );
+                    }}
+                  >
+                    <div>Edit</div>
+                  </div>
+                  <div
+                    className="py-1 pe-2 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (
+                        window.confirm(`Are you sure to delete "${file.name}"?`)
+                      ) {
+                        deleteFolderOrFile(file);
+                      }
+                      setFiles(
+                        files.map((ele) => {
+                          ele.isOutlineDotsOpen = false;
+                          return ele;
+                        })
+                      );
+                    }}
+                  >
+                    <div> Delete</div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>
