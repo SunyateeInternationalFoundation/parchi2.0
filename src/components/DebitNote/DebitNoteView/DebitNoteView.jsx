@@ -93,7 +93,6 @@ const DebitNoteView = () => {
     fetchDebitNote();
   }, [companyId]);
 
-  console.log("debit-note", debitNote);
   return (
     <div className="px-5 pb-5 bg-gray-100" style={{ width: "100%" }}>
       <header className="flex items-center space-x-3 my-2 ">
@@ -106,12 +105,11 @@ const DebitNoteView = () => {
         <h1 className="text-2xl font-bold">{debitNote.debitNoteNo}</h1>
       </header>
 
-      
       <hr />
       <div className="w-full">
-          <div>
-            <DebitNote debitNote={debitNote} bankDetails={bankDetails} />
-          </div>
+        <div>
+          <DebitNote debitNote={debitNote} bankDetails={bankDetails} />
+        </div>
       </div>
     </div>
   );

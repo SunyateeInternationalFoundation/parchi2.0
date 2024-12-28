@@ -1,5 +1,5 @@
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
@@ -42,7 +42,6 @@ function Services({ companyDetails }) {
 
     return matchesSearch && matchesStatus;
   });
-
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -168,7 +167,7 @@ function Services({ companyDetails }) {
             <div className="" style={{ height: "80vh" }}>
               <div className="" style={{ height: "74vh" }}>
                 <table className="w-full border-collapse text-start">
-                  <thead className="sticky top-0 z-10 bg-white">
+                  <thead className=" bg-white">
                     <tr className="border-b">
                       <td className="px-5 py-1 text-gray-600 font-semibold text-start">
                         Service No

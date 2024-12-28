@@ -1,10 +1,10 @@
 import {
-    collection,
-    doc,
-    getDocs,
-    query,
-    updateDoc,
-    where,
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
@@ -12,7 +12,6 @@ import { useSelector } from "react-redux";
 import { db } from "../../../../firebase";
 
 function UserSidebar({ isOpen, onClose, projectId, projectDetails, Refresh }) {
-  console.log("🚀 ~ UserSidebar ~ projectDetails:", projectDetails);
   const userDetails = useSelector((state) => state.users);
 
   const companyId =
@@ -124,7 +123,6 @@ function UserSidebar({ isOpen, onClose, projectId, projectDetails, Refresh }) {
 
         const data = dataSet[activeNav].find((item) => fieldId === item.id);
 
-        console.log("🚀 ~ selectedDataSet.forEach ~ data:", data);
         phoneNum.push(data?.phone);
 
         field.data.push(ref);

@@ -1,10 +1,10 @@
 import {
-    collection,
-    deleteDoc,
-    doc,
-    getDocs,
-    query,
-    where
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
@@ -13,8 +13,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
 import {
-    deleteCustomerDetails,
-    setAllCustomersDetails,
+  deleteCustomerDetails,
+  setAllCustomersDetails,
 } from "../../store/CustomerSlice";
 import CreateCustomer from "./CreateCustomer";
 
@@ -23,21 +23,17 @@ const CustomerList = ({ companyDetails, isStaff }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-  console.log("customercompanyDetails", companyDetails);
   const userDetails = useSelector((state) => state.users);
   let companyId;
   if (!companyDetails) {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-    console.log("!companyId", companyId);
   } else {
     companyId = companyDetails.id;
-    console.log("companyId", companyId);
   }
   const customersDetails = useSelector((state) => state.customers).data;
   const dispatch = useDispatch();
 
-  console.log("🚀 ~ CustomerList ~ customersDetails:", customersDetails);
   const fetchCustomers = async () => {
     if (customersDetails.length !== 0) {
       return;

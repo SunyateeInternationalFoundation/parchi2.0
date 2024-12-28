@@ -121,7 +121,7 @@ const Navbar = () => {
   return (
     <>
       <header className="border-b border-gray-300" style={{ height: "8vh" }}>
-        <div className="flex items-center justify-between px-4 h-full">
+        <div className="flex items-center justify-between px-10 w-full">
           <div className="flex items-center space-x-6">
             <Link href="#" className="flex items-center m-3">
               <div>

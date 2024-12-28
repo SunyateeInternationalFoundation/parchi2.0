@@ -39,7 +39,6 @@ function CreateProject() {
       value
     );
     const bankBookName = books.find((book) => book.id === value).name;
-    console.log(bankBookName, bookRef);
     setProjectForm((prevData) => ({
       ...prevData,
       book: { bookRef, id: value, name: bankBookName },

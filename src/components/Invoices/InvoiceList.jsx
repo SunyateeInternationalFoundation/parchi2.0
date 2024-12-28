@@ -27,8 +27,6 @@ const InvoiceList = () => {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   }
-  console.log("userDetails", userDetails);
-  console.log("companyId", companyId);
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.invoice;
@@ -108,8 +106,6 @@ const InvoiceList = () => {
   const pendingAmount = filteredInvoices
     .filter((invoice) => invoice.paymentStatus === "Pending")
     .reduce((sum, invoice) => sum + invoice.total, 0);
-  console.log("userDetails", userDetails);
-  console.log("filteredInvoices", filteredInvoices);
   return (
     <div className="w-full">
       <div
@@ -196,7 +192,7 @@ const InvoiceList = () => {
             <div className="" style={{ height: "80vh" }}>
               <div className="" style={{ height: "74vh" }}>
                 <table className="w-full border-collapse text-start">
-                  <thead className="sticky top-0 z-10 bg-white">
+                  <thead className=" bg-white">
                     <tr className="border-b">
                       <td className="px-5 py-1 text-gray-600 font-semibold text-start">
                         Invoice No

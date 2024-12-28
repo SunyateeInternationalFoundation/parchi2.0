@@ -1,13 +1,13 @@
 import {
-    addDoc,
-    collection,
-    doc,
-    getDoc,
-    getDocs,
-    query,
-    Timestamp,
-    updateDoc,
-    where,
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  Timestamp,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
@@ -82,7 +82,6 @@ const SetPO = () => {
   });
   const [suggestions, setSuggestions] = useState([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  console.log("existquantity", existQuantity);
   useEffect(() => {
     function addActionQty() {
       if (formData?.products?.length === 0 || products.length === 0 || !poId) {
@@ -167,7 +166,6 @@ const SetPO = () => {
           ...vendorData,
         });
         setFormData(getData);
-        console.log("formdata", formData);
       } catch (error) {
         console.log("🚀 ~ fetchPoData ~ error:", error);
       }
@@ -291,18 +289,12 @@ const SetPO = () => {
                 : +data.purchasePrice) /
                 100) *
               data.discount;
-            console.log("discount", discount);
           }
           const netAmount =
             (data.purchasePrice <= 0
               ? +data.sellingPrice
               : data.purchasePrice) - discount;
-          console.log(
-            "price",
-            netAmount,
-            data.purchasePrice,
-            data.sellingPrice
-          );
+
           const taxRate = data.tax || 0;
           let sgst = 0;
           let cgst = 0;
@@ -618,8 +610,7 @@ const SetPO = () => {
 
         const existingQuantity = existQuantity[item.name] || 0;
         const updatedStock = currentQuantity - existingQuantity + item.quantity;
-        // console.log("existingquantity", existingQuantity,item.name)
-        // console.log("items", item)
+
         await updateDoc(item.productRef, {
           stock: updatedStock,
         });
@@ -662,7 +653,6 @@ const SetPO = () => {
   function onSelectBook(e) {
     const { value } = e.target;
     const data = books.find((ele) => ele.id === value);
-    console.log("🚀 ~ onSelectBook ~ data:", data);
     const bookRef = doc(
       db,
       "companies",

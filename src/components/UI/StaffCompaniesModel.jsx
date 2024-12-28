@@ -52,17 +52,17 @@ const StaffCompaniesModel = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-10">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
         <h2 className="text-2xl font-semibold mb-4 text-center">
           Company Details{" "}
         </h2>
         {staffDetails && staffDetails.length > 0 ? (
-          <div className="grid grid-cols-3">
+          <div className="grid grid-cols-3 gap-3">
             {staffDetails.map((staff, index) => (
               <div
                 key={staff.companyDetails.companyId}
-                className="p-2 cursor-pointer hover:bg-gray-100 border-2 rounded-lg h-32 "
+                className="p-2 cursor-pointer hover:bg-gray-100 border-2 rounded-lg h-46"
                 onClick={() => {
                   navigate("invoice");
                   onSwitchCompanyStaffDashboard();
@@ -75,10 +75,12 @@ const StaffCompaniesModel = ({
                   onClose();
                 }}
               >
-                <div className="font-bold text-5xl text-center h-3/4 flex items-center justify-center rounded-full bg-sky-100">
+                <div className="font-bold text-5xl text-center py-6 flex items-center justify-center shadow  rounded-full bg-sky-100">
                   {staff.companyDetails.name?.slice(0, 2).toUpperCase() || "YC"}
                 </div>
-                <p className="h-1/4 text-center">{staff.companyDetails.name}</p>
+                <p className="h-fit text-center text-xs font-bold pt-2">
+                  {staff.companyDetails.name}
+                </p>
               </div>
             ))}
           </div>

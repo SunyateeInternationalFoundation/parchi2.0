@@ -12,21 +12,9 @@ function SideBar() {
   const userDetails = useSelector((state) => state.users);
   const staffAndCompanyDetails =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex];
+
   const selectedDashboardUser = userDetails.selectedDashboard;
-  const rolesList = [
-    "invoice",
-    "services",
-    "quotation",
-    "purchase",
-    "customers",
-    "vendors",
-    "project",
-    "po",
-    "pos",
-    "proFormaInvoice",
-    "creditNote",
-    "deliveryChallan",
-  ];
+
   const constSideBarDetails = {
     //
     sales: {
@@ -142,21 +130,6 @@ function SideBar() {
     },
   };
 
-  const staffSideBarDetails = staffAndCompanyDetails
-    ? staffAndCompanyDetails?.roles || ""
-    : "";
-
-  const rolesArray = staffSideBarDetails
-    ? rolesList.filter((role) => {
-        return staffSideBarDetails[role]?.view ?? false;
-      })
-    : [];
-  const viewDashBoardList = {
-    customer: ["invoice", "projects", "quotation"],
-    vendor: ["pO", "projects", "quotation"],
-    staff: rolesArray,
-  };
-
   const [sideBarDetails, setSideBarDetails] = useState(constSideBarDetails);
   useEffect(() => {
     if (selectedDashboardUser === "") {
@@ -164,6 +137,34 @@ function SideBar() {
       return;
     }
     let updatedSidebarData = {};
+    const rolesList = [
+      "invoice",
+      "services",
+      "quotation",
+      "purchase",
+      "customers",
+      "vendors",
+      "project",
+      "po",
+      "pos",
+      "proFormaInvoice",
+      "creditNote",
+      "deliveryChallan",
+    ];
+    const staffSideBarDetails = staffAndCompanyDetails
+      ? staffAndCompanyDetails?.roles || ""
+      : "";
+
+    const rolesArray = staffSideBarDetails
+      ? rolesList.filter((role) => {
+          return staffSideBarDetails[role]?.view ?? false;
+        })
+      : [];
+    const viewDashBoardList = {
+      customer: ["invoice", "projects", "quotation"],
+      vendor: ["pO", "projects", "quotation"],
+      staff: ["projects", ...rolesArray],
+    };
     for (let key of Object.keys(constSideBarDetails)) {
       if (!updatedSidebarData[key]) {
         updatedSidebarData[key] = {
@@ -171,6 +172,7 @@ function SideBar() {
           items: [],
         };
       }
+
       updatedSidebarData[key].items = constSideBarDetails[key].items?.filter(
         (ele) => {
           if (viewDashBoardList[selectedDashboardUser]?.includes(ele.id)) {
@@ -181,7 +183,11 @@ function SideBar() {
       );
     }
     setSideBarDetails(updatedSidebarData);
-  }, [selectedDashboardUser]);
+  }, [
+    selectedDashboardUser,
+    userDetails.selectedStaffCompanyIndex,
+    staffAndCompanyDetails,
+  ]);
 
   return (
     <div
@@ -239,63 +245,70 @@ function SideBar() {
             </Link>
           </div>
         )}
-        <div className=" border-b-2 mt-3">
-          <div
-            className="flex items-center justify-between"
-            onClick={() =>
-              setSideBarDetails({
-                ...sideBarDetails,
-                sales: {
-                  ...sideBarDetails.sales,
-                  isExpend: !sideBarDetails.sales.isExpend,
-                },
-              })
-            }
-          >
-            <div className="flex items-center">
-              {/* <div>{sideBarDetails.sales.image}</div> */}
-              <div
-                className="text-lg font-semibold pl-3"
-                hidden={!isSideBarExpend}
-              >
-                Sales
+        {sideBarDetails.sales.items.length > 0 && (
+          <div className=" border-b-2 mt-3">
+            <div
+              className="flex items-center justify-between"
+              onClick={() =>
+                setSideBarDetails({
+                  ...sideBarDetails,
+                  sales: {
+                    ...sideBarDetails.sales,
+                    isExpend: !sideBarDetails.sales.isExpend,
+                  },
+                })
+              }
+            >
+              <div className="flex items-center">
+                {/* <div>{sideBarDetails.sales.image}</div> */}
+                <div
+                  className="text-lg font-semibold pl-3"
+                  hidden={!isSideBarExpend}
+                >
+                  Sales
+                </div>
+              </div>
+              <div hidden={!isSideBarExpend}>
+                {sideBarDetails.sales.isExpend ? (
+                  <FaAngleUp />
+                ) : (
+                  <FaAngleDown />
+                )}
               </div>
             </div>
-            <div hidden={!isSideBarExpend}>
-              {sideBarDetails.sales.isExpend ? <FaAngleUp /> : <FaAngleDown />}
+            <div
+              className={
+                isSideBarExpend ? "" : "ml-2 mt-2 bg-white rounded-lg shadow-lg"
+              }
+            >
+              {sideBarDetails.sales.isExpend &&
+                sideBarDetails.sales.items.map((item, index) => (
+                  <Link
+                    key={index}
+                    to={
+                      (selectedDashboardUser
+                        ? "/" + selectedDashboardUser
+                        : "") + item.path
+                    }
+                    className=" cursor-pointer"
+                  >
+                    <div
+                      className={
+                        "w-full py-2 px-3 border-t hover:bg-gray-300 hover:rounded-lg  " +
+                        (location.pathname
+                          .split("/")
+                          .includes(item.path.split("/")[1])
+                          ? "bg-gray-300 rounded-lg"
+                          : "")
+                      }
+                    >
+                      {item.name}
+                    </div>
+                  </Link>
+                ))}
             </div>
           </div>
-          <div
-            className={
-              isSideBarExpend ? "" : "ml-2 mt-2 bg-white rounded-lg shadow-lg"
-            }
-          >
-            {sideBarDetails.sales.isExpend &&
-              sideBarDetails.sales.items.map((item, index) => (
-                <Link
-                  key={index}
-                  to={
-                    (selectedDashboardUser ? "/" + selectedDashboardUser : "") +
-                    item.path
-                  }
-                  className=" cursor-pointer"
-                >
-                  <div
-                    className={
-                      "w-full py-2 px-3 border-t hover:bg-gray-300 hover:rounded-lg  " +
-                      (location.pathname
-                        .split("/")
-                        .includes(item.path.split("/")[1])
-                        ? "bg-gray-300 rounded-lg"
-                        : "")
-                    }
-                  >
-                    {item.name}
-                  </div>
-                </Link>
-              ))}
-          </div>
-        </div>
+        )}
         {selectedDashboardUser === "" && (
           <div className="border-b-2 mt-3">
             <Link to="/pos" className=" cursor-pointer mb-10">
@@ -303,66 +316,73 @@ function SideBar() {
             </Link>
           </div>
         )}
-        <div className="mt-3  border-b-2">
-          <div
-            className="flex items-center justify-between"
-            onClick={() =>
-              setSideBarDetails({
-                ...sideBarDetails,
-                manage: {
-                  ...sideBarDetails.manage,
-                  isExpend: !sideBarDetails.manage.isExpend,
-                },
-              })
-            }
-          >
-            <div className="flex items-center">
-              {/* <div>{sideBarDetails.manage.image}</div> */}
-              <div
-                className="text-lg font-semibold pl-3"
-                hidden={!isSideBarExpend}
-              >
-                Manage
+        {sideBarDetails.manage.items.length > 0 && (
+          <div className="mt-3  border-b-2">
+            <div
+              className="flex items-center justify-between"
+              onClick={() =>
+                setSideBarDetails({
+                  ...sideBarDetails,
+                  manage: {
+                    ...sideBarDetails.manage,
+                    isExpend: !sideBarDetails.manage.isExpend,
+                  },
+                })
+              }
+            >
+              <div className="flex items-center">
+                {/* <div>{sideBarDetails.manage.image}</div> */}
+                <div
+                  className="text-lg font-semibold pl-3"
+                  hidden={!isSideBarExpend}
+                >
+                  Manage
+                </div>
+              </div>
+              <div hidden={!isSideBarExpend}>
+                {sideBarDetails.manage.isExpend ? (
+                  <FaAngleUp />
+                ) : (
+                  <FaAngleDown />
+                )}
               </div>
             </div>
-            <div hidden={!isSideBarExpend}>
-              {sideBarDetails.manage.isExpend ? <FaAngleUp /> : <FaAngleDown />}
+            <div
+              className={
+                "" +
+                (isSideBarExpend
+                  ? ""
+                  : "absolute left-full ml-2 mt-2 bg-white rounded-lg shadow-lg")
+              }
+            >
+              {sideBarDetails.manage.isExpend &&
+                sideBarDetails.manage.items.map((item, index) => (
+                  <Link
+                    key={index}
+                    to={
+                      (selectedDashboardUser
+                        ? "/" + selectedDashboardUser
+                        : "") + item.path
+                    }
+                    className=" cursor-pointer"
+                  >
+                    <div
+                      className={
+                        "w-full py-2 px-3 border-t hover:bg-gray-300 hover:rounded-lg  " +
+                        (location.pathname
+                          .split("/")
+                          .includes(item.path.split("/")[1])
+                          ? "bg-gray-300 rounded-lg"
+                          : "")
+                      }
+                    >
+                      {item.name}
+                    </div>
+                  </Link>
+                ))}
             </div>
           </div>
-          <div
-            className={
-              "" +
-              (isSideBarExpend
-                ? ""
-                : "absolute left-full ml-2 mt-2 bg-white rounded-lg shadow-lg")
-            }
-          >
-            {sideBarDetails.manage.isExpend &&
-              sideBarDetails.manage.items.map((item, index) => (
-                <Link
-                  key={index}
-                  to={
-                    (selectedDashboardUser ? "/" + selectedDashboardUser : "") +
-                    item.path
-                  }
-                  className=" cursor-pointer"
-                >
-                  <div
-                    className={
-                      "w-full py-2 px-3 border-t hover:bg-gray-300 hover:rounded-lg  " +
-                      (location.pathname
-                        .split("/")
-                        .includes(item.path.split("/")[1])
-                        ? "bg-gray-300 rounded-lg"
-                        : "")
-                    }
-                  >
-                    {item.name}
-                  </div>
-                </Link>
-              ))}
-          </div>
-        </div>
+        )}
         {selectedDashboardUser === "" && (
           <>
             <div className="mt-3  border-b-2">

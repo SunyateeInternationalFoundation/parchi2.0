@@ -10,7 +10,12 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 
-import { getDownloadURL, ref, uploadBytesResumable, deleteObject } from "firebase/storage";
+import {
+  getDownloadURL,
+  ref,
+  uploadBytesResumable,
+  deleteObject,
+} from "firebase/storage";
 import { useEffect, useState } from "react";
 import {
   AiFillFolder,
@@ -117,7 +122,6 @@ const Documents = () => {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           setUploadProgress(progress);
-          console.log(`Upload is ${progress}% done`);
         },
         (error) => {
           console.error("File upload error:", error.message);

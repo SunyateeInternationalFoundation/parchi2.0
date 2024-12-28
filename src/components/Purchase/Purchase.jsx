@@ -2,10 +2,10 @@ import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
-    LuChevronLeft,
-    LuChevronRight,
-    LuChevronsLeft,
-    LuChevronsRight,
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -172,7 +172,7 @@ const Purchase = ({ companyDetails, isStaff }) => {
             <div className="" style={{ height: "80vh" }}>
               <div className="" style={{ height: "74vh" }}>
                 <table className="w-full border-collapse text-start">
-                  <thead className="sticky top-0 z-10 bg-white">
+                  <thead className=" bg-white">
                     <tr className="border-b">
                       <td className="px-5 py-3 text-gray-600 font-semibold text-start">
                         Purchase No
