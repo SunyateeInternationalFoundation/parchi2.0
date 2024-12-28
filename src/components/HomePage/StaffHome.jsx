@@ -63,6 +63,7 @@ const Modal = ({
   setSelectedCompany,
   staffProfileDetailsAllCompany,
   setStaffProfileDetailsSelectedCompany,
+  setSelectCompanyIndex,
 }) => {
   const navigate = useNavigate();
   return (
@@ -73,7 +74,7 @@ const Modal = ({
         </h2>
         {companyDetails && companyDetails.length > 0 ? (
           <div className="grid grid-cols-3">
-            {companyDetails.map((company) => (
+            {companyDetails.map((company, index) => (
               <div
                 key={company.id}
                 className="p-2 cursor-pointer hover:bg-gray-100 border-2 rounded-lg h-32 "
@@ -81,10 +82,11 @@ const Modal = ({
                   navigate("invoice");
                   setSelectedCompanyName(company.name);
                   setSelectedCompany(company);
+                  setSelectCompanyIndex(index);
                   setStaffProfileDetailsSelectedCompany(
                     staffProfileDetailsAllCompany.find(
                       (ele) => ele.companyRef.id == company.id
-                    ).id
+                    )
                   );
                 }}
               >
@@ -119,6 +121,7 @@ Modal.propTypes = {
   setSelectedCompany: PropTypes.func.isRequired,
   staffProfileDetailsAllCompany: PropTypes.array,
   setStaffProfileDetailsSelectedCompany: PropTypes.func.isRequired,
+  setSelectCompanyIndex: PropTypes.func.isRequired,
 };
 
 const StaffHome = () => {
@@ -131,9 +134,10 @@ const StaffHome = () => {
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [staffProfileDetailsAllCompany, setStaffProfileDetailsAllCompany] =
     useState(null);
-  const [staffIdSelectedCompany, setStaffIdSelectedCompany] = useState(null);
+  const [staffDetailsSelectedCompany, setStaffDetailsSelectedCompany] =
+    useState(null);
+  const [selectCompanyIndex, setSelectCompanyIndex] = useState(0);
 
-  console.log("🚀 ~ StaffHome ~ selectedCompany:", selectedCompany);
   useEffect(() => {
     if (location.pathname === "/staff") {
       setShowModal(true);
@@ -161,7 +165,6 @@ const StaffHome = () => {
         setStaffProfileDetailsAllCompany(staffDoc);
         const staffSidebar = staffDoc.map((staff) => {
           if (staff.roles) {
-            console.log("role", staff.roles);
             return Object.keys(staff.roles).filter((role) => staff.roles[role]);
           }
           return [];
@@ -169,7 +172,6 @@ const StaffHome = () => {
         const companyPromises = staffDoc.map(async (staff) => {
           if (staff.companyRef) {
             const companyDoc = await getDoc(staff.companyRef);
-            console.log("companyDoc", companyDoc);
             return companyDoc.exists()
               ? { id: companyDoc.id, ...companyDoc.data() }
               : null;
@@ -178,6 +180,7 @@ const StaffHome = () => {
         });
 
         const companies = await Promise.all(companyPromises);
+
         if (companies.length > 0) {
           setCompanyDetails(companies);
         } else {
@@ -207,7 +210,10 @@ const StaffHome = () => {
       <div className="flex" style={{ height: "92vh" }}>
         <div>
           {!showModal && (
-            <SideBar staff={roles} staffId={staffIdSelectedCompany} />
+            <SideBar
+              staff={roles[selectCompanyIndex]}
+              staffId={staffDetailsSelectedCompany?.id}
+            />
           )}
         </div>
         <div style={{ width: "100%", height: "92vh" }} className="bg-gray-100">
@@ -216,223 +222,152 @@ const StaffHome = () => {
               path="/profile/:id"
               element={<StaffView staffCompanyId={selectedCompany?.id} />}
             ></Route>
-            {roles.length > 0 && roles[0].includes("Invoice") && (
-              <>
-                <Route
-                  path="/invoice"
-                  element={
-                    <InvoiceList
-                      companyDetails={selectedCompany}
-                      isStaff={true}
-                    />
-                  }
-                ></Route>
-                <Route path="/invoice/:id" element={<InvoiceView />}></Route>
-                <Route
-                  path="/invoice/create-invoice"
-                  element={<SetInvoice />}
-                ></Route>
-                <Route
-                  path="/invoice/:invoiceId/edit-invoice"
-                  element={<SetInvoice />}
-                ></Route>
-              </>
-            )}
-            {roles.length > 0 && roles[0].includes("Quotation") && (
-              <>
-                <Route
-                  path="/quotation"
-                  element={
-                    <Quotation
-                      companyDetails={selectedCompany}
-                      isStaff={true}
-                    />
-                  }
-                ></Route>
-                <Route
-                  path="/quotation/:id"
-                  element={<QuotationViewHome />}
-                ></Route>
-                <Route
-                  path="/quotation/create-quotation"
-                  element={<SetQuotation />}
-                ></Route>
-                <Route
-                  path="/quotation/:quotationId/edit-quotation"
-                  element={<SetQuotation />}
-                ></Route>
-              </>
-            )}
-            {roles.length > 0 && roles[0].includes("Purchase") && (
-              <>
-                <Route
-                  path="/purchase"
-                  element={
-                    <Purchase companyDetails={selectedCompany} isStaff={true} />
-                  }
-                ></Route>
-                <Route
-                  path="/purchase/:id"
-                  element={<PurchaseViewHome />}
-                ></Route>
-                <Route
-                  path="/purchase/create-purchase"
-                  element={<SetPurchase />}
-                ></Route>
-                <Route
-                  path="/purchase/:purchaseId/edit-purchase"
-                  element={<SetPurchase />}
-                ></Route>
-              </>
-            )}
-            {roles.length > 0 && roles[0].includes("Project") && (
-              <>
-                <Route
-                  path="/projects"
-                  element={
-                    <Projects companyDetails={selectedCompany} isStaff={true} />
-                  }
-                ></Route>
-                <Route
-                  path="/projects/create-project"
-                  element={<CreateProject />}
-                ></Route>
-                <Route path="/projects/:id" element={<ProjectView />} />
-                <Route path="/projects/:id/user" element={<Users />} />
-                <Route path="/projects/:id/tasks" element={<Tasks />}></Route>
-                <Route
-                  path="/projects/:id/milestones"
-                  element={<Milestone />}
-                ></Route>
-                <Route path="/projects/:id/files" element={<Files />}></Route>
-                <Route
-                  path="/projects/:id/approvals"
-                  element={<Approval />}
-                ></Route>
-                <Route
-                  path="/projects/:id/payments"
-                  element={<Payment />}
-                ></Route>
-                <Route path="/projects/:id/items" element={<Items />}></Route>
-                <Route path="/projects/:id/chats" element={<Chats />}></Route>
-              </>
-            )}
-            {roles.length > 0 && roles[0].includes("Customers") && (
-              <>
-                <Route
-                  path="/customers"
-                  element={
-                    <CustomerList
-                      companyDetails={selectedCompany}
-                      isStaff={true}
-                    />
-                  }
-                ></Route>
-                <Route path="/customers/:id" element={<CustomerView />}></Route>
-              </>
-            )}
-            {roles.length > 0 && roles[0].includes("Vendors") && (
-              <>
-                <Route
-                  path="/vendors"
-                  element={
-                    <VendorList
-                      companyDetails={selectedCompany}
-                      isStaff={true}
-                    />
-                  }
-                ></Route>
-                <Route path="/vendors/:id" element={<VendorView />}></Route>
-              </>
-            )}
-            {roles.length > 0 && roles[0].includes("PO") && (
-              <>
-                <Route path="/po" element={<PO />}></Route>
-
-                <Route path="/po/:id" element={<PoView />}></Route>
-                <Route path="/po/create-po" element={<SetPO />}></Route>
-                <Route path="/po/:poId/edit-po" element={<SetPO />}></Route>
-              </>
-            )}
-            {roles.length > 0 && roles[0].includes("Services") && (
-              <>
-                <Route path="/services" element={<Services />}></Route>
-                <Route
-                  path="/services/create-service"
-                  element={<CreateService />}
-                ></Route>
-                <Route
-                  path="/services/:id/edit-service"
-                  element={<EditService />}
-                ></Route>
-              </>
-            )}
-            {roles.length > 0 && roles[0].includes("DeliveryChallan") && (
-              <>
-                <Route
-                  path="/delivery-challan"
-                  element={<DeliveryChallanList />}
-                ></Route>
-                <Route
-                  path="/delivery-challan/:id"
-                  element={<DeliveryChallanView />}
-                ></Route>
-                <Route
-                  path="/delivery-challan/create-deliverychallan"
-                  element={<SetDeliveryChallan />}
-                ></Route>
-                <Route
-                  path="/delivery-challan/:deliverychallanId/edit-deliverychallan"
-                  element={<SetDeliveryChallan />}
-                ></Route>
-              </>
-            )}
-            {roles.length > 0 && roles[0].includes("CreditNote") && (
-              <>
-                <Route path="/credit-note" element={<CreditNoteList />}></Route>
-                <Route
-                  path="/credit-note/:id"
-                  element={<CreditNoteView />}
-                ></Route>
-                <Route
-                  path="/credit-note/create-creditnote"
-                  element={<SetCreditNote />}
-                ></Route>
-                <Route
-                  path="/credit-note/:creditnoteId/edit-creditnote"
-                  element={<SetCreditNote />}
-                ></Route>
-              </>
-            )}
-            {roles.length > 0 && roles[0].includes("POS") && (
-              <>
-                <Route path="/pos" element={<POS />}></Route>
-                <Route path="/pos/:id" element={<POSView />}></Route>
-                <Route path="/pos/create-pos" element={<SetPos />}></Route>
-                <Route path="/pos/:posId/edit-pos" element={<SetPos />}></Route>
-              </>
-            )}
-
-            {roles.length > 0 && roles[0].includes("ProFormaInvoice") && (
-              <>
-                <Route
-                  path="/pro-forma-invoice"
-                  element={<ProFormaInvoice />}
-                ></Route>
-                <Route
-                  path="/pro-forma-invoice/:id"
-                  element={<ProFormaView />}
-                ></Route>
-                <Route
-                  path="/pro-forma-invoice/create-proForma-invoice"
-                  element={<SetProFormaInvoice />}
-                ></Route>
-                <Route
-                  path="/pro-forma-invoice/:proFormaId/edit-proForma-invoice"
-                  element={<SetProFormaInvoice />}
-                ></Route>
-              </>
-            )}
+            <Route
+              path="/invoice"
+              element={
+                <InvoiceList companyDetails={selectedCompany} isStaff={true} />
+              }
+            ></Route>
+            <Route path="/invoice/:id" element={<InvoiceView />}></Route>
+            <Route
+              path="/invoice/create-invoice"
+              element={<SetInvoice />}
+            ></Route>
+            <Route
+              path="/invoice/:invoiceId/edit-invoice"
+              element={<SetInvoice />}
+            ></Route>
+            <Route
+              path="/quotation"
+              element={
+                <Quotation companyDetails={selectedCompany} isStaff={true} />
+              }
+            ></Route>
+            <Route
+              path="/quotation/:id"
+              element={<QuotationViewHome />}
+            ></Route>
+            <Route
+              path="/quotation/create-quotation"
+              element={<SetQuotation />}
+            ></Route>
+            <Route
+              path="/quotation/:quotationId/edit-quotation"
+              element={<SetQuotation />}
+            ></Route>
+            <Route
+              path="/purchase"
+              element={
+                <Purchase companyDetails={selectedCompany} isStaff={true} />
+              }
+            ></Route>
+            <Route path="/purchase/:id" element={<PurchaseViewHome />}></Route>
+            <Route
+              path="/purchase/create-purchase"
+              element={<SetPurchase />}
+            ></Route>
+            <Route
+              path="/purchase/:purchaseId/edit-purchase"
+              element={<SetPurchase />}
+            ></Route>
+            <Route
+              path="/projects"
+              element={
+                <Projects companyDetails={selectedCompany} isStaff={true} />
+              }
+            ></Route>
+            <Route
+              path="/projects/create-project"
+              element={<CreateProject />}
+            ></Route>
+            <Route path="/projects/:id" element={<ProjectView />} />
+            <Route path="/projects/:id/user" element={<Users />} />
+            <Route path="/projects/:id/tasks" element={<Tasks />}></Route>
+            <Route
+              path="/projects/:id/milestones"
+              element={<Milestone />}
+            ></Route>
+            <Route path="/projects/:id/files" element={<Files />}></Route>
+            <Route
+              path="/projects/:id/approvals"
+              element={<Approval />}
+            ></Route>
+            <Route path="/projects/:id/payments" element={<Payment />}></Route>
+            <Route path="/projects/:id/items" element={<Items />}></Route>
+            <Route path="/projects/:id/chats" element={<Chats />}></Route>
+            <Route
+              path="/customers"
+              element={
+                <CustomerList companyDetails={selectedCompany} isStaff={true} />
+              }
+            ></Route>
+            <Route path="/customers/:id" element={<CustomerView />}></Route>
+            <Route
+              path="/vendors"
+              element={
+                <VendorList companyDetails={selectedCompany} isStaff={true} />
+              }
+            ></Route>
+            <Route path="/vendors/:id" element={<VendorView />}></Route>
+            <Route path="/po" element={<PO />}></Route>
+            <Route path="/po/:id" element={<PoView />}></Route>
+            <Route path="/po/create-po" element={<SetPO />}></Route>
+            <Route path="/po/:poId/edit-po" element={<SetPO />}></Route>
+            <Route path="/services" element={<Services />}></Route>
+            <Route
+              path="/services/create-service"
+              element={<CreateService />}
+            ></Route>
+            <Route
+              path="/services/:id/edit-service"
+              element={<EditService />}
+            ></Route>
+            <Route
+              path="/delivery-challan"
+              element={<DeliveryChallanList />}
+            ></Route>
+            <Route
+              path="/delivery-challan/:id"
+              element={<DeliveryChallanView />}
+            ></Route>
+            <Route
+              path="/delivery-challan/create-deliverychallan"
+              element={<SetDeliveryChallan />}
+            ></Route>
+            <Route
+              path="/delivery-challan/:deliverychallanId/edit-deliverychallan"
+              element={<SetDeliveryChallan />}
+            ></Route>
+            <Route path="/credit-note" element={<CreditNoteList />}></Route>
+            <Route path="/credit-note/:id" element={<CreditNoteView />}></Route>
+            <Route
+              path="/credit-note/create-creditnote"
+              element={<SetCreditNote />}
+            ></Route>
+            <Route
+              path="/credit-note/:creditnoteId/edit-creditnote"
+              element={<SetCreditNote />}
+            ></Route>
+            <Route path="/pos" element={<POS />}></Route>
+            <Route path="/pos/:id" element={<POSView />}></Route>
+            <Route path="/pos/create-pos" element={<SetPos />}></Route>
+            <Route path="/pos/:posId/edit-pos" element={<SetPos />}></Route>
+            <Route
+              path="/pro-forma-invoice"
+              element={<ProFormaInvoice />}
+            ></Route>
+            <Route
+              path="/pro-forma-invoice/:id"
+              element={<ProFormaView />}
+            ></Route>
+            <Route
+              path="/pro-forma-invoice/create-proForma-invoice"
+              element={<SetProFormaInvoice />}
+            ></Route>
+            <Route
+              path="/pro-forma-invoice/:proFormaId/edit-proForma-invoice"
+              element={<SetProFormaInvoice />}
+            ></Route>
           </Routes>
 
           <Outlet />
@@ -445,7 +380,8 @@ const StaffHome = () => {
           setSelectedCompanyName={setSelectedCompanyName}
           setSelectedCompany={setSelectedCompany}
           staffProfileDetailsAllCompany={staffProfileDetailsAllCompany}
-          setStaffProfileDetailsSelectedCompany={setStaffIdSelectedCompany}
+          setStaffProfileDetailsSelectedCompany={setStaffDetailsSelectedCompany}
+          setSelectCompanyIndex={setSelectCompanyIndex}
         />
       )}
     </div>
