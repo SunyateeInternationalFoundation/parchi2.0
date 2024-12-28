@@ -242,7 +242,7 @@ const InvoiceList = () => {
                             </span>
                           </td>
 
-                          <td className="px-5 py-3">
+                          <td className="px-5 py-3 text-start">
                             {new Date(
                               invoice.date.seconds * 1000 +
                                 invoice.date.nanoseconds / 1000000
@@ -286,11 +286,11 @@ const InvoiceList = () => {
                               </select>
                             </div>
                           </td>
-                          <td className="px-5 py-3">
+                          <td className="px-5 py-3 text-start">
                             {invoice.mode || "Online"}
                           </td>
 
-                          <td className="px-5 py-3">
+                          <td className="px-5 py-3 text-start">
                             {/* {invoice?.createdBy?.name == userDetails.name
                               ? "Owner"
                               : "staff"} */}

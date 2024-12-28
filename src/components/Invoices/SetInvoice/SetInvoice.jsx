@@ -992,6 +992,7 @@ const SetInvoice = () => {
                     value={formData.shippingCharges || ""}
                     placeholder="Shipping Charges"
                     className="border p-2 rounded w-full"
+                    min={0}
                     onChange={(e) => {
                       setFormData((val) => ({
                         ...val,
@@ -1007,6 +1008,7 @@ const SetInvoice = () => {
                     value={formData.packagingCharges || ""}
                     placeholder="Packaging Charges"
                     className="border p-2 rounded w-full"
+                    min={0}
                     onChange={(e) => {
                       setFormData((val) => ({
                         ...val,
