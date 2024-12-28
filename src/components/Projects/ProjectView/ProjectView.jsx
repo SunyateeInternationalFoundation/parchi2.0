@@ -56,7 +56,7 @@ function ProjectView() {
   }
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
-      ?.approvals;
+      ?.project;
 
   const handleUpdate = async () => {
     try {
@@ -302,20 +302,44 @@ function ProjectView() {
               </div>
               {isOutlineDotsOpen && (
                 <div className="absolute bg-white  p-1 right-1 cursor-pointer border-2 rounded-lg">
-                  <div
-                    className="pe-14 py-1 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
-                    onClick={() => setIsEdit(true)}
-                  >
-                    <TbEdit className="text-green-600" />
-                    <div>Edit</div>
-                  </div>
-                  <div
-                    className="py-1 pe-14 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
-                    onClick={handleDelete}
-                  >
-                    <RiDeleteBin6Line className="text-red-500" />
-                    <div> Delete</div>
-                  </div>
+                  {userDetails.selectedDashboard === "staff" ? (
+                    role.edit && (
+                      <div
+                        className="pe-14 py-1 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
+                        onClick={() => setIsEdit(true)}
+                      >
+                        <TbEdit className="text-green-600" />
+                        <div>Edit</div>
+                      </div>
+                    )
+                  ) : (
+                    <div
+                      className="pe-14 py-1 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
+                      onClick={() => setIsEdit(true)}
+                    >
+                      <TbEdit className="text-green-600" />
+                      <div>Edit</div>
+                    </div>
+                  )}
+                  {userDetails.selectedDashboard === "staff" ? (
+                    role.delete && (
+                      <div
+                        className="py-1 pe-14 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
+                        onClick={handleDelete}
+                      >
+                        <RiDeleteBin6Line className="text-red-500" />
+                        <div> Delete</div>
+                      </div>
+                    )
+                  ) : (
+                    <div
+                      className="py-1 pe-14 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
+                      onClick={handleDelete}
+                    >
+                      <RiDeleteBin6Line className="text-red-500" />
+                      <div> Delete</div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

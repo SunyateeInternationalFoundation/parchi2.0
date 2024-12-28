@@ -1,6 +1,7 @@
 import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../../../firebase"; // Ensure Firebase is configured correctly
 import CreateApproval from "./CreateApproval";
@@ -10,7 +11,21 @@ const Approval = () => {
   const projectId = id;
   const [approvals, setApprovals] = useState([]);
   const [filter, setFilter] = useState("All");
-
+  const userDetails = useSelector((state) => state.users);
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
+  console.log("userDetails", userDetails);
+  console.log("companyId", companyId);
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.approvals;
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const fetchApprovals = async () => {
     const approvalsRef = collection(db, `projects/${projectId}/approvals`);
@@ -61,12 +76,23 @@ const Approval = () => {
           ))}
         </div>
         <div>
-          <button
-            className="bg-blue-500 text-white py-1 px-2 rounded"
-            onClick={() => setIsSideBarOpen(true)}
-          >
-            + Create Approval
-          </button>
+          {userDetails.selectedDashboard === "staff" ? (
+            role.access && (
+              <button
+                className="bg-blue-500 text-white py-1 px-2 rounded"
+                onClick={() => setIsSideBarOpen(true)}
+              >
+                + Create Approval
+              </button>
+            )
+          ) : (
+            <button
+              className="bg-blue-500 text-white py-1 px-2 rounded"
+              onClick={() => setIsSideBarOpen(true)}
+            >
+              + Create Approval
+            </button>
+          )}
         </div>
       </div>
 

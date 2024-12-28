@@ -9,16 +9,30 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../../../firebase"; // Ensure Firebase is initialized and configured
-
 const Milestone = () => {
   const [milestones, setMilestones] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { id } = useParams();
   const projectId = id;
-
+  const userDetails = useSelector((state) => state.users);
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
+  console.log("userDetails", userDetails);
+  console.log("companyId", companyId);
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.milestones;
   useEffect(() => {
     const fetchMilestones = async () => {
       const milestonesRef = collection(db, `projects/${projectId}/milestone`);
@@ -71,12 +85,24 @@ const Milestone = () => {
           </Link>
           <h1 className="text-2xl font-bold  text-black">Milestones</h1>
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-blue-500 text-white px-2 rounded hover:bg-blue-600 transition"
-        >
-          + Create Milestone
-        </button>
+
+        {userDetails.selectedDashboard === "staff" ? (
+          role.access && (
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-blue-500 text-white px-2 rounded hover:bg-blue-600 transition"
+            >
+              + Create Milestone
+            </button>
+          )
+        ) : (
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-500 text-white px-2 rounded hover:bg-blue-600 transition"
+          >
+            + Create Milestone
+          </button>
+        )}
       </div>
       <div className="space-y-4">
         {milestones.map((milestone) => (

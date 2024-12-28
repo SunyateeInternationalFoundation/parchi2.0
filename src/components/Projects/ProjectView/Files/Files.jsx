@@ -1,11 +1,11 @@
 import {
-    addDoc,
-    collection,
-    doc,
-    getDocs,
-    query,
-    serverTimestamp,
-    where,
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  serverTimestamp,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
@@ -29,9 +29,20 @@ const Files = () => {
   });
 
   const userDetails = useSelector((state) => state.users);
-
-  const companyId =
-    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
+  console.log("userDetails", userDetails);
+  console.log("companyId", companyId);
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.files;
   const { id } = useParams();
   const projectId = id;
 
@@ -169,12 +180,24 @@ const Files = () => {
           </Link>
           <h1 className="text-xl font-bold">Files</h1>
         </div>
-        <button
-          className="bg-blue-500 text-white text-2xl text-center px-3 pb-1 rounded hover:bg-blue-600 transition"
-          onClick={() => setIsModalOpen(true)}
-        >
-          +
-        </button>
+
+        {userDetails.selectedDashboard === "staff" ? (
+          role.access && (
+            <button
+              className="bg-blue-500 text-white text-2xl text-center px-3 pb-1 rounded hover:bg-blue-600 transition"
+              onClick={() => setIsModalOpen(true)}
+            >
+              +
+            </button>
+          )
+        ) : (
+          <button
+            className="bg-blue-500 text-white text-2xl text-center px-3 pb-1 rounded hover:bg-blue-600 transition"
+            onClick={() => setIsModalOpen(true)}
+          >
+            +
+          </button>
+        )}
       </div>
 
       <div className="rounded-lg p-6 space-y-4">
@@ -309,7 +332,6 @@ const Files = () => {
                   // onChange={(e) =>
                   //   setFormData({ ...formData, file: e.target.files[0] })
                   // }
-                  
                 />
               </div>
               <button

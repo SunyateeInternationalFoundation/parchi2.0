@@ -9,7 +9,7 @@ import {
   LuChevronsRight,
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
 
 const CreditNoteList = () => {
@@ -25,7 +25,7 @@ const CreditNoteList = () => {
 
   // const companyId =
   //   userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
     companyId =

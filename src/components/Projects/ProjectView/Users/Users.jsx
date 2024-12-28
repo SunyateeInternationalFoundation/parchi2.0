@@ -1,13 +1,28 @@
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../../../firebase";
 import UserSidebar from "./UserSidebar";
-
 function Users() {
   const { id } = useParams();
   const projectId = id;
+  const userDetails = useSelector((state) => state.users);
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
+  console.log("userDetails", userDetails);
+  console.log("companyId", companyId);
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.users;
   const [loading, setLoading] = useState(false);
   const [activeNav, setActiveNav] = useState("customers");
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
@@ -101,12 +116,24 @@ function Users() {
           </Link>
           <h2 className="text-2xl font-bold">Project Members</h2>
         </div>
-        <button
-          className="bg-blue-500 text-white px-4 pb-1 rounded-md ml-4 text-2xl"
-          onClick={() => setIsSideBarOpen(true)}
-        >
-          +
-        </button>
+
+        {userDetails.selectedDashboard === "staff" ? (
+          role.create && (
+            <button
+              className="bg-blue-500 text-white px-4 pb-1 rounded-md ml-4 text-2xl"
+              onClick={() => setIsSideBarOpen(true)}
+            >
+              +
+            </button>
+          )
+        ) : (
+          <button
+            className="bg-blue-500 text-white px-4 pb-1 rounded-md ml-4 text-2xl"
+            onClick={() => setIsSideBarOpen(true)}
+          >
+            +
+          </button>
+        )}
       </div>
       <div className="bg-white p-4 rounded-lg shadow mb-4">
         <nav className="flex space-x-4 mb-4">
