@@ -139,7 +139,7 @@ function StaffView({ staffCompanyId }) {
           >
             Projects
           </button>
-          <button
+          {/* <button
             className={
               "px-4 py-1" +
               (activeTab === "Payments"
@@ -149,7 +149,7 @@ function StaffView({ staffCompanyId }) {
             onClick={() => setActiveTab("Payments")}
           >
             Payments
-          </button>
+          </button> */}
           <button
             className={
               "px-4 py-1" +
