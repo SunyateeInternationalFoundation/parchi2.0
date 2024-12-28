@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
@@ -87,7 +87,10 @@ function Sidebar({
               <div className="text-end">
                 <div className="font-bold">₹ {product.sellingPrice}</div>
                 <div className="text-sm">Discount : {product.discount}</div>
-                <div className="text-sm"> Tax ₹ {product.taxAmount}</div>
+                <div className="text-sm">
+                  {" "}
+                  Tax ₹ {product.taxAmount.toFixed(2)}
+                </div>
               </div>
             </div>
           ))}
@@ -95,7 +98,7 @@ function Sidebar({
 
         <div className="mt-4 text-right">
           <h3 className="text-gray-700 font-bold text-base">
-            Total: ₹ {totalAmount}
+            Total: ₹ {totalAmount.toFixed(2)}
           </h3>
         </div>
 

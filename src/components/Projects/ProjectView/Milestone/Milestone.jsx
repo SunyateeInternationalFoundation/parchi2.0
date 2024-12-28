@@ -19,17 +19,7 @@ const Milestone = () => {
   const { id } = useParams();
   const projectId = id;
   const userDetails = useSelector((state) => state.users);
-  let companyId;
-  if (userDetails.selectedDashboard === "staff") {
-    companyId =
-      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
-        .companyDetails.companyId;
-  } else {
-    companyId =
-      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  }
-  console.log("userDetails", userDetails);
-  console.log("companyId", companyId);
+
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.milestones;
