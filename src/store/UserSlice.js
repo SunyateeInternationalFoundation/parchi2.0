@@ -28,6 +28,7 @@ if (localStorage.getItem("user")) {
     token,
     companies,
     selectedCompanyIndex,
+    selectedStaffCompanyIndex,
     selectedDashboard,
     isCompanyProfileDone,
   } = JSON.parse(localStorage.getItem("user"));
@@ -43,6 +44,7 @@ if (localStorage.getItem("user")) {
     companies,
     isCompanyProfileDone,
     selectedDashboard: selectedDashboard,
+    selectedStaffCompanyIndex,
     asAStaffCompanies: [],
     userAsOtherCompanies: {
       customer: [],

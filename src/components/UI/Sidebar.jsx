@@ -145,17 +145,12 @@ function SideBar() {
   const staffSideBarDetails = staffAndCompanyDetails
     ? staffAndCompanyDetails?.roles || ""
     : "";
-  console.log("🚀 ~ SideBar ~ staffSideBarDetails:", staffSideBarDetails);
 
-  // const projectsList = ["users", "milestones", "tasks", "files", "approvals"];
-
-  // const actions = ["create", "edit", "view", "delete"];
   const rolesArray = staffSideBarDetails
     ? rolesList.filter((role) => {
         return staffSideBarDetails[role]?.view ?? false;
       })
     : [];
-  console.log("🚀 ~ SideBar ~ rolesArray:", rolesArray);
   const viewDashBoardList = {
     customer: ["invoice", "projects", "quotation"],
     vendor: ["pO", "projects", "quotation"],

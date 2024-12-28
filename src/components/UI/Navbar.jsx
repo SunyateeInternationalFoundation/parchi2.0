@@ -19,8 +19,9 @@ import {
   setUserLogout,
   updateUserDetails,
 } from "../../store/UserSlice";
+import StaffCompaniesModel from "./StaffCompaniesModel";
 
-const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
+const Navbar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isCompanyOpen, setIsCompanyOpen] = useState(false);
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
@@ -28,14 +29,18 @@ const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
   const [editForm, setEditForm] = useState({ name: "", email: "", phone: "" });
   const dispatch = useDispatch();
   const userDetails = useSelector((state) => state.users);
-  let companiesList = userDetails.companies;
-
+  let companiesList = userDetails?.companies;
+  const [showModal, setShowModal] = useState(false);
   let companyName =
+    companiesList &&
     userDetails.companies[userDetails.selectedCompanyIndex]?.name;
 
-  if (isStaff) {
-    companiesList = companyDetails ?? [];
-    companyName = selectedCompany ?? "";
+  if (userDetails.selectedDashboard == "staff") {
+    companiesList =
+      userDetails.asAStaffCompanies.map((ele) => ele.companyDetails) ?? [];
+    companyName =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        ?.companyDetails.name ?? "";
   }
 
   function onSwitchCompany(index) {
@@ -44,14 +49,25 @@ const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
     setIsCompanyOpen(false);
   }
 
-  // Updated to accept dashboardValue directly instead of event
   function onSwitchDashboard(dashboardValue) {
     const payload = { ...userDetails, selectedDashboard: dashboardValue };
-    dispatch(setUserLogin(payload));
-    navigate("/" + dashboardValue);
+    if (dashboardValue == "staff") {
+      setShowModal(true);
+    } else {
+      navigate("/" + dashboardValue);
+      dispatch(setUserLogin(payload));
+    }
     setIsDashboardOpen(false);
   }
-
+  function onSwitchCompanyStaffDashboard() {
+    dispatch(
+      setUserLogin({
+        ...userDetails,
+        selectedDashboard: "staff",
+      })
+    );
+    navigate("/staff");
+  }
   const navigate = useNavigate();
 
   const handleEditClick = () => {
@@ -165,7 +181,7 @@ const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
           </div>
 
           {userDetails.selectedDashboard === "staff" && (
-            <div> You Logged as a Staff in {selectedCompany}'s Company</div>
+            <div> You Logged as a Staff in {companyName}'s Company</div>
           )}
 
           <div className="flex items-center">
@@ -392,7 +408,7 @@ const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
                       key={company.companyId}
                       className="flex flex-col items-center justify-center p-1 cursor-pointer hover:bg-blue-100 rounded-lg"
                       onClick={() => {
-                        if (!isStaff) {
+                        if (userDetails.selectedDashboard == "") {
                           navigate("/");
                           onSwitchCompany(index);
                         }
@@ -407,7 +423,7 @@ const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
                     </div>
                   ))}
                 {/* Add Company Section */}
-                {!isStaff && (
+                {userDetails.selectedDashboard == "" && (
                   <div className="col-span-2 flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-blue-100 rounded-lg border border-dashed border-gray-300">
                     <div className="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full mb-2">
                       <span className="text-lg text-gray-600">+</span>
@@ -421,6 +437,15 @@ const Navbar = ({ selectedCompany, companyDetails, isStaff }) => {
             </div>
           </div>
         </div>
+      )}
+      {showModal && (
+        <StaffCompaniesModel
+          onClose={() => {
+            setShowModal(false);
+          }}
+          phone={userDetails.phone}
+          onSwitchCompanyStaffDashboard={onSwitchCompanyStaffDashboard}
+        />
       )}
     </>
   );
