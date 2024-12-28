@@ -7,8 +7,10 @@ import {
   Timestamp,
   updateDoc,
   where,
+  deleteDoc,
 } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+
+import { getDownloadURL, ref, uploadBytesResumable, deleteObject } from "firebase/storage";
 import { useEffect, useState } from "react";
 import {
   AiFillFolder,
