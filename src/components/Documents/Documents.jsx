@@ -358,7 +358,7 @@ const Documents = () => {
         {files.map((file) => (
           <div
             key={file.id}
-            className="flex justify-center items-center gap-3 rounded-lg cursor-pointer hover:bg-gray-200 relative"
+            className="flex justify-center items-center gap-3 rounded-lg cursor-pointer hover:bg-gray-200 relative "
           >
             <div className="px-2 py-1 text-xs">
               <div onClick={() => handleFileClick(file.fileUrl)}>
@@ -374,7 +374,7 @@ const Documents = () => {
                   className="w-full text-center bg-transparent border-b-2 border-gray-400"
                 />
               ) : (
-                <p className="text-center font-medium ">{file.name}</p>
+                <p className="text-center font-medium text-ellipsis overflow-hidden h-4">{file.name}</p>
               )}
             </div>
             <div className="absolute top-2 right-2">
