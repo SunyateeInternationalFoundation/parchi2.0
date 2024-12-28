@@ -1,5 +1,4 @@
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
-import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
@@ -12,12 +11,11 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
 
-function Quotation() {
-  const [quotations, setQuotations] = useState([]);
+const Purchase = () => {
+  const [purchases, setPurchases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
-
   const userDetails = useSelector((state) => state.users);
 
   // let companyId;
@@ -27,6 +25,7 @@ function Quotation() {
   // } else {
   //   companyId = companyDetails.id;
   // }
+
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
     companyId =
@@ -36,56 +35,51 @@ function Quotation() {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   }
-  console.log("userDetails", userDetails);
-  console.log("companyId", companyId);
+
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
-      ?.quotation;
+      ?.purchase;
+
   const navigate = useNavigate();
   useEffect(() => {
-    const fetchQuotations = async () => {
+    const fetchPurchases = async () => {
       setLoading(true);
       try {
-        const quotationRef = collection(
-          db,
-          "companies",
-          companyId,
-          "quotations"
-        );
-        const querySnapshot = await getDocs(quotationRef);
-        const quotationsData = querySnapshot.docs.map((doc) => ({
+        const purchaseRef = collection(db, "companies", companyId, "purchases");
+        const querySnapshot = await getDocs(purchaseRef);
+        const purchasesData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        setQuotations(quotationsData);
+        setPurchases(purchasesData);
       } catch (error) {
-        console.error("Error fetching quotations:", error);
+        console.error("Error fetching purchases:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchQuotations();
+    fetchPurchases();
   }, [companyId]);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
 
-  const handleStatusChange = async (quotationId, newStatus) => {
+  const handleStatusChange = async (purchaseId, newStatus) => {
     try {
-      const quotationDoc = doc(
+      const purchaseDoc = doc(
         db,
         "companies",
         companyId,
-        "quotations",
-        quotationId
+        "purchases",
+        purchaseId
       );
-      await updateDoc(quotationDoc, { paymentStatus: newStatus });
-      setQuotations((prevQuotations) =>
-        prevQuotations.map((quotation) =>
-          quotation.id === quotationId
-            ? { ...quotation, paymentStatus: newStatus }
-            : quotation
+      await updateDoc(purchaseDoc, { paymentStatus: newStatus });
+      setPurchases((prevPurchases) =>
+        prevPurchases.map((purchase) =>
+          purchase.id === purchaseId
+            ? { ...purchase, paymentStatus: newStatus }
+            : purchase
         )
       );
     } catch (error) {
@@ -93,12 +87,12 @@ function Quotation() {
     }
   };
 
-  const filteredQuotations = quotations.filter((quotation) => {
-    const { customerDetails, quotationNo, paymentStatus } = quotation;
-    const customerName = customerDetails?.name || "";
+  const filteredPurchases = purchases.filter((purchase) => {
+    const { vendorDetails, purchaseNo, paymentStatus } = purchase;
+    const VendorName = vendorDetails?.name || "";
     const matchesSearch =
-      customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      quotationNo?.toString().toLowerCase().includes(searchTerm.toLowerCase());
+      VendorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      purchaseNo?.toString().toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
       filterStatus === "All" || paymentStatus === filterStatus;
@@ -106,17 +100,17 @@ function Quotation() {
     return matchesSearch && matchesStatus;
   });
 
-  const totalAmount = filteredQuotations.reduce(
-    (sum, quotation) => sum + quotation.total,
+  const totalAmount = filteredPurchases.reduce(
+    (sum, purchase) => sum + purchase.total,
     0
   );
 
-  const paidAmount = filteredQuotations
-    .filter((quotation) => quotation.paymentStatus === "Paid")
-    .reduce((sum, quotation) => sum + quotation.total, 0);
-  const pendingAmount = filteredQuotations
-    .filter((quotation) => quotation.paymentStatus === "Pending")
-    .reduce((sum, quotation) => sum + quotation.total, 0);
+  const paidAmount = filteredPurchases
+    .filter((purchase) => purchase.paymentStatus === "Paid")
+    .reduce((sum, purchase) => sum + purchase.total, 0);
+  const pendingAmount = filteredPurchases
+    .filter((purchase) => purchase.paymentStatus === "Pending")
+    .reduce((sum, purchase) => sum + purchase.total, 0);
 
   return (
     <div className="w-full">
@@ -125,7 +119,7 @@ function Quotation() {
         style={{ height: "92vh" }}
       >
         <div className="bg-white rounded-lg shadow mt-4 h-48">
-          <h1 className="text-2xl font-bold py-3 px-10 ">Quotation Overview</h1>
+          <h1 className="text-2xl font-bold py-3 px-10 ">Purchase Overview</h1>
           <div className="grid grid-cols-4 gap-12  px-10 ">
             <div className="rounded-lg p-5 bg-[hsl(240,100%,98%)] ">
               <div className="text-lg">Total Amount</div>
@@ -147,7 +141,7 @@ function Quotation() {
               </div>
             </div>
             <div className="rounded-lg p-5 bg-red-50 ">
-              <div className="text-lg">UnPaid Amount </div>
+              <div className="text-lg">UnPaid Amount</div>
               <div className="text-3xl text-red-600 font-bold">
                 ₹ {totalAmount - paidAmount}
               </div>
@@ -161,7 +155,7 @@ function Quotation() {
               <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg w-full">
                 <input
                   type="text"
-                  placeholder="Search by quotation #..."
+                  placeholder="Search by purchase #..."
                   className=" w-full focus:outline-none"
                   value={searchTerm}
                   onChange={handleSearch}
@@ -182,112 +176,112 @@ function Quotation() {
                 role.create && (
                   <Link
                     className="bg-blue-500 text-white py-2 px-2 rounded-lg"
-                    to="create-quotation"
+                    to="create-purchase"
                   >
-                    + Create Quotation
+                    + Create Purchase
                   </Link>
                 )
               ) : (
                 <Link
                   className="bg-blue-500 text-white py-2 px-2 rounded-lg"
-                  to="create-quotation"
+                  to="create-purchase"
                 >
-                  + Create Quotation
+                  + Create Purchase
                 </Link>
               )}
             </div>
           </nav>
 
           {loading ? (
-            <div className="text-center py-6">Loading quotations...</div>
+            <div className="text-center py-6">Loading purchases...</div>
           ) : (
             <div className="" style={{ height: "80vh" }}>
               <div className="" style={{ height: "74vh" }}>
                 <table className="w-full border-collapse text-start">
                   <thead className=" bg-white">
                     <tr className="border-b">
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
-                        Quotation No
+                      <td className="px-5 py-3 text-gray-600 font-semibold text-start">
+                        Purchase No
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
-                        Customer
+                      <td className="px-5 py-3 text-gray-600 font-semibold text-start">
+                        Vendor
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-3 text-gray-600 font-semibold text-start ">
                         Date
                       </td>
-                      <td className="px-5 py-1 text-gray-600 text-center font-semibold  ">
+                      <td className="px-5 py-3 text-center text-gray-600 font-semibold  ">
                         Amount
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-center ">
+                      <td className="px-5 py-3 text-gray-600 font-semibold text-center ">
                         Status
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-3 text-gray-600 font-semibold text-start ">
                         Mode
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-3 text-gray-600 font-semibold text-start ">
                         Created By
                       </td>
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredQuotations.length > 0 ? (
-                      filteredQuotations.map((quotation) => (
+                    {filteredPurchases.length > 0 ? (
+                      filteredPurchases.map((purchase) => (
                         <tr
-                          key={quotation.id}
-                          className="border-b cursor-pointer text-start"
-                          onClick={() => {
-                            navigate(quotation.id);
+                          key={purchase.id}
+                          className="border-b text-center cursor-pointer text-start"
+                          onClick={(e) => {
+                            navigate(purchase.id);
                           }}
                         >
                           <td className="px-5 py-3 font-bold">
-                            {quotation.quotationNo}
+                            {purchase.purchaseNo}
                           </td>
 
                           <td className="px-5 py-3 text-start">
-                            {quotation.customerDetails?.name} <br />
+                            {purchase.vendorDetails?.name} <br />
                             <span className="text-gray-500 text-sm">
-                              Ph.No {quotation.customerDetails.phone}
+                              Ph.No {purchase.vendorDetails.phone}
                             </span>
                           </td>
 
                           <td className="px-5 py-3">
                             {new Date(
-                              quotation.date.seconds * 1000 +
-                                quotation.date.nanoseconds / 1000000
+                              purchase.date.seconds * 1000 +
+                                purchase.date.nanoseconds / 1000000
                             ).toLocaleString()}
                           </td>
-                          <td className="px-5 py-3 font-bold  text-center">{`₹ ${quotation.total.toFixed(
+                          <td className="px-5 py-3 font-bold text-center">{`₹ ${purchase.total.toFixed(
                             2
                           )}`}</td>
                           <td
-                            className="px-5 py-3"
+                            className="px-5 py-1"
                             onClick={(e) => e.stopPropagation()}
                           >
                             {" "}
                             <div
                               className={`px-1 text-center py-2 rounded-lg text-xs font-bold ${
-                                quotation.paymentStatus === "Paid"
+                                purchase.paymentStatus === "Paid"
                                   ? "bg-green-100 "
-                                  : quotation.paymentStatus === "Pending"
+                                  : purchase.paymentStatus === "Pending"
                                   ? "bg-yellow-100 "
-                                  : "bg-red-100"
+                                  : "bg-red-100 "
                               }`}
                             >
                               <select
-                                value={quotation.paymentStatus}
+                                value={purchase.paymentStatus}
                                 onChange={(e) => {
                                   handleStatusChange(
-                                    quotation.id,
+                                    purchase.id,
                                     e.target.value
                                   );
                                 }}
-                                className={
-                                  quotation.paymentStatus === "Paid"
+                                className={`${
+                                  purchase.paymentStatus === "Paid"
                                     ? "bg-green-100 "
-                                    : quotation.paymentStatus === "Pending"
+                                    : purchase.paymentStatus === "Pending"
                                     ? "bg-yellow-100 "
                                     : "bg-red-100 "
-                                }
+                                }`}
                               >
                                 <option value="Pending">Pending</option>
                                 <option value="Paid">Paid</option>
@@ -296,11 +290,11 @@ function Quotation() {
                             </div>
                           </td>
                           <td className="px-5 py-3">
-                            {quotation.mode || "Online"}
+                            {purchase.mode || "Online"}
                           </td>
 
                           <td className="px-5 py-3">
-                            {quotation?.createdBy?.name == userDetails.name
+                            {purchase?.createdBy?.name == userDetails.name
                               ? "Owner"
                               : userDetails.name}
                           </td>
@@ -309,7 +303,7 @@ function Quotation() {
                     ) : (
                       <tr>
                         <td colSpan="6" className="h-24 text-center py-4">
-                          No quotations found
+                          No purchases found
                         </td>
                       </tr>
                     )}
@@ -351,10 +345,6 @@ function Quotation() {
       </div>
     </div>
   );
-}
-Quotation.propTypes = {
-  companyDetails: PropTypes.object,
-  isStaff: PropTypes.bool,
 };
 
-export default Quotation;
+export default Purchase;

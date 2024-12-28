@@ -1,4 +1,3 @@
-
 import { Outlet, Route, Routes } from "react-router-dom";
 import Approval from "../CustomerDashboard/Approval";
 import Navbar from "../UI/Navbar";
@@ -20,6 +19,7 @@ function VendorHome() {
         </div>
         <div style={{ width: "100%", height: "92vh" }} className="bg-gray-100">
           <Routes>
+            <Route path="/purchase" element={<VendorPO />}></Route>
             <Route path="/po" element={<VendorPO />}></Route>
             <Route path="/projects" element={<Projects />}></Route>
             <Route path="/projects/:id" element={<ProjectView />} />

@@ -6,6 +6,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
@@ -115,8 +116,12 @@ function UserSidebar({ isOpen, onClose, projectId, projectDetails, Refresh }) {
         };
       }
 
-      // previousSelectedDataSet.customers.map(ele=>)
-      let phoneNum = [];
+      const customersNumbers = projectDetails?.customerRef?.map(
+        (ele) => ele.phone
+      );
+      const vendersNumbers = projectDetails?.vendorRef?.map((ele) => ele.phone);
+      const staffsNumbers = projectDetails?.staffRef?.map((ele) => ele.phone);
+      let phoneNum = [...customersNumbers, ...vendersNumbers, ...staffsNumbers];
 
       selectedDataSet.forEach((fieldId) => {
         const ref = doc(db, field.collectionName, fieldId);
@@ -248,4 +253,14 @@ function UserSidebar({ isOpen, onClose, projectId, projectDetails, Refresh }) {
     </div>
   );
 }
+UserSidebar.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  projectId: PropTypes.string.isRequired,
+  projectDetails: PropTypes.object,
+  vendorRef: PropTypes.object,
+  staffRef: PropTypes.object,
+  Refresh: PropTypes.func.isRequired,
+};
+
 export default UserSidebar;
