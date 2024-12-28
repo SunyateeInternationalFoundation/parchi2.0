@@ -36,8 +36,8 @@ function Invoice({ invoice, bankDetails }) {
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   }
   let role =
-    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex].roles
-      .invoice;
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.invoice;
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [isSelectTemplateOpen, setIsSelectTemplateOpen] = useState(false);
   const [totalTax, setTotalTax] = useState(0);

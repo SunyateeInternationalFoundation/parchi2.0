@@ -30,8 +30,8 @@ const InvoiceList = () => {
   console.log("userDetails", userDetails);
   console.log("companyId", companyId);
   let role =
-    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex].roles
-      .invoice;
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.invoice;
   const navigate = useNavigate();
 
   useEffect(() => {
