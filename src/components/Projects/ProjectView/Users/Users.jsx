@@ -18,11 +18,10 @@ function Users() {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   }
-  console.log("userDetails", userDetails);
-  console.log("companyId", companyId);
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.users;
+  console.log("🚀 ~ Users ~ role:", role);
   const [loading, setLoading] = useState(false);
   const [activeNav, setActiveNav] = useState("customers");
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
@@ -117,16 +116,7 @@ function Users() {
           <h2 className="text-2xl font-bold">Project Members</h2>
         </div>
 
-        {userDetails.selectedDashboard === "staff" ? (
-          role.create && (
-            <button
-              className="bg-blue-500 text-white px-4 pb-1 rounded-md ml-4 text-2xl"
-              onClick={() => setIsSideBarOpen(true)}
-            >
-              +
-            </button>
-          )
-        ) : (
+        {(userDetails.selectedDashboard === "" || role.access) && (
           <button
             className="bg-blue-500 text-white px-4 pb-1 rounded-md ml-4 text-2xl"
             onClick={() => setIsSideBarOpen(true)}

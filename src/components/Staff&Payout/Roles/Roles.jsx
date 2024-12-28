@@ -208,14 +208,10 @@ const Roles = () => {
                         <th className="border border-gray-300 px-4 py-2 text-left">
                           Role
                         </th>
-                        {["access"].map((action) => (
-                          <th
-                            key={action}
-                            className="border border-gray-300 px-4 py-2"
-                          >
-                            {action.charAt(0).toUpperCase() + action.slice(1)}
-                          </th>
-                        ))}
+
+                        <th className="border border-gray-300 px-4 py-2">
+                          Access
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -229,13 +225,13 @@ const Roles = () => {
                             <input
                               type="checkbox"
                               checked={
-                                tempRoles[staff.id]?.[role]?.Access || false
+                                tempRoles[staff.id]?.[role]?.access || false
                               }
                               onChange={(e) =>
                                 handleRoleChange(
                                   staff.id,
                                   role,
-                                  "Access",
+                                  "access",
                                   e.target.checked
                                 )
                               }
