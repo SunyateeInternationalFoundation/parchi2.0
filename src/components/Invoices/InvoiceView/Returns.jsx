@@ -5,7 +5,7 @@ import {
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -22,8 +22,15 @@ function Returns({ invoice }) {
   }, [invoice]);
 
   const userDetails = useSelector((state) => state.users);
-  const companyId =
-    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
 
   function handleActionQty(op, productId) {
     let updatedProducts = products.map((product) => {

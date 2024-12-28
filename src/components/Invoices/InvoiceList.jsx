@@ -19,12 +19,19 @@ const InvoiceList = () => {
   const [filterStatus, setFilterStatus] = useState("All");
   const userDetails = useSelector((state) => state.users);
   let companyId;
-  // if (!companyDetails) {
-  companyId = userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  // } else {
-  // companyId = companyDetails.companyId;
-  // }
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
   console.log("userDetails", userDetails);
+  console.log("companyId", companyId);
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex].roles
+      .invoice;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -163,12 +170,23 @@ const InvoiceList = () => {
               </div>
             </div>
             <div className="w-full text-end ">
-              <Link
-                className="bg-blue-500 text-white py-2 px-2 rounded-lg"
-                to="create-invoice"
-              >
-                + Create Invoice
-              </Link>
+              {userDetails.selectedDashboard === "staff" ? (
+                role.create && (
+                  <Link
+                    className="bg-blue-500 text-white py-2 px-2 rounded-lg"
+                    to="create-invoice"
+                  >
+                    + Create Invoice
+                  </Link>
+                )
+              ) : (
+                <Link
+                  className="bg-blue-500 text-white py-2 px-2 rounded-lg"
+                  to="create-invoice"
+                >
+                  + Create Invoice
+                </Link>
+              )}
             </div>
           </nav>
 

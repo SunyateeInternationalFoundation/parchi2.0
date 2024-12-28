@@ -17,17 +17,25 @@ import { db } from "../../../firebase";
 import { setAllCustomersDetails } from "../../../store/CustomerSlice";
 import Sidebar from "./Sidebar";
 
-const SetInvoice = ({ companyDetail, isStaff }) => {
+const SetInvoice = () => {
   const { invoiceId } = useParams();
 
   const userDetails = useSelector((state) => state.users);
   const customersDetails = useSelector((state) => state.customers).data;
   const dispatch = useDispatch();
+  // let companyDetails;
+  // if (!companyDetail) {
+  //   companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
+  // } else {
+  //   companyDetails = companyDetail;
+  // }
   let companyDetails;
-  if (!companyDetail) {
-    companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
+  if (userDetails.selectedDashboard === "staff") {
+    companyDetails =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails;
   } else {
-    companyDetails = companyDetail;
+    companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   }
   console.log(
     "🚀 ~ file: SetInvoice.js ~ line 10 ~ SetInvoice ~ companyDetails",
@@ -565,7 +573,7 @@ const SetInvoice = ({ companyDetail, isStaff }) => {
         ? { ...baseCreatedBy, who: formData.createdBy.who }
         : {
             ...baseCreatedBy,
-            who: isStaff ? "staff" : "owner",
+            who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
           };
       const payload = {
         ...formData,
@@ -622,7 +630,11 @@ const SetInvoice = ({ companyDetail, isStaff }) => {
       alert(
         "Successfully " + (invoiceId ? "Updated" : "Created") + " the Invoice"
       );
-      navigate(companyDetail ? "/staff/invoice" : "/invoice");
+      navigate(
+        userDetails.selectedDashboard === "staff"
+          ? "/staff/invoice"
+          : "/invoice"
+      );
     } catch (err) {
       console.error(err);
     }
