@@ -1,10 +1,10 @@
 import {
-    collection,
-    deleteDoc,
-    doc,
-    getDocs,
-    query,
-    where
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
@@ -13,12 +13,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
 import {
-    deleteCustomerDetails,
-    setAllCustomersDetails,
+  deleteCustomerDetails,
+  setAllCustomersDetails,
 } from "../../store/CustomerSlice";
 import CreateCustomer from "./CreateCustomer";
 
-const CustomerList = ({ companyDetails, isStaff }) => {
+const CustomerList = () => {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,14 +26,17 @@ const CustomerList = ({ companyDetails, isStaff }) => {
   console.log("customercompanyDetails", companyDetails);
   const userDetails = useSelector((state) => state.users);
   let companyId;
-  if (!companyDetails) {
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-    console.log("!companyId", companyId);
-  } else {
-    companyId = companyDetails.id;
-    console.log("companyId", companyId);
   }
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.customers;
   const customersDetails = useSelector((state) => state.customers).data;
   const dispatch = useDispatch();
 
@@ -121,12 +124,24 @@ const CustomerList = ({ companyDetails, isStaff }) => {
               size={16}
             />
           </div>
-          <button
-            className="bg-blue-700 text-white px-4 py-1 rounded-md ml-4"
-            onClick={() => setIsModalOpen(true)}
-          >
-            + New Customer
-          </button>
+
+          {userDetails.selectedDashboard === "staff" ? (
+            role.create && (
+              <button
+                className="bg-blue-700 text-white px-4 py-1 rounded-md ml-4"
+                onClick={() => setIsModalOpen(true)}
+              >
+                + New Customer
+              </button>
+            )
+          ) : (
+            <button
+              className="bg-blue-700 text-white px-4 py-1 rounded-md ml-4"
+              onClick={() => setIsModalOpen(true)}
+            >
+              + New Customer
+            </button>
+          )}
         </div>
       </div>
 

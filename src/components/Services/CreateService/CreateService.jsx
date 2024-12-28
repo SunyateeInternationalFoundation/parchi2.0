@@ -19,9 +19,16 @@ import SideBarAddServices from "./SideBarAddServices";
 function CreateService() {
   const userDetails = useSelector((state) => state.users);
 
-  const companyDetails =
-    userDetails.companies[userDetails.selectedCompanyIndex];
-
+  // const companyDetails =
+  //   userDetails.companies[userDetails.selectedCompanyIndex];
+  let companyDetails;
+  if (userDetails.selectedDashboard === "staff") {
+    companyDetails =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails;
+  } else {
+    companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
+  }
   const phoneNo = userDetails.phone;
 
   const [date, setDate] = useState(new Date());
@@ -229,7 +236,11 @@ function CreateService() {
         });
       }
       alert("successfully Created Service");
-      navigate("/services");
+      navigate(
+        userDetails.selectedDashboard === "staff"
+          ? "/staff/services"
+          : "/services"
+      );
     } catch (err) {
       console.error(err);
     }

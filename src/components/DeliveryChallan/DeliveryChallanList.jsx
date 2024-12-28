@@ -3,16 +3,16 @@ import jsPDF from "jspdf";
 import { useEffect, useRef, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
-    LuChevronLeft,
-    LuChevronRight,
-    LuChevronsLeft,
-    LuChevronsRight,
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
 
-const DeliveryChallanList = ({ companyDetails, isStaff }) => {
+const DeliveryChallanList = () => {
   const [deliveryChallan, setDeliveryChallan] = useState([]);
   const [isDeliveryChallanOpen, setIsDeliveryChallanOpen] = useState(false);
   const deliveryChallanRef = useRef();
@@ -24,13 +24,27 @@ const DeliveryChallanList = ({ companyDetails, isStaff }) => {
 
   const userDetails = useSelector((state) => state.users);
 
+  // let companyId;
+  // if (!companyDetails) {
+  //   companyId =
+  //     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  // } else {
+  //   companyId = companyDetails.id;
+  // }
   let companyId;
-  if (!companyDetails) {
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  } else {
-    companyId = companyDetails.id;
   }
+  console.log("userDetails", userDetails);
+  console.log("companyId", companyId);
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.deliveryChallan;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -207,12 +221,23 @@ const DeliveryChallanList = ({ companyDetails, isStaff }) => {
               </div>
             </div>
             <div className="w-full text-end ">
-              <Link
-                className="bg-blue-500 text-white py-2 px-2 rounded-lg"
-                to="create-deliveryChallan"
-              >
-                + Create Delivery Challan
-              </Link>
+              {userDetails.selectedDashboard === "staff" ? (
+                role.create && (
+                  <Link
+                    className="bg-blue-500 text-white py-2 px-2 rounded-lg"
+                    to="create-deliveryChallan"
+                  >
+                    + Create Delivery Challan
+                  </Link>
+                )
+              ) : (
+                <Link
+                  className="bg-blue-500 text-white py-2 px-2 rounded-lg"
+                  to="create-deliveryChallan"
+                >
+                  + Create Delivery Challan
+                </Link>
+              )}
             </div>
           </nav>
 

@@ -1,7 +1,4 @@
-import {
-  doc,
-  getDoc
-} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
@@ -15,8 +12,15 @@ const DeliveryChallanView = () => {
   const userDetails = useSelector((state) => state.users);
   const [bankDetails, setBankDetails] = useState({});
 
-  const companyId =
-    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
 
   const fetchDeliveryChallan = async () => {
     try {
@@ -100,7 +104,6 @@ const DeliveryChallanView = () => {
     }
   };
 
- 
   useEffect(() => {
     fetchDeliveryChallan();
   }, [companyId]);
@@ -120,11 +123,10 @@ const DeliveryChallanView = () => {
       </header>
       <hr />
       <div className="w-full">
-            <DeliveryChallan
-              deliveryChallan={deliveryChallan}
-              bankDetails={bankDetails}
-            />
-        
+        <DeliveryChallan
+          deliveryChallan={deliveryChallan}
+          bankDetails={bankDetails}
+        />
       </div>
     </div>
   );

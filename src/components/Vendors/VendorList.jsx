@@ -1,10 +1,10 @@
 import {
-    collection,
-    deleteDoc,
-    doc,
-    getDocs,
-    query,
-    where,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
 import CreateVendor from "./CreateVendor";
 
-const VendorList = ({ companyDetails, isStaff }) => {
+const VendorList = () => {
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -22,12 +22,17 @@ const VendorList = ({ companyDetails, isStaff }) => {
   const [selectedVendor, setSelectedVendor] = useState(null);
   const userDetails = useSelector((state) => state.users);
   let companyId;
-  if (!companyDetails) {
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  } else {
-    companyId = companyDetails.id;
   }
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.vendors;
 
   const fetchVendors = async () => {
     setLoading(true);
@@ -100,12 +105,24 @@ const VendorList = ({ companyDetails, isStaff }) => {
               size={16}
             />
           </div>
-          <button
-            className="bg-blue-500 text-white px-4 py-1 rounded-md ml-4"
-            onClick={() => setIsModalOpen(true)}
-          >
-            + New Vendor
-          </button>
+
+          {userDetails.selectedDashboard === "staff" ? (
+            role.create && (
+              <button
+                className="bg-blue-500 text-white px-4 py-1 rounded-md ml-4"
+                onClick={() => setIsModalOpen(true)}
+              >
+                + New Vendor
+              </button>
+            )
+          ) : (
+            <button
+              className="bg-blue-500 text-white px-4 py-1 rounded-md ml-4"
+              onClick={() => setIsModalOpen(true)}
+            >
+              + New Vendor
+            </button>
+          )}
         </div>
       </div>
 

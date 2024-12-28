@@ -23,9 +23,16 @@ const SetProFormaInvoice = () => {
   const userDetails = useSelector((state) => state.users);
   const customersDetails = useSelector((state) => state.customers).data;
   const dispatch = useDispatch();
-  const companyDetails =
-    userDetails.companies[userDetails.selectedCompanyIndex];
-
+  // const companyDetails =
+  //   userDetails.companies[userDetails.selectedCompanyIndex];
+  let companyDetails;
+  if (userDetails.selectedDashboard === "staff") {
+    companyDetails =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails;
+  } else {
+    companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
+  }
   const phoneNo = userDetails.phone;
 
   const [date, setDate] = useState(Timestamp.fromDate(new Date()));
@@ -604,7 +611,11 @@ const SetProFormaInvoice = () => {
           (proFormaId ? "Updated" : "Created") +
           " the ProForma Invoice"
       );
-      navigate("/pro-forma-invoice");
+      navigate(
+        userDetails.selectedDashboard === "staff"
+          ? "/staff/pro-forma-invoice"
+          : "/pro-forma-invoice"
+      );
     } catch (err) {
       console.error(err);
     }

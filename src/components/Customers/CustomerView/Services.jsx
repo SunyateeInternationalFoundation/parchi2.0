@@ -1,5 +1,3 @@
-
-
 function Services({ servicesList }) {
   return (
     <div className=" p-4 rounded-lg">

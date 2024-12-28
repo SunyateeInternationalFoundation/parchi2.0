@@ -12,8 +12,15 @@ const DebitNoteView = () => {
   const userDetails = useSelector((state) => state.users);
   const [bankDetails, setBankDetails] = useState({});
 
-  const companyId =
-    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
 
   const fetchDebitNote = async () => {
     try {
@@ -106,12 +113,11 @@ const DebitNoteView = () => {
         <h1 className="text-2xl font-bold">{debitNote.debitNoteNo}</h1>
       </header>
 
-      
       <hr />
       <div className="w-full">
-          <div>
-            <DebitNote debitNote={debitNote} bankDetails={bankDetails} />
-          </div>
+        <div>
+          <DebitNote debitNote={debitNote} bankDetails={bankDetails} />
+        </div>
       </div>
     </div>
   );

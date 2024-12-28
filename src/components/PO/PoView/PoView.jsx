@@ -1,7 +1,4 @@
-import {
-  doc,
-  getDoc
-} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
@@ -15,8 +12,15 @@ const PoView = () => {
   const userDetails = useSelector((state) => state.users);
   const [bankDetails, setBankDetails] = useState({});
 
-  const companyId =
-    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
 
   const fechPO = async () => {
     try {
@@ -98,7 +102,6 @@ const PoView = () => {
     fechPO();
   }, [companyId]);
 
-
   return (
     <div className="px-5 pb-5 bg-gray-100" style={{ width: "100%" }}>
       <header className="flex items-center space-x-3 my-2 ">
@@ -113,7 +116,7 @@ const PoView = () => {
 
       <hr />
       <div className="w-full">
-            <Po Po={po} bankDetails={bankDetails} />
+        <Po Po={po} bankDetails={bankDetails} />
       </div>
     </div>
   );

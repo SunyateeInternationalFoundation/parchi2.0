@@ -1,13 +1,13 @@
 import {
-    addDoc,
-    collection,
-    doc,
-    getDoc,
-    getDocs,
-    query,
-    Timestamp,
-    updateDoc,
-    where,
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  Timestamp,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
@@ -21,9 +21,16 @@ const SetPurchase = () => {
 
   const userDetails = useSelector((state) => state.users);
 
-  const companyDetails =
-    userDetails.companies[userDetails.selectedCompanyIndex];
-
+  // const companyDetails =
+  //   userDetails.companies[userDetails.selectedCompanyIndex];
+  let companyDetails;
+  if (userDetails.selectedDashboard === "staff") {
+    companyDetails =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails;
+  } else {
+    companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
+  }
   const phoneNo = userDetails.phone;
   const [dueDate, setDueDate] = useState(Timestamp.fromDate(new Date()));
 
@@ -606,7 +613,11 @@ const SetPurchase = () => {
       alert(
         "Successfully " + (purchaseId ? "Updated" : "Created") + " the Purchase"
       );
-      navigate("/purchase");
+      navigate(
+        userDetails.selectedDashboard === "staff"
+          ? "/staff/purchase"
+          : "/purchase"
+      );
     } catch (err) {
       console.error(err);
     }

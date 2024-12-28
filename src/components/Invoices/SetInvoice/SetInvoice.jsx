@@ -630,11 +630,7 @@ const SetInvoice = () => {
       alert(
         "Successfully " + (invoiceId ? "Updated" : "Created") + " the Invoice"
       );
-      navigate(
-        userDetails.selectedDashboard === "staff"
-          ? "/staff/invoice"
-          : "/invoice"
-      );
+      navigate("./../");
     } catch (err) {
       console.error(err);
     }

@@ -1,6 +1,6 @@
 import { deleteDoc, doc } from "firebase/firestore";
 import jsPDF from "jspdf";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
 import { FaRegEye } from "react-icons/fa";
 import { IoMdClose, IoMdDownload } from "react-icons/io";
@@ -25,8 +25,18 @@ import Template9 from "../../Templates/Template9";
 const CreditNote = ({ creditNote, bankDetails }) => {
   const navigate = useNavigate();
   const userDetails = useSelector((state) => state.users);
-  const companyId =
-    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.creditNote;
   const [isCreditNoteOpen, setIsCreditNoteOpen] = useState(false);
   const [totalTax, setTotalTax] = useState(0);
   const [isSelectTemplateOpen, setIsSelectTemplateOpen] = useState(false);
@@ -121,7 +131,7 @@ const CreditNote = ({ creditNote, bankDetails }) => {
       const tax = creditNote?.products.reduce((acc, cur) => {
         return acc + cur?.tax;
       }, 0);
-   
+
       setTotalTax(tax);
     }
   }, [creditNote]);
@@ -160,7 +170,7 @@ const CreditNote = ({ creditNote, bankDetails }) => {
       );
       if (!confirmDelete) return;
       await deleteDoc(creditNoteDocRef);
-      navigate("/credit-note");
+      navigate("./../");
     } catch (error) {
       console.error("Error deleting creditNote:", error);
       alert("Failed to delete the creditNote. Check the console for details.");
@@ -218,14 +228,28 @@ const CreditNote = ({ creditNote, bankDetails }) => {
           >
             <FaRegEye /> &nbsp; View
           </button>
-          <button
-            className={
-              "px-4 py-1 bg-red-300 text-white rounded-full flex items-center"
-            }
-            onClick={() => navigate("edit-creditnote")}
-          >
-            <TbEdit /> &nbsp; Edit
-          </button>
+
+          {userDetails.selectedDashboard === "staff" ? (
+            role.edit && (
+              <button
+                className={
+                  "px-4 py-1 bg-red-300 text-white rounded-full flex items-center"
+                }
+                onClick={() => navigate("edit-creditnote")}
+              >
+                <TbEdit /> &nbsp; Edit
+              </button>
+            )
+          ) : (
+            <button
+              className={
+                "px-4 py-1 bg-red-300 text-white rounded-full flex items-center"
+              }
+              onClick={() => navigate("edit-creditnote")}
+            >
+              <TbEdit /> &nbsp; Edit
+            </button>
+          )}
           <button
             className={
               "px-4 py-1 bg-green-500 text-white rounded-full flex items-center"
@@ -246,12 +270,23 @@ const CreditNote = ({ creditNote, bankDetails }) => {
           </div>
           {creditNote.paymentStatus !== "Paid" && (
             <div className="text-end">
-              <button
-                className={"px-4 py-1 text-red-700 text-2xl"}
-                onClick={handleDelete}
-              >
-                <RiDeleteBin6Line />
-              </button>
+              {userDetails.selectedDashboard === "staff" ? (
+                role.delete && (
+                  <button
+                    className={"px-4 py-1 text-red-700 text-2xl"}
+                    onClick={handleDelete}
+                  >
+                    <RiDeleteBin6Line />
+                  </button>
+                )
+              ) : (
+                <button
+                  className={"px-4 py-1 text-red-700 text-2xl"}
+                  onClick={handleDelete}
+                >
+                  <RiDeleteBin6Line />
+                </button>
+              )}
             </div>
           )}
         </div>

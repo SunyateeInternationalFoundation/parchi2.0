@@ -12,8 +12,15 @@ function POSView() {
   const userDetails = useSelector((state) => state.users);
   const [bankDetails, setBankDetails] = useState({});
 
-  const companyId =
-    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
 
   const fetchPOS = async () => {
     try {
@@ -104,12 +111,10 @@ function POSView() {
         <h1 className="text-2xl font-bold">{POS.POSNo}</h1>
       </header>
       <hr />
-      <div>
-       
-      </div>
+      <div></div>
       <hr />
       <div className="w-full">
-            <POSViewHome POS={POS} bankDetails={bankDetails} />
+        <POSViewHome POS={POS} bankDetails={bankDetails} />
       </div>
     </div>
   );

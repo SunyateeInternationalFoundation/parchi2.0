@@ -2,12 +2,25 @@ import { doc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { FaUserEdit } from "react-icons/fa";
+import { useSelector } from "react-redux";
 import { db, storage } from "../../../firebase";
-
 const VendorProfile = ({ vendorData, refresh }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [UpdatedData, setUpdatedData] = useState(vendorData);
   const [progress, setProgress] = useState(0);
+  const userDetails = useSelector((state) => state.users);
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.vendors;
   useEffect(() => {
     setUpdatedData(vendorData);
   }, [vendorData]);
@@ -114,15 +127,26 @@ const VendorProfile = ({ vendorData, refresh }) => {
                       UpdatedData.name || "N/A"
                     )}
                   </div>
-                  {!isEdit && (
-                    <button
-                      className="flex items-center space-x-2 text-purple-600 hover:text-purple-800 mt-2"
-                      onClick={() => setIsEdit(true)}
-                    >
-                      <FaUserEdit />
-                      <span>Edit Profile</span>
-                    </button>
-                  )}
+                  {!isEdit &&
+                    (userDetails.selectedDashboard === "staff" ? (
+                      role.edit && (
+                        <button
+                          className="flex items-center space-x-2 text-purple-600 hover:text-purple-800 mt-2"
+                          onClick={() => setIsEdit(true)}
+                        >
+                          <FaUserEdit />
+                          <span>Edit Profile</span>
+                        </button>
+                      )
+                    ) : (
+                      <button
+                        className="flex items-center space-x-2 text-purple-600 hover:text-purple-800 mt-2"
+                        onClick={() => setIsEdit(true)}
+                      >
+                        <FaUserEdit />
+                        <span>Edit Profile</span>
+                      </button>
+                    ))}
                   {isEdit && (
                     <input
                       type="file"

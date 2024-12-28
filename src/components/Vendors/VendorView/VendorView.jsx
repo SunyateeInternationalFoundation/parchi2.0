@@ -1,10 +1,10 @@
 import {
-    collection,
-    doc,
-    getDoc,
-    getDocs,
-    query,
-    where,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
@@ -19,8 +19,16 @@ import VendorServices from "./VendorServices";
 function VendorView() {
   const { id } = useParams();
   const userDetails = useSelector((state) => state.users);
-  const companyId =
-    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
+
   const [activeTab, setActiveTab] = useState("Profile");
   const [vendorsPOData, setVendorsPOData] = useState([]);
   const [vendorsProjectsData, setvendorsProjectsData] = useState([]);

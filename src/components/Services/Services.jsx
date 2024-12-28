@@ -1,5 +1,5 @@
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
@@ -12,21 +12,34 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
 
-function Services({ companyDetails }) {
+function Services() {
   const [filterStatus, setFilterStatus] = useState("All");
   const [loading, setLoading] = useState(false);
   const [services, setServices] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const userDetails = useSelector((state) => state.users);
   const navigate = useNavigate();
+  // let companyId;
+  // if (!companyDetails) {
+  //   companyId =
+  //     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  // } else {
+  //   companyId = companyDetails.id;
+  // }
   let companyId;
-  if (!companyDetails) {
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  } else {
-    companyId = companyDetails.id;
   }
-
+  console.log("userDetails", userDetails);
+  console.log("companyId", companyId);
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.services;
   const filteredServices = services.filter((service) => {
     const { customerDetails, status, serviceNo } = service;
     const customerName = customerDetails?.name || "";
@@ -42,7 +55,6 @@ function Services({ companyDetails }) {
 
     return matchesSearch && matchesStatus;
   });
-
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -153,12 +165,23 @@ function Services({ companyDetails }) {
               </div>
             </div>
             <div className="w-full text-end ">
-              <Link
-                className="bg-blue-500 text-white py-2 px-2 rounded-lg"
-                to="create-service"
-              >
-                + Create Service
-              </Link>
+              {userDetails.selectedDashboard === "staff" ? (
+                role.create && (
+                  <Link
+                    className="bg-blue-500 text-white py-2 px-2 rounded-lg"
+                    to="create-service"
+                  >
+                    + Create Service
+                  </Link>
+                )
+              ) : (
+                <Link
+                  className="bg-blue-500 text-white py-2 px-2 rounded-lg"
+                  to="create-service"
+                >
+                  + Create Service
+                </Link>
+              )}
             </div>
           </nav>
 

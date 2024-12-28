@@ -1,9 +1,4 @@
-import {
-    addDoc,
-    collection,
-    doc,
-    serverTimestamp
-} from "firebase/firestore";
+import { addDoc, collection, doc, serverTimestamp } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
@@ -13,8 +8,16 @@ import { db, storage } from "../../firebase";
 const CreateVendor = ({ isOpen, onClose, onVendorAdded }) => {
   const userDetails = useSelector((state) => state.users);
 
-  const companyId =
-    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
+
   const [isUploading, setIsUploading] = useState(false);
 
   const [fileName, setFileName] = useState("No file chosen");

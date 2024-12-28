@@ -24,8 +24,18 @@ import Template9 from "../../Templates/Template9";
 function ProForma({ proForma, bankDetails }) {
   const navigate = useNavigate();
   const userDetails = useSelector((state) => state.users);
-  const companyId =
-    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.proFormaInvoice;
 
   const [isProFormaOpen, setIsProFormaOpen] = useState(false);
   const [totalTax, setTotalTax] = useState(0);
@@ -188,7 +198,7 @@ function ProForma({ proForma, bankDetails }) {
       //   });
       //   await Promise.all(updateInventoryPromises);
       // }
-      navigate("/pro-forma-invoice");
+      navigate("./../");
     } catch (error) {
       console.error("Error deleting proForma:", error);
       alert("Failed to delete the proForma. Check the console for details.");
@@ -246,14 +256,28 @@ function ProForma({ proForma, bankDetails }) {
           >
             <FaRegEye /> &nbsp; View
           </button>
-          <button
-            className={
-              "px-4 py-1 bg-red-300 text-white rounded-full flex items-center"
-            }
-            onClick={() => navigate("edit-proForma-invoice")}
-          >
-            <TbEdit /> &nbsp; Edit
-          </button>
+
+          {userDetails.selectedDashboard === "staff" ? (
+            role.edit && (
+              <button
+                className={
+                  "px-4 py-1 bg-red-300 text-white rounded-full flex items-center"
+                }
+                onClick={() => navigate("edit-proForma-invoice")}
+              >
+                <TbEdit /> &nbsp; Edit
+              </button>
+            )
+          ) : (
+            <button
+              className={
+                "px-4 py-1 bg-red-300 text-white rounded-full flex items-center"
+              }
+              onClick={() => navigate("edit-proForma-invoice")}
+            >
+              <TbEdit /> &nbsp; Edit
+            </button>
+          )}
           <button
             className={
               "px-4 py-1 bg-green-500 text-white rounded-full flex items-center"
@@ -274,12 +298,23 @@ function ProForma({ proForma, bankDetails }) {
           </div>
           {proForma.paymentStatus !== "Paid" && (
             <div className="text-end">
-              <button
-                className={"px-4 py-1 text-red-700 text-2xl"}
-                onClick={handleDelete}
-              >
-                <RiDeleteBin6Line />
-              </button>
+              {userDetails.selectedDashboard === "staff" ? (
+                role.delete && (
+                  <button
+                    className={"px-4 py-1 text-red-700 text-2xl"}
+                    onClick={handleDelete}
+                  >
+                    <RiDeleteBin6Line />
+                  </button>
+                )
+              ) : (
+                <button
+                  className={"px-4 py-1 text-red-700 text-2xl"}
+                  onClick={handleDelete}
+                >
+                  <RiDeleteBin6Line />
+                </button>
+              )}
             </div>
           )}
         </div>

@@ -237,11 +237,7 @@ function Invoice({ invoice, bankDetails }) {
         );
         await Promise.all(updateInventoryPromises);
       }
-      navigate(
-        userDetails.selectedDashboard === "staff"
-          ? "/staff/invoice"
-          : "/invoice"
-      );
+      navigate("./../");
     } catch (error) {
       console.error("Error deleting invoice:", error);
       alert("Failed to delete the invoice. Check the console for details.");

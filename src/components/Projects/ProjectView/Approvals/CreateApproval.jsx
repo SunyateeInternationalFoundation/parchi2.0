@@ -1,11 +1,11 @@
 import {
-    addDoc,
-    collection,
-    doc,
-    getDocs,
-    query,
-    Timestamp,
-    where,
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  Timestamp,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
@@ -15,9 +15,20 @@ import { db } from "../../../../firebase";
 function CreateApproval({ isOpen, projectId, onClose, newApprovalAdded }) {
   const userDetails = useSelector((state) => state.users);
 
-  const companyId =
-    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-
+  // const companyId =
+  //   userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.approvals;
   const [filter, setFilter] = useState("Customer");
   const [typeOfFile, setTypeOfFile] = useState("Image");
   const [uploadedFile, setUploadedFile] = useState("");

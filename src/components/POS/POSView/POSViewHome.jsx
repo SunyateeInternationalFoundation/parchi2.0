@@ -24,8 +24,18 @@ import Template9 from "../../Templates/Template9";
 function POSViewHome({ POS, bankDetails }) {
   const navigate = useNavigate();
   const userDetails = useSelector((state) => state.users);
-  const companyId =
-    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.pos;
   const [isPOSOpen, setIsPOSOpen] = useState(false);
   const [totalTax, setTotalTax] = useState(0);
   const [totalDiscount, setTotalDiscount] = useState(0);
