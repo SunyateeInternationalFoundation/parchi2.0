@@ -16,6 +16,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
 import { setAllCustomersDetails } from "../../../store/CustomerSlice";
 import Sidebar from "./Sidebar";
+import { use } from "react";
 
 const SetInvoice = () => {
   const { invoiceId } = useParams();
@@ -353,11 +354,12 @@ const SetInvoice = () => {
     fetchInvoiceData();
     fetchTax();
     customerDetails();
-  }, [companyDetails]);
+  }, [companyDetails.companyId , userDetails.selectedDashboard]);
 
   const handleInputChange = (e) => {
-    const value = e.target.value;
+    const value = e.target.value.trim();
     setSelectedCustomerData({ name: value });
+    setIsDropdownVisible(true);
     if (value) {
       const filteredSuggestions = customersDetails.filter((item) =>
         item.name.toLowerCase().includes(value.toLowerCase())
@@ -366,6 +368,7 @@ const SetInvoice = () => {
       setIsDropdownVisible(true);
     } else {
       setSuggestions(customersDetails);
+      
     }
   };
 
@@ -714,12 +717,18 @@ const SetInvoice = () => {
                   className="text-base text-gray-900 font-semibold border p-1 rounded w-full mt-1"
                   value={selectedCustomerData?.name}
                   onChange={handleInputChange}
-                  onFocus={() => setIsDropdownVisible(true)}
+                  onFocus={() =>{
+                    setIsDropdownVisible(true);
+                    setSuggestions(customersDetails || [])
+                  } 
+                  }
                   onBlur={() => {
-                    if (!selectedCustomerData.id) {
-                      setSelectedCustomerData({ name: "" });
-                    }
-                    setIsDropdownVisible(false);
+                    setTimeout(() => {
+                      if (!selectedCustomerData.id) {
+                        setSelectedCustomerData({ name: "" });
+                      }
+                      setIsDropdownVisible(false);
+                    }, 200);
                   }}
                   required
                 />
