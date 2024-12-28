@@ -6,18 +6,27 @@ import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 
-function SideBar({ staff, staffId }) {
+function SideBar() {
   const location = useLocation();
   const [isSideBarExpend, setIsSideBarExpend] = useState(true);
   const userDetails = useSelector((state) => state.users);
+  const staffAndCompanyDetails =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex];
   const selectedDashboardUser = userDetails.selectedDashboard;
-  const xyz = staff?.map((s) => s.toString().replace(/^Create/, ""));
-  const viewDashBoardList = {
-    customer: ["Invoice", "Projects", "Quotation"],
-    vendor: ["PO", "Projects", "Quotation"],
-    staff: staff ? ["Projects", ...xyz] : [],
-  };
-
+  const rolesList = [
+    "invoice",
+    "services",
+    "quotation",
+    "purchase",
+    "customers",
+    "vendors",
+    "project",
+    "po",
+    "pos",
+    "proFormaInvoice",
+    "creditNote",
+    "deliveryChallan",
+  ];
   const constSideBarDetails = {
     //
     sales: {
@@ -25,48 +34,48 @@ function SideBar({ staff, staffId }) {
       isExpend: true,
       items: [
         {
-          id: "Invoice",
+          id: "invoice",
           name: "Invoice",
           path: "/invoice",
         },
 
         {
-          id: "Quotation",
+          id: "quotation",
           name: "Quotation",
           path: "/quotation",
         },
         {
-          id: "ProFormaInvoice",
+          id: "proFormaInvoice",
           name: "Pro Forma Invoice",
           path: "/pro-forma-invoice",
         },
         {
-          id: "DeliveryChallan",
+          id: "deliveryChallan",
           name: "Delivery Challan",
           path: "/delivery-challan",
         },
         {
-          id: "Subscription",
+          id: "subscription",
           name: "Subscription",
           path: "/services",
         },
         {
-          id: "CreditNote",
+          id: "creditNote",
           name: "Credit Note",
           path: "/credit-note",
         },
         {
-          id: "Purchase",
+          id: "purchase",
           name: "Purchase",
           path: "/purchase",
         },
         {
-          id: "PO",
+          id: "pO",
           name: "PO",
           path: "/po",
         },
         {
-          id: "DebitNote",
+          id: "debitNote",
           name: "Debit Note",
           path: "/debit-note",
         },
@@ -78,22 +87,22 @@ function SideBar({ staff, staffId }) {
       isExpend: true,
       items: [
         {
-          id: "Projects",
+          id: "projects",
           name: "Projects",
           path: "/projects",
         },
         {
-          id: "Inventory",
+          id: "inventory",
           name: "Inventory",
           path: "/products",
         },
         {
-          id: "SubscriptionPlans",
+          id: "subscriptionPlans",
           name: "Subscription Plans",
           path: "/services-list",
         },
         {
-          id: "Staff&Payout",
+          id: "staff&Payout",
           name: "Staff & Payout",
           path: "/staff-payout",
         },
@@ -103,12 +112,12 @@ function SideBar({ staff, staffId }) {
       isExpend: true,
       items: [
         {
-          id: "Customers",
+          id: "customers",
           name: "Customers",
           path: "/customers",
         },
         {
-          id: "Vendors",
+          id: "vendors",
           name: "Vendors",
           path: "/vendors",
         },
@@ -120,17 +129,37 @@ function SideBar({ staff, staffId }) {
       //   isExpend: true,
       //   items: [
       //     {
-      //       id: "Insights",
+      //       id: "insights",
       //       name: "Insights",
       //       path: "",
       //     },
       //     {
-      //       id: "Report",
+      //       id: "report",
       //       name: "Report",
       //       path: "",
       //     },
       //   ],
     },
+  };
+
+  const staffSideBarDetails = staffAndCompanyDetails
+    ? staffAndCompanyDetails?.roles || ""
+    : "";
+  console.log("🚀 ~ SideBar ~ staffSideBarDetails:", staffSideBarDetails);
+
+  // const projectsList = ["users", "milestones", "tasks", "files", "approvals"];
+
+  // const actions = ["create", "edit", "view", "delete"];
+  const rolesArray = staffSideBarDetails
+    ? rolesList.filter((role) => {
+        return staffSideBarDetails[role]?.view ?? false;
+      })
+    : [];
+  console.log("🚀 ~ SideBar ~ rolesArray:", rolesArray);
+  const viewDashBoardList = {
+    customer: ["invoice", "projects", "quotation"],
+    vendor: ["pO", "projects", "quotation"],
+    staff: rolesArray,
   };
 
   const [sideBarDetails, setSideBarDetails] = useState(constSideBarDetails);
@@ -196,7 +225,7 @@ function SideBar({ staff, staffId }) {
         {selectedDashboardUser === "staff" && (
           <div className="border-b-2 ">
             <Link
-              to={"/staff/profile/" + staffId}
+              to={"/staff/profile/" + staffAndCompanyDetails?.id}
               className=" cursor-pointer mb-10"
             >
               <div className="text-lg font-semibold pl-3">Profile</div>

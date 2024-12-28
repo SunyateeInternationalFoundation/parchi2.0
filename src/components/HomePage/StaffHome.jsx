@@ -1,7 +1,7 @@
 import { collection, getDoc, getDocs, query, where } from "firebase/firestore";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Outlet,
   Route,
@@ -10,6 +10,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { db } from "../../firebase";
+import { setAsAStaffCompanies } from "../../store/UserSlice";
 import CreditNoteList from "../CreditNote/CreditNoteList";
 import CreditNoteView from "../CreditNote/CreditNoteView/CreditNoteView";
 import SetCreditNote from "../CreditNote/SetCreditNote/SetCreditNote";
@@ -56,44 +57,33 @@ import SideBar from "../UI/Sidebar";
 import VendorList from "../Vendors/VendorList";
 import VendorView from "../Vendors/VendorView/VendorView";
 
-const Modal = ({
-  companyDetails,
-  onClose,
-  setSelectedCompanyName,
-  setSelectedCompany,
-  staffProfileDetailsAllCompany,
-  setStaffProfileDetailsSelectedCompany,
-  setSelectCompanyIndex,
-}) => {
+const Modal = ({ onClose, staffDetails }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
         <h2 className="text-2xl font-semibold mb-4 text-center">
           Company Details{" "}
         </h2>
-        {companyDetails && companyDetails.length > 0 ? (
+        {staffDetails && staffDetails.length > 0 ? (
           <div className="grid grid-cols-3">
-            {companyDetails.map((company, index) => (
+            {staffDetails.map((staff, index) => (
               <div
-                key={company.id}
+                key={staff.companyDetails.companyId}
                 className="p-2 cursor-pointer hover:bg-gray-100 border-2 rounded-lg h-32 "
                 onClick={() => {
                   navigate("invoice");
-                  setSelectedCompanyName(company.name);
-                  setSelectedCompany(company);
-                  setSelectCompanyIndex(index);
-                  setStaffProfileDetailsSelectedCompany(
-                    staffProfileDetailsAllCompany.find(
-                      (ele) => ele.companyRef.id == company.id
-                    )
+                  dispatch(
+                    setAsAStaffCompanies({ selectedStaffCompanyIndex: index })
                   );
                 }}
               >
                 <div className="font-bold text-5xl text-center h-3/4 flex items-center justify-center rounded-full bg-sky-100">
-                  {company.name?.slice(0, 2).toUpperCase() || "YC"}
+                  {staff.companyDetails.name?.slice(0, 2).toUpperCase() || "YC"}
                 </div>
-                <p className="h-1/4 text-center">{company.name}</p>
+                <p className="h-1/4 text-center">{staff.companyDetails.name}</p>
               </div>
             ))}
           </div>
@@ -115,37 +105,26 @@ const Modal = ({
   );
 };
 Modal.propTypes = {
-  companyDetails: PropTypes.array,
+  staffDetails: PropTypes.array,
   onClose: PropTypes.func.isRequired,
-  setSelectedCompanyName: PropTypes.func.isRequired,
-  setSelectedCompany: PropTypes.func.isRequired,
-  staffProfileDetailsAllCompany: PropTypes.array,
-  setStaffProfileDetailsSelectedCompany: PropTypes.func.isRequired,
-  setSelectCompanyIndex: PropTypes.func.isRequired,
 };
 
 const StaffHome = () => {
   const location = useLocation();
   const phone = useSelector((state) => state.users.phone);
   const [showModal, setShowModal] = useState(false);
-  const [companyDetails, setCompanyDetails] = useState(null);
-  const [roles, setRoles] = useState([]);
-  const [selectedCompanyName, setSelectedCompanyName] = useState("");
-  const [selectedCompany, setSelectedCompany] = useState(null);
-  const [staffProfileDetailsAllCompany, setStaffProfileDetailsAllCompany] =
-    useState(null);
-  const [staffDetailsSelectedCompany, setStaffDetailsSelectedCompany] =
-    useState(null);
-  const [selectCompanyIndex, setSelectCompanyIndex] = useState(0);
+  const [staffDetails, setStaffDetails] = useState(null);
+  const [selectedStaffCompanyIndex, setSelectedStaffCompanyIndex] = useState(0);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (location.pathname === "/staff") {
       setShowModal(true);
-      if (phone) {
-        fetchCompanyDetails(phone);
-      }
     } else {
       setShowModal(false);
+    }
+    if (phone) {
+      fetchCompanyDetails(phone);
     }
   }, [location, phone]);
 
@@ -158,39 +137,27 @@ const StaffHome = () => {
       const staffSnapshot = await getDocs(staffQuery);
 
       if (!staffSnapshot.empty) {
-        const staffDoc = staffSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setStaffProfileDetailsAllCompany(staffDoc);
-        const staffSidebar = staffDoc.map((staff) => {
-          if (staff.roles) {
-            return Object.keys(staff.roles).filter((role) => staff.roles[role]);
-          }
-          return [];
-        });
-        const companyPromises = staffDoc.map(async (staff) => {
-          if (staff.companyRef) {
-            const companyDoc = await getDoc(staff.companyRef);
-            return companyDoc.exists()
-              ? { id: companyDoc.id, ...companyDoc.data() }
-              : null;
-          }
-          return null;
-        });
-
-        const companies = await Promise.all(companyPromises);
-
-        if (companies.length > 0) {
-          setCompanyDetails(companies);
-        } else {
-          setCompanyDetails(null);
-        }
-        setRoles(staffSidebar);
+        const staffDoc = await Promise.all(
+          staffSnapshot.docs.map(async (doc) => {
+            const { companyRef, ...data } = doc.data();
+            const companyDoc = await getDoc(companyRef);
+            const { userRef, ...companyData } = companyDoc.data();
+            return {
+              id: doc.id,
+              ...data,
+              companyDetails: {
+                companyId: companyDoc.id,
+                ...companyData,
+              },
+            };
+          })
+        );
+        setStaffDetails(staffDoc);
+        dispatch(setAsAStaffCompanies({ asAStaffCompanies: staffDoc }));
       }
     } catch (error) {
       console.error("Error fetching company details:", error);
-      setCompanyDetails(null);
+      setStaffDetails(null);
     }
   };
 
@@ -201,33 +168,14 @@ const StaffHome = () => {
   return (
     <div>
       <div style={{ height: "8vh" }}>
-        <Navbar
-          selectedCompany={selectedCompanyName}
-          companyDetails={companyDetails}
-          isStaff={true}
-        />
+        <Navbar />
       </div>
       <div className="flex" style={{ height: "92vh" }}>
-        <div>
-          {!showModal && (
-            <SideBar
-              staff={roles[selectCompanyIndex]}
-              staffId={staffDetailsSelectedCompany?.id}
-            />
-          )}
-        </div>
+        <div>{!showModal && <SideBar />}</div>
         <div style={{ width: "100%", height: "92vh" }} className="bg-gray-100">
           <Routes>
-            <Route
-              path="/profile/:id"
-              element={<StaffView staffCompanyId={selectedCompany?.id} />}
-            ></Route>
-            <Route
-              path="/invoice"
-              element={
-                <InvoiceList companyDetails={selectedCompany} isStaff={true} />
-              }
-            ></Route>
+            <Route path="/profile/:id" element={<StaffView />}></Route>
+            <Route path="/invoice" element={<InvoiceList />}></Route>
             <Route path="/invoice/:id" element={<InvoiceView />}></Route>
             <Route
               path="/invoice/create-invoice"
@@ -237,12 +185,7 @@ const StaffHome = () => {
               path="/invoice/:invoiceId/edit-invoice"
               element={<SetInvoice />}
             ></Route>
-            <Route
-              path="/quotation"
-              element={
-                <Quotation companyDetails={selectedCompany} isStaff={true} />
-              }
-            ></Route>
+            <Route path="/quotation" element={<Quotation />}></Route>
             <Route
               path="/quotation/:id"
               element={<QuotationViewHome />}
@@ -255,12 +198,7 @@ const StaffHome = () => {
               path="/quotation/:quotationId/edit-quotation"
               element={<SetQuotation />}
             ></Route>
-            <Route
-              path="/purchase"
-              element={
-                <Purchase companyDetails={selectedCompany} isStaff={true} />
-              }
-            ></Route>
+            <Route path="/purchase" element={<Purchase />}></Route>
             <Route path="/purchase/:id" element={<PurchaseViewHome />}></Route>
             <Route
               path="/purchase/create-purchase"
@@ -270,12 +208,7 @@ const StaffHome = () => {
               path="/purchase/:purchaseId/edit-purchase"
               element={<SetPurchase />}
             ></Route>
-            <Route
-              path="/projects"
-              element={
-                <Projects companyDetails={selectedCompany} isStaff={true} />
-              }
-            ></Route>
+            <Route path="/projects" element={<Projects />}></Route>
             <Route
               path="/projects/create-project"
               element={<CreateProject />}
@@ -295,19 +228,9 @@ const StaffHome = () => {
             <Route path="/projects/:id/payments" element={<Payment />}></Route>
             <Route path="/projects/:id/items" element={<Items />}></Route>
             <Route path="/projects/:id/chats" element={<Chats />}></Route>
-            <Route
-              path="/customers"
-              element={
-                <CustomerList companyDetails={selectedCompany} isStaff={true} />
-              }
-            ></Route>
+            <Route path="/customers" element={<CustomerList />}></Route>
             <Route path="/customers/:id" element={<CustomerView />}></Route>
-            <Route
-              path="/vendors"
-              element={
-                <VendorList companyDetails={selectedCompany} isStaff={true} />
-              }
-            ></Route>
+            <Route path="/vendors" element={<VendorList />}></Route>
             <Route path="/vendors/:id" element={<VendorView />}></Route>
             <Route path="/po" element={<PO />}></Route>
             <Route path="/po/:id" element={<PoView />}></Route>
@@ -373,17 +296,7 @@ const StaffHome = () => {
           <Outlet />
         </div>
       </div>
-      {showModal && (
-        <Modal
-          companyDetails={companyDetails}
-          onClose={closeModal}
-          setSelectedCompanyName={setSelectedCompanyName}
-          setSelectedCompany={setSelectedCompany}
-          staffProfileDetailsAllCompany={staffProfileDetailsAllCompany}
-          setStaffProfileDetailsSelectedCompany={setStaffDetailsSelectedCompany}
-          setSelectCompanyIndex={setSelectCompanyIndex}
-        />
-      )}
+      {showModal && <Modal onClose={closeModal} staffDetails={staffDetails} />}
     </div>
   );
 };
