@@ -129,7 +129,7 @@ const VendorProfile = ({ vendorData, refresh }) => {
                   </div>
                   {!isEdit &&
                     (userDetails.selectedDashboard === "staff" ? (
-                      role.edit && (
+                      role?.edit && (
                         <button
                           className="flex items-center space-x-2 text-purple-600 hover:text-purple-800 mt-2"
                           onClick={() => setIsEdit(true)}

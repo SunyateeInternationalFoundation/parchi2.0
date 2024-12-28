@@ -22,17 +22,7 @@ function Tasks() {
   const { id } = useParams();
   const projectId = id;
   const userDetails = useSelector((state) => state.users);
-  let companyId;
-  if (userDetails.selectedDashboard === "staff") {
-    companyId =
-      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
-        .companyDetails.companyId;
-  } else {
-    companyId =
-      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  }
-  console.log("userDetails", userDetails);
-  console.log("companyId", companyId);
+
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.tasks;
@@ -242,20 +232,7 @@ function Tasks() {
               <h2 className="text-xl font-semibold ">TASKS</h2>
             </div>
 
-            {userDetails.selectedDashboard === "staff" ? (
-              role.access && (
-                <button
-                  type="button"
-                  className="bg-blue-500 text-white py-1 px-2 rounded"
-                  onClick={() => {
-                    setIsSideBarOpen(true);
-                    setSideBarType("CreateTask");
-                  }}
-                >
-                  + Create Task
-                </button>
-              )
-            ) : (
+            {(userDetails.selectedDashboard === "" || role?.access) && (
               <button
                 type="button"
                 className="bg-blue-500 text-white py-1 px-2 rounded"

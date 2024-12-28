@@ -49,7 +49,7 @@ function ProjectView() {
   if (userDetails.selectedDashboard === "staff") {
     companyId =
       userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
-        .companyDetails.companyId;
+        ?.companyDetails?.companyId;
   } else {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
@@ -233,6 +233,18 @@ function ProjectView() {
       },
     },
   ];
+  const [manageItems, setManageItems] = useState(manageProjectItems);
+  useEffect(() => {
+    if (userDetails.selectedDashboard === "staff") {
+      const removedItems = ["Payments", "Items", "Chat"];
+
+      const updatedData = manageProjectItems.filter(
+        (ele) => !removedItems.includes(ele.name)
+      );
+      setManageItems(updatedData);
+    }
+  }, []);
+
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({});
@@ -302,17 +314,7 @@ function ProjectView() {
               </div>
               {isOutlineDotsOpen && (
                 <div className="absolute bg-white  p-1 right-1 cursor-pointer border-2 rounded-lg">
-                  {userDetails.selectedDashboard === "staff" ? (
-                    role.edit && (
-                      <div
-                        className="pe-14 py-1 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
-                        onClick={() => setIsEdit(true)}
-                      >
-                        <TbEdit className="text-green-600" />
-                        <div>Edit</div>
-                      </div>
-                    )
-                  ) : (
+                  {(userDetails.selectedDashboard === "" || role?.edit) && (
                     <div
                       className="pe-14 py-1 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
                       onClick={() => setIsEdit(true)}
@@ -321,17 +323,7 @@ function ProjectView() {
                       <div>Edit</div>
                     </div>
                   )}
-                  {userDetails.selectedDashboard === "staff" ? (
-                    role.delete && (
-                      <div
-                        className="py-1 pe-14 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
-                        onClick={handleDelete}
-                      >
-                        <RiDeleteBin6Line className="text-red-500" />
-                        <div> Delete</div>
-                      </div>
-                    )
-                  ) : (
+                  {(userDetails.selectedDashboard === "" || role?.delete) && (
                     <div
                       className="py-1 pe-14 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
                       onClick={handleDelete}
@@ -650,7 +642,7 @@ function ProjectView() {
         <div className="p-5 bg-white shadow rounded-lg mt-4">
           <div className="mb-4">Manage Project</div>
           <div className="grid grid-cols-4 gap-4 gap-y-8">
-            {manageProjectItems.map((item) => (
+            {manageItems.map((item) => (
               <div
                 key={item.name}
                 className="flex flex-col items-center cursor-pointer"

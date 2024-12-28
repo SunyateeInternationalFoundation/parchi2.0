@@ -21,7 +21,7 @@ function Projects() {
   if (userDetails.selectedDashboard === "staff") {
     companyId =
       userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
-        .companyDetails.companyId;
+        ?.companyDetails?.companyId;
   } else {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
@@ -29,10 +29,14 @@ function Projects() {
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.project;
+  console.log("🚀 ~ Projects ~ role:", role, companyId);
   const navigate = useNavigate();
   useEffect(() => {
     async function fetchProjectsList() {
       try {
+        if (!companyId) {
+          return;
+        }
         const companyRef = doc(db, "companies", companyId);
 
         const projectRef = collection(db, "projects");
@@ -200,16 +204,7 @@ function Projects() {
               </div>
             </div>
             <div className="w-full text-end ">
-              {userDetails.selectedDashboard === "staff" ? (
-                role.create && (
-                  <Link
-                    className="bg-blue-500 text-white py-1 px-2 rounded"
-                    to="create-Project"
-                  >
-                    + Create Project
-                  </Link>
-                )
-              ) : (
+              {(userDetails.selectedDashboard === "staff" || role?.create) && (
                 <Link
                   className="bg-blue-500 text-white py-1 px-2 rounded"
                   to="create-Project"

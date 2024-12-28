@@ -173,7 +173,7 @@ const Roles = () => {
                     {rolesList.map((role) => (
                       <tr key={role} className="hover:bg-gray-100">
                         <td className="border border-gray-300 px-4 py-2">
-                          {role.charAt(0).toUpperCase() + role.slice(1)}
+                          {role?.charAt(0).toUpperCase() + role?.slice(1)}
                         </td>
                         {actions.map((action) => (
                           <td
@@ -208,34 +208,30 @@ const Roles = () => {
                         <th className="border border-gray-300 px-4 py-2 text-left">
                           Role
                         </th>
-                        {["access"].map((action) => (
-                          <th
-                            key={action}
-                            className="border border-gray-300 px-4 py-2"
-                          >
-                            {action.charAt(0).toUpperCase() + action.slice(1)}
-                          </th>
-                        ))}
+
+                        <th className="border border-gray-300 px-4 py-2">
+                          Access
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {projectsList.map((role) => (
                         <tr key={role} className="hover:bg-gray-100">
                           <td className="border border-gray-300 px-4 py-2">
-                            {role.charAt(0).toUpperCase() + role.slice(1)}
+                            {role?.charAt(0).toUpperCase() + role?.slice(1)}
                           </td>
 
                           <td className="border border-gray-300 px-4 py-2 text-center">
                             <input
                               type="checkbox"
                               checked={
-                                tempRoles[staff.id]?.[role]?.Access || false
+                                tempRoles[staff.id]?.[role]?.access || false
                               }
                               onChange={(e) =>
                                 handleRoleChange(
                                   staff.id,
                                   role,
-                                  "Access",
+                                  "access",
                                   e.target.checked
                                 )
                               }

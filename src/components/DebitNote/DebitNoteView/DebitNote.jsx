@@ -230,7 +230,7 @@ const DebitNote = ({ debitNote, bankDetails }) => {
           </button>
 
           {userDetails.selectedDashboard === "staff" ? (
-            role.edit && (
+            role?.edit && (
               <button
                 className={
                   "px-4 py-1 bg-red-300 text-white rounded-full flex items-center"
@@ -271,7 +271,7 @@ const DebitNote = ({ debitNote, bankDetails }) => {
           {debitNote.paymentStatus !== "Paid" && (
             <div className="text-end">
               {userDetails.selectedDashboard === "staff" ? (
-                role.delete && (
+                role?.delete && (
                   <button
                     className={"px-4 py-1 text-red-700 text-2xl"}
                     onClick={handleDelete}

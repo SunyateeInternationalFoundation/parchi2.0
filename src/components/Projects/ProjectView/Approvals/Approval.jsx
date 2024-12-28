@@ -76,16 +76,7 @@ const Approval = () => {
           ))}
         </div>
         <div>
-          {userDetails.selectedDashboard === "staff" ? (
-            role.access && (
-              <button
-                className="bg-blue-500 text-white py-1 px-2 rounded"
-                onClick={() => setIsSideBarOpen(true)}
-              >
-                + Create Approval
-              </button>
-            )
-          ) : (
+          {(userDetails.selectedDashboard === "" || role?.access) && (
             <button
               className="bg-blue-500 text-white py-1 px-2 rounded"
               onClick={() => setIsSideBarOpen(true)}

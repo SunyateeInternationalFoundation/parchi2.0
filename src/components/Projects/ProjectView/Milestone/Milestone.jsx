@@ -76,16 +76,7 @@ const Milestone = () => {
           <h1 className="text-2xl font-bold  text-black">Milestones</h1>
         </div>
 
-        {userDetails.selectedDashboard === "staff" ? (
-          role.access && (
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="bg-blue-500 text-white px-2 rounded hover:bg-blue-600 transition"
-            >
-              + Create Milestone
-            </button>
-          )
-        ) : (
+        {(userDetails.selectedDashboard === "" || role?.access) && (
           <button
             onClick={() => setIsModalOpen(true)}
             className="bg-blue-500 text-white px-2 rounded hover:bg-blue-600 transition"
