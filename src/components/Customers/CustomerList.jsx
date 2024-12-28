@@ -23,7 +23,6 @@ const CustomerList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-  console.log("customercompanyDetails", companyDetails);
   const userDetails = useSelector((state) => state.users);
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
@@ -40,7 +39,6 @@ const CustomerList = () => {
   const customersDetails = useSelector((state) => state.customers).data;
   const dispatch = useDispatch();
 
-  console.log("🚀 ~ CustomerList ~ customersDetails:", customersDetails);
   const fetchCustomers = async () => {
     if (customersDetails.length !== 0) {
       return;

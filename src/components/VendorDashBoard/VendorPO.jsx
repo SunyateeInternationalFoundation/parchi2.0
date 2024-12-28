@@ -43,8 +43,6 @@ const VendorPO = () => {
         const POList = [];
         const phoneNo = phone.startsWith("+91") ? phone.slice(3) : phone;
         for (const company of companiesId) {
-          console.log(company.companyId);
-
           const poRef = collection(
             db,
             "companies",
@@ -62,7 +60,6 @@ const VendorPO = () => {
           });
           POList.push(...getAllPO);
         }
-        console.log("🚀 ~ fetchPO ~ POList:", POList);
 
         setPo(POList);
       } catch (error) {
@@ -89,7 +86,7 @@ const VendorPO = () => {
           ) : (
             <div className="overflow-y-auto" style={{ height: "70vh" }}>
               <table className="w-full border-collapse  h-28 text-center">
-                <thead className="sticky top-0 z-10 bg-white">
+                <thead className=" bg-white">
                   <tr className="border-b">
                     <th className="p-4">Company Name</th>
                     <th className="p-4">Amount</th>

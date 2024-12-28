@@ -99,7 +99,6 @@ const CreditNoteView = () => {
     fetchCreditNote();
   }, [companyId]);
 
-  console.log("credit-note", creditNote);
   return (
     <div className="px-5 pb-5 bg-gray-100" style={{ width: "100%" }}>
       <header className="flex items-center space-x-3 my-2 ">

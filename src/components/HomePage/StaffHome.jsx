@@ -27,11 +27,8 @@ import SetProFormaInvoice from "../ProFormaInvoice/SetProFormaInvoice/SetProForm
 import CreateProject from "../Projects/CreateProject/CreateProject";
 import Projects from "../Projects/Projects";
 import Approval from "../Projects/ProjectView/Approvals/Approval";
-import Chats from "../Projects/ProjectView/Chats/Chats";
 import Files from "../Projects/ProjectView/Files/Files";
-import Items from "../Projects/ProjectView/Items/Items";
 import Milestone from "../Projects/ProjectView/Milestone/Milestone";
-import Payment from "../Projects/ProjectView/Payment/Payment";
 import ProjectView from "../Projects/ProjectView/ProjectView";
 import Tasks from "../Projects/ProjectView/Tasks/Tasks";
 import Users from "../Projects/ProjectView/Users/Users";
@@ -54,11 +51,10 @@ const StaffHome = () => {
   const dispatch = useDispatch();
   const [staffDetails, setStaffDetails] = useState(null);
   const userDetails = useSelector((state) => state.users);
+  const { selectedStaffCompanyIndex } = userDetails;
 
-  // const projectsList = ["users", "milestones", "tasks", "files", "approvals"];
-
-  // const actions = ["create", "edit", "view", "delete"];
   useEffect(() => {
+    setStaffDetails(userDetails.asAStaffCompanies);
     if (userDetails.asAStaffCompanies.length == 0) {
       fetchCompanyDetails();
     }
@@ -99,6 +95,15 @@ const StaffHome = () => {
       console.error("Error fetching company details:", error);
     }
   };
+
+  function checkPermission(field, subField) {
+    if (!staffDetails) {
+      return false;
+    }
+    const isTrue = staffDetails[selectedStaffCompanyIndex]?.roles[field];
+
+    return isTrue && (isTrue[subField] ?? false);
+  }
   return (
     <div>
       <div style={{ height: "8vh" }}>
@@ -106,128 +111,238 @@ const StaffHome = () => {
       </div>
       <div className="flex" style={{ height: "92vh" }}>
         <div>
-          {" "}
           <SideBar />
         </div>
         <div style={{ width: "100%", height: "92vh" }} className="bg-gray-100">
           <Routes>
-            {<Route path="/profile/:id" element={<StaffView />}></Route>}
-            <Route path="/invoice" element={<InvoiceList />}></Route>
-            <Route path="/invoice/:id" element={<InvoiceView />}></Route>
-            <Route
-              path="/invoice/create-invoice"
-              element={<SetInvoice />}
-            ></Route>
-            <Route
-              path="/invoice/:invoiceId/edit-invoice"
-              element={<SetInvoice />}
-            ></Route>
-            <Route path="/quotation" element={<Quotation />}></Route>
-            <Route
-              path="/quotation/:id"
-              element={<QuotationViewHome />}
-            ></Route>
-            <Route
-              path="/quotation/create-quotation"
-              element={<SetQuotation />}
-            ></Route>
-            <Route
-              path="/quotation/:quotationId/edit-quotation"
-              element={<SetQuotation />}
-            ></Route>
-            <Route path="/purchase" element={<Purchase />}></Route>
-            <Route path="/purchase/:id" element={<PurchaseViewHome />}></Route>
-            <Route
-              path="/purchase/create-purchase"
-              element={<SetPurchase />}
-            ></Route>
-            <Route
-              path="/purchase/:purchaseId/edit-purchase"
-              element={<SetPurchase />}
-            ></Route>
+            <Route path="/profile/:id" element={<StaffView />}></Route>
+
+            {checkPermission("invoice", "view") && (
+              <Route path="/invoice" element={<InvoiceList />}></Route>
+            )}
+
+            {checkPermission("invoice", "view") && (
+              <Route path="/invoice/:id" element={<InvoiceView />}></Route>
+            )}
+            {checkPermission("invoice", "create") && (
+              <Route
+                path="/invoice/create-invoice"
+                element={<SetInvoice />}
+              ></Route>
+            )}
+            {checkPermission("invoice", "edit") && (
+              <Route
+                path="/invoice/:invoiceId/edit-invoice"
+                element={<SetInvoice />}
+              ></Route>
+            )}
+            {checkPermission("quotation", "view") && (
+              <Route path="/quotation" element={<Quotation />}></Route>
+            )}
+            {checkPermission("quotation", "view") && (
+              <Route
+                path="/quotation/:id"
+                element={<QuotationViewHome />}
+              ></Route>
+            )}
+            {checkPermission("quotation", "create") && (
+              <Route
+                path="/quotation/create-quotation"
+                element={<SetQuotation />}
+              ></Route>
+            )}
+            {checkPermission("quotation", "edit") && (
+              <Route
+                path="/quotation/:quotationId/edit-quotation"
+                element={<SetQuotation />}
+              ></Route>
+            )}
+            {checkPermission("purchase", "view") && (
+              <Route path="/purchase" element={<Purchase />}></Route>
+            )}
+            {checkPermission("purchase", "view") && (
+              <Route
+                path="/purchase/:id"
+                element={<PurchaseViewHome />}
+              ></Route>
+            )}
+            {checkPermission("purchase", "create") && (
+              <Route
+                path="/purchase/create-purchase"
+                element={<SetPurchase />}
+              ></Route>
+            )}
+            {checkPermission("purchase", "edit") && (
+              <Route
+                path="/purchase/:purchaseId/edit-purchase"
+                element={<SetPurchase />}
+              ></Route>
+            )}
+
             <Route path="/projects" element={<Projects />}></Route>
-            <Route
-              path="/projects/create-project"
-              element={<CreateProject />}
-            ></Route>
+
+            {checkPermission("projects", "create") && (
+              <Route
+                path="/projects/create-project"
+                element={<CreateProject />}
+              ></Route>
+            )}
+
             <Route path="/projects/:id" element={<ProjectView />} />
-            <Route path="/projects/:id/user" element={<Users />} />
-            <Route path="/projects/:id/tasks" element={<Tasks />}></Route>
-            <Route
-              path="/projects/:id/milestones"
-              element={<Milestone />}
-            ></Route>
-            <Route path="/projects/:id/files" element={<Files />}></Route>
-            <Route
-              path="/projects/:id/approvals"
-              element={<Approval />}
-            ></Route>
-            <Route path="/projects/:id/payments" element={<Payment />}></Route>
-            <Route path="/projects/:id/items" element={<Items />}></Route>
-            <Route path="/projects/:id/chats" element={<Chats />}></Route>
-            <Route path="/customers" element={<CustomerList />}></Route>
-            <Route path="/customers/:id" element={<CustomerView />}></Route>
-            <Route path="/vendors" element={<VendorList />}></Route>
-            <Route path="/vendors/:id" element={<VendorView />}></Route>
-            <Route path="/po" element={<PO />}></Route>
-            <Route path="/po/:id" element={<PoView />}></Route>
-            <Route path="/po/create-po" element={<SetPO />}></Route>
-            <Route path="/po/:poId/edit-po" element={<SetPO />}></Route>
-            <Route path="/services" element={<Services />}></Route>
-            <Route
-              path="/services/create-service"
-              element={<CreateService />}
-            ></Route>
-            <Route
-              path="/services/:id/edit-service"
-              element={<EditService />}
-            ></Route>
-            <Route
-              path="/delivery-challan"
-              element={<DeliveryChallanList />}
-            ></Route>
-            <Route
-              path="/delivery-challan/:id"
-              element={<DeliveryChallanView />}
-            ></Route>
-            <Route
-              path="/delivery-challan/create-deliverychallan"
-              element={<SetDeliveryChallan />}
-            ></Route>
-            <Route
-              path="/delivery-challan/:deliverychallanId/edit-deliverychallan"
-              element={<SetDeliveryChallan />}
-            ></Route>
-            <Route path="/credit-note" element={<CreditNoteList />}></Route>
-            <Route path="/credit-note/:id" element={<CreditNoteView />}></Route>
-            <Route
-              path="/credit-note/create-creditnote"
-              element={<SetCreditNote />}
-            ></Route>
-            <Route
-              path="/credit-note/:creditnoteId/edit-creditnote"
-              element={<SetCreditNote />}
-            ></Route>
-            <Route path="/pos" element={<POS />}></Route>
-            <Route path="/pos/:id" element={<POSView />}></Route>
-            <Route path="/pos/create-pos" element={<SetPos />}></Route>
-            <Route path="/pos/:posId/edit-pos" element={<SetPos />}></Route>
-            <Route
-              path="/pro-forma-invoice"
-              element={<ProFormaInvoice />}
-            ></Route>
-            <Route
-              path="/pro-forma-invoice/:id"
-              element={<ProFormaView />}
-            ></Route>
-            <Route
-              path="/pro-forma-invoice/create-proForma-invoice"
-              element={<SetProFormaInvoice />}
-            ></Route>
-            <Route
-              path="/pro-forma-invoice/:proFormaId/edit-proForma-invoice"
-              element={<SetProFormaInvoice />}
-            ></Route>
+
+            {checkPermission("users", "access") && (
+              <Route path="/projects/:id/user" element={<Users />} />
+            )}
+            {checkPermission("task", "access") && (
+              <Route path="/projects/:id/tasks" element={<Tasks />}></Route>
+            )}
+            {checkPermission("milestones", "access") && (
+              <Route
+                path="/projects/:id/milestones"
+                element={<Milestone />}
+              ></Route>
+            )}
+            {checkPermission("files", "access") && (
+              <Route path="/projects/:id/files" element={<Files />}></Route>
+            )}
+            {checkPermission("approvals", "access") && (
+              <Route
+                path="/projects/:id/approvals"
+                element={<Approval />}
+              ></Route>
+            )}
+            {/* {checkPermission("projects", "view") && (
+              <Route
+                path="/projects/:id/payments"
+                element={<Payment />}
+              ></Route>
+            )} */}
+            {/* {checkPermission("projects", "view") && (
+              <Route path="/projects/:id/items" element={<Items />}></Route>
+            )} */}
+            {/* {checkPermission("projects", "view") && (
+              <Route path="/projects/:id/chats" element={<Chats />}></Route>
+            )} */}
+            {checkPermission("customers", "view") && (
+              <Route path="/customers" element={<CustomerList />}></Route>
+            )}
+            {checkPermission("customers", "view") && (
+              <Route path="/customers/:id" element={<CustomerView />}></Route>
+            )}
+            {checkPermission("vendors", "view") && (
+              <Route path="/vendors" element={<VendorList />}></Route>
+            )}
+            {checkPermission("vendors", "view") && (
+              <Route path="/vendors/:id" element={<VendorView />}></Route>
+            )}
+            {checkPermission("po", "view") && (
+              <Route path="/po" element={<PO />}></Route>
+            )}
+            {checkPermission("po", "view") && (
+              <Route path="/po/:id" element={<PoView />}></Route>
+            )}
+            {checkPermission("po", "create") && (
+              <Route path="/po/create-po" element={<SetPO />}></Route>
+            )}
+            {checkPermission("po", "edit") && (
+              <Route path="/po/:poId/edit-po" element={<SetPO />}></Route>
+            )}
+            {checkPermission("services", "create") && (
+              <Route path="/services" element={<Services />}></Route>
+            )}
+            {checkPermission("services", "view") && (
+              <Route
+                path="/services/create-service"
+                element={<CreateService />}
+              ></Route>
+            )}
+            {checkPermission("services", "edit") && (
+              <Route
+                path="/services/:id/edit-service"
+                element={<EditService />}
+              ></Route>
+            )}
+            {checkPermission("deliveryChallan", "view") && (
+              <Route
+                path="/delivery-challan"
+                element={<DeliveryChallanList />}
+              ></Route>
+            )}
+            {checkPermission("deliveryChallan", "view") && (
+              <Route
+                path="/delivery-challan/:id"
+                element={<DeliveryChallanView />}
+              ></Route>
+            )}
+            {checkPermission("deliveryChallan", "create") && (
+              <Route
+                path="/delivery-challan/create-deliverychallan"
+                element={<SetDeliveryChallan />}
+              ></Route>
+            )}
+            {checkPermission("deliveryChallan", "edit") && (
+              <Route
+                path="/delivery-challan/:deliverychallanId/edit-deliverychallan"
+                element={<SetDeliveryChallan />}
+              ></Route>
+            )}
+            {checkPermission("creditNote", "view") && (
+              <Route path="/credit-note" element={<CreditNoteList />}></Route>
+            )}
+            {checkPermission("creditNote", "view") && (
+              <Route
+                path="/credit-note/:id"
+                element={<CreditNoteView />}
+              ></Route>
+            )}
+            {checkPermission("creditNote", "create") && (
+              <Route
+                path="/credit-note/create-creditnote"
+                element={<SetCreditNote />}
+              ></Route>
+            )}
+            {checkPermission("creditNote", "edit") && (
+              <Route
+                path="/credit-note/:creditnoteId/edit-creditnote"
+                element={<SetCreditNote />}
+              ></Route>
+            )}
+            {checkPermission("pos", "view") && (
+              <Route path="/pos" element={<POS />}></Route>
+            )}
+            {checkPermission("pos", "view") && (
+              <Route path="/pos/:id" element={<POSView />}></Route>
+            )}
+            {checkPermission("pos", "create") && (
+              <Route path="/pos/create-pos" element={<SetPos />}></Route>
+            )}
+            {checkPermission("pos", "edit") && (
+              <Route path="/pos/:posId/edit-pos" element={<SetPos />}></Route>
+            )}
+            {checkPermission("proFormaInvoice", "view") && (
+              <Route
+                path="/pro-forma-invoice"
+                element={<ProFormaInvoice />}
+              ></Route>
+            )}
+            {checkPermission("proFormaInvoice", "view") && (
+              <Route
+                path="/pro-forma-invoice/:id"
+                element={<ProFormaView />}
+              ></Route>
+            )}
+            {checkPermission("proFormaInvoice", "create") && (
+              <Route
+                path="/pro-forma-invoice/create-proForma-invoice"
+                element={<SetProFormaInvoice />}
+              ></Route>
+            )}
+            {checkPermission("proFormaInvoice", "edit") && (
+              <Route
+                path="/pro-forma-invoice/:proFormaId/edit-proForma-invoice"
+                element={<SetProFormaInvoice />}
+              ></Route>
+            )}
           </Routes>
 
           <Outlet />

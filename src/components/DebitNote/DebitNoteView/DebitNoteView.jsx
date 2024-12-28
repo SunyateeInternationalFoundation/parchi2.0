@@ -100,7 +100,6 @@ const DebitNoteView = () => {
     fetchDebitNote();
   }, [companyId]);
 
-  console.log("debit-note", debitNote);
   return (
     <div className="px-5 pb-5 bg-gray-100" style={{ width: "100%" }}>
       <header className="flex items-center space-x-3 my-2 ">

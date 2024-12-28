@@ -15,9 +15,7 @@ function Quotations() {
     async function fetchCustomerCompanies() {
       try {
         const customerRef = collection(db, "customers");
-        console.log("🚀 ~ fetchCustomerCompanies ~ customerRef", customerRef);
         const q = query(customerRef, where("phone", "==", userDetails.phone));
-        console.log("🚀 ~ fetchCustomerCompanies ~ q", q);
         const getData = await getDocs(q);
         const getCompaniesId = getData.docs.map((doc) => {
           const { name, companyRef } = doc.data();
@@ -43,8 +41,6 @@ function Quotations() {
       try {
         const quotationList = [];
         for (const company of companiesId) {
-          console.log(company.companyId);
-
           const quotationRef = collection(
             db,
             "companies",
@@ -89,7 +85,7 @@ function Quotations() {
           ) : (
             <div className="overflow-y-auto" style={{ height: "70vh" }}>
               <table className="w-full border-collapse  h-28 text-center">
-                <thead className="sticky top-0 z-10 bg-white">
+                <thead className=" bg-white">
                   <tr className="border-b">
                     <th className="p-4">company</th>
                     <th className="p-4">Amount</th>

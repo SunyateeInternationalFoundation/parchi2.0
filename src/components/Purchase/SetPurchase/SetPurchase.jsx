@@ -275,18 +275,12 @@ const SetPurchase = () => {
                 : +data.purchasePrice) /
                 100) *
               data.discount;
-            console.log("discount", discount);
           }
           const netAmount =
             (data.purchasePrice <= 0
               ? +data.sellingPrice
               : data.purchasePrice) - discount;
-          console.log(
-            "price",
-            netAmount,
-            data.purchasePrice,
-            data.sellingPrice
-          );
+
           const taxRate = data.tax || 0;
           let sgst = 0;
           let cgst = 0;

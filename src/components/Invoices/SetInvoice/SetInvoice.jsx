@@ -16,6 +16,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
 import { setAllCustomersDetails } from "../../../store/CustomerSlice";
 import Sidebar from "./Sidebar";
+import { use } from "react";
 
 const SetInvoice = () => {
   const { invoiceId } = useParams();
@@ -37,10 +38,7 @@ const SetInvoice = () => {
   } else {
     companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   }
-  console.log(
-    "🚀 ~ file: SetInvoice.js ~ line 10 ~ SetInvoice ~ companyDetails",
-    companyDetails
-  );
+
   const phoneNo = userDetails.phone;
 
   const [date, setDate] = useState(Timestamp.fromDate(new Date()));
@@ -205,7 +203,6 @@ const SetInvoice = () => {
             ...data,
           };
         });
-        console.log("🚀 ~ customerDetails ~ customersData:", customersData);
         dispatch(setAllCustomersDetails(customersData));
         setSuggestions(customersData);
       } catch (error) {
@@ -353,11 +350,12 @@ const SetInvoice = () => {
     fetchInvoiceData();
     fetchTax();
     customerDetails();
-  }, [companyDetails]);
+  }, [companyDetails.companyId , userDetails.selectedDashboard]);
 
   const handleInputChange = (e) => {
-    const value = e.target.value;
+    const value = e.target.value.trim();
     setSelectedCustomerData({ name: value });
+    setIsDropdownVisible(true);
     if (value) {
       const filteredSuggestions = customersDetails.filter((item) =>
         item.name.toLowerCase().includes(value.toLowerCase())
@@ -366,6 +364,7 @@ const SetInvoice = () => {
       setIsDropdownVisible(true);
     } else {
       setSuggestions(customersDetails);
+      
     }
   };
 
@@ -649,7 +648,6 @@ const SetInvoice = () => {
   function onSelectBook(e) {
     const { value } = e.target;
     const data = books.find((ele) => ele.id === value);
-    console.log("🚀 ~ onSelectBook ~ data:", data);
     const bookRef = doc(
       db,
       "companies",
@@ -677,8 +675,6 @@ const SetInvoice = () => {
       warehouse: { name: data.name, warehouseRef },
     }));
   }
-  console.log("suggest", suggestions);
-  console.log("formdata", formData);
   return (
     <div
       className="px-5 pb-5 bg-gray-100 overflow-y-auto"
@@ -710,12 +706,18 @@ const SetInvoice = () => {
                   className="text-base text-gray-900 font-semibold border p-1 rounded w-full mt-1"
                   value={selectedCustomerData?.name}
                   onChange={handleInputChange}
-                  onFocus={() => setIsDropdownVisible(true)}
+                  onFocus={() =>{
+                    setIsDropdownVisible(true);
+                    setSuggestions(customersDetails || [])
+                  } 
+                  }
                   onBlur={() => {
-                    if (!selectedCustomerData.id) {
-                      setSelectedCustomerData({ name: "" });
-                    }
-                    setIsDropdownVisible(false);
+                    setTimeout(() => {
+                      if (!selectedCustomerData.id) {
+                        setSelectedCustomerData({ name: "" });
+                      }
+                      setIsDropdownVisible(false);
+                    }, 200);
                   }}
                   required
                 />

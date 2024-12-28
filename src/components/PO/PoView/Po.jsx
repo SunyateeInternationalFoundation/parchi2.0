@@ -185,7 +185,6 @@ function Po({ Po, bankDetails }) {
 
       if (Po.products && Po.products.length > 0) {
         const updateInventoryPromises = Po.products.map((inventoryItem) => {
-          console.log("inventoryitem", inventoryItem);
           if (
             !inventoryItem.productRef ||
             typeof inventoryItem.quantity !== "number"
