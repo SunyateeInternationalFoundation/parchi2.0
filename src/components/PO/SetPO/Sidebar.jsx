@@ -66,26 +66,28 @@ function Sidebar({
                   {product.name} - Quantity: {product.quantity || "0"}
                 </div>
                 {/* {product.quantity !== 0 && ( */}
-                  <div className="border-2 rounded-lg flex justify-between w-20 text-lg mt-2">
-                    <button
-                      onClick={() => handleActionQty("-", product.id)}
-                      className="px-2"
-                    >
-                      -
-                    </button>
-                    <div>{product.actionQty}</div>
-                    <button
-                      onClick={() => handleActionQty("+", product.id)}
-                      className="px-2"
-                    >
-                      +
-                    </button>
-                  </div>
+                <div className="border-2 rounded-lg flex justify-between w-20 text-lg mt-2">
+                  <button
+                    onClick={() => handleActionQty("-", product.id)}
+                    className="px-2"
+                  >
+                    -
+                  </button>
+                  <div>{product.actionQty}</div>
+                  <button
+                    onClick={() => handleActionQty("+", product.id)}
+                    className="px-2"
+                  >
+                    +
+                  </button>
+                </div>
                 {/* )} */}
               </div>
               <div className="text-end">
                 <div className="font-bold">₹ {product.sellingPrice}</div>
-                <div className="text-sm">Discount : ₹ {product.discount}</div>
+                <div className="text-sm">
+                  Discount : ₹ {product.discount.toFixed(2)}
+                </div>
                 <div className="text-sm"> Tax: {product.tax} %</div>
               </div>
             </div>
@@ -94,7 +96,7 @@ function Sidebar({
 
         <div className="mt-4 text-right">
           <h3 className="text-gray-700 font-bold text-base">
-            Total: ₹ {totalAmount}
+            Total: ₹ {totalAmount.toFixed(2)}
           </h3>
         </div>
 
