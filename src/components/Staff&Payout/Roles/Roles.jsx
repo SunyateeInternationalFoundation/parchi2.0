@@ -44,7 +44,6 @@ const Roles = () => {
         };
       });
       setStaffData(staffData);
-
       const initialTempRoles = staffData.reduce((acc, staff) => {
         acc[staff.id] = { ...staff.roles };
         return acc;
@@ -61,13 +60,11 @@ const Roles = () => {
       const staffRef = doc(db, "staff", staff.id);
       const updatedRoles = tempRoles[staff.id];
       await updateDoc(staffRef, { roles: updatedRoles });
-
       setStaffData((prevData) =>
         prevData.map((item) =>
           item.id === staff.id ? { ...item, roles: updatedRoles } : item
         )
       );
-
       console.log("Roles updated successfully!");
     } catch (error) {
       console.log("Error in handleUpdateRoles:", error);
@@ -92,21 +89,21 @@ const Roles = () => {
   }, [companyDetails.companyId]);
 
   const rolesList = [
-    "Invoice",
-    "Services",
-    "Quotation",
-    "Purchase",
-    "Customers",
-    "Vendors",
-    "Project",
-    "PO",
-    "POS",
-    "ProFormaInvoice",
-    "CreditNote",
-    "DeliveryChallan",
+    "invoice",
+    "services",
+    "quotation",
+    "purchase",
+    "customers",
+    "vendors",
+    "project",
+    "po",
+    "pos",
+    "proFormaInvoice",
+    "creditNote",
+    "deliveryChallan",
   ];
 
-  const projectsList = ["Users", "Milestones", "Tasks", "Files", "Approvals"];
+  const projectsList = ["users", "milestones", "tasks", "files", "approvals"];
 
   const actions = ["create", "edit", "view", "delete"];
 
@@ -130,18 +127,20 @@ const Roles = () => {
           <div
             key={staff.id}
             className="mb-6 bg-white shadow-lg rounded-lg px-8 pb-3 pt-5"
-            onClick={() =>
-              setStaffData((prevData) =>
-                prevData.map((pre) => {
-                  if (staff.id === pre.id) {
-                    return { ...pre, isExpand: !pre.isExpand };
-                  }
-                  return pre;
-                })
-              )
-            }
           >
-            <div className="flex justify-between items-center mb-4">
+            <div
+              className="flex justify-between items-center mb-4 "
+              onClick={() =>
+                setStaffData((prevData) =>
+                  prevData.map((pre) => {
+                    if (staff.id === pre.id) {
+                      return { ...pre, isExpand: !pre.isExpand };
+                    }
+                    return pre;
+                  })
+                )
+              }
+            >
               <h2 className="text-xl font-bold">{staff.name}</h2>
               {staff.isExpand && (
                 <button
@@ -154,7 +153,7 @@ const Roles = () => {
               )}
             </div>
             {staff.isExpand && (
-              <div className="overflow-x-auto">
+              <div className="border-t pt-3">
                 <table className="min-w-full table-auto border-collapse border border-gray-200">
                   <thead>
                     <tr className="bg-gray-200">
@@ -174,24 +173,19 @@ const Roles = () => {
                   <tbody>
                     {rolesList.map((role) => (
                       <tr key={role} className="hover:bg-gray-100">
-                        <td
-                          className="border border-gray-300 px-4 py-2"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {role}
+                        <td className="border border-gray-300 px-4 py-2">
+                          {role.charAt(0).toUpperCase() + role.slice(1)}
                         </td>
                         {actions.map((action) => (
                           <td
                             key={action}
                             className="border border-gray-300 px-4 py-2 text-center"
-                            onClick={(e) => e.stopPropagation()}
                           >
                             <input
                               type="checkbox"
                               checked={
                                 tempRoles[staff.id]?.[role]?.[action] || false
                               }
-                              onClick={(e) => e.stopPropagation()}
                               onChange={(e) =>
                                 handleRoleChange(
                                   staff.id,
@@ -228,35 +222,26 @@ const Roles = () => {
                     <tbody>
                       {projectsList.map((role) => (
                         <tr key={role} className="hover:bg-gray-100">
-                          <td
-                            className="border border-gray-300 px-4 py-2"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {role}
+                          <td className="border border-gray-300 px-4 py-2">
+                            {role.charAt(0).toUpperCase() + role.slice(1)}
                           </td>
-                          {["Access"].map((action) => (
-                            <td
-                              key={action}
-                              className="border border-gray-300 px-4 py-2 text-center"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <input
-                                type="checkbox"
-                                checked={
-                                  tempRoles[staff.id]?.[role]?.[action] || false
-                                }
-                                onClick={(e) => e.stopPropagation()}
-                                onChange={(e) =>
-                                  handleRoleChange(
-                                    staff.id,
-                                    role,
-                                    action,
-                                    e.target.checked
-                                  )
-                                }
-                              />
-                            </td>
-                          ))}
+
+                          <td className="border border-gray-300 px-4 py-2 text-center">
+                            <input
+                              type="checkbox"
+                              checked={
+                                tempRoles[staff.id]?.[role]?.Access || false
+                              }
+                              onChange={(e) =>
+                                handleRoleChange(
+                                  staff.id,
+                                  role,
+                                  "Access",
+                                  e.target.checked
+                                )
+                              }
+                            />
+                          </td>
                         </tr>
                       ))}
                     </tbody>

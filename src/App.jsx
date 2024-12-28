@@ -11,12 +11,12 @@ function App() {
   const usersDetails = useSelector((state) => state.users);
   const isAuthenticated = usersDetails.isLogin;
   const isCompanyProfileDone = usersDetails.isCompanyProfileDone;
-  console.log("🚀 ~ App ~ isAuthenticated:", isAuthenticated)
-  console.log("🚀 ~ App ~ isCompanyProfileDone:", isCompanyProfileDone)
   return (
     <div>
       <Routes>
-        {(!isAuthenticated || !isCompanyProfileDone) && <Route path="/" element={<LandingPage />}></Route>}
+        {(!isAuthenticated || !isCompanyProfileDone) && (
+          <Route path="/" element={<LandingPage />}></Route>
+        )}
         {isAuthenticated && usersDetails.selectedDashboard === "" && (
           <Route path="/*" element={<Home />}></Route>
         )}

@@ -11,10 +11,11 @@ let initialState = {
   selectedCompanyIndex: 0,
   isLogin: false,
   selectedDashboard: "",
+  selectedStaffCompanyIndex: 0,
+  asAStaffCompanies: [],
   userAsOtherCompanies: {
     customer: [],
     vendor: [],
-    staff: [],
   },
 };
 
@@ -42,11 +43,10 @@ if (localStorage.getItem("user")) {
     companies,
     isCompanyProfileDone,
     selectedDashboard: selectedDashboard,
-
+    asAStaffCompanies: [],
     userAsOtherCompanies: {
       customer: [],
       vendor: [],
-      staff: [],
     },
   };
 }
@@ -67,6 +67,7 @@ const userSlice = createSlice({
         selectedDashboard,
         userAsOtherCompanies,
         isCompanyProfileDone,
+        selectedStaffCompanyIndex,
       } = action.payload;
       localStorage.setItem("user", JSON.stringify(action.payload));
       state.userId = userId;
@@ -80,6 +81,7 @@ const userSlice = createSlice({
       state.selectedDashboard = selectedDashboard;
       state.userAsOtherCompanies = userAsOtherCompanies;
       state.selectedCompanyIndex = selectedCompanyIndex;
+      state.selectedStaffCompanyIndex = selectedStaffCompanyIndex;
     },
 
     setCompanyData: (state, { payload }) => {
@@ -100,10 +102,10 @@ const userSlice = createSlice({
       state.userAsOtherCompanies = {
         customer: [],
         vendor: [],
-        staff: [],
       };
       state.selectedCompanyIndex = 0;
       state.selectedDashboard = "";
+      state.selectedStaffCompanyIndex = 0;
     },
 
     updateUserDetails: (state, action) => {
@@ -161,6 +163,19 @@ const userSlice = createSlice({
       const updatedData = { ...state, companies: updatedCompanies };
       localStorage.setItem("user", JSON.stringify(updatedData));
     },
+
+    setAsAStaffCompanies: (state, { payload }) => {
+      state.asAStaffCompanies =
+        payload.asAStaffCompanies ?? state.asAStaffCompanies;
+      state.selectedStaffCompanyIndex =
+        payload.selectedStaffCompanyIndex ?? state.selectedStaffCompanyIndex;
+      const payloadLocalStorageData = {
+        ...state,
+        selectedStaffCompanyIndex:
+          payload.selectedStaffCompanyIndex ?? state.selectedStaffCompanyIndex,
+      };
+      localStorage.setItem("user", JSON.stringify(payloadLocalStorageData));
+    },
   },
 });
 
@@ -170,6 +185,7 @@ export const {
   updateUserDetails,
   updateCompanyDetails,
   setCompanyData,
+  setAsAStaffCompanies,
 } = userSlice.actions;
 
 export default userSlice.reducer;
