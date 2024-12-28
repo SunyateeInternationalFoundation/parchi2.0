@@ -1,11 +1,11 @@
 import {
-    addDoc,
-    collection,
-    doc,
-    getDocs,
-    query,
-    Timestamp,
-    where,
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  Timestamp,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
@@ -145,11 +145,11 @@ function CreateStaff({ isOpen, onClose, staffAdded }) {
           <div>
             <label className="text-sm block font-semibold ">
               Phone
-              {phoneExists && (
+              {/* {phoneExists && (
                 <span className="ml-2 text-red-500 text-xs">
                   "Phone number is already in use.*"
                 </span>
-              )}
+              )} */}
             </label>
             <div className="flex items-center mb-4">
               <span className="px-3 py-2 bg-gray-200 border border-r-0 rounded-l-md text-gray-700">
