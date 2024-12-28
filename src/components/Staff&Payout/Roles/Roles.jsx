@@ -173,7 +173,7 @@ const Roles = () => {
                     {rolesList.map((role) => (
                       <tr key={role} className="hover:bg-gray-100">
                         <td className="border border-gray-300 px-4 py-2">
-                          {role.charAt(0).toUpperCase() + role.slice(1)}
+                          {role?.charAt(0).toUpperCase() + role?.slice(1)}
                         </td>
                         {actions.map((action) => (
                           <td
@@ -218,7 +218,7 @@ const Roles = () => {
                       {projectsList.map((role) => (
                         <tr key={role} className="hover:bg-gray-100">
                           <td className="border border-gray-300 px-4 py-2">
-                            {role.charAt(0).toUpperCase() + role.slice(1)}
+                            {role?.charAt(0).toUpperCase() + role?.slice(1)}
                           </td>
 
                           <td className="border border-gray-300 px-4 py-2 text-center">

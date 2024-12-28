@@ -190,27 +190,22 @@ const StaffHome = () => {
 
             <Route path="/projects/:id" element={<ProjectView />} />
 
-            {checkPermission("users", "access") && (
-              <Route path="/projects/:id/user" element={<Users />} />
-            )}
-            {checkPermission("task", "access") && (
-              <Route path="/projects/:id/tasks" element={<Tasks />}></Route>
-            )}
-            {checkPermission("milestones", "access") && (
-              <Route
-                path="/projects/:id/milestones"
-                element={<Milestone />}
-              ></Route>
-            )}
-            {checkPermission("files", "access") && (
-              <Route path="/projects/:id/files" element={<Files />}></Route>
-            )}
-            {checkPermission("approvals", "access") && (
-              <Route
-                path="/projects/:id/approvals"
-                element={<Approval />}
-              ></Route>
-            )}
+            <Route path="/projects/:id/user" element={<Users />} />
+
+            <Route path="/projects/:id/tasks" element={<Tasks />}></Route>
+
+            <Route
+              path="/projects/:id/milestones"
+              element={<Milestone />}
+            ></Route>
+
+            <Route path="/projects/:id/files" element={<Files />}></Route>
+
+            <Route
+              path="/projects/:id/approvals"
+              element={<Approval />}
+            ></Route>
+
             {/* {checkPermission("projects", "view") && (
               <Route
                 path="/projects/:id/payments"

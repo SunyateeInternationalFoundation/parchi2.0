@@ -181,16 +181,7 @@ const Files = () => {
           <h1 className="text-xl font-bold">Files</h1>
         </div>
 
-        {userDetails.selectedDashboard === "staff" ? (
-          role.access && (
-            <button
-              className="bg-blue-500 text-white text-2xl text-center px-3 pb-1 rounded hover:bg-blue-600 transition"
-              onClick={() => setIsModalOpen(true)}
-            >
-              +
-            </button>
-          )
-        ) : (
+        {(userDetails.selectedDashboard === "" || role?.access) && (
           <button
             className="bg-blue-500 text-white text-2xl text-center px-3 pb-1 rounded hover:bg-blue-600 transition"
             onClick={() => setIsModalOpen(true)}

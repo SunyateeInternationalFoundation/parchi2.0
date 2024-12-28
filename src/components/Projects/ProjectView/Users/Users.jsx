@@ -9,15 +9,7 @@ function Users() {
   const { id } = useParams();
   const projectId = id;
   const userDetails = useSelector((state) => state.users);
-  let companyId;
-  if (userDetails.selectedDashboard === "staff") {
-    companyId =
-      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
-        .companyDetails.companyId;
-  } else {
-    companyId =
-      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  }
+
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.users;
@@ -116,7 +108,7 @@ function Users() {
           <h2 className="text-2xl font-bold">Project Members</h2>
         </div>
 
-        {(userDetails.selectedDashboard === "" || role.access) && (
+        {(userDetails.selectedDashboard === "" || role?.access) && (
           <button
             className="bg-blue-500 text-white px-4 pb-1 rounded-md ml-4 text-2xl"
             onClick={() => setIsSideBarOpen(true)}

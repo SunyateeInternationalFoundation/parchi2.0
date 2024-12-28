@@ -213,7 +213,7 @@ const CreditNoteList = () => {
             </div>
             <div className="w-full text-end ">
               {userDetails.selectedDashboard === "staff" ? (
-                role.create && (
+                role?.create && (
                   <Link
                     className="bg-blue-500 text-white py-2 px-2 rounded-lg"
                     to="create-creditnote"
