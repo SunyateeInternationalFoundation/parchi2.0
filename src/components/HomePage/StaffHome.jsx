@@ -97,7 +97,7 @@ const StaffHome = () => {
   };
 
   function checkPermission(field, subField) {
-    if (!staffDetails) {
+    if (!staffDetails || !staffDetails[selectedStaffCompanyIndex]?.roles) {
       return false;
     }
     const isTrue = staffDetails[selectedStaffCompanyIndex]?.roles[field];
