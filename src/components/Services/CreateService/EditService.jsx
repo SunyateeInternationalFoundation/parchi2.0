@@ -19,8 +19,16 @@ import SideBarAddServices from "./SideBarAddServices";
 function EditService() {
   const { id } = useParams();
   const userDetails = useSelector((state) => state.users);
-  const companyDetails =
-    userDetails.companies[userDetails.selectedCompanyIndex];
+  // const companyDetails =
+  //   userDetails.companies[userDetails.selectedCompanyIndex];
+  let companyDetails;
+  if (userDetails.selectedDashboard === "staff") {
+    companyDetails =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails;
+  } else {
+    companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
+  }
   const [serviceDate, setServiceDate] = useState(new Date());
   const [serviceDueDate, setServiceDueDate] = useState(new Date());
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
@@ -267,7 +275,11 @@ function EditService() {
         });
       }
       alert("successfully Updated Service");
-      navigate("/services");
+      navigate(
+        userDetails.selectedDashboard === "staff"
+          ? "/staff/services"
+          : "/services"
+      );
     } catch (err) {
       console.error(err);
     }

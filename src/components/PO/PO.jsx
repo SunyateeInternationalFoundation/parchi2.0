@@ -11,17 +11,32 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
 
-function PO({ companyDetails, isStaff }) {
+function PO() {
   const [filterStatus, setFilterStatus] = useState("All");
   const [loading, setLoading] = useState(!true);
   const userDetails = useSelector((state) => state.users);
+  // let companyId;
+  // if (!companyDetails) {
+  //   companyId =
+  //     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  // } else {
+  //   companyId = companyDetails.id;
+  // }
+
   let companyId;
-  if (!companyDetails) {
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  } else {
-    companyId = companyDetails.id;
   }
+  console.log("userDetails", userDetails);
+  console.log("companyId", companyId);
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.po;
 
   const selectedDashboardUser = userDetails.selectedDashboard;
   const navigate = useNavigate();
@@ -159,12 +174,23 @@ function PO({ companyDetails, isStaff }) {
               </div>
             </div>
             <div className="w-full text-end ">
-              <Link
-                className="bg-blue-500 text-white py-2 px-2 rounded-lg"
-                to="create-po"
-              >
-                + Create PO
-              </Link>
+              {userDetails.selectedDashboard === "staff" ? (
+                role.create && (
+                  <Link
+                    className="bg-blue-500 text-white py-2 px-2 rounded-lg"
+                    to="create-po"
+                  >
+                    + Create PO
+                  </Link>
+                )
+              ) : (
+                <Link
+                  className="bg-blue-500 text-white py-2 px-2 rounded-lg"
+                  to="create-po"
+                >
+                  + Create PO
+                </Link>
+              )}
             </div>
           </nav>
 

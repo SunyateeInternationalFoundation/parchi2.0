@@ -1,26 +1,30 @@
-import  { useState, useEffect } from "react";
 import {
   addDoc,
   collection,
-  serverTimestamp,
   doc,
-  updateDoc,
   Timestamp,
+  updateDoc,
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../../firebase";
-import { useDispatch, useSelector } from "react-redux";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { useEffect, useState } from "react";
 import { FaUserEdit } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
-import {
-  setCustomerDetails,
-  updateCustomerDetails,
-} from "../../store/CustomerSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { db, storage } from "../../firebase";
+import { setCustomerDetails } from "../../store/CustomerSlice";
 
 const CreateCustomer = ({ isOpen, onClose, customerData, isEdit }) => {
   const userDetails = useSelector((state) => state.users);
-  const companyId =
-    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
+
   const [isUploading, setIsUploading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [fileName, setFileName] = useState("No file chosen");

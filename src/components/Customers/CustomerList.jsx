@@ -18,19 +18,24 @@ import {
 } from "../../store/CustomerSlice";
 import CreateCustomer from "./CreateCustomer";
 
-const CustomerList = ({ companyDetails, isStaff }) => {
+const CustomerList = () => {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const userDetails = useSelector((state) => state.users);
   let companyId;
-  if (!companyDetails) {
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  } else {
-    companyId = companyDetails.id;
   }
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.customers;
   const customersDetails = useSelector((state) => state.customers).data;
   const dispatch = useDispatch();
 
@@ -117,12 +122,24 @@ const CustomerList = ({ companyDetails, isStaff }) => {
               size={16}
             />
           </div>
-          <button
-            className="bg-blue-700 text-white px-4 py-1 rounded-md ml-4"
-            onClick={() => setIsModalOpen(true)}
-          >
-            + New Customer
-          </button>
+
+          {userDetails.selectedDashboard === "staff" ? (
+            role.create && (
+              <button
+                className="bg-blue-700 text-white px-4 py-1 rounded-md ml-4"
+                onClick={() => setIsModalOpen(true)}
+              >
+                + New Customer
+              </button>
+            )
+          ) : (
+            <button
+              className="bg-blue-700 text-white px-4 py-1 rounded-md ml-4"
+              onClick={() => setIsModalOpen(true)}
+            >
+              + New Customer
+            </button>
+          )}
         </div>
       </div>
 

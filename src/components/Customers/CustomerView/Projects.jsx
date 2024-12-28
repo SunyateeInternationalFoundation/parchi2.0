@@ -1,5 +1,3 @@
-
-
 function Projects({ customersProjectsData }) {
   return (
     <div className=" p-4 rounded-lg">

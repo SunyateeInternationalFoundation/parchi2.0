@@ -23,9 +23,16 @@ const SetDebitNote = () => {
   const userDetails = useSelector((state) => state.users);
   const customersDetails = useSelector((state) => state.customers).data;
   const dispatch = useDispatch();
-  const companyDetails =
-    userDetails.companies[userDetails.selectedCompanyIndex];
-
+  // const companyDetails =
+  //   userDetails.companies[userDetails.selectedCompanyIndex];
+  let companyDetails;
+  if (userDetails.selectedDashboard === "staff") {
+    companyDetails =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails;
+  } else {
+    companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
+  }
   const phoneNo = userDetails.phone;
   const [dueDate, setDueDate] = useState(Timestamp.fromDate(new Date()));
 
@@ -600,7 +607,11 @@ const SetDebitNote = () => {
           (debitNoteId ? "Updated" : "Created") +
           " the DebitNote"
       );
-      navigate("/debit-note");
+      navigate(
+        userDetails.selectedDashboard === "staff"
+          ? "/staff/debit-note"
+          : "/debit-note"
+      );
     } catch (err) {
       console.error(err);
     }
@@ -1058,9 +1069,7 @@ const SetDebitNote = () => {
                       <option value="Emi">Emi</option>
                       <option value="Cheque">Cheque</option>
                       <option value="Net Banking">Net Banking</option>
-                      <option value="Debit/Debit Card">
-                        Debit/Debit Card
-                      </option>
+                      <option value="Debit/Debit Card">Debit/Debit Card</option>
                     </select>
                   </div>
                 </div>

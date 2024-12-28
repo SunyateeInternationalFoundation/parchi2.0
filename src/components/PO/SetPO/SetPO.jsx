@@ -21,9 +21,16 @@ const SetPO = () => {
 
   const userDetails = useSelector((state) => state.users);
 
-  const companyDetails =
-    userDetails.companies[userDetails.selectedCompanyIndex];
-
+  // const companyDetails =
+  //   userDetails.companies[userDetails.selectedCompanyIndex];
+  let companyDetails;
+  if (userDetails.selectedDashboard === "staff") {
+    companyDetails =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails;
+  } else {
+    companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
+  }
   const phoneNo = userDetails.phone;
   const [dueDate, setDueDate] = useState(Timestamp.fromDate(new Date()));
 
@@ -617,7 +624,7 @@ const SetPO = () => {
       }
 
       alert("Successfully " + (poId ? "Updated" : "Created") + " the PO");
-      navigate("/po");
+      navigate(userDetails.selectedDashboard === "staff" ? "/staff/po" : "/po");
     } catch (err) {
       console.error(err);
     }

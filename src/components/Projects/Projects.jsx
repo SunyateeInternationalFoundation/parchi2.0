@@ -4,7 +4,7 @@ import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
-function Projects({ companyDetails, isStaff }) {
+function Projects() {
   const userDetails = useSelector((state) => state.users);
   const [filterStatus, setFilterStatus] = useState("All");
   const [loading, setLoading] = useState(!true);
@@ -18,12 +18,17 @@ function Projects({ companyDetails, isStaff }) {
   });
   // const [filterDate, setFilterDate] = useState({ from: "", to: "" });
   let companyId;
-  if (!companyDetails) {
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  } else {
-    companyId = companyDetails.id;
   }
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.project;
   const navigate = useNavigate();
   useEffect(() => {
     async function fetchProjectsList() {
@@ -195,12 +200,23 @@ function Projects({ companyDetails, isStaff }) {
               </div>
             </div>
             <div className="w-full text-end ">
-              <Link
-                className="bg-blue-500 text-white py-1 px-2 rounded"
-                to="create-Project"
-              >
-                + Create Project
-              </Link>
+              {userDetails.selectedDashboard === "staff" ? (
+                role.create && (
+                  <Link
+                    className="bg-blue-500 text-white py-1 px-2 rounded"
+                    to="create-Project"
+                  >
+                    + Create Project
+                  </Link>
+                )
+              ) : (
+                <Link
+                  className="bg-blue-500 text-white py-1 px-2 rounded"
+                  to="create-Project"
+                >
+                  + Create Project
+                </Link>
+              )}
             </div>
           </nav>
           <div className=" ">

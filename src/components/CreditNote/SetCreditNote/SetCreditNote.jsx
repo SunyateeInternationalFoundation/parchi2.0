@@ -1,13 +1,13 @@
 import {
-    Timestamp,
-    addDoc,
-    collection,
-    doc,
-    getDoc,
-    getDocs,
-    query,
-    updateDoc,
-    where,
+  Timestamp,
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
@@ -23,9 +23,16 @@ const SetCreditNote = () => {
   const userDetails = useSelector((state) => state.users);
   const customersDetails = useSelector((state) => state.customers).data;
   const dispatch = useDispatch();
-  const companyDetails =
-    userDetails.companies[userDetails.selectedCompanyIndex];
-
+  // const companyDetails =
+  //   userDetails.companies[userDetails.selectedCompanyIndex];
+  let companyDetails;
+  if (userDetails.selectedDashboard === "staff") {
+    companyDetails =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails;
+  } else {
+    companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
+  }
   const phoneNo = userDetails.phone;
   const [dueDate, setDueDate] = useState(Timestamp.fromDate(new Date()));
 
@@ -600,7 +607,11 @@ const SetCreditNote = () => {
           (creditnoteId ? "Updated" : "Created") +
           " the CreditNote"
       );
-      navigate("/credit-note");
+      navigate(
+        userDetails.selectedDashboard === "staff"
+          ? "/staff/credit-note"
+          : "/credit-note"
+      );
     } catch (err) {
       console.error(err);
     }
