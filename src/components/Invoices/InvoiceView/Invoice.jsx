@@ -1,7 +1,7 @@
 import { deleteDoc, doc, increment, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import jsPDF from "jspdf";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
 import { FaRegEye } from "react-icons/fa";
 import { IoMdClose, IoMdDownload } from "react-icons/io";
@@ -26,8 +26,18 @@ import Template9 from "../../Templates/Template9";
 function Invoice({ invoice, bankDetails }) {
   const navigate = useNavigate();
   const userDetails = useSelector((state) => state.users);
-  const companyId =
-    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.invoice;
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [isSelectTemplateOpen, setIsSelectTemplateOpen] = useState(false);
   const [totalTax, setTotalTax] = useState(0);
@@ -227,7 +237,11 @@ function Invoice({ invoice, bankDetails }) {
         );
         await Promise.all(updateInventoryPromises);
       }
-      navigate("/invoice");
+      navigate(
+        userDetails.selectedDashboard === "staff"
+          ? "/staff/invoice"
+          : "/invoice"
+      );
     } catch (error) {
       console.error("Error deleting invoice:", error);
       alert("Failed to delete the invoice. Check the console for details.");
@@ -287,14 +301,27 @@ function Invoice({ invoice, bankDetails }) {
           >
             <FaRegEye /> &nbsp; View
           </button>
-          <button
-            className={
-              "px-4 py-1 bg-red-300 text-white rounded-full flex items-center"
-            }
-            onClick={() => navigate("edit-invoice")}
-          >
-            <TbEdit /> &nbsp; Edit
-          </button>
+          {userDetails.selectedDashboard === "staff" ? (
+            role.edit && (
+              <button
+                className={
+                  "px-4 py-1 bg-red-300 text-white rounded-full flex items-center"
+                }
+                onClick={() => navigate("edit-invoice")}
+              >
+                <TbEdit /> &nbsp; Edit
+              </button>
+            )
+          ) : (
+            <button
+              className={
+                "px-4 py-1 bg-red-300 text-white rounded-full flex items-center"
+              }
+              onClick={() => navigate("edit-invoice")}
+            >
+              <TbEdit /> &nbsp; Edit
+            </button>
+          )}
           <button
             className={
               "px-4 py-1 bg-green-500 text-white rounded-full flex items-center"
@@ -327,12 +354,23 @@ function Invoice({ invoice, bankDetails }) {
           </div>
           {invoice.paymentStatus !== "Paid" && (
             <div className="text-end">
-              <button
-                className={"px-4 py-1 text-red-700 text-2xl"}
-                onClick={handleDelete}
-              >
-                <RiDeleteBin6Line />
-              </button>
+              {userDetails.selectedDashboard === "staff" ? (
+                role.delete && (
+                  <button
+                    className={"px-4 py-1 text-red-700 text-2xl"}
+                    onClick={handleDelete}
+                  >
+                    <RiDeleteBin6Line />
+                  </button>
+                )
+              ) : (
+                <button
+                  className={"px-4 py-1 text-red-700 text-2xl"}
+                  onClick={handleDelete}
+                >
+                  <RiDeleteBin6Line />
+                </button>
+              )}
             </div>
           )}
         </div>
