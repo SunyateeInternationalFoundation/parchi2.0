@@ -58,7 +58,6 @@ function StaffView({ staffCompanyId }) {
         }
         const staffAttendance = staffAttendanceGetDocs.docs.map((doc) => {
           const { date, staffs } = doc.data();
-          console.log("🚀 ~ staffAttendance ~ staffs:", doc.id, doc.data());
           const attendanceStaffData = staffs.find((item) => item.id == id);
           return {
             attendanceId: doc.id,
@@ -66,7 +65,6 @@ function StaffView({ staffCompanyId }) {
             ...attendanceStaffData,
           };
         });
-        console.log("🚀 ~ staffAttendance ~ staffAttendance:", staffAttendance);
         setAttendanceData(staffAttendance);
       } catch (error) {
         console.error("Error fetching staff data:", error);

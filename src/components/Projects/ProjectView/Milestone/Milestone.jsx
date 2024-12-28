@@ -1,11 +1,11 @@
 import {
-    addDoc,
-    collection,
-    doc,
-    getDocs,
-    query,
-    serverTimestamp,
-    where,
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  serverTimestamp,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
@@ -35,7 +35,6 @@ const Milestone = () => {
           db,
           `projects/${projectId}/milestone/${milestone.id}`
         );
-        console.log("Milestone Path:", milestoneDocRef);
         const tasksRef = collection(db, `projects/${projectId}/tasks`);
         const tasksQuery = query(
           tasksRef,
@@ -45,7 +44,6 @@ const Milestone = () => {
       });
 
       const tasksSnapshots = await Promise.all(tasksQueryPromises);
-      console.log("Tasks Snapshot Size:", tasksSnapshots.size);
       const tasksData = tasksSnapshots.flatMap((snapshot) =>
         snapshot.docs.map((doc) => ({
           id: doc.id,
@@ -53,7 +51,6 @@ const Milestone = () => {
         }))
       );
       setTasks(tasksData);
-      console.log(tasksData);
     };
     fetchMilestones();
   }, [projectId]);

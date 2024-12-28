@@ -84,7 +84,6 @@ const Settings = () => {
         (snapshot) => {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
         },
         (error) => {
           console.error("Error uploading file:", error);
@@ -110,7 +109,6 @@ const Settings = () => {
       const { id, ...payload } = formData;
       const { companyLogo, altContact, website, userName, userRef, ...rest } =
         payload;
-      console.log("rest", rest);
       await updateDoc(doc(db, "companies", companyId), payload);
       alert("Details saved successfully! ");
       dispatch(updateCompanyDetails(rest));

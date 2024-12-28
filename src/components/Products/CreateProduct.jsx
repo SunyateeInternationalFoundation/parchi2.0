@@ -210,7 +210,6 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
       console.log("🚀 ~ onCreateProduct ~ error:", error);
     }
   }
-  console.log("formData", formData);
   return (
     <div
       className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${

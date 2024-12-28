@@ -1,9 +1,4 @@
-import {
-    collection,
-    deleteDoc,
-    doc,
-    getDocs
-} from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { MdDelete } from "react-icons/md";
@@ -51,7 +46,6 @@ function Items() {
         qty: sumQty,
         price,
       });
-      console.log("🚀 ~ data ~ data:", data);
 
       setItemsData(data);
     } catch (error) {

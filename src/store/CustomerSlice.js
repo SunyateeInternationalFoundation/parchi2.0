@@ -20,8 +20,6 @@ const CustomerSlice = createSlice({
       state.data.push(customerData);
     },
     updateCustomerDetails: (state, action) => {
-      console.log("🚀 ~ action.payload:", action.payload);
-
       const customerData = action.payload;
       state.data = state.data.map((ele) => {
         if (ele.id === customerData.id) {

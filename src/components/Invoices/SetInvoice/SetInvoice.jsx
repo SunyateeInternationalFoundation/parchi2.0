@@ -37,10 +37,7 @@ const SetInvoice = () => {
   } else {
     companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   }
-  console.log(
-    "🚀 ~ file: SetInvoice.js ~ line 10 ~ SetInvoice ~ companyDetails",
-    companyDetails
-  );
+
   const phoneNo = userDetails.phone;
 
   const [date, setDate] = useState(Timestamp.fromDate(new Date()));
@@ -205,7 +202,6 @@ const SetInvoice = () => {
             ...data,
           };
         });
-        console.log("🚀 ~ customerDetails ~ customersData:", customersData);
         dispatch(setAllCustomersDetails(customersData));
         setSuggestions(customersData);
       } catch (error) {
@@ -653,7 +649,6 @@ const SetInvoice = () => {
   function onSelectBook(e) {
     const { value } = e.target;
     const data = books.find((ele) => ele.id === value);
-    console.log("🚀 ~ onSelectBook ~ data:", data);
     const bookRef = doc(
       db,
       "companies",
@@ -681,8 +676,6 @@ const SetInvoice = () => {
       warehouse: { name: data.name, warehouseRef },
     }));
   }
-  console.log("suggest", suggestions);
-  console.log("formdata", formData);
   return (
     <div
       className="px-5 pb-5 bg-gray-100 overflow-y-auto"

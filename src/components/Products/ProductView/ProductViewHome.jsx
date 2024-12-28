@@ -1,10 +1,10 @@
 import {
-    collection,
-    doc,
-    getDoc,
-    getDocs,
-    query,
-    where,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
@@ -73,7 +73,6 @@ function ProductViewHome() {
         for (const invoiceDoc of invoicesSnapshot.docs) {
           const invoiceId = invoiceDoc.id;
           const invoiceData = invoiceDoc.data();
-          console.log("🚀 ~ fetchReturns ~ invoiceData:", invoiceData);
           //   const invoiceNumber = invoiceData.invoiceNo || invoiceData.number;
 
           //   const returnsRef = collection(invoiceDoc.ref, "returns");

@@ -397,8 +397,6 @@ function EditService() {
     }
     setMembershipDate();
   }, [membershipStartDate, membershipPeriod]);
-  console.log("serviceDate", serviceDate);
-  console.log("serviceDueDate", serviceDueDate);
   return (
     <div
       className="w-full px-5 pb-5 bg-gray-100 overflow-y-auto"

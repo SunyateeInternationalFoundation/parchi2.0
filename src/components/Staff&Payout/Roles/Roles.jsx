@@ -65,7 +65,6 @@ const Roles = () => {
           item.id === staff.id ? { ...item, roles: updatedRoles } : item
         )
       );
-      console.log("Roles updated successfully!");
     } catch (error) {
       console.log("Error in handleUpdateRoles:", error);
     }
@@ -209,7 +208,7 @@ const Roles = () => {
                         <th className="border border-gray-300 px-4 py-2 text-left">
                           Role
                         </th>
-                        {["Access"].map((action) => (
+                        {["access"].map((action) => (
                           <th
                             key={action}
                             className="border border-gray-300 px-4 py-2"

@@ -6,7 +6,6 @@ import { db, storage } from "../../../../firebase";
 import { useSelector } from "react-redux";
 
 const Profile = ({ staffData, refresh }) => {
-  console.log(staffData);
   const [isEdit, setIsEdit] = useState(false);
   const [UpdatedData, setUpdatedData] = useState(staffData);
   const [progress, setProgress] = useState(0);
@@ -112,7 +111,7 @@ const Profile = ({ staffData, refresh }) => {
                     UpdatedData.name || "N/A"
                   )}
                 </div>
-                {(!isEdit && selectedDashboardUser !="staff") && (
+                {!isEdit && selectedDashboardUser != "staff" && (
                   <button
                     className="flex items-center space-x-2 text-purple-600 hover:text-purple-800 mt-2"
                     onClick={() => setIsEdit(true)}

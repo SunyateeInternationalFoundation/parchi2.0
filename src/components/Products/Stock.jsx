@@ -32,14 +32,12 @@ const Stock = () => {
         id: doc.id,
         ...doc.data(),
       }));
-      console.log(products)
 
       // Filter products based on stock quantity
       const lowStock = products.filter(
         (product) => product.stock > 0 && product.stock < 5
       );
       const noStock = products.filter((product) => product.stock === 0);
-      console.log(noStock);
 
       setLowStockItems(lowStock);
       setNoStockItems(noStock);
@@ -58,20 +56,16 @@ const Stock = () => {
         "invoices"
       );
       const invoicesSnapshot = await getDocs(invoicesRef);
-     
+
       let allReturns = [];
-  
+
       for (const invoiceDoc of invoicesSnapshot.docs) {
         const invoiceId = invoiceDoc.id;
         const invoiceData = invoiceDoc.data();
-        // console.log("Invoice Data:", invoiceData);
-  
         const invoiceNumber = invoiceData.invoiceNo || invoiceData.number;
-        //console.log("Invoice number:", invoiceNumber);
-  
         const returnsRef = collection(invoiceDoc.ref, "returns");
         const returnsSnapshot = await getDocs(returnsRef);
-  
+
         returnsSnapshot.forEach((doc) => {
           allReturns.push({
             id: doc.id,
@@ -81,14 +75,12 @@ const Stock = () => {
           });
         });
       }
-  
-      //console.log("All returns:", allReturns); // Final log to confirm structure
+
       setReturns(allReturns);
     } catch (error) {
       console.error("Error fetching returns:", error);
     }
   };
-  
 
   useEffect(() => {
     fetchProducts();
@@ -192,39 +184,38 @@ const Stock = () => {
         </div>
       )}
 
-{selectedFilter === "returns" && (
-  <div className="bg-white p-6 rounded-lg shadow-md mt-6">
-    <h3 className="text-xl font-semibold text-blue-600 mb-4">
-      Returned Items
-    </h3>
-    {returns.length > 0 ? (
-      <ul className="space-y-3">
-        {returns.map((item) => (
-          <li
-            key={item.id}
-            className="flex justify-between items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-100 transition cursor-pointer"
-            onClick={() => navigateToInvoice(item.invoiceId)}
-          >
-            <div>
-              <span className="text-gray-700 font-bold">{item.name}</span>
-              <br />
-              <span className="text-blue-600 font-semibold">
-                Qty: {item.quantity}
-              </span>
-              <br />
-              <span className="text-sm text-gray-500">
-                Invoice: {item.invoiceNumber}
-              </span>
-            </div>
-          </li>
-        ))}
-      </ul>
-    ) : (
-      <p className="text-gray-600">No returned items found.</p>
-    )}
-  </div>
-)}
-
+      {selectedFilter === "returns" && (
+        <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+          <h3 className="text-xl font-semibold text-blue-600 mb-4">
+            Returned Items
+          </h3>
+          {returns.length > 0 ? (
+            <ul className="space-y-3">
+              {returns.map((item) => (
+                <li
+                  key={item.id}
+                  className="flex justify-between items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-100 transition cursor-pointer"
+                  onClick={() => navigateToInvoice(item.invoiceId)}
+                >
+                  <div>
+                    <span className="text-gray-700 font-bold">{item.name}</span>
+                    <br />
+                    <span className="text-blue-600 font-semibold">
+                      Qty: {item.quantity}
+                    </span>
+                    <br />
+                    <span className="text-sm text-gray-500">
+                      Invoice: {item.invoiceNumber}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-600">No returned items found.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };

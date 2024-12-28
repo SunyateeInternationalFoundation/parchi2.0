@@ -1,9 +1,4 @@
-import {
-    collection,
-    getDocs,
-    query,
-    where
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdDownload } from "react-icons/io";
 import { useSelector } from "react-redux";
@@ -46,8 +41,6 @@ function Invoice() {
       try {
         const invoiceList = [];
         for (const company of companiesId) {
-          console.log(company.companyId);
-
           const invoiceRef = collection(
             db,
             "companies",
@@ -68,7 +61,6 @@ function Invoice() {
           });
           invoiceList.push(...getAllInvoices);
         }
-        console.log("🚀 ~ fetchInvoices ~ invoiceList:", invoiceList);
 
         setInvoices(invoiceList);
       } catch (error) {
@@ -94,7 +86,7 @@ function Invoice() {
           ) : (
             <div className="overflow-y-auto" style={{ height: "70vh" }}>
               <table className="w-full border-collapse  h-28 text-center">
-                <thead className="sticky top-0 z-10 bg-white">
+                <thead className=" bg-white">
                   <tr className="border-b">
                     <th className="p-4">company</th>
                     <th className="p-4">Amount</th>
