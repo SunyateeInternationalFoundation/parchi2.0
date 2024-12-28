@@ -6,19 +6,27 @@ import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 
-function SideBar({ staff, staffId }) {
+function SideBar() {
   const location = useLocation();
   const [isSideBarExpend, setIsSideBarExpend] = useState(true);
   const userDetails = useSelector((state) => state.users);
+  const staffAndCompanyDetails =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex];
   const selectedDashboardUser = userDetails.selectedDashboard;
-  const viewDashBoardList = {
-    customer: ["Invoice", "Projects", "Quotation"],
-    vendor: ["PO", "Projects", "Quotation"],
-    staff: staff
-      ? staff[0]?.map((s) => s.toString().replace(/^Create/, ""))
-      : [],
-  };
-
+  const rolesList = [
+    "invoice",
+    "services",
+    "quotation",
+    "purchase",
+    "customers",
+    "vendors",
+    "project",
+    "po",
+    "pos",
+    "proFormaInvoice",
+    "creditNote",
+    "deliveryChallan",
+  ];
   const constSideBarDetails = {
     //
     sales: {
@@ -26,39 +34,48 @@ function SideBar({ staff, staffId }) {
       isExpend: true,
       items: [
         {
+          id: "invoice",
           name: "Invoice",
           path: "/invoice",
         },
 
         {
+          id: "quotation",
           name: "Quotation",
           path: "/quotation",
         },
         {
+          id: "proFormaInvoice",
           name: "Pro Forma Invoice",
           path: "/pro-forma-invoice",
         },
         {
+          id: "deliveryChallan",
           name: "Delivery Challan",
           path: "/delivery-challan",
         },
         {
+          id: "subscription",
           name: "Subscription",
           path: "/services",
         },
         {
+          id: "creditNote",
           name: "Credit Note",
           path: "/credit-note",
         },
         {
+          id: "purchase",
           name: "Purchase",
           path: "/purchase",
         },
         {
+          id: "pO",
           name: "PO",
           path: "/po",
         },
         {
+          id: "debitNote",
           name: "Debit Note",
           path: "/debit-note",
         },
@@ -70,18 +87,22 @@ function SideBar({ staff, staffId }) {
       isExpend: true,
       items: [
         {
+          id: "projects",
           name: "Projects",
           path: "/projects",
         },
         {
+          id: "inventory",
           name: "Inventory",
           path: "/products",
         },
         {
+          id: "subscriptionPlans",
           name: "Subscription Plans",
           path: "/services-list",
         },
         {
+          id: "staff&Payout",
           name: "Staff & Payout",
           path: "/staff-payout",
         },
@@ -91,10 +112,12 @@ function SideBar({ staff, staffId }) {
       isExpend: true,
       items: [
         {
+          id: "customers",
           name: "Customers",
           path: "/customers",
         },
         {
+          id: "vendors",
           name: "Vendors",
           path: "/vendors",
         },
@@ -106,15 +129,37 @@ function SideBar({ staff, staffId }) {
       //   isExpend: true,
       //   items: [
       //     {
+      //       id: "insights",
       //       name: "Insights",
       //       path: "",
       //     },
       //     {
+      //       id: "report",
       //       name: "Report",
       //       path: "",
       //     },
       //   ],
     },
+  };
+
+  const staffSideBarDetails = staffAndCompanyDetails
+    ? staffAndCompanyDetails?.roles || ""
+    : "";
+  console.log("🚀 ~ SideBar ~ staffSideBarDetails:", staffSideBarDetails);
+
+  // const projectsList = ["users", "milestones", "tasks", "files", "approvals"];
+
+  // const actions = ["create", "edit", "view", "delete"];
+  const rolesArray = staffSideBarDetails
+    ? rolesList.filter((role) => {
+        return staffSideBarDetails[role]?.view ?? false;
+      })
+    : [];
+  console.log("🚀 ~ SideBar ~ rolesArray:", rolesArray);
+  const viewDashBoardList = {
+    customer: ["invoice", "projects", "quotation"],
+    vendor: ["pO", "projects", "quotation"],
+    staff: rolesArray,
   };
 
   const [sideBarDetails, setSideBarDetails] = useState(constSideBarDetails);
@@ -133,7 +178,7 @@ function SideBar({ staff, staffId }) {
       }
       updatedSidebarData[key].items = constSideBarDetails[key].items?.filter(
         (ele) => {
-          if (viewDashBoardList[selectedDashboardUser]?.includes(ele.name)) {
+          if (viewDashBoardList[selectedDashboardUser]?.includes(ele.id)) {
             return true;
           }
           return false;
@@ -180,7 +225,7 @@ function SideBar({ staff, staffId }) {
         {selectedDashboardUser === "staff" && (
           <div className="border-b-2 ">
             <Link
-              to={"/staff/profile/" + staffId}
+              to={"/staff/profile/" + staffAndCompanyDetails?.id}
               className=" cursor-pointer mb-10"
             >
               <div className="text-lg font-semibold pl-3">Profile</div>

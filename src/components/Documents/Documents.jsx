@@ -374,7 +374,9 @@ const Documents = () => {
                   className="w-full text-center bg-transparent border-b-2 border-gray-400"
                 />
               ) : (
-                <p className="text-center font-medium text-ellipsis overflow-hidden h-4">{file.name}</p>
+                <p className="text-center font-medium text-ellipsis overflow-hidden h-4">
+                  {file.name}
+                </p>
               )}
             </div>
             <div className="absolute top-2 right-2">

@@ -12,20 +12,19 @@ import {
   LuChevronsRight,
 } from "react-icons/lu";
 
-const InvoiceList = ({ companyDetails, isStaff }) => {
+const InvoiceList = () => {
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const userDetails = useSelector((state) => state.users);
   let companyId;
-  if (!companyDetails) {
-    companyId =
-      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  } else {
-    companyId = companyDetails.companyId;
-  }
-
+  // if (!companyDetails) {
+  companyId = userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  // } else {
+  // companyId = companyDetails.companyId;
+  // }
+  console.log("userDetails", userDetails);
   const navigate = useNavigate();
 
   useEffect(() => {
