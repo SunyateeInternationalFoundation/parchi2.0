@@ -358,7 +358,7 @@ const Documents = () => {
         {files.map((file) => (
           <div
             key={file.id}
-            className="flex justify-center items-center gap-3 rounded-lg cursor-pointer hover:bg-gray-200 relative"
+            className="flex justify-center items-center gap-3 rounded-lg cursor-pointer hover:bg-gray-200 relative "
           >
             <div className="px-2 py-1 text-xs">
               <div onClick={() => handleFileClick(file.fileUrl)}>
