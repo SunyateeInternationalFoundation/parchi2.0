@@ -54,6 +54,7 @@ const StaffHome = () => {
   const { selectedStaffCompanyIndex } = userDetails;
 
   useEffect(() => {
+    setStaffDetails(userDetails.asAStaffCompanies);
     if (userDetails.asAStaffCompanies.length == 0) {
       fetchCompanyDetails();
     }
@@ -96,7 +97,7 @@ const StaffHome = () => {
   };
 
   function checkPermission(field, subField) {
-    if (!staffDetails || !staffDetails[selectedStaffCompanyIndex]?.roles) {
+    if (!staffDetails) {
       return false;
     }
     const isTrue = staffDetails[selectedStaffCompanyIndex]?.roles[field];
