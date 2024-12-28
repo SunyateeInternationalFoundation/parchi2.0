@@ -234,7 +234,7 @@ function Quotation() {
                       filteredQuotations.map((quotation) => (
                         <tr
                           key={quotation.id}
-                          className="border-b text-center cursor-pointer text-start"
+                          className="border-b cursor-pointer text-start"
                           onClick={() => {
                             navigate(quotation.id);
                           }}
