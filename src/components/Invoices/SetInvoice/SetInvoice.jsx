@@ -17,15 +17,22 @@ import { db } from "../../../firebase";
 import { setAllCustomersDetails } from "../../../store/CustomerSlice";
 import Sidebar from "./Sidebar";
 
-const SetInvoice = () => {
+const SetInvoice = ({ companyDetail, isStaff }) => {
   const { invoiceId } = useParams();
 
   const userDetails = useSelector((state) => state.users);
   const customersDetails = useSelector((state) => state.customers).data;
   const dispatch = useDispatch();
-  const companyDetails =
-    userDetails.companies[userDetails.selectedCompanyIndex];
-
+  let companyDetails;
+  if (!companyDetail) {
+    companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
+  } else {
+    companyDetails = companyDetail;
+  }
+  console.log(
+    "🚀 ~ file: SetInvoice.js ~ line 10 ~ SetInvoice ~ companyDetails",
+    companyDetails
+  );
   const phoneNo = userDetails.phone;
 
   const [date, setDate] = useState(Timestamp.fromDate(new Date()));
@@ -190,6 +197,7 @@ const SetInvoice = () => {
             ...data,
           };
         });
+        console.log("🚀 ~ customerDetails ~ customersData:", customersData);
         dispatch(setAllCustomersDetails(customersData));
         setSuggestions(customersData);
       } catch (error) {
@@ -291,13 +299,13 @@ const SetInvoice = () => {
           }
           const netAmount = +data.sellingPrice - discount;
           const taxRate = data.tax || 0;
-    
+
           const sgst = taxRate / 2;
           const cgst = taxRate / 2;
           const taxAmount = netAmount * (taxRate / 100);
           const sgstAmount = netAmount * (sgst / 100);
           const cgstAmount = netAmount * (cgst / 100);
-          
+
           return {
             id: doc.id,
             description: data.description ?? "",
@@ -544,21 +552,28 @@ const SetInvoice = () => {
         tdsSection: taxSelect === "tds" ? selectedTaxDetails.tdsSection : "",
         tds_amount: taxSelect === "tds" ? total_Tax_Amount : 0,
       };
+      const baseCreatedBy = {
+        companyRef: companyRef,
+        name: companyDetails.name,
+        address: companyDetails.address ?? "",
+        city: companyDetails.city ?? "",
+        zipCode: companyDetails.zipCode ?? "",
+        phoneNo: phoneNo,
+      };
 
+      const createdBy = invoiceId
+        ? { ...baseCreatedBy, who: formData.createdBy.who }
+        : {
+            ...baseCreatedBy,
+            who: isStaff ? "staff" : "owner",
+          };
       const payload = {
         ...formData,
         tds,
         tcs,
         date,
         dueDate,
-        createdBy: {
-          companyRef: companyRef,
-          name: companyDetails.name,
-          address: companyDetails.address ?? "",
-          city: companyDetails.city ?? "",
-          zipCode: companyDetails.zipCode ?? "",
-          phoneNo: phoneNo,
-        },
+        createdBy,
         subTotal: +subTotal,
         total: +calculateTotal(),
         products: items,
@@ -607,7 +622,7 @@ const SetInvoice = () => {
       alert(
         "Successfully " + (invoiceId ? "Updated" : "Created") + " the Invoice"
       );
-      navigate("/invoice");
+      navigate(companyDetail ? "/staff/invoice" : "/invoice");
     } catch (err) {
       console.error(err);
     }
@@ -654,6 +669,8 @@ const SetInvoice = () => {
       warehouse: { name: data.name, warehouseRef },
     }));
   }
+  console.log("suggest", suggestions);
+  console.log("formdata", formData);
   return (
     <div
       className="px-5 pb-5 bg-gray-100 overflow-y-auto"

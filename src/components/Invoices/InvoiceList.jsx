@@ -23,7 +23,7 @@ const InvoiceList = ({ companyDetails, isStaff }) => {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   } else {
-    companyId = companyDetails.id;
+    companyId = companyDetails.companyId;
   }
 
   const navigate = useNavigate();
@@ -274,9 +274,10 @@ const InvoiceList = ({ companyDetails, isStaff }) => {
                           </td>
 
                           <td className="px-5 py-3">
-                            {invoice?.createdBy?.name == userDetails.name
+                            {/* {invoice?.createdBy?.name == userDetails.name
                               ? "Owner"
-                              : userDetails.name}
+                              : "staff"} */}
+                            {invoice?.createdBy?.who}
                           </td>
                         </tr>
                       ))

@@ -83,7 +83,7 @@ const Modal = ({
                   setSelectedCompany(company);
                   setStaffProfileDetailsSelectedCompany(
                     staffProfileDetailsAllCompany.find(
-                      (ele) => ele.companyRef.id == company.id
+                      (ele) => ele.companyRef.id == company.companyId
                     ).id
                   );
                 }}
@@ -171,7 +171,7 @@ const StaffHome = () => {
             const companyDoc = await getDoc(staff.companyRef);
             console.log("companyDoc", companyDoc);
             return companyDoc.exists()
-              ? { id: companyDoc.id, ...companyDoc.data() }
+              ? { companyId: companyDoc.id, ...companyDoc.data() }
               : null;
           }
           return null;
@@ -230,11 +230,21 @@ const StaffHome = () => {
                 <Route path="/invoice/:id" element={<InvoiceView />}></Route>
                 <Route
                   path="/invoice/create-invoice"
-                  element={<SetInvoice />}
+                  element={
+                    <SetInvoice
+                      companyDetail={selectedCompany}
+                      isStaff={true}
+                    />
+                  }
                 ></Route>
                 <Route
                   path="/invoice/:invoiceId/edit-invoice"
-                  element={<SetInvoice />}
+                  element={
+                    <SetInvoice
+                      companyDetail={selectedCompany}
+                      isStaff={true}
+                    />
+                  }
                 ></Route>
               </>
             )}
