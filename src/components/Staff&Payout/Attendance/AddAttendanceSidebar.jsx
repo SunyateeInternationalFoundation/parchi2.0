@@ -1,9 +1,9 @@
 import { deleteDoc, doc, setDoc, Timestamp } from "firebase/firestore";
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaChevronRight } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
-import { db } from "../../../firebase";
 import { useSelector } from "react-redux";
+import { db } from "../../../firebase";
 import PaymentsDeductions from "./PaymentsDeductions";
 
 function AddAttendanceSidebar({
@@ -88,8 +88,20 @@ function AddAttendanceSidebar({
         alert("please Select Date");
         return;
       }
+      let present = 0;
+      let absent = 0;
+      attendanceForm.staffs.forEach((ele) => {
+        if (ele.status == "present") {
+          present++;
+        }
+        if (ele.status == "absent") {
+          absent++;
+        }
+      });
       let payload = {
         ...attendanceForm,
+        present,
+        absent,
         createdAt: Timestamp.fromDate(new Date()),
       };
 
@@ -115,16 +127,7 @@ function AddAttendanceSidebar({
         payload
       );
       alert("Successfully Marked Attendance");
-      let present = 0;
-      let absent = 0;
-      attendanceForm.staffs.forEach((ele) => {
-        if (ele.status == "present") {
-          present++;
-        }
-        if (ele.status == "absent") {
-          absent++;
-        }
-      });
+
       markedAttendance(attendanceId, {
         id: attendanceId,
         ...payload,

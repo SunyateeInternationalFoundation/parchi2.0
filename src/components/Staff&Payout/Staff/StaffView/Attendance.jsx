@@ -1,78 +1,85 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 function Attendance({ attendanceData }) {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [calender, setCalender] = useState([]);
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();
 
   // Render the days of the month
-  const renderDays = () => {
-    const cells = [];
-    let dayCounter = 1;
+  useEffect(() => {
+    const renderDays = () => {
+      const cells = [];
+      let dayCounter = 1;
 
-    for (let week = 0; week < 6; week++) {
-      const row = [];
+      for (let week = 0; week < 6; week++) {
+        const row = [];
 
-      for (let day = 0; day < 7; day++) {
-        if (week === 0 && day < firstDay) {
-          row.push(<div key={`empty-${day}`} className="h-16 border"></div>);
-        } else if (dayCounter <= daysInMonth) {
-          const date = `${String(dayCounter).padStart(2, "0")}${String(
-            currentMonth + 1
-          ).padStart(2, "0")}${currentYear}`;
-          const dayStatus =
-            attendanceData.find((ele) => ele.attendanceId == date) || null;
+        for (let day = 0; day < 7; day++) {
+          if (week === 0 && day < firstDay) {
+            row.push(<div key={`empty-${day}`} className="h-16 border"></div>);
+          } else if (dayCounter <= daysInMonth) {
+            const date = `${String(dayCounter).padStart(2, "0")}${String(
+              currentMonth + 1
+            ).padStart(2, "0")}${currentYear}`;
+            const dayStatus =
+              attendanceData.find((ele) => ele.attendanceId == date) || null;
 
-          row.push(
-            <div className=" border">
-              <div
-                key={dayCounter}
-                className={`h-16 p-2  items-center justify-center ${
-                  dayStatus?.status === "present"
-                    ? "bg-green-200 text-green-800"
-                    : dayStatus?.status === "absent"
-                    ? "bg-red-200 text-red-800"
-                    : dayStatus?.status === "leave"
-                    ? "bg-red-200 text-red-800"
-                    : dayStatus?.status === "holiday"
-                    ? "bg-yellow-200 text-red-800"
-                    : ""
-                }`}
-              >
-                <div className="flex space-x-5">
-                  <div className="text-black">{dayCounter}</div>
-                  <div className="text-sm uppercase font-bold">
-                    {dayStatus?.status}
+            row.push(
+              <div className=" border">
+                <div
+                  key={dayCounter}
+                  className={`h-16 p-2  items-center justify-center ${
+                    dayStatus?.status === "present"
+                      ? "bg-green-200 text-green-800"
+                      : dayStatus?.status === "absent"
+                      ? "bg-red-200 text-red-800"
+                      : dayStatus?.status === "leave"
+                      ? "bg-red-200 text-red-800"
+                      : dayStatus?.status === "holiday"
+                      ? "bg-yellow-200 text-red-800"
+                      : ""
+                  }`}
+                >
+                  <div className="flex space-x-5">
+                    <div className="text-black">{dayCounter}</div>
+                    <div className="text-sm uppercase font-bold">
+                      {dayStatus?.status}
+                    </div>
                   </div>
+                  {dayStatus?.status && (
+                    <div>
+                      <div className="text-sm">Shift: {dayStatus?.shift}</div>
+                    </div>
+                  )}
                 </div>
-                {dayStatus?.status && (
-                  <div>
-                    <div className="text-sm">Shift: {dayStatus?.shift}</div>
-                  </div>
-                )}
               </div>
-            </div>
-          );
-          dayCounter++;
-        } else {
-          row.push(
-            <div key={`empty-${day + week * 7}`} className="h-16 border"></div>
-          );
+            );
+            dayCounter++;
+          } else {
+            row.push(
+              <div
+                key={`empty-${day + week * 7}`}
+                className="h-16 border"
+              ></div>
+            );
+          }
         }
+        cells.push(
+          <div key={`week-${week}`} className="grid grid-cols-7 gap-0">
+            {row}
+          </div>
+        );
       }
-      cells.push(
-        <div key={`week-${week}`} className="grid grid-cols-7 gap-0">
-          {row}
-        </div>
-      );
-    }
+      setCalender(cells);
+    };
+    renderDays();
+  }, [attendanceData]);
 
-    return cells;
-  };
   return (
     <div className="p-4 bg-white rounded-lg mt-5">
       <div className="flex justify-center items-center gap-4 mb-4">
@@ -115,7 +122,7 @@ function Attendance({ attendanceData }) {
           <div>Fri</div>
           <div>Sat</div>
         </div>
-        {renderDays()}
+        {calender}
       </div>
     </div>
   );
