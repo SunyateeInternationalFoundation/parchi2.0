@@ -40,7 +40,7 @@ const SetInvoice = () => {
   }
 
   const phoneNo = userDetails.phone;
-
+  const [prefix, setPrefix] = useState("Invoice");
   const [date, setDate] = useState(Timestamp.fromDate(new Date()));
   const [dueDate, setDueDate] = useState(Timestamp.fromDate(new Date()));
   const [taxSelect, setTaxSelect] = useState("");
@@ -155,6 +155,21 @@ const SetInvoice = () => {
   }
 
   useEffect(() => {
+    const fetchPrefix = async () => {
+      try {
+        const companyDocRef = doc(db, "companies", companyDetails.companyId);
+        const companySnapshot = await getDoc(companyDocRef);
+
+        if (companySnapshot.exists()) {
+          const companyData = companySnapshot.data();
+          setPrefix(companyData.prefix.invoice);
+        } else {
+          console.error("No company document found.");
+        }
+      } catch (error) {
+        console.error("Error fetching company details:", error);
+      }
+    };
     async function fetchInvoiceData() {
       if (!invoiceId) {
         return;
@@ -343,14 +358,14 @@ const SetInvoice = () => {
     if (!invoiceId) {
       fetchInvoiceNumbers();
     }
-
+    fetchPrefix();
     fetchProducts();
     fetchBooks();
     fetchWarehouse();
     fetchInvoiceData();
     fetchTax();
     customerDetails();
-  }, [companyDetails.companyId , userDetails.selectedDashboard]);
+  }, [companyDetails.companyId, userDetails.selectedDashboard]);
 
   const handleInputChange = (e) => {
     const value = e.target.value.trim();
@@ -364,7 +379,6 @@ const SetInvoice = () => {
       setIsDropdownVisible(true);
     } else {
       setSuggestions(customersDetails);
-      
     }
   };
 
@@ -706,11 +720,10 @@ const SetInvoice = () => {
                   className="text-base text-gray-900 font-semibold border p-1 rounded w-full mt-1"
                   value={selectedCustomerData?.name}
                   onChange={handleInputChange}
-                  onFocus={() =>{
+                  onFocus={() => {
                     setIsDropdownVisible(true);
-                    setSuggestions(customersDetails || [])
-                  } 
-                  }
+                    setSuggestions(customersDetails || []);
+                  }}
                   onBlur={() => {
                     setTimeout(() => {
                       if (!selectedCustomerData.id) {
@@ -788,20 +801,25 @@ const SetInvoice = () => {
                     </span>
                   )}
                 </label>
-                <input
-                  type="text"
-                  placeholder="Enter Invoice No. "
-                  className="border p-1 rounded w-full mt-1"
-                  value={formData.invoiceNo}
-                  onChange={(e) => {
-                    const { value } = e.target;
-                    setFormData((val) => ({
-                      ...val,
-                      invoiceNo: value,
-                    }));
-                  }}
-                  required
-                />
+                <div className="flex items-center">
+                  <span className="px-4 py-1 mt-1 border rounded-l-md text-gray-700 flex-grow">
+                    {prefix}
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Enter Invoice No. "
+                    className="border p-1 rounded-r-md w-full mt-1 flex-grow"
+                    value={formData.invoiceNo}
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      setFormData((val) => ({
+                        ...val,
+                        invoiceNo: value,
+                      }));
+                    }}
+                    required
+                  />
+                </div>
               </div>
             </div>
           </div>

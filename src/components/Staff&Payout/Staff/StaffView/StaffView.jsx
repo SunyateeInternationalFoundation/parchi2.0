@@ -21,8 +21,17 @@ import StaffDocuments from "./StaffDocuments";
 function StaffView({ staffCompanyId }) {
   const { id } = useParams();
   const userDetails = useSelector((state) => state.users);
-  let companyId =
-    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  // let companyId =
+  //   userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
   if (staffCompanyId) {
     companyId = staffCompanyId;
   }
@@ -101,6 +110,8 @@ function StaffView({ staffCompanyId }) {
     fetchStaffData();
     fetchProjectList();
   }, []);
+  console.log("staffcompanyId", staffCompanyId);
+  console.log("attendance data", attendanceData);
   return (
     <div className="px-5 pb-5 bg-gray-100" style={{ width: "100%" }}>
       <header className="flex items-center  space-x-3 my-2 ">
