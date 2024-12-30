@@ -26,7 +26,7 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
       sellingPrice: 0,
       sellingPriceTaxType: true,
       discount: 0,
-      discountType: true,
+      discountType: "Percentage",
       description: "",
       tax: 0,
       monthDuration: "1", // Reset month duration
