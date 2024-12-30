@@ -42,18 +42,47 @@ const VendorList = () => {
       const q = query(vendorsRef, where("companyRef", "==", companyRef));
       const querySnapshot = await getDocs(q);
 
-      const vendorsData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const vendorsData = Promise.all(
+        querySnapshot.docs.map(async (doc) => {
+          const amount = await fetchTotalAmount(doc.id);
+          return {
+            id: doc.id,
+            ...doc.data(),
+            amount,
+          };
+        })
+      );
 
-      setVendors(vendorsData);
+      setVendors(await vendorsData);
     } catch (error) {
       console.error("Error fetching vendors:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  async function fetchTotalAmount(vendorId) {
+    try {
+      console.log("🚀 ~ fetchTotalAmount ~ vendorId:", vendorId);
+      const poRef = collection(db, "companies", companyId, "po");
+      const vendorRef = doc(db, "vendors", vendorId);
+      const poQ = query(
+        poRef,
+        where("vendorDetails.vendorRef", "==", vendorRef)
+      );
+
+      const poQuerySnapshot = await getDocs(poQ);
+      const vendorsPosAmount = poQuerySnapshot.docs.reduce((acc, cur) => {
+        const { total } = cur.data();
+        return (acc += +total);
+      }, 0);
+
+      return vendorsPosAmount;
+    } catch (error) {
+      console.log("🚀 ~ fetchInvoiceList ~ error:", error);
+    }
+    return 0;
+  }
   useEffect(() => {
     if (companyId) {
       fetchVendors();
@@ -142,9 +171,9 @@ const VendorList = () => {
               <th className="py-3 px-6 text-left font-semibold text-gray-600">
                 Email
               </th>
-              {/* <th className="py-3 px-6 text-left font-semibold text-gray-600">
-                Closing Balance
-              </th> */}
+              <th className="py-3 px-6 text-left font-semibold text-gray-600">
+                Amount
+              </th>
               <th className="py-3 px-6 text-center font-semibold text-gray-600 ">
                 Delete
               </th>
@@ -190,6 +219,7 @@ const VendorList = () => {
 
                   <td className="py-3 px-6">{vendor.phone || "N/A"}</td>
                   <td className="py-3 px-6">{vendor.email || "N/A"}</td>
+                  <td className="py-3 px-6">{vendor.amount || "0"}</td>
 
                   {/* <td className="py-3 px-6">
                     <div className="text-red-500 font-semibold">
