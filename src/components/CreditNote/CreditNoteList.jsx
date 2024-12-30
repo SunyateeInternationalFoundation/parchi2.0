@@ -337,7 +337,7 @@ const CreditNoteList = () => {
                             {/* {creditnote?.createdBy?.name == userDetails.name
                               ? "Owner"
                               : userDetails.name} */}
-                            {creditNote?.createdBy?.who}
+                            {creditnote?.createdBy?.who}
                           </td>
                         </tr>
                       ))
