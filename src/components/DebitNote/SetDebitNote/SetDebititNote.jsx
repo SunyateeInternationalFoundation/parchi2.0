@@ -525,7 +525,7 @@ const SetDebitNote = () => {
     total_TCS_TDS_Amount();
   }, [products, selectedTaxDetails]);
 
-  async function onSetPo() {
+  async function onSetDebitNote() {
     try {
       if (!selectedVendorData.id) {
         return;
@@ -663,8 +663,8 @@ const SetDebitNote = () => {
       );
       navigate(
         userDetails.selectedDashboard === "staff"
-          ? "/staff/debitNote"
-          : "/debitNote"
+          ? "/staff/debit-note"
+          : "/debit-note"
       );
     } catch (err) {
       console.error(err);
@@ -1310,13 +1310,13 @@ const SetDebitNote = () => {
               onClick={() => {
                 {
                   products.length > 0 && isProductSelected
-                    ? onSetPo()
+                    ? onSetDebitNote()
                     : alert("Please select items to proceed.");
                 }
               }}
             >
               <span className="text-lg">+</span>{" "}
-              {debitNoteId ? "Edit" : "Create"} debitNotedebitNote
+              {debitNoteId ? "Edit" : "Create"} debitNote
             </button>
           </div>
         </div>
