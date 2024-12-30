@@ -84,7 +84,7 @@ const Home = () => {
 
   const matchPathList = [
     "/invoice/create-invoice",
-    "/projects/create-Project",
+    "/projects/create-project",
     "/customers/:id",
     "/vendors/:id",
     "/staff-payout/staff/:id",

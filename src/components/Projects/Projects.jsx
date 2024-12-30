@@ -214,7 +214,7 @@ function Projects() {
               {(userDetails.selectedDashboard === "" || role?.create) && (
                 <Link
                   className="bg-blue-500 text-white py-1 px-2 rounded"
-                  to="create-Project"
+                  to="create-project"
                 >
                   + Create Project
                 </Link>

@@ -181,7 +181,7 @@ const StaffHome = () => {
 
             <Route path="/projects" element={<Projects />}></Route>
 
-            {checkPermission("projects", "create") && (
+            {checkPermission("project", "create") && (
               <Route
                 path="/projects/create-project"
                 element={<CreateProject />}
