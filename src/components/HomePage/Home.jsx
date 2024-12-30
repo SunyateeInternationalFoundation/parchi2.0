@@ -276,7 +276,7 @@ const Home = () => {
               element={<SetDebitNote />}
             ></Route>
             <Route
-              path="/debit-note/:debitnoteId/edit-debitnote"
+              path="/debit-note/:debitNoteId/edit-debitnote"
               element={<SetDebitNote />}
             ></Route>
             <Route path="/vendor/po" element={<VendorPO />}></Route>
