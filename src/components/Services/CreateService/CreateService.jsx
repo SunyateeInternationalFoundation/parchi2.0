@@ -224,6 +224,7 @@ function CreateService() {
           city: companyDetails.city ?? "",
           zipCode: companyDetails.zipCode ?? "",
           phoneNo: phoneNo,
+          who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
         },
         subTotal: +totalAmounts.subTotalAmount,
         total: +totalAmounts.totalAmount,

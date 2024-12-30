@@ -279,9 +279,10 @@ function Services() {
                           </td>
 
                           <td className="px-5 py-3">
-                            {service?.createdBy?.name == userDetails.name
+                            {/* {service?.createdBy?.name == userDetails.name
                               ? "Owner"
-                              : userDetails.name}
+                              : userDetails.name} */}
+                            {service?.createdBy?.who}
                           </td>
                         </tr>
                       ))

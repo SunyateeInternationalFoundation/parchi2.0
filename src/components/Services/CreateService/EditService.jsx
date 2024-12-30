@@ -275,6 +275,7 @@ function EditService() {
           zipCode: selectedCustomerData.zipCode ?? "",
           phone: selectedCustomerData.phone ?? "",
           name: selectedCustomerData.name,
+          who: formData.createdBy.who,
         },
         servicesList: serviceListPayload,
         membershipStartDate: membershipStartDate,
