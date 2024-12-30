@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
@@ -94,7 +95,7 @@ function Sidebar({
 
         <div className="mt-4 text-right">
           <h3 className="text-gray-700 font-bold text-base">
-            Total: ₹ {totalAmount}
+            Total: ₹ {+totalAmount?.toFixed(2)}
           </h3>
         </div>
 
@@ -108,5 +109,12 @@ function Sidebar({
     </div>
   );
 }
+Sidebar.propTypes = {
+  onClose: PropTypes.func,
+  productList: PropTypes.array,
+  isOpen: PropTypes.bool,
+  handleActionQty: PropTypes.func,
+  totalAmount: PropTypes.number,
+};
 
 export default Sidebar;

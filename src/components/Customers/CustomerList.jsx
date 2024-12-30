@@ -242,7 +242,7 @@ const CustomerList = () => {
 
                   <td className="py-3 px-6">{customer.email || ""}</td>
                   <td className="py-3 px-6">
-                    {customer.amount.toFixed(2) || ""}
+                    {customer?.amount?.toFixed(2) || ""}
                   </td>
                   {/* 
                   <td className="py-3 px-6">

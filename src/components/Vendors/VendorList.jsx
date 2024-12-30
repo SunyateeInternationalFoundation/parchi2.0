@@ -219,7 +219,9 @@ const VendorList = () => {
 
                   <td className="py-3 px-6">{vendor.phone || "N/A"}</td>
                   <td className="py-3 px-6">{vendor.email || "N/A"}</td>
-                  <td className="py-3 px-6">{vendor.amount || "0"}</td>
+                  <td className="py-3 px-6">
+                    {vendor?.amount?.toFixed(2) || "0"}
+                  </td>
 
                   {/* <td className="py-3 px-6">
                     <div className="text-red-500 font-semibold">

@@ -272,22 +272,7 @@ function PurchaseView({ purchase, bankDetails }) {
           </div>
           {purchase.paymentStatus !== "Paid" && (
             <div className="text-end">
-              <button
-                className={"px-4 py-1 text-red-700 text-2xl"}
-                onClick={handleDelete}
-              >
-                <RiDeleteBin6Line />
-              </button>
-              {userDetails.selectedDashboard === "staff" ? (
-                role?.delete && (
-                  <button
-                    className={"px-4 py-1 text-red-700 text-2xl"}
-                    onClick={handleDelete}
-                  >
-                    <RiDeleteBin6Line />
-                  </button>
-                )
-              ) : (
+              {(userDetails.selectedDashboard === "" || role?.delete) && (
                 <button
                   className={"px-4 py-1 text-red-700 text-2xl"}
                   onClick={handleDelete}

@@ -24,8 +24,7 @@ const SetQuotation = () => {
   const userDetails = useSelector((state) => state.users);
   const customersDetails = useSelector((state) => state.customers).data;
   const dispatch = useDispatch();
-  // const companyDetails =
-  //   userDetails.companies[userDetails.selectedCompanyIndex];
+
   let companyDetails;
   if (userDetails.selectedDashboard === "staff") {
     companyDetails =
