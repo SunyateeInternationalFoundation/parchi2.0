@@ -30,7 +30,7 @@ function CreateService() {
     companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   }
   const phoneNo = userDetails.phone;
-  const [prefix, setPrefix] = useState("Service");
+  const [prefix, setPrefix] = useState("");
   const [date, setDate] = useState(new Date());
   const [dueDate, setDueDate] = useState(new Date());
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);

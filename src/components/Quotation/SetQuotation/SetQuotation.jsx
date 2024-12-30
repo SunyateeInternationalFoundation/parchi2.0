@@ -35,7 +35,7 @@ const SetQuotation = () => {
     companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   }
   const phoneNo = userDetails.phone;
-  const [prefix, setPrefix] = useState("Quotation");
+  const [prefix, setPrefix] = useState("");
   const [date, setDate] = useState(Timestamp.fromDate(new Date()));
   const [warehouses, setWarehouses] = useState([]);
   const [taxSelect, setTaxSelect] = useState("");

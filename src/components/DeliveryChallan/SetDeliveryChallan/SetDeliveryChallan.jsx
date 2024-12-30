@@ -34,7 +34,7 @@ const SetDeliveryChallan = () => {
     companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   }
   const phoneNo = userDetails.phone;
-  const [prefix, setPrefix] = useState("Delivery Challan");
+  const [prefix, setPrefix] = useState("");
   const [date, setDate] = useState(Timestamp.fromDate(new Date()));
   const [dueDate, setDueDate] = useState(Timestamp.fromDate(new Date()));
   const [taxSelect, setTaxSelect] = useState("");

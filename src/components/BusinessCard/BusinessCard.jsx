@@ -149,36 +149,36 @@ const BusinessCard = () => {
           </div>
 
           <div className="flex justify-end space-x-4 mt-6">
-            {formData?.socialLinks?.facebook && (
-              <a
-                href={formData.socialLinks.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-700 hover:text-blue-900"
-              >
-                <FaFacebookF className="text-2xl" />
-              </a>
-            )}
-            {formData?.socialLinks?.twitter && (
-              <a
-                href={formData.socialLinks.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-400 hover:text-blue-600"
-              >
-                <FaTwitter className="text-2xl" />
-              </a>
-            )}
-            {formData?.socialLinks?.instagram && (
-              <a
-                href={formData.socialLinks.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-pink-600 hover:text-pink-800"
-              >
-                <FaInstagram className="text-2xl" />
-              </a>
-            )}
+            {/* {formData.socialLinks.facebook && ( */}
+            <a
+              href={formData?.socialLinks?.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-700 hover:text-blue-900"
+            >
+              <FaFacebookF className="text-2xl" />
+            </a>
+            {/* )} */}
+            {/* {formData.socialLinks.twitter && ( */}
+            <a
+              href={formData?.socialLinks?.twitter}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:text-blue-600"
+            >
+              <FaTwitter className="text-2xl" />
+            </a>
+            {/* )}
+            {formData.socialLinks.instagram && ( */}
+            <a
+              href={formData?.socialLinks?.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-pink-600 hover:text-pink-800"
+            >
+              <FaInstagram className="text-2xl" />
+            </a>
+            {/* )} */}
           </div>
 
           <div className="absolute bottom-20 right-20">
