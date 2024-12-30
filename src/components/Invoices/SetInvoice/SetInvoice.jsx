@@ -5,6 +5,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  orderBy,
   query,
   updateDoc,
   where,
@@ -129,17 +130,25 @@ const SetInvoice = () => {
 
   const fetchInvoiceNumbers = async () => {
     try {
-      const querySnapshot = await getDocs(
-        collection(db, "companies", companyDetails.companyId, "invoices")
+      const invoicesRef = collection(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "invoices"
       );
-      const noList = querySnapshot.docs.map((doc) => doc.data().invoiceNo);
+      const q = query(invoicesRef, orderBy("invoiceNo", "asc"));
+      const querySnapshot = await getDocs(q);
+      const noList = querySnapshot.docs.map((doc) => {
+        const no = doc.data().invoiceNo;
+        return no;
+      });
       if (invoiceId) {
         setPreInvoiceList(noList.filter((ele) => ele !== formData.invoiceNo));
       } else {
         setPreInvoiceList(noList);
         setFormData((val) => ({
           ...val,
-          invoiceNo: String(noList.length + 1).padStart(4, 0),
+          invoiceNo: String(+noList[noList.length - 1] + 1).padStart(4, 0),
         }));
       }
     } catch (error) {
@@ -161,7 +170,7 @@ const SetInvoice = () => {
 
         if (companySnapshot.exists()) {
           const companyData = companySnapshot.data();
-          setPrefix(companyData.prefix.invoice || "Invoice");
+          setPrefix(companyData.prefix.invoice || "INV");
         } else {
           console.error("No company document found.");
         }

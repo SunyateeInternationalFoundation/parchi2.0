@@ -23,8 +23,6 @@ const SetCreditNote = () => {
   const userDetails = useSelector((state) => state.users);
   const customersDetails = useSelector((state) => state.customers).data;
   const dispatch = useDispatch();
-  // const companyDetails =
-  //   userDetails.companies[userDetails.selectedCompanyIndex];
   let companyDetails;
   if (userDetails.selectedDashboard === "staff") {
     companyDetails =
@@ -33,7 +31,6 @@ const SetCreditNote = () => {
   } else {
     companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   }
-  const phoneNo = userDetails.phone;
   const [prefix, setPrefix] = useState("Credit Note");
   const [dueDate, setDueDate] = useState(Timestamp.fromDate(new Date()));
 
@@ -699,7 +696,10 @@ const SetCreditNote = () => {
                   className="text-base text-gray-900 font-semibold border p-1 rounded w-full mt-1"
                   value={selectedCustomerData?.name}
                   onChange={handleInputChange}
-                  onFocus={() => setIsDropdownVisible(true)}
+                  onFocus={() => {
+                    setIsDropdownVisible(true);
+                    setSuggestions(customersDetails || []);
+                  }}
                   onBlur={() => {
                     if (!selectedCustomerData.id) {
                       setSelectedCustomerData({ name: "" });

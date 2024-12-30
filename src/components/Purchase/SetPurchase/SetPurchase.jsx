@@ -709,11 +709,14 @@ const SetPurchase = () => {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search your Customers, Company Name, GSTIN..."
+                  placeholder="Search your venders, Company Name, GSTIN..."
                   className="text-base text-gray-900 font-semibold border p-1 rounded w-full mt-1"
                   value={selectedVendorData?.name}
                   onChange={handleInputChange}
-                  onFocus={() => setIsDropdownVisible(true)}
+                  onFocus={() => {
+                    setIsDropdownVisible(true);
+                    setSuggestions(vendorsDetails || []);
+                  }}
                   onBlur={() => {
                     if (!selectedVendorData.id) {
                       setSelectedVendorData({ name: "" });

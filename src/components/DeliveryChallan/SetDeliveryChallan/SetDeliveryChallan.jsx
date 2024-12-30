@@ -719,7 +719,10 @@ const SetDeliveryChallan = () => {
                   className="text-base text-gray-900 font-semibold border p-1 rounded w-full mt-1"
                   value={selectedCustomerData?.name}
                   onChange={handleInputChange}
-                  onFocus={() => setIsDropdownVisible(true)}
+                  onFocus={() => {
+                    setIsDropdownVisible(true);
+                    setSuggestions(customersDetails || []);
+                  }}
                   onBlur={() => {
                     if (!selectedCustomerData.id) {
                       setSelectedCustomerData({ name: "" });
