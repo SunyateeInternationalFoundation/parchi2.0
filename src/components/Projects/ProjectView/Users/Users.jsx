@@ -13,7 +13,6 @@ function Users() {
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.users;
-  console.log("🚀 ~ Users ~ role:", role);
   const [loading, setLoading] = useState(false);
   const [activeNav, setActiveNav] = useState("customers");
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);

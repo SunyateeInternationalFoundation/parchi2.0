@@ -233,6 +233,11 @@ function SideBar() {
         </div>
       </div>
       <div className="p-1">
+        <div className="border-b-2 ">
+          <Link to="" className=" cursor-pointer mb-10">
+            <div className="text-lg font-semibold pl-3">Home</div>
+          </Link>
+        </div>
         {selectedDashboardUser === "staff" && (
           <div className="border-b-2 ">
             <Link
@@ -243,11 +248,6 @@ function SideBar() {
             </Link>
           </div>
         )}
-        <div className="border-b-2 ">
-          <Link to="" className=" cursor-pointer mb-10">
-            <div className="text-lg font-semibold pl-3">Home</div>
-          </Link>
-        </div>
         {selectedDashboardUser === "" && (
           <div className="border-b-2 mt-3">
             <Link to="/expense" className=" cursor-pointer mb-10">
