@@ -32,7 +32,7 @@ const SetPO = () => {
     companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   }
   const phoneNo = userDetails.phone;
-  const [prefix, setPrefix] = useState("PO");
+  const [prefix, setPrefix] = useState("");
   const [dueDate, setDueDate] = useState(Timestamp.fromDate(new Date()));
 
   const [date, setDate] = useState(Timestamp.fromDate(new Date()));

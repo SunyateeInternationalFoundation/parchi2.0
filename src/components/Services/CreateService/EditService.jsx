@@ -29,7 +29,7 @@ function EditService() {
   } else {
     companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   }
-  const [prefix, setPrefix] = useState("Service");
+  const [prefix, setPrefix] = useState("");
   const [serviceDate, setServiceDate] = useState(new Date());
   const [serviceDueDate, setServiceDueDate] = useState(new Date());
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
