@@ -157,7 +157,7 @@ const SetDebitNote = () => {
 
         if (companySnapshot.exists()) {
           const companyData = companySnapshot.data();
-          setPrefix(companyData.prefix.debitNote);
+          setPrefix(companyData.prefix.debitNote || "Debit Note");
         } else {
           console.error("No company document found.");
         }

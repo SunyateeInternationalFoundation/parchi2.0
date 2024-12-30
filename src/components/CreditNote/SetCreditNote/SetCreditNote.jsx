@@ -157,7 +157,7 @@ const SetCreditNote = () => {
 
         if (companySnapshot.exists()) {
           const companyData = companySnapshot.data();
-          setPrefix(companyData.prefix.creditNote);
+          setPrefix(companyData.prefix.creditNote || "Credit Note");
         } else {
           console.error("No company document found.");
         }

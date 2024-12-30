@@ -150,7 +150,7 @@ const SetPos = () => {
 
         if (companySnapshot.exists()) {
           const companyData = companySnapshot.data();
-          setPrefix(companyData.prefix.pos);
+          setPrefix(companyData.prefix.pos || "POS");
         } else {
           console.error("No company document found.");
         }

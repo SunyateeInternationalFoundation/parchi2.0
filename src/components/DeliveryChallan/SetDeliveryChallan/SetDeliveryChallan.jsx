@@ -158,7 +158,7 @@ const SetDeliveryChallan = () => {
 
         if (companySnapshot.exists()) {
           const companyData = companySnapshot.data();
-          setPrefix(companyData.prefix.deliveryChallan);
+          setPrefix(companyData.prefix.deliveryChallan || "Delivery Challan");
         } else {
           console.error("No company document found.");
         }

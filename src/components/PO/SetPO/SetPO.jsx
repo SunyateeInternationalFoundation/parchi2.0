@@ -156,7 +156,7 @@ const SetPO = () => {
 
         if (companySnapshot.exists()) {
           const companyData = companySnapshot.data();
-          setPrefix(companyData.prefix.po);
+          setPrefix(companyData.prefix.po || "PO");
         } else {
           console.error("No company document found.");
         }

@@ -155,7 +155,7 @@ const SetProFormaInvoice = () => {
 
         if (companySnapshot.exists()) {
           const companyData = companySnapshot.data();
-          setPrefix(companyData.prefix.proformaInvoice);
+          setPrefix(companyData.prefix.proformaInvoice || "ProForma Invoice");
         } else {
           console.error("No company document found.");
         }

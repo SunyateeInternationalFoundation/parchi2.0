@@ -125,7 +125,7 @@ function EditService() {
 
         if (companySnapshot.exists()) {
           const companyData = companySnapshot.data();
-          setPrefix(companyData.prefix.service);
+          setPrefix(companyData.prefix.service || "Service");
         } else {
           console.error("No company document found.");
         }

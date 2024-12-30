@@ -154,7 +154,7 @@ const SetPurchase = () => {
 
         if (companySnapshot.exists()) {
           const companyData = companySnapshot.data();
-          setPrefix(companyData.prefix.purchase);
+          setPrefix(companyData.prefix.purchase || "Purchase");
         } else {
           console.error("No company document found.");
         }

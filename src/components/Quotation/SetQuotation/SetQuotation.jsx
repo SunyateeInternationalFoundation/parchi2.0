@@ -157,7 +157,7 @@ const SetQuotation = () => {
 
         if (companySnapshot.exists()) {
           const companyData = companySnapshot.data();
-          setPrefix(companyData.prefix.quotation);
+          setPrefix(companyData.prefix.quotation || "Quotation");
         } else {
           console.error("No company document found.");
         }
