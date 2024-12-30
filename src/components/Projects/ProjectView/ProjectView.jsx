@@ -121,6 +121,7 @@ function ProjectView() {
       dueDate: payload.dueDate,
       book: payload.book,
     });
+
     setProject(payload);
     setTotalPersons(
       (payload.vendorRef?.length || 0) +
@@ -233,7 +234,8 @@ function ProjectView() {
       },
     },
   ];
-  const [manageItems, setManageItems] = useState(manageProjectItems);
+  const [manageItems, setManageItems] = useState([]);
+
   useEffect(() => {
     if (userDetails.selectedDashboard === "staff") {
       const removedItems = ["Payments", "Items", "Chat"];
@@ -242,8 +244,10 @@ function ProjectView() {
         (ele) => !removedItems.includes(ele.name)
       );
       setManageItems(updatedData);
+    } else {
+      setManageItems(manageProjectItems);
     }
-  }, []);
+  }, [project]);
 
   const navigate = useNavigate();
 
