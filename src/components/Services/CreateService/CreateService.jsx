@@ -449,7 +449,7 @@ function CreateService() {
                   value={setCurrentDate(date)}
                   className="border p-1 rounded w-full mt-1"
                   onChange={(e) => {
-                    setDate(e.target.value);
+                    setDate(new Date(e.target.value));
                   }}
                   required
                 />
@@ -463,7 +463,7 @@ function CreateService() {
                   value={setCurrentDate(dueDate)}
                   className="border p-1 rounded w-full mt-1"
                   onChange={(e) => {
-                    setDueDate(e.target.value);
+                    setDueDate(new Date(e.target.value));
                   }}
                 />
               </div>

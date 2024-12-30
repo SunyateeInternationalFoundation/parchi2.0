@@ -42,7 +42,6 @@ function Services() {
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.services;
-  console.log("role", role);
   const filteredServices = services.filter((service) => {
     const { customerDetails, status, serviceNo } = service;
     const customerName = customerDetails?.name || "";
