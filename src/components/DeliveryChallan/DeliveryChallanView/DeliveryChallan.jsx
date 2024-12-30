@@ -235,14 +235,7 @@ const DeliveryChallan = ({ deliveryChallan, bankDetails }) => {
           >
             <FaRegEye /> &nbsp; View
           </button>
-          <button
-            className={
-              "px-4 py-1 bg-red-300 text-white rounded-full flex items-center"
-            }
-            onClick={() => navigate("edit-deliverychallan")}
-          >
-            <TbEdit /> &nbsp; Edit
-          </button>
+
           {userDetails.selectedDashboard === "staff" ? (
             role?.edit && (
               <button

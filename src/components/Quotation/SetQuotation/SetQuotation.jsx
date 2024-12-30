@@ -552,21 +552,28 @@ const SetQuotation = () => {
         tdsSection: taxSelect === "tds" ? selectedTaxDetails.tdsSection : "",
         tds_amount: taxSelect === "tds" ? total_Tax_Amount : 0,
       };
+      const baseCreatedBy = {
+        companyRef: companyRef,
+        name: companyDetails.name,
+        address: companyDetails.address ?? "",
+        city: companyDetails.city ?? "",
+        zipCode: companyDetails.zipCode ?? "",
+        phoneNo: phoneNo,
+      };
 
+      const createdBy = quotationId
+        ? { ...baseCreatedBy, who: formData.createdBy.who }
+        : {
+            ...baseCreatedBy,
+            who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+          };
       const payload = {
         ...formData,
         tds,
         tcs,
         date,
         dueDate,
-        createdBy: {
-          companyRef: companyRef,
-          name: companyDetails.name,
-          address: companyDetails.address ?? "",
-          city: companyDetails.city ?? "",
-          zipCode: companyDetails.zipCode ?? "",
-          phoneNo: phoneNo,
-        },
+        createdBy,
         subTotal: +subTotal,
         total: +calculateTotal(),
         products: items,

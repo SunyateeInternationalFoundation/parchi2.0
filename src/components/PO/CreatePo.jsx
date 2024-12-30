@@ -1,11 +1,11 @@
 import {
-    addDoc,
-    collection,
-    doc,
-    getDocs,
-    query,
-    updateDoc,
-    where
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
@@ -433,14 +433,7 @@ const CreatePo = () => {
         tds,
         tcs,
         date,
-        createdBy: {
-          companyRef: companyRef,
-          name: companyDetails.name,
-          address: companyDetails.address ?? "",
-          city: companyDetails.city ?? "",
-          zipCode: companyDetails.zipCode ?? "",
-          phoneNo: phoneNo,
-        },
+        createdBy,
         subTotal: +subTotal,
         total:
           +totalAmounts.totalAmount +
