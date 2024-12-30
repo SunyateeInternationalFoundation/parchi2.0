@@ -29,7 +29,6 @@ function Projects() {
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.project;
-  console.log("🚀 ~ Projects ~ role:", role, companyId);
   const navigate = useNavigate();
   useEffect(() => {
     async function fetchProjectsList() {
@@ -38,10 +37,18 @@ function Projects() {
           return;
         }
         const companyRef = doc(db, "companies", companyId);
-
         const projectRef = collection(db, "projects");
+        let q;
+        if (userDetails.selectedDashboard === "staff") {
+          q = query(
+            projectRef,
+            where("phoneNum", "array-contains", userDetails.phone),
+            where("companyRef", "==", companyRef)
+          );
+        } else {
+          q = query(projectRef, where("companyRef", "==", companyRef));
+        }
 
-        const q = query(projectRef, where("companyRef", "==", companyRef));
         const querySnapshot = await getDocs(q);
         const projectsData = querySnapshot.docs.map((doc) => {
           const { projectMembers, companyRef, createdAt, ...rest } = doc.data();
@@ -85,7 +92,7 @@ function Projects() {
       }
     }
     fetchProjectsList();
-  }, [userDetails.companies]);
+  }, [companyId]);
 
   function DateFormate(timestamp) {
     const milliseconds =
@@ -204,7 +211,7 @@ function Projects() {
               </div>
             </div>
             <div className="w-full text-end ">
-              {(userDetails.selectedDashboard === "staff" || role?.create) && (
+              {(userDetails.selectedDashboard === "" || role?.create) && (
                 <Link
                   className="bg-blue-500 text-white py-1 px-2 rounded"
                   to="create-Project"

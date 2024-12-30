@@ -90,7 +90,12 @@ function UserSidebar({ isOpen, onClose, projectId, projectDetails, Refresh }) {
   async function onAddSelectedItems() {
     try {
       const projectDocRef = doc(db, "projects", projectId);
-
+      const customersNumbers = projectDetails?.customerRef?.map(
+        (ele) => ele.phone
+      );
+      const vendersNumbers = projectDetails?.vendorRef?.map((ele) => ele.phone);
+      const staffsNumbers = projectDetails?.staffRef?.map((ele) => ele.phone);
+      let phoneNum = [...vendersNumbers, ...staffsNumbers];
       let field = {
         name: "customerRef",
         refName: "customer_ref",
@@ -106,6 +111,7 @@ function UserSidebar({ isOpen, onClose, projectId, projectDetails, Refresh }) {
           user_type: "Vendor",
           data: [],
         };
+        phoneNum = [...customersNumbers, ...staffsNumbers];
       } else if (activeNav === "staff") {
         field = {
           name: "staffRef",
@@ -114,14 +120,8 @@ function UserSidebar({ isOpen, onClose, projectId, projectDetails, Refresh }) {
           user_type: "Staff",
           data: [],
         };
+        phoneNum = [...customersNumbers, ...vendersNumbers];
       }
-
-      const customersNumbers = projectDetails?.customerRef?.map(
-        (ele) => ele.phone
-      );
-      const vendersNumbers = projectDetails?.vendorRef?.map((ele) => ele.phone);
-      const staffsNumbers = projectDetails?.staffRef?.map((ele) => ele.phone);
-      let phoneNum = [...customersNumbers, ...vendersNumbers, ...staffsNumbers];
 
       selectedDataSet.forEach((fieldId) => {
         const ref = doc(db, field.collectionName, fieldId);
