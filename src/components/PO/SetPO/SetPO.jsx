@@ -849,8 +849,7 @@ const SetPO = () => {
                 <thead className="border-b bg-gray-50">
                   <tr>
                     <th className="px-4 py-2">Product Name</th>
-                    <th className="px-4 py-2">Quantity</th>
-                    <th className="px-4 py-2">Unit Price</th>
+                    <th className="px-4 py-2">Purchase Price</th>
                     <th className="px-4 py-2">Discount</th>
                     <th className="px-4 py-2">Net Amount</th>
                     <th className="px-2 py-2">Is Tax Included</th>
@@ -865,9 +864,8 @@ const SetPO = () => {
                         product.actionQty > 0 && (
                           <tr key={product.id}>
                             <td className="px-4 py-2">{product.name}</td>
-                            <td className="px-4 py-2">{product.quantity}</td>
                             <td className="px-4 py-2">
-                              ₹{product.sellingPrice.toFixed(2)}
+                              ₹{product.purchasePrice.toFixed(2)}
                             </td>
                             <td className="px-4 py-2">
                               ₹{product.discount.toFixed(2)}
@@ -876,7 +874,7 @@ const SetPO = () => {
                               ₹{product.netAmount.toFixed(2)}
                             </td>
                             <td className="px-2 py-2">
-                              {product.sellingPriceTaxType ? "Yes" : "No"}
+                              {product.purchasePriceTaxType ? "Yes" : "No"}
                             </td>
                             <td className="px-4 py-2">
                               ₹{product.totalAmount.toFixed(2)}

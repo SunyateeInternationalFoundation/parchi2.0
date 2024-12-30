@@ -1,28 +1,26 @@
 import {
-  Timestamp,
   addDoc,
   collection,
   doc,
   getDoc,
   getDocs,
   query,
+  Timestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
-import { setAllCustomersDetails } from "../../../store/CustomerSlice";
 import Sidebar from "./Sidebar";
 
 const SetDebitNote = () => {
   const { debitNoteId } = useParams();
 
   const userDetails = useSelector((state) => state.users);
-  const customersDetails = useSelector((state) => state.customers).data;
-  const dispatch = useDispatch();
+
   // const companyDetails =
   //   userDetails.companies[userDetails.selectedCompanyIndex];
   let companyDetails;
@@ -46,18 +44,20 @@ const SetDebitNote = () => {
     tcs: [],
   });
   const [isProductSelected, setIsProductSelected] = useState(false);
-
+  const [vendorsDetails, setVendorsDetails] = useState([]);
   const [products, setProducts] = useState([]);
-  const [preDebitNoteList, setPreDebitNoteList] = useState([]);
+  const [prePoList, setPrePoList] = useState([]);
+  const [books, setBooks] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+  const [existQuantity, setExistQuantity] = useState({});
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
+    book: {},
     warehouse: {},
     discount: 0,
-    paymentStatus: "UnPaid",
+    orderStatus: "Pending",
     notes: "",
     debitNoteNo: "",
     packagingCharges: 0,
@@ -85,12 +85,11 @@ const SetDebitNote = () => {
     totalAmount: 0,
   });
 
-  const [selectedCustomerData, setSelectedCustomerData] = useState({
+  const [selectedVendorData, setSelectedVendorData] = useState({
     name: "",
   });
   const [suggestions, setSuggestions] = useState([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-
   useEffect(() => {
     function addActionQty() {
       if (
@@ -109,30 +108,34 @@ const SetDebitNote = () => {
             // pro.quantity += ele.quantity;
             pro.totalAmount = ele.quantity * pro.netAmount;
           }
+
           return pro;
         });
+        setExistQuantity((prev) => ({
+          ...prev,
+          [ele.name]: ele.quantity,
+        }));
       }
+
       setProducts(productData);
       calculateProduct(productData);
     }
     addActionQty();
     if (debitNoteId) {
-      fetchDebitNoteNumbers();
+      fetchPoNumbers();
     }
   }, [formData.products]);
 
-  const fetchDebitNoteNumbers = async () => {
+  const fetchPoNumbers = async () => {
     try {
       const querySnapshot = await getDocs(
         collection(db, "companies", companyDetails.companyId, "debitNote")
       );
       const noList = querySnapshot.docs.map((doc) => doc.data().debitNoteNo);
       if (debitNoteId) {
-        setPreDebitNoteList(
-          noList.filter((ele) => ele !== formData.debitNoteNo)
-        );
+        setPrePoList(noList.filter((ele) => ele !== formData.debitNoteNo));
       } else {
-        setPreDebitNoteList(noList);
+        setPrePoList(noList);
         setFormData((val) => ({
           ...val,
           debitNoteNo: String(noList.length + 1).padStart(4, 0),
@@ -157,7 +160,7 @@ const SetDebitNote = () => {
 
         if (companySnapshot.exists()) {
           const companyData = companySnapshot.data();
-          setPrefix(companyData.prefix.debitNote || "Debit Note");
+          setPrefix(companyData.prefix.debitNote || "DebitNote");
         } else {
           console.error("No company document found.");
         }
@@ -165,7 +168,7 @@ const SetDebitNote = () => {
         console.error("Error fetching company details:", error);
       }
     };
-    async function fetchDebitNoteData() {
+    async function fetchPoData() {
       if (!debitNoteId) {
         return;
       }
@@ -182,30 +185,27 @@ const SetDebitNote = () => {
         setDate(getData.date);
         setDueDate(getData.dueDate);
 
-        const customerData = (
-          await getDoc(getData.customerDetails.customerRef)
+        const vendorData = (
+          await getDoc(getData.vendorDetails.vendorRef)
         ).data();
         handleSelectCustomer({
-          id: getData.customerDetails.customerRef.id,
-          ...customerData,
+          id: getData.vendorDetails.vendorRef.id,
+          ...vendorData,
         });
         setFormData(getData);
       } catch (error) {
-        console.log("🚀 ~ fetchDebitNoteData ~ error:", error);
+        console.log("🚀 ~ fetchPoData ~ error:", error);
       }
     }
 
-    async function customerDetails() {
-      if (customersDetails.length !== 0) {
-        return;
-      }
-
+    async function vendorDetails() {
       try {
-        const customersRef = collection(db, "customers");
+        const vendorsRef = collection(db, "vendors");
+
         const companyRef = doc(db, "companies", companyDetails.companyId);
-        const q = query(customersRef, where("companyRef", "==", companyRef));
+        const q = query(vendorsRef, where("companyRef", "==", companyRef));
         const company = await getDocs(q);
-        const customersData = company.docs.map((doc) => {
+        const VendorData = company.docs.map((doc) => {
           const { createdAt, companyRef, ...data } = doc.data();
           return {
             id: doc.id,
@@ -214,10 +214,10 @@ const SetDebitNote = () => {
             ...data,
           };
         });
-        dispatch(setAllCustomersDetails(customersData));
-        setSuggestions(customersData);
+        setVendorsDetails(VendorData);
+        setSuggestions(VendorData);
       } catch (error) {
-        console.log("🚀 ~ customerDetails ~ error:", error);
+        console.log("🚀 ~ vendorDetails ~ error:", error);
       }
     }
 
@@ -256,6 +256,25 @@ const SetDebitNote = () => {
       }
     }
 
+    async function fetchBooks() {
+      try {
+        const bookRef = collection(
+          db,
+          "companies",
+          companyDetails.companyId,
+          "books"
+        );
+        const getBookData = await getDocs(bookRef);
+        const fetchBooks = getBookData.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setBooks(fetchBooks);
+      } catch (error) {
+        console.log("🚀 ~ fetchBooks ~ error:", error);
+      }
+    }
+
     async function fetchWarehouse() {
       try {
         const bookRef = collection(
@@ -274,7 +293,6 @@ const SetDebitNote = () => {
         console.log("🚀 ~ fetchBooks ~ error:", error);
       }
     }
-
     const fetchProducts = async () => {
       try {
         const companyRef = doc(db, "companies", companyDetails.companyId);
@@ -292,9 +310,18 @@ const SetDebitNote = () => {
           let discount = +data.discount || 0;
 
           if (data.discountType) {
-            discount = (+data.sellingPrice / 100) * data.discount;
+            discount =
+              ((data.purchasePrice <= 0
+                ? +data.sellingPrice
+                : +data.purchasePrice) /
+                100) *
+              data.discount;
           }
-          const netAmount = +data.sellingPrice - discount;
+          const netAmount =
+            (data.purchasePrice <= 0
+              ? +data.sellingPrice
+              : data.purchasePrice) - discount;
+
           const taxRate = data.tax || 0;
           let sgst = 0;
           let cgst = 0;
@@ -332,37 +359,38 @@ const SetDebitNote = () => {
         });
         setProducts(productsData);
       } catch (error) {
-        console.error("Error fetching debitNote:", error);
+        console.error("Error fetching DebitNotes:", error);
       }
     };
 
     if (!debitNoteId) {
-      fetchDebitNoteNumbers();
+      fetchPoNumbers();
     }
     fetchPrefix();
     fetchProducts();
+    fetchBooks();
     fetchWarehouse();
-    fetchDebitNoteData();
+    fetchPoData();
     fetchTax();
-    customerDetails();
+    vendorDetails();
   }, [companyDetails]);
 
   const handleInputChange = (e) => {
     const value = e.target.value;
-    setSelectedCustomerData({ name: value });
+    setSelectedVendorData({ name: value });
     if (value) {
-      const filteredSuggestions = customersDetails.filter((item) =>
+      const filteredSuggestions = vendorsDetails.filter((item) =>
         item.name.toLowerCase().includes(value.toLowerCase())
       );
       setSuggestions(filteredSuggestions);
       setIsDropdownVisible(true);
     } else {
-      setSuggestions(customersDetails);
+      setSuggestions(vendorsDetails);
     }
   };
 
   const handleSelectCustomer = (item) => {
-    setSelectedCustomerData(item);
+    setSelectedVendorData(item);
     setIsDropdownVisible(false);
   };
 
@@ -372,9 +400,9 @@ const SetDebitNote = () => {
       if (product.id === productId) {
         // Update action quantity
         if (op === "+") {
-          if (product.quantity > product.actionQty) {
-            ++product.actionQty;
-          }
+          // if (product.quantity > product.actionQty) {
+          ++product.actionQty;
+          // }
         } else {
           if (0 < product.actionQty) {
             --product.actionQty;
@@ -497,12 +525,12 @@ const SetDebitNote = () => {
     total_TCS_TDS_Amount();
   }, [products, selectedTaxDetails]);
 
-  async function onSetDebitNote() {
+  async function onSetPo() {
     try {
-      if (!selectedCustomerData.id) {
+      if (!selectedVendorData.id) {
         return;
       }
-      const customerRef = doc(db, "customers", selectedCustomerData.id);
+      const vendorRef = doc(db, "vendors", selectedVendorData.id);
       const companyRef = doc(db, "companies", companyDetails.companyId);
       let subTotal = 0;
       const items = [];
@@ -577,14 +605,14 @@ const SetDebitNote = () => {
         subTotal: +subTotal,
         total: +calculateTotal(),
         products: items,
-        customerDetails: {
-          gstNumber: selectedCustomerData.gstNumber ?? "",
-          customerRef: customerRef,
-          address: selectedCustomerData.address ?? "",
-          city: selectedCustomerData.city ?? "",
-          zipCode: selectedCustomerData.zipCode ?? "",
-          phone: selectedCustomerData.phone ?? "",
-          name: selectedCustomerData.name,
+        vendorDetails: {
+          gstNumber: selectedVendorData.gstNumber ?? "",
+          vendorRef: vendorRef,
+          address: selectedVendorData.address ?? "",
+          city: selectedVendorData.city ?? "",
+          zipCode: selectedVendorData.zipCode ?? "",
+          phone: selectedVendorData.phone ?? "",
+          name: selectedVendorData.name,
         },
       };
 
@@ -615,14 +643,17 @@ const SetDebitNote = () => {
           (val) => val.name === item.name
         ).quantity;
 
-        if (currentQuantity <= 0) {
-          alert("Product is out of stock!");
-          throw new Error("Product is out of stock!");
-        }
+        // if (currentQuantity <= 0) {
+        //   alert("Product is out of stock!");
+        //   throw new Error("Product is out of stock!");
+        // }
 
-        // await updateDoc(item.productRef, {
-        //   stock: currentQuantity - item.quantity,
-        // });
+        const existingQuantity = existQuantity[item.name] || 0;
+        const updatedStock = currentQuantity - existingQuantity + item.quantity;
+
+        await updateDoc(item.productRef, {
+          stock: updatedStock,
+        });
       }
 
       alert(
@@ -632,8 +663,8 @@ const SetDebitNote = () => {
       );
       navigate(
         userDetails.selectedDashboard === "staff"
-          ? "/staff/debit-note"
-          : "/debit-note"
+          ? "/staff/debitNote"
+          : "/debitNote"
       );
     } catch (err) {
       console.error(err);
@@ -650,22 +681,7 @@ const SetDebitNote = () => {
 
     return `${getFullYear}-${getMonth}-${getDate}`;
   }
-  //   function onSelectBook(e) {
-  //     const { value } = e.target;
-  //     const data = books.find((ele) => ele.id === value);
-  //     console.log("🚀 ~ onSelectBook ~ data:", data);
-  //     const bookRef = doc(
-  //       db,
-  //       "companies",
-  //       companyDetails.companyId,
-  //       "books",
-  //       value
-  //     );
-  //     setFormData((val) => ({
-  //       ...val,
-  //       book: { name: data.name, bookRef },
-  //     }));
-  //   }
+
   function onSelectWarehouse(e) {
     const { value } = e.target;
     const data = warehouses.find((ele) => ele.id === value);
@@ -681,7 +697,23 @@ const SetDebitNote = () => {
       warehouse: { name: data.name, warehouseRef },
     }));
   }
-  console.log("formData", formData);
+
+  function onSelectBook(e) {
+    const { value } = e.target;
+    const data = books.find((ele) => ele.id === value);
+    const bookRef = doc(
+      db,
+      "companies",
+      companyDetails.companyId,
+      "books",
+      value
+    );
+    setFormData((val) => ({
+      ...val,
+      book: { name: data.name, bookRef },
+    }));
+  }
+
   return (
     <div
       className="px-5 pb-5 bg-gray-100 overflow-y-auto"
@@ -701,25 +733,25 @@ const SetDebitNote = () => {
       <div className="bg-white p-6 rounded-lg shadow-lg">
         <div className="flex gap-8 mb-6">
           <div className="flex-1">
-            <h2 className="font-semibold mb-2">Customer Details</h2>
+            <h2 className="font-semibold mb-2">Vendor Details</h2>
             <div className="bg-blue-50 p-4 rounded-lg">
               <label className="text-sm text-gray-600">
-                Select Customer <span className="text-red-500">*</span>{" "}
+                Select Vendor <span className="text-red-500">*</span>{" "}
               </label>
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search your Customers, Company Name, GSTIN..."
+                  placeholder="Search your vendors, Company Name, GSTIN..."
                   className="text-base text-gray-900 font-semibold border p-1 rounded w-full mt-1"
-                  value={selectedCustomerData?.name}
+                  value={selectedVendorData?.name}
                   onChange={handleInputChange}
                   onFocus={() => {
                     setIsDropdownVisible(true);
-                    setSuggestions(customersDetails || []);
+                    setSuggestions(vendorsDetails || []);
                   }}
                   onBlur={() => {
-                    if (!selectedCustomerData.id) {
-                      setSelectedCustomerData({ name: "" });
+                    if (!selectedVendorData.id) {
+                      setSelectedVendorData({ name: "" });
                     }
                     setIsDropdownVisible(false);
                   }}
@@ -781,7 +813,7 @@ const SetDebitNote = () => {
               <div>
                 <label className="text-sm text-gray-600">
                   DebitNote No. <span className="text-red-500">*</span>
-                  {preDebitNoteList.includes(formData.debitNoteNo) && (
+                  {prePoList.includes(formData.debitNoteNo) && (
                     <span className="text-red-800 text-xs">
                       "Already DebitNote No. exist"{" "}
                     </span>
@@ -798,8 +830,8 @@ const SetDebitNote = () => {
                   </span>
                   <input
                     type="text"
-                    placeholder="Enter debitNote No. "
-                    className="border p-1 rounded w-full mt-1 flex-grow"
+                    placeholder="Enter DebitNote No. "
+                    className="border p-1 rounded w-full mt- flex-grow"
                     value={formData.debitNoteNo}
                     onChange={(e) => {
                       const { value } = e.target;
@@ -837,8 +869,7 @@ const SetDebitNote = () => {
                 <thead className="border-b bg-gray-50">
                   <tr>
                     <th className="px-4 py-2">Product Name</th>
-                    <th className="px-4 py-2">Quantity</th>
-                    <th className="px-4 py-2">Unit Price</th>
+                    <th className="px-4 py-2">Purchase Price</th>
                     <th className="px-4 py-2">Discount</th>
                     <th className="px-4 py-2">Net Amount</th>
                     <th className="px-2 py-2">Is Tax Included</th>
@@ -853,9 +884,8 @@ const SetDebitNote = () => {
                         product.actionQty > 0 && (
                           <tr key={product.id}>
                             <td className="px-4 py-2">{product.name}</td>
-                            <td className="px-4 py-2">{product.quantity}</td>
                             <td className="px-4 py-2">
-                              ₹{product.sellingPrice.toFixed(2)}
+                              ₹{product.purchasePrice.toFixed(2)}
                             </td>
                             <td className="px-4 py-2">
                               ₹{product.discount.toFixed(2)}
@@ -864,7 +894,7 @@ const SetDebitNote = () => {
                               ₹{product.netAmount.toFixed(2)}
                             </td>
                             <td className="px-2 py-2">
-                              {product.sellingPriceTaxType ? "Yes" : "No"}
+                              {product.purchasePriceTaxType ? "Yes" : "No"}
                             </td>
                             <td className="px-4 py-2">
                               ₹{product.totalAmount.toFixed(2)}
@@ -888,7 +918,7 @@ const SetDebitNote = () => {
                               <button
                                 className="bg-blue-500 text-white  rounded w-1/5 "
                                 onClick={() => handleActionQty("+", product.id)}
-                                disabled={product.quantity === 0}
+                                // disabled={product.quantity === 0}
                               >
                                 +
                               </button>
@@ -951,7 +981,7 @@ const SetDebitNote = () => {
                       ))}
                   </select>
                 </div>
-                {/* <div className="w-full ">
+                <div className="w-full ">
                   <div>Bank/Book</div>
                   <select
                     value={formData.book.bookRef?.id || ""}
@@ -968,7 +998,7 @@ const SetDebitNote = () => {
                         </option>
                       ))}
                   </select>
-                </div> */}
+                </div>
                 <div className="w-full ">
                   <div>Sign</div>
                   <select
@@ -987,9 +1017,9 @@ const SetDebitNote = () => {
                   <input
                     type="file"
                     className="flex h-10 w-full rounded-md border border-input
-                  bg-white px-3 py-2 text-sm text-gray-400 file:border-0
-                  file:bg-transparent file:text-gray-600 file:text-sm
-                  file:font-medium"
+                      bg-white px-3 py-2 text-sm text-gray-400 file:border-0
+                      file:bg-transparent file:text-gray-600 file:text-sm
+                      file:font-medium"
                   />
                 </div>
                 <div className="w-full ">
@@ -1100,7 +1130,9 @@ const SetDebitNote = () => {
                       <option value="Emi">Emi</option>
                       <option value="Cheque">Cheque</option>
                       <option value="Net Banking">Net Banking</option>
-                      <option value="Debit/Debit Card">Debit/Debit Card</option>
+                      <option value="Credit/Debit Card">
+                        Credit/Debit Card
+                      </option>
                     </select>
                   </div>
                 </div>
@@ -1271,20 +1303,20 @@ const SetDebitNote = () => {
         <div className="mt-6 flex justify-end">
           <div className="flex gap-2">
             {/* <button className="border border-blue-500 text-blue-500 py-1 px-4 rounded-lg flex items-center gap-1">
-              <span className="text-lg">+</span> Add to Product
-            </button> */}
+                  <span className="text-lg">+</span> Add to Product
+                </button> */}
             <button
               className="bg-blue-500 text-white py-1 px-4 rounded-lg flex items-center gap-1"
               onClick={() => {
                 {
                   products.length > 0 && isProductSelected
-                    ? onSetDebitNote()
+                    ? onSetPo()
                     : alert("Please select items to proceed.");
                 }
               }}
             >
               <span className="text-lg">+</span>{" "}
-              {debitNoteId ? "Edit" : "Create"} DebitNote
+              {debitNoteId ? "Edit" : "Create"} debitNotedebitNote
             </button>
           </div>
         </div>

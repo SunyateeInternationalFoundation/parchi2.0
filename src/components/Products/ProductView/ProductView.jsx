@@ -1,11 +1,10 @@
-import  { useEffect, useState } from "react";
-import { AiOutlineArrowLeft } from "react-icons/ai";
-import { Link, useParams } from "react-router-dom";
 import { doc, updateDoc } from "firebase/firestore";
-import { db, storage } from "../../../firebase";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { FaUserEdit } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { db, storage } from "../../../firebase";
 
 const ProductView = ({ productData }) => {
   const { id: productId } = useParams();
@@ -96,8 +95,8 @@ const ProductView = ({ productData }) => {
   }
 
   return (
-    <div className="p-6 bg-gray-50 overflow-y-auto" style={{ height: "76vh" }}>
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md">
+    <div className="px-3 py-6 overflow-y-auto" style={{ height: "76vh" }}>
+      <div className=" bg-white rounded-lg shadow-md">
         <div className="p-6">
           {progress > 0 && (
             <div className="w-full bg-gray-200 rounded-full h-2">

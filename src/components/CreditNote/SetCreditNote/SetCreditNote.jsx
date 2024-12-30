@@ -618,9 +618,9 @@ const SetCreditNote = () => {
           throw new Error("Product is out of stock!");
         }
 
-        // await updateDoc(item.productRef, {
-        //   stock: currentQuantity - item.quantity,
-        // });
+        await updateDoc(item.productRef, {
+          stock: currentQuantity - item.quantity,
+        });
       }
 
       alert(

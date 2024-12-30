@@ -33,15 +33,15 @@ const DebitNoteView = () => {
       let totalCgstAmount_9 = 0;
       let tax = 0;
       const debitNoteRef = doc(db, "companies", companyId, "debitNote", id);
-      const { customerDetails, debitNoteNo, ...resData } = (
+      const { vendorDetails, debitNoteNo, ...resData } = (
         await getDoc(debitNoteRef)
       ).data();
       const debitNoteData = {
         id,
         ...resData,
-        type: "Debit Note",
+        type: "DebitNote",
         no: debitNoteNo,
-        userTo: customerDetails,
+        userTo: vendorDetails,
         items: resData.products.map((item) => {
           let discount = +item.discount || 0;
 
@@ -87,7 +87,11 @@ const DebitNoteView = () => {
       };
 
       if (debitNoteData?.book?.bookRef) {
-        const bankData = (await getDoc(debitNoteData?.book.bookRef)).data();
+        const bankData = (await getDoc(debitNoteData.book.bookRef)).data();
+        setBankDetails(bankData);
+      }
+      if (debitNoteData.book.bookRef) {
+        const bankData = (await getDoc(debitNoteData.book.bookRef)).data();
         setBankDetails(bankData);
       }
       setDebitNote(debitNoteData);

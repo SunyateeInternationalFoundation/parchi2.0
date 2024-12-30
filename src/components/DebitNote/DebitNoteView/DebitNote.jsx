@@ -1,4 +1,5 @@
-import { deleteDoc, doc } from "firebase/firestore";
+import { deleteDoc, doc, increment, updateDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import jsPDF from "jspdf";
 import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
@@ -8,7 +9,8 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { TbEdit } from "react-icons/tb";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { db } from "../../../firebase";
+import SunyaLogo from "../../../assets/SunyaLogo.jpg";
+import { db, storage } from "../../../firebase";
 import SelectTemplateSideBar from "../../Templates/SelectTemplateSideBar";
 import Template1 from "../../Templates/Template1";
 import Template10 from "../../Templates/Template10";
@@ -22,7 +24,7 @@ import Template7 from "../../Templates/Template7";
 import Template8 from "../../Templates/Template8";
 import Template9 from "../../Templates/Template9";
 
-const DebitNote = ({ debitNote, bankDetails }) => {
+function DebitNote({ debitNote, bankDetails }) {
   const navigate = useNavigate();
   const userDetails = useSelector((state) => state.users);
   let companyId;
@@ -38,11 +40,77 @@ const DebitNote = ({ debitNote, bankDetails }) => {
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.debitNote;
   const [isDebitNoteOpen, setIsDebitNoteOpen] = useState(false);
+
   const [totalTax, setTotalTax] = useState(0);
+  const [totalDiscount, setTotalDiscount] = useState(0);
+  const debitNoteRef = useRef();
   const [isSelectTemplateOpen, setIsSelectTemplateOpen] = useState(false);
   const [selectTemplate, setSelectTemplate] = useState("template1");
 
-  const debitNoteRef = useRef();
+  useEffect(() => {
+    if (debitNote.products) {
+      const tax = debitNote?.products.reduce((acc, cur) => {
+        return acc + cur?.tax;
+      }, 0);
+      const discount = debitNote?.products.reduce((acc, cur) => {
+        return acc + cur?.discount;
+      }, 0);
+      setTotalTax(tax);
+      setTotalDiscount(discount);
+    }
+  }, [debitNote]);
+
+  const handleDownloadPdf = () => {
+    if (!debitNote.id) {
+      return;
+    }
+    const doc = new jsPDF("p", "pt", "a4");
+    doc.html(debitNoteRef.current, {
+      callback: function (doc) {
+        doc.save(`${debitNote.vendorDetailsname}'s debitNote.pdf`);
+      },
+      x: 0,
+      y: 0,
+    });
+  };
+
+  const handleWhatsAppShare = async () => {
+    if (!debitNote.id) {
+      console.error("debitNote ID is missing!");
+      return;
+    }
+
+    try {
+      // Generate the PDF in-memory
+      const doc = new jsPDF("p", "pt", "a4");
+      doc.html(debitNoteRef.current, {
+        callback: async function (doc) {
+          const pdfBlob = doc.output("blob");
+
+          // Create a reference to the file in Firebase Storage
+          const fileName = `debitNotes/${debitNote.id}.pdf`;
+          const fileRef = ref(storage, fileName);
+
+          // Upload the file
+          await uploadBytes(fileRef, pdfBlob);
+
+          // Generate a public download URL
+          const downloadURL = await getDownloadURL(fileRef);
+
+          // Share the public link via WhatsApp
+          const message = `Here is your debitNote for ${debitNote.vendorDetailsname}: ${downloadURL}`;
+          window.open(
+            `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`,
+            "_blank"
+          );
+        },
+        x: 0,
+        y: 0,
+      });
+    } catch (error) {
+      console.error("Error uploading or sharing the PDF:", error);
+    }
+  };
   const templatesComponents = {
     template1: (
       <Template1
@@ -126,28 +194,42 @@ const DebitNote = ({ debitNote, bankDetails }) => {
       />
     ),
   };
-  useEffect(() => {
-    if (debitNote.products) {
-      const tax = debitNote?.products.reduce((acc, cur) => {
-        return acc + cur?.tax;
-      }, 0);
-
-      setTotalTax(tax);
-    }
-  }, [debitNote]);
-
-  const handleDownloadPdf = () => {
+  const handleEmailShare = async () => {
     if (!debitNote.id) {
+      console.error("debitNote ID is missing!");
       return;
     }
-    const doc = new jsPDF("p", "pt", "a4");
-    doc.html(debitNoteRef.current, {
-      callback: function (doc) {
-        doc.save(`${debitNote.customerDetails.name}'s debitNote.pdf`);
-      },
-      x: 0,
-      y: 0,
-    });
+
+    try {
+      // Generate the PDF in-memory
+      const doc = new jsPDF("p", "pt", "a4");
+      doc.html(debitNoteRef.current, {
+        callback: async function (doc) {
+          const pdfBlob = doc.output("blob");
+
+          // Create a reference to the file in Firebase Storage
+          const fileName = `debitNotes/${debitNote.id}.pdf`;
+          const fileRef = ref(storage, fileName);
+
+          // Upload the file to Firebase Storage
+          await uploadBytes(fileRef, pdfBlob);
+
+          // Generate a public download URL
+          const downloadURL = await getDownloadURL(fileRef);
+
+          // Construct the email subject and body
+          const subject = `debitNote for ${debitNote.vendorDetailsname}`;
+          const body = `Hi ${debitNote.vendorDetailsname},%0D%0A%0D%0AHere is your debitNote for the recent debitNote.%0D%0A%0D%0AYou can download it here: ${downloadURL}`;
+
+          // Open the default email client with pre-filled subject and body
+          window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        },
+        x: 0,
+        y: 0,
+      });
+    } catch (error) {
+      console.error("Error uploading or sharing the PDF:", error);
+    }
   };
 
   const handleDelete = async () => {
@@ -166,10 +248,37 @@ const DebitNote = ({ debitNote, bankDetails }) => {
       );
 
       const confirmDelete = window.confirm(
-        "Are you sure you want to delete this DebitNote?"
+        "Are you sure you want to delete this debitNote?"
       );
       if (!confirmDelete) return;
       await deleteDoc(debitNoteDocRef);
+
+      if (debitNote.products && debitNote.products.length > 0) {
+        const updateInventoryPromises = debitNote.products.map(
+          (inventoryItem) => {
+            if (
+              !inventoryItem.productRef ||
+              typeof inventoryItem.quantity !== "number"
+            ) {
+              console.error("Invalid inventory item:", inventoryItem);
+              return Promise.resolve();
+            }
+
+            const inventoryDocRef = doc(
+              db,
+              "companies",
+              companyId,
+              "products",
+              inventoryItem.productRef.id
+            );
+
+            return updateDoc(inventoryDocRef, {
+              stock: increment(-inventoryItem.quantity),
+            });
+          }
+        );
+        await Promise.all(updateInventoryPromises);
+      }
       navigate("./../");
     } catch (error) {
       console.error("Error deleting debitNote:", error);
@@ -216,6 +325,7 @@ const DebitNote = ({ debitNote, bankDetails }) => {
       label: "PRICE",
     },
   ];
+
   return (
     <div className="">
       <div className="p-3 flex justify-between bg-white rounded-lg my-3">
@@ -374,8 +484,9 @@ const DebitNote = ({ debitNote, bankDetails }) => {
               <div className="flex gap-6 flex-col md:flex-row pt-8">
                 <div className="flex-1">
                   <Link href="#">
+                    <img src={SunyaLogo} width={100} alt="logo" height={100} />
                     <span className="text-3xl font-bold text-primary-600">
-                      {debitNote.createdBy?.name}
+                      Sunya
                     </span>
                   </Link>
                   <div className="mt-5">
@@ -383,18 +494,18 @@ const DebitNote = ({ debitNote, bankDetails }) => {
                       Billing To:
                     </div>
                     <div className="text-lg  text-gray-800 mt-1">
-                      {debitNote.customerDetails?.name}
+                      {debitNote.vendorDetails?.name}
                     </div>
                     <div className=" text-gray-600 mt-2">
-                      {debitNote.customerDetails?.address} <br />
-                      {debitNote.customerDetails?.city} <br />
-                      {debitNote.customerDetails?.zipCode} <br />
+                      {debitNote.vendorDetails?.address} <br />
+                      {debitNote.vendorDetails?.city} <br />
+                      {debitNote.vendorDetails?.zipCode} <br />
                     </div>
                   </div>
                 </div>
                 <div className="flex-none md:text-end">
                   <div className="text-4xl font-semibold text-gray-900">
-                    DebitNote #
+                    debitNote #
                   </div>
                   <div className="mt-1.5 text-xl  text-gray-600">
                     {debitNote.debitNoteNo}
@@ -408,7 +519,7 @@ const DebitNote = ({ debitNote, bankDetails }) => {
                   <div className="mt-8">
                     <div className="mb-2.5">
                       <span className="mr-12  font-semibold text-gray-900">
-                        DebitNote Date:
+                        debitNote Date:
                       </span>
                       <span className="  text-gray-600">
                         {DateFormate(debitNote?.date)}
@@ -441,9 +552,9 @@ const DebitNote = ({ debitNote, bankDetails }) => {
                   </thead>
                   <tbody className="[&_tr:last-child]:border-1 ">
                     {debitNote?.products?.length > 0 &&
-                      debitNote?.products.map((item) => (
+                      debitNote?.products.map((item, index) => (
                         <tr
-                          key={`debitNote-description-${item.id}`}
+                          key={`debitNote-description-${index}`}
                           className="border-b-2 p-3 [&_td:last-child]:text-end"
                         >
                           <td className="  text-gray-600 max-w-[200px] truncate p-3">
@@ -540,7 +651,6 @@ const DebitNote = ({ debitNote, bankDetails }) => {
           </div>
         </div>
       </div>
-
       {debitNote.id && (
         <div
           className="fixed inset-0 z-20 "
@@ -555,7 +665,7 @@ const DebitNote = ({ debitNote, bankDetails }) => {
               <div className="bg-white mb-5 overflow-y-auto w-fit h-fit rounded ">
                 <div className="flex justify-end border-b-2 py-2">
                   <div
-                    className="relative text-2xl text-red-700 group px-2 cursor-pointer"
+                    className="relative text-2xl text-red-700 group px-2 cursor-debitNoteinter"
                     onClick={() => setIsDebitNoteOpen(false)}
                   >
                     <IoMdClose />
@@ -581,9 +691,9 @@ const DebitNote = ({ debitNote, bankDetails }) => {
       />
     </div>
   );
-};
+}
 DebitNote.propTypes = {
-  debitNote: PropTypes.object.isRequired,
+  debitNote: PropTypes.object,
   bankDetails: PropTypes.object,
 };
 
