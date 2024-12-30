@@ -334,9 +334,10 @@ const CreditNoteList = () => {
                           </td>
 
                           <td className="px-5 py-3">
-                            {creditnote?.createdBy?.name == userDetails.name
+                            {/* {creditnote?.createdBy?.name == userDetails.name
                               ? "Owner"
-                              : userDetails.name}
+                              : userDetails.name} */}
+                            {creditNote?.createdBy?.who}
                           </td>
                         </tr>
                       ))

@@ -300,9 +300,10 @@ function Quotation() {
                           </td>
 
                           <td className="px-5 py-3">
-                            {quotation?.createdBy?.name == userDetails.name
+                            {/* {quotation?.createdBy?.name == userDetails.name
                               ? "Owner"
-                              : userDetails.name}
+                              : userDetails.name} */}
+                            {quotation?.createdBy?.who}
                           </td>
                         </tr>
                       ))

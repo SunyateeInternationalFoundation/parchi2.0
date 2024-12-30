@@ -284,9 +284,10 @@ function PO() {
                           <td className="px-5 py-3">{po.mode || "Online"}</td>
 
                           <td className="px-5 py-3">
-                            {po?.createdBy?.name == userDetails.name
+                            {/* {po?.createdBy?.name == userDetails.name
                               ? "Owner"
-                              : userDetails.name}
+                              : userDetails.name} */}
+                            {po?.createdBy?.who}
                           </td>
                         </tr>
                       ))

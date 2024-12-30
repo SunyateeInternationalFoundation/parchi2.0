@@ -340,9 +340,10 @@ const DeliveryChallanList = () => {
                           </td>
 
                           <td className="px-5 py-3">
-                            {dcItem?.createdBy?.name == userDetails.name
+                            {/* {dcItem?.createdBy?.name == userDetails.name
                               ? "Owner"
-                              : userDetails.name}
+                              : userDetails.name} */}
+                            {dcItem?.createdBy?.who}
                           </td>
                         </tr>
                       ))

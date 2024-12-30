@@ -311,9 +311,10 @@ const POS = () => {
                           <td className="px-5 py-3">{pos.mode || "Online"}</td>
 
                           <td className="px-5 py-3">
-                            {pos?.createdBy?.name == userDetails.name
+                            {/* {pos?.createdBy?.name == userDetails.name
                               ? "Owner"
-                              : userDetails.name}
+                              : userDetails.name} */}
+                            {pos?.createdBy?.who}
                           </td>
                         </tr>
                       ))
