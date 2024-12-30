@@ -308,9 +308,10 @@ const ProFormaProForma = () => {
                           </td>
 
                           <td className="px-5 py-3">
-                            {proForma?.createdBy?.name == userDetails.name
+                            {/* {proForma?.createdBy?.name == userDetails.name
                               ? "Owner"
-                              : userDetails.name}
+                              : userDetails.name} */}
+                            {proForma?.createdBy?.who}
                           </td>
                         </tr>
                       ))

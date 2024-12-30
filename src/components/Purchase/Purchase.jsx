@@ -293,9 +293,10 @@ const Purchase = () => {
                           </td>
 
                           <td className="px-5 py-3">
-                            {purchase?.createdBy?.name == userDetails.name
+                            {/* {purchase?.createdBy?.name == userDetails.name
                               ? "Owner"
-                              : userDetails.name}
+                              : userDetails.name} */}
+                            {purchase?.createdBy?.who}
                           </td>
                         </tr>
                       ))
