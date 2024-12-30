@@ -166,7 +166,7 @@ const DeliveryChallan = ({ deliveryChallan, bankDetails }) => {
         db,
         "companies",
         companyId,
-        "deliverychallan",
+        "deliveryChallan",
         deliveryChallan.id
       );
 

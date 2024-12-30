@@ -31,7 +31,7 @@ const CreditNoteView = () => {
       let totalSgstAmount_9 = 0;
       let totalCgstAmount_9 = 0;
       let tax = 0;
-      const creditNoteRef = doc(db, "companies", companyId, "creditnote", id);
+      const creditNoteRef = doc(db, "companies", companyId, "creditNote", id);
       const { customerDetails, creditNoteNo, ...resData } = (
         await getDoc(creditNoteRef)
       ).data();

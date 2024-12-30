@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 
 const Template8 = forwardRef((props, ref) => {
   const { dataSet, bankDetails } = props;
-  if (!Object.keys(dataSet).length===0) {
+  if (!Object.keys(dataSet).length === 0) {
     return;
   }
   function DateFormate(timestamp) {
@@ -152,8 +152,8 @@ const Template8 = forwardRef((props, ref) => {
                     <p>{dataSet.totalCgstAmount_6.toFixed(2)}%</p>
                     <p>{dataSet.totalSgstAmount_9.toFixed(2)}%</p>
                     <p>{dataSet.totalCgstAmount_9.toFixed(2)}%</p>
-                    <p>{dataSet.tds.tds_amount.toFixed(2)}%</p>
-                    <p>{dataSet.tcs.tcs_amount.toFixed(2)}%</p>
+                    <p>{dataSet?.tds.tds_amount.toFixed(2) || 0}%</p>
+                    <p>{dataSet?.tcs.tcs_amount.toFixed(2) || 0}%</p>
                     <p>{dataSet.shippingCharges}</p>
                     <p>{dataSet.packagingCharges}</p>
                   </td>
@@ -178,23 +178,25 @@ const Template8 = forwardRef((props, ref) => {
           </div>
 
           {/* Footer Section */}
-         {bankDetails && <div className="flex justify-between">
-            <div className="w-full border-r-2 border-black px-2">
-              <h3 className="font-bold text-gray-800">Bank Details:</h3>
-              <p>Bank: {bankDetails?.bankName}</p>
-              <p>Account #: {bankDetails?.accountNo}</p>
-              <p>IFSC: {bankDetails?.ifscCode}</p>
-              <p>Branch: {bankDetails?.branch}</p>
-            </div>
-            <div className="text-sm text-gray-600 w-3/4 px-2">
-              <div className="font-bold text-gray-800">Note:</div>
-              <div className="">{dataSet.notes || "No Notes"}</div>
-              <div className="font-bold text-gray-800">
-                Terms and Conditions:
+          {bankDetails && (
+            <div className="flex justify-between">
+              <div className="w-full border-r-2 border-black px-2">
+                <h3 className="font-bold text-gray-800">Bank Details:</h3>
+                <p>Bank: {bankDetails?.bankName}</p>
+                <p>Account #: {bankDetails?.accountNo}</p>
+                <p>IFSC: {bankDetails?.ifscCode}</p>
+                <p>Branch: {bankDetails?.branch}</p>
               </div>
-              <p>{dataSet.terms || "No Terms & Conditions"}</p>
+              <div className="text-sm text-gray-600 w-3/4 px-2">
+                <div className="font-bold text-gray-800">Note:</div>
+                <div className="">{dataSet.notes || "No Notes"}</div>
+                <div className="font-bold text-gray-800">
+                  Terms and Conditions:
+                </div>
+                <p>{dataSet.terms || "No Terms & Conditions"}</p>
+              </div>
             </div>
-          </div>}
+          )}
         </div>
       </div>
     </div>

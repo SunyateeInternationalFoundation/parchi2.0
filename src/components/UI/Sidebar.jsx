@@ -155,6 +155,7 @@ function SideBar() {
       "pos",
       "proFormaInvoice",
       "creditNote",
+      "debitNote",
       "deliveryChallan",
     ];
     const staffSideBarDetails = staffAndCompanyDetails

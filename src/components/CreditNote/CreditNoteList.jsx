@@ -1,4 +1,11 @@
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  updateDoc,
+} from "firebase/firestore";
 import jsPDF from "jspdf";
 import { useEffect, useRef, useState } from "react";
 import { IoSearch } from "react-icons/io5";
@@ -14,17 +21,16 @@ import { db } from "../../firebase";
 
 const CreditNoteList = () => {
   const [creditNote, setCreditNote] = useState([]);
-  const [isCreditNoteOpen, setIsCreditNoteOpen] = useState(false);
   const creditNoteRef = useRef();
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCreditNoteData, setSelectedCreditNoteData] = useState(null);
   const [filterStatus, setFilterStatus] = useState("All");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
 
   const userDetails = useSelector((state) => state.users);
 
-  // const companyId =
-  //   userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   const navigate = useNavigate();
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
@@ -35,8 +41,7 @@ const CreditNoteList = () => {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   }
-  console.log("userDetails", userDetails);
-  console.log("companyId", companyId);
+
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.creditNote;
@@ -48,23 +53,24 @@ const CreditNoteList = () => {
           db,
           "companies",
           companyId,
-          "creditnote"
+          "creditNote"
         );
-        const querySnapshot = await getDocs(creditNoteRef);
+        // const querySnapshot = await getDocs(creditNoteRef);
+        // const creditNoteData = querySnapshot.docs.map((doc) => ({
+        //   id: doc.id,
+        //   ...doc.data(),
+        // }));
+        const q = query(creditNoteRef, orderBy("creditNoteNo", "asc"));
+        const querySnapshot = await getDocs(q);
         const creditNoteData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        // const q = query(creditnoteRef, orderBy("date", "desc"));
-        // const querySnapshot = await getDocs(q);
-        // const creditnoteData = querySnapshot.docs.map((doc) => ({
-        //   id: doc.id,
-        //   ...doc.data(),
-        // }));
-        setSelectedCreditNoteData(creditNoteData[0]);
+        setTotalPages(Math.ceil(creditNoteData.length / 10));
+        setPaginationData(creditNoteData.slice(0, 10));
         setCreditNote(creditNoteData);
       } catch (error) {
-        console.error("Error fetching creditnote:", error);
+        console.error("Error fetching creditNote:", error);
       } finally {
         setLoading(false);
       }
@@ -76,30 +82,21 @@ const CreditNoteList = () => {
     setSearchTerm(e.target.value);
   };
 
-  const handleCreditNoteClick = async (creditNoteData) => {
-    try {
-      setSelectedCreditNoteData(creditNoteData);
-      setIsCreditNoteOpen(true);
-    } catch (error) {
-      console.error("Error fetching creditnote:", error);
-    }
-  };
-
   const handleStatusChange = async (creditNoteId, newStatus) => {
     try {
       const creditNoteDoc = doc(
         db,
         "companies",
         companyId,
-        "creditnote",
+        "creditNote",
         creditNoteId
       );
       await updateDoc(creditNoteDoc, { paymentStatus: newStatus });
-      setCreditNote((prevcreditnote) =>
-        prevcreditnote.map((creditnote) =>
-          creditnote.id === creditNoteId
-            ? { ...creditnote, paymentStatus: newStatus }
-            : creditnote
+      setCreditNote((prevCreditNote) =>
+        prevCreditNote.map((creditNote) =>
+          creditNote.id === creditNoteId
+            ? { ...creditNote, paymentStatus: newStatus }
+            : creditNote
         )
       );
     } catch (error) {
@@ -149,6 +146,11 @@ const CreditNoteList = () => {
       y: 0,
     });
   };
+  useEffect(() => {
+    setPaginationData(
+      filteredCreditNote.slice(currentPage * 10, currentPage * 10 + 10)
+    );
+  }, [currentPage]);
 
   return (
     <div className="w-full">
@@ -156,8 +158,8 @@ const CreditNoteList = () => {
         className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
         style={{ height: "92vh" }}
       >
-        <div className="bg-white rounded-lg shadow mt-4 h-48">
-          <h1 className="text-2xl font-bold py-3 px-10 ">
+        <div className="bg-white rounded-lg shadow mt-4 py-5">
+          <h1 className="text-2xl font-bold pb-3 px-10 ">
             Credit Note Overview
           </h1>
           <div className="grid grid-cols-4 gap-12  px-10 ">
@@ -212,16 +214,7 @@ const CreditNoteList = () => {
               </div>
             </div>
             <div className="w-full text-end ">
-              {userDetails.selectedDashboard === "staff" ? (
-                role?.create && (
-                  <Link
-                    className="bg-blue-500 text-white py-2 px-2 rounded-lg"
-                    to="create-creditnote"
-                  >
-                    + Create Credit Note
-                  </Link>
-                )
-              ) : (
+              {(userDetails.selectedDashboard === "" || role?.create) && (
                 <Link
                   className="bg-blue-500 text-white py-2 px-2 rounded-lg"
                   to="create-creditnote"
@@ -235,8 +228,8 @@ const CreditNoteList = () => {
           {loading ? (
             <div className="text-center py-6">Loading Credit Notes...</div>
           ) : (
-            <div className="" style={{ height: "80vh" }}>
-              <div className="" style={{ height: "74vh" }}>
+            <div className="" style={{ height: "96vh" }}>
+              <div className="" style={{ height: "92vh" }}>
                 <table className="w-full border-collapse text-start">
                   <thead className=" bg-white">
                     <tr className="border-b">
@@ -264,33 +257,33 @@ const CreditNoteList = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredCreditNote.length > 0 ? (
-                      filteredCreditNote.map((creditnote) => (
+                    {paginationData.length > 0 ? (
+                      paginationData.map((creditNote) => (
                         <tr
-                          key={creditnote.id}
+                          key={creditNote.id}
                           className="border-b text-center cursor-pointer text-start"
                           onClick={(e) => {
-                            navigate(creditnote.id);
+                            navigate(creditNote.id);
                           }}
                         >
                           <td className="px-5 py-3 font-bold">
-                            {creditnote.creditNoteNo}
+                            {creditNote.creditNoteNo}
                           </td>
 
                           <td className="px-5 py-3 text-start">
-                            {creditnote.customerDetails?.name} <br />
+                            {creditNote.customerDetails?.name} <br />
                             <span className="text-gray-500 text-sm">
-                              Ph.No {creditnote.customerDetails.phone}
+                              Ph.No {creditNote.customerDetails.phone}
                             </span>
                           </td>
 
                           <td className="px-5 py-3">
                             {new Date(
-                              creditnote.date.seconds * 1000 +
-                                creditnote.date.nanoseconds / 1000000
+                              creditNote.date.seconds * 1000 +
+                                creditNote.date.nanoseconds / 1000000
                             ).toLocaleString()}
                           </td>
-                          <td className="px-5 py-3 font-bold text-center">{`₹ ${creditnote.total.toFixed(
+                          <td className="px-5 py-3 font-bold text-center">{`₹ ${creditNote.total.toFixed(
                             2
                           )}`}</td>
                           <td
@@ -300,25 +293,25 @@ const CreditNoteList = () => {
                             {" "}
                             <div
                               className={`px-1 text-center py-2 rounded-lg text-xs font-bold ${
-                                creditnote.paymentStatus === "Paid"
+                                creditNote.paymentStatus === "Paid"
                                   ? "bg-green-100 "
-                                  : creditnote.paymentStatus === "Pending"
+                                  : creditNote.paymentStatus === "Pending"
                                   ? "bg-yellow-100"
                                   : "bg-red-100 "
                               }`}
                             >
                               <select
-                                value={creditnote.paymentStatus}
+                                value={creditNote.paymentStatus}
                                 onChange={(e) => {
                                   handleStatusChange(
-                                    creditnote.id,
+                                    creditNote.id,
                                     e.target.value
                                   );
                                 }}
                                 className={`${
-                                  creditnote.paymentStatus === "Paid"
+                                  creditNote.paymentStatus === "Paid"
                                     ? "bg-green-100 "
-                                    : creditnote.paymentStatus === "Pending"
+                                    : creditNote.paymentStatus === "Pending"
                                     ? "bg-yellow-100"
                                     : "bg-red-100 "
                                 }`}
@@ -330,14 +323,14 @@ const CreditNoteList = () => {
                             </div>
                           </td>
                           <td className="px-5 py-3">
-                            {creditnote.mode || "Online"}
+                            {creditNote.mode || "Online"}
                           </td>
 
                           <td className="px-5 py-3">
                             {/* {creditnote?.createdBy?.name == userDetails.name
                               ? "Owner"
                               : userDetails.name} */}
-                            {creditnote?.createdBy?.who}
+                            {creditNote?.createdBy?.who}
                           </td>
                         </tr>
                       ))
@@ -353,26 +346,42 @@ const CreditNoteList = () => {
               </div>
               <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
                 <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
-                  0 of 10 row(s) selected.
+                  {currentPage + 1} of {totalPages || 1} row(s) selected.
                 </div>
                 <div className="flex flex-wrap items-center gap-6">
                   <div className="flex items-center gap-2">
-                    <button className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]">
+                    <button
+                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                      onClick={() => setCurrentPage(0)}
+                      disabled={currentPage <= 0}
+                    >
                       <div className="flex justify-center">
                         <LuChevronsLeft className="text-sm" />
                       </div>
                     </button>
-                    <button className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]">
+                    <button
+                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                      onClick={() => setCurrentPage((val) => val - 1)}
+                      disabled={currentPage <= 0}
+                    >
                       <div className="flex justify-center">
                         <LuChevronLeft className="text-sm" />
                       </div>
                     </button>
-                    <button className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]">
+                    <button
+                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                      onClick={() => setCurrentPage((val) => val + 1)}
+                      disabled={currentPage + 1 >= totalPages}
+                    >
                       <div className="flex justify-center">
                         <LuChevronRight className="text-sm" />
                       </div>
                     </button>
-                    <button className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]">
+                    <button
+                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                      onClick={() => setCurrentPage(totalPages - 1)}
+                      disabled={currentPage + 1 >= totalPages}
+                    >
                       <div className="flex justify-center">
                         <LuChevronsRight className="" />
                       </div>

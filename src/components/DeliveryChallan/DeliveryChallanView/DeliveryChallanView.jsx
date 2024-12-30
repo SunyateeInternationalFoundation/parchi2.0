@@ -36,7 +36,7 @@ const DeliveryChallanView = () => {
         db,
         "companies",
         companyId,
-        "deliverychallan",
+        "deliveryChallan",
         id
       );
       const { customerDetails, deliveryChallanNo, ...resData } = (

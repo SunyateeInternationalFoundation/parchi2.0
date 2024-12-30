@@ -109,10 +109,10 @@ function Users() {
 
         {(userDetails.selectedDashboard === "" || role?.access) && (
           <button
-            className="bg-blue-500 text-white px-4 pb-1 rounded-md ml-4 text-2xl"
+            className="bg-blue-500 text-white px-4 pb-1 rounded-lg ml-4 "
             onClick={() => setIsSideBarOpen(true)}
           >
-            +
+            + Add Members
           </button>
         )}
       </div>

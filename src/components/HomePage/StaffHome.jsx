@@ -9,6 +9,9 @@ import CreditNoteView from "../CreditNote/CreditNoteView/CreditNoteView";
 import SetCreditNote from "../CreditNote/SetCreditNote/SetCreditNote";
 import CustomerList from "../Customers/CustomerList";
 import CustomerView from "../Customers/CustomerView/CustomerView";
+import DebitNoteList from "../DebitNote/DebitNoteList";
+import DebitNoteView from "../DebitNote/DebitNoteView/DebitNoteView";
+import SetDebitNote from "../DebitNote/SetDebitNote/SetDebititNote";
 import DeliveryChallanList from "../DeliveryChallan/DeliveryChallanList";
 import DeliveryChallanView from "../DeliveryChallan/DeliveryChallanView/DeliveryChallanView";
 import SetDeliveryChallan from "../DeliveryChallan/SetDeliveryChallan/SetDeliveryChallan";
@@ -298,7 +301,7 @@ const StaffHome = () => {
             )}
             {checkPermission("creditNote", "edit") && (
               <Route
-                path="/credit-note/:creditnoteId/edit-creditnote"
+                path="/credit-note/:creditNoteId/edit-creditnote"
                 element={<SetCreditNote />}
               ></Route>
             )}
@@ -336,6 +339,25 @@ const StaffHome = () => {
               <Route
                 path="/pro-forma-invoice/:proFormaId/edit-proForma-invoice"
                 element={<SetProFormaInvoice />}
+              ></Route>
+            )}
+
+            {checkPermission("debitNote", "view") && (
+              <Route path="/debit-note" element={<DebitNoteList />}></Route>
+            )}
+            {checkPermission("debitNote", "view") && (
+              <Route path="/debit-note/:id" element={<DebitNoteView />}></Route>
+            )}
+            {checkPermission("debitNote", "create") && (
+              <Route
+                path="/debit-note/create-debitnote"
+                element={<SetDebitNote />}
+              ></Route>
+            )}
+            {checkPermission("debitNote", "edit") && (
+              <Route
+                path="/debit-note/:debitNoteId/edit-debitnote"
+                element={<SetDebitNote />}
               ></Route>
             )}
           </Routes>

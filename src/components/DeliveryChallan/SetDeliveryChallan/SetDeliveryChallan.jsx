@@ -123,7 +123,7 @@ const SetDeliveryChallan = () => {
   const fetchDeliveryChallanNumbers = async () => {
     try {
       const querySnapshot = await getDocs(
-        collection(db, "companies", companyDetails.companyId, "deliverychallan")
+        collection(db, "companies", companyDetails.companyId, "deliveryChallan")
       );
       const noList = querySnapshot.docs.map(
         (doc) => doc.data().deliveryChallanNo
@@ -175,7 +175,7 @@ const SetDeliveryChallan = () => {
           db,
           "companies",
           companyDetails.companyId,
-          "deliverychallan",
+          "deliveryChallan",
           deliverychallanId
         );
         const getData = (await getDoc(docRef)).data();
@@ -594,7 +594,7 @@ const SetDeliveryChallan = () => {
             db,
             "companies",
             companyDetails.companyId,
-            "deliverychallan",
+            "deliveryChallan",
             deliverychallanId
           ),
           payload
@@ -605,7 +605,7 @@ const SetDeliveryChallan = () => {
             db,
             "companies",
             companyDetails.companyId,
-            "deliverychallan"
+            "deliveryChallan"
           ),
           payload
         );

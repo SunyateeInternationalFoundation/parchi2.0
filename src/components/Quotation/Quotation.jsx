@@ -1,4 +1,11 @@
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  updateDoc,
+} from "firebase/firestore";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
@@ -17,16 +24,11 @@ function Quotation() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
-
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
   const userDetails = useSelector((state) => state.users);
 
-  // let companyId;
-  // if (!companyDetails) {
-  //   companyId =
-  //     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  // } else {
-  //   companyId = companyDetails.id;
-  // }
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
     companyId =
@@ -36,8 +38,6 @@ function Quotation() {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   }
-  console.log("userDetails", userDetails);
-  console.log("companyId", companyId);
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.quotation;
@@ -52,11 +52,15 @@ function Quotation() {
           companyId,
           "quotations"
         );
-        const querySnapshot = await getDocs(quotationRef);
+
+        const q = query(quotationRef, orderBy("quotationNo", "asc"));
+        const querySnapshot = await getDocs(q);
         const quotationsData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
+        setTotalPages(Math.ceil(quotationsData.length / 10));
+        setPaginationData(quotationsData.slice(0, 10));
         setQuotations(quotationsData);
       } catch (error) {
         console.error("Error fetching quotations:", error);
@@ -117,15 +121,19 @@ function Quotation() {
   const pendingAmount = filteredQuotations
     .filter((quotation) => quotation.paymentStatus === "Pending")
     .reduce((sum, quotation) => sum + quotation.total, 0);
-
+  useEffect(() => {
+    setPaginationData(
+      filteredQuotations.slice(currentPage * 10, currentPage * 10 + 10)
+    );
+  }, [currentPage]);
   return (
     <div className="w-full">
       <div
         className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
         style={{ height: "92vh" }}
       >
-        <div className="bg-white rounded-lg shadow mt-4 h-48">
-          <h1 className="text-2xl font-bold py-3 px-10 ">Quotation Overview</h1>
+        <div className="bg-white rounded-lg shadow mt-4 py-5">
+          <h1 className="text-2xl font-bold pb-3 px-10 ">Quotation Overview</h1>
           <div className="grid grid-cols-4 gap-12  px-10 ">
             <div className="rounded-lg p-5 bg-[hsl(240,100%,98%)] ">
               <div className="text-lg">Total Amount</div>
@@ -178,16 +186,7 @@ function Quotation() {
               </div>
             </div>
             <div className="w-full text-end ">
-              {userDetails.selectedDashboard === "staff" ? (
-                role?.create && (
-                  <Link
-                    className="bg-blue-500 text-white py-2 px-2 rounded-lg"
-                    to="create-quotation"
-                  >
-                    + Create Quotation
-                  </Link>
-                )
-              ) : (
+              {(userDetails.selectedDashboard === "" || role?.create) && (
                 <Link
                   className="bg-blue-500 text-white py-2 px-2 rounded-lg"
                   to="create-quotation"
@@ -201,8 +200,8 @@ function Quotation() {
           {loading ? (
             <div className="text-center py-6">Loading quotations...</div>
           ) : (
-            <div className="" style={{ height: "80vh" }}>
-              <div className="" style={{ height: "74vh" }}>
+            <div className="" style={{ height: "96vh" }}>
+              <div className="" style={{ height: "92vh" }}>
                 <table className="w-full border-collapse text-start">
                   <thead className=" bg-white">
                     <tr className="border-b">
@@ -230,8 +229,8 @@ function Quotation() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredQuotations.length > 0 ? (
-                      filteredQuotations.map((quotation) => (
+                    {paginationData.length > 0 ? (
+                      paginationData.map((quotation) => (
                         <tr
                           key={quotation.id}
                           className="border-b cursor-pointer text-start"
@@ -319,26 +318,42 @@ function Quotation() {
               </div>
               <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
                 <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
-                  0 of 10 row(s) selected.
+                  {currentPage + 1} of {totalPages || 1} row(s) selected.
                 </div>
                 <div className="flex flex-wrap items-center gap-6">
                   <div className="flex items-center gap-2">
-                    <button className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]">
+                    <button
+                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                      onClick={() => setCurrentPage(0)}
+                      disabled={currentPage <= 0}
+                    >
                       <div className="flex justify-center">
                         <LuChevronsLeft className="text-sm" />
                       </div>
                     </button>
-                    <button className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]">
+                    <button
+                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                      onClick={() => setCurrentPage((val) => val - 1)}
+                      disabled={currentPage <= 0}
+                    >
                       <div className="flex justify-center">
                         <LuChevronLeft className="text-sm" />
                       </div>
                     </button>
-                    <button className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]">
+                    <button
+                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                      onClick={() => setCurrentPage((val) => val + 1)}
+                      disabled={currentPage + 1 >= totalPages}
+                    >
                       <div className="flex justify-center">
                         <LuChevronRight className="text-sm" />
                       </div>
                     </button>
-                    <button className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]">
+                    <button
+                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                      onClick={() => setCurrentPage(totalPages - 1)}
+                      disabled={currentPage + 1 >= totalPages}
+                    >
                       <div className="flex justify-center">
                         <LuChevronsRight className="" />
                       </div>

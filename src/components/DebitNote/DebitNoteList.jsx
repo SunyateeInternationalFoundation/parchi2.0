@@ -1,5 +1,12 @@
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
-import { useEffect, useRef, useState } from "react";
+import {
+  collection,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  updateDoc,
+} from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
   LuChevronLeft,
@@ -13,16 +20,27 @@ import { db } from "../../firebase";
 
 const DebitNoteList = () => {
   const [debitNote, setDebitNote] = useState([]);
-  const debitNoteRef = useRef();
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
-
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
   const userDetails = useSelector((state) => state.users);
+  let companyId;
+  if (userDetails.selectedDashboard === "staff") {
+    companyId =
+      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+        .companyDetails.companyId;
+  } else {
+    companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+  }
 
-  const companyId =
-    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   const navigate = useNavigate();
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.debitNote;
 
   useEffect(() => {
     const fetchDebitNote = async () => {
@@ -34,17 +52,19 @@ const DebitNoteList = () => {
           companyId,
           "debitNote"
         );
-        const querySnapshot = await getDocs(debitNoteRef);
-        const debitNoteData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        // const q = query(debitNoteRef, orderBy("date", "desc"));
-        // const querySnapshot = await getDocs(q);
+        // const querySnapshot = await getDocs(debitNoteRef);
         // const debitNoteData = querySnapshot.docs.map((doc) => ({
         //   id: doc.id,
         //   ...doc.data(),
         // }));
+        const q = query(debitNoteRef, orderBy("debitNoteNo", "asc"));
+        const querySnapshot = await getDocs(q);
+        const debitNoteData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setTotalPages(Math.ceil(debitNoteData.length / 10));
+        setPaginationData(debitNoteData.slice(0, 10));
         setDebitNote(debitNoteData);
       } catch (error) {
         console.error("Error fetching debitNote:", error);
@@ -69,8 +89,8 @@ const DebitNoteList = () => {
         debitNoteId
       );
       await updateDoc(debitNoteDoc, { paymentStatus: newStatus });
-      setDebitNote((prevdebitNote) =>
-        prevdebitNote.map((debitNote) =>
+      setDebitNote((prevDebitNote) =>
+        prevDebitNote.map((debitNote) =>
           debitNote.id === debitNoteId
             ? { ...debitNote, paymentStatus: newStatus }
             : debitNote
@@ -113,14 +133,19 @@ const DebitNoteList = () => {
     .filter((debitNote) => debitNote.paymentStatus === "Pending")
     .reduce((sum, debitNote) => sum + debitNote.total, 0);
 
+  useEffect(() => {
+    setPaginationData(
+      filteredDebitNote.slice(currentPage * 10, currentPage * 10 + 10)
+    );
+  }, [currentPage]);
   return (
     <div className="w-full">
       <div
         className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
         style={{ height: "92vh" }}
       >
-        <div className="bg-white rounded-lg shadow mt-4 h-48">
-          <h1 className="text-2xl font-bold py-3 px-10 ">
+        <div className="bg-white rounded-lg shadow mt-4 py-5">
+          <h1 className="text-2xl font-bold pb-3 px-10 ">
             Debit Note Overview
           </h1>
           <div className="grid grid-cols-4 gap-12  px-10 ">
@@ -175,20 +200,22 @@ const DebitNoteList = () => {
               </div>
             </div>
             <div className="w-full text-end ">
-              <Link
-                className="bg-blue-500 text-white py-2 px-2 rounded-lg"
-                to="create-debitNote"
-              >
-                + Create Debit Note
-              </Link>
+              {(userDetails.selectedDashboard === "" || role?.create) && (
+                <Link
+                  className="bg-blue-500 text-white py-2 px-2 rounded-lg"
+                  to="create-debitNote"
+                >
+                  + Create Debit Note
+                </Link>
+              )}
             </div>
           </nav>
 
           {loading ? (
             <div className="text-center py-6">Loading Debit Notes...</div>
           ) : (
-            <div className="" style={{ height: "80vh" }}>
-              <div className="" style={{ height: "74vh" }}>
+            <div className="" style={{ height: "96vh" }}>
+              <div className="" style={{ height: "92vh" }}>
                 <table className="w-full border-collapse text-start">
                   <thead className=" bg-white">
                     <tr className="border-b">
@@ -216,8 +243,8 @@ const DebitNoteList = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredDebitNote.length > 0 ? (
-                      filteredDebitNote.map((debitNote) => (
+                    {paginationData.length > 0 ? (
+                      paginationData.map((debitNote) => (
                         <tr
                           key={debitNote.id}
                           className="border-b text-center cursor-pointer text-start"
@@ -305,28 +332,44 @@ const DebitNoteList = () => {
               </div>
               <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
                 <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
-                  0 of 10 row(s) selected.
+                  {currentPage + 1} of {totalPages || 1} row(s) selected.
                 </div>
                 <div className="flex flex-wrap items-center gap-6">
                   <div className="flex items-center gap-2">
-                    <button className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]">
+                    <button
+                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                      onClick={() => setCurrentPage(0)}
+                      disabled={currentPage <= 0}
+                    >
                       <div className="flex justify-center">
                         <LuChevronsLeft className="text-sm" />
                       </div>
                     </button>
-                    <button className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]">
+                    <button
+                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                      onClick={() => setCurrentPage((val) => val - 1)}
+                      disabled={currentPage <= 0}
+                    >
                       <div className="flex justify-center">
                         <LuChevronLeft className="text-sm" />
                       </div>
                     </button>
-                    <button className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]">
+                    <button
+                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                      onClick={() => setCurrentPage((val) => val + 1)}
+                      disabled={currentPage + 1 >= totalPages}
+                    >
                       <div className="flex justify-center">
                         <LuChevronRight className="text-sm" />
                       </div>
                     </button>
-                    <button className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]">
+                    <button
+                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                      onClick={() => setCurrentPage(totalPages - 1)}
+                      disabled={currentPage + 1 >= totalPages}
+                    >
                       <div className="flex justify-center">
-                        <LuChevronsRight className="" />
+                        <LuChevronsRight />
                       </div>
                     </button>
                   </div>

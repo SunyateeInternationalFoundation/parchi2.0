@@ -18,7 +18,7 @@ import { setAllCustomersDetails } from "../../../store/CustomerSlice";
 import Sidebar from "./Sidebar";
 
 const SetCreditNote = () => {
-  const { creditnoteId } = useParams();
+  const { creditNoteId } = useParams();
 
   const userDetails = useSelector((state) => state.users);
   const customersDetails = useSelector((state) => state.customers).data;
@@ -94,7 +94,7 @@ const SetCreditNote = () => {
       if (
         formData?.products?.length === 0 ||
         products.length === 0 ||
-        !creditnoteId
+        !creditNoteId
       ) {
         return;
       }
@@ -114,7 +114,7 @@ const SetCreditNote = () => {
       calculateProduct(productData);
     }
     addActionQty();
-    if (creditnoteId) {
+    if (creditNoteId) {
       fetchCreditNoteNumbers();
     }
   }, [formData.products]);
@@ -122,10 +122,10 @@ const SetCreditNote = () => {
   const fetchCreditNoteNumbers = async () => {
     try {
       const querySnapshot = await getDocs(
-        collection(db, "companies", companyDetails.companyId, "creditnote")
+        collection(db, "companies", companyDetails.companyId, "creditNote")
       );
       const noList = querySnapshot.docs.map((doc) => doc.data().creditNoteNo);
-      if (creditnoteId) {
+      if (creditNoteId) {
         setPreCreditNoteList(
           noList.filter((ele) => ele !== formData.creditNoteNo)
         );
@@ -164,7 +164,7 @@ const SetCreditNote = () => {
       }
     };
     async function fetchCreditNoteData() {
-      if (!creditnoteId) {
+      if (!creditNoteId) {
         return;
       }
       try {
@@ -172,8 +172,8 @@ const SetCreditNote = () => {
           db,
           "companies",
           companyDetails.companyId,
-          "creditnote",
-          creditnoteId
+          "creditNote",
+          creditNoteId
         );
         const getData = (await getDoc(docRef)).data();
 
@@ -334,7 +334,7 @@ const SetCreditNote = () => {
       }
     };
 
-    if (!creditnoteId) {
+    if (!creditNoteId) {
       fetchCreditNoteNumbers();
     }
     fetchPrefix();
@@ -559,7 +559,7 @@ const SetCreditNote = () => {
         phoneNo: phoneNo,
       };
 
-      const createdBy = creditnoteId
+      const createdBy = creditNoteId
         ? { ...baseCreatedBy, who: formData.createdBy.who }
         : {
             ...baseCreatedBy,
@@ -586,20 +586,20 @@ const SetCreditNote = () => {
         },
       };
 
-      if (creditnoteId) {
+      if (creditNoteId) {
         await updateDoc(
           doc(
             db,
             "companies",
             companyDetails.companyId,
-            "creditnote",
-            creditnoteId
+            "creditNote",
+            creditNoteId
           ),
           payload
         );
       } else {
         await addDoc(
-          collection(db, "companies", companyDetails.companyId, "creditnote"),
+          collection(db, "companies", companyDetails.companyId, "creditNote"),
           payload
         );
       }
@@ -625,7 +625,7 @@ const SetCreditNote = () => {
 
       alert(
         "Successfully " +
-          (creditnoteId ? "Updated" : "Created") +
+          (creditNoteId ? "Updated" : "Created") +
           " the CreditNote"
       );
       navigate(
@@ -693,7 +693,7 @@ const SetCreditNote = () => {
           <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
         </Link>
         <h1 className="text-2xl font-bold">
-          {creditnoteId ? "Edit" : "Create"} CreditNote
+          {creditNoteId ? "Edit" : "Create"} CreditNote
         </h1>
       </header>
       <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -1284,7 +1284,7 @@ const SetCreditNote = () => {
               }}
             >
               <span className="text-lg">+</span>{" "}
-              {creditnoteId ? "Edit" : "Create"} CreditNote
+              {creditNoteId ? "Edit" : "Create"} CreditNote
             </button>
           </div>
         </div>

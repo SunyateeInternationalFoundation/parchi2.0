@@ -160,8 +160,8 @@ function Projects() {
         className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
         style={{ height: "92vh" }}
       >
-        <div className="bg-white rounded-lg shadow mt-4 h-48">
-          <h1 className="text-2xl font-bold py-3 px-10 ">Projects Overview</h1>
+        <div className="bg-white rounded-lg shadow mt-4 py-5">
+          <h1 className="text-2xl font-bold pb-3 px-10 ">Projects Overview</h1>
           <div className="grid grid-cols-4 gap-12  px-10 ">
             <div className="rounded-lg p-5 bg-[hsl(240,100%,98%)] ">
               <div className="text-lg">Total Projects</div>

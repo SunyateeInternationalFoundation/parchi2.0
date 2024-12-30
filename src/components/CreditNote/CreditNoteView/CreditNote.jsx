@@ -161,7 +161,7 @@ const CreditNote = ({ creditNote, bankDetails }) => {
         db,
         "companies",
         companyId,
-        "creditnote",
+        "creditNote",
         creditNote.id
       );
 

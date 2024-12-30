@@ -266,7 +266,7 @@ const Home = () => {
               element={<SetCreditNote />}
             ></Route>
             <Route
-              path="/credit-note/:creditnoteId/edit-creditnote"
+              path="/credit-note/:creditNoteId/edit-creditnote"
               element={<SetCreditNote />}
             ></Route>
             <Route path="/debit-note" element={<DebitNoteList />}></Route>

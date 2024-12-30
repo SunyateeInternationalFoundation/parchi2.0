@@ -99,22 +99,19 @@ const Roles = () => {
     "pos",
     "proFormaInvoice",
     "creditNote",
+    "debitNote",
     "deliveryChallan",
   ];
 
   const projectsList = ["users", "milestones", "tasks", "files", "approvals"];
 
-  const actions = ["create", "edit", "view", "delete"];
+  const actions = ["view", "create", "edit", "delete"];
 
   return (
-    <div className="w-full h-full bg-gray-100 p-8 overflow-y-auto">
+    <div className="w-full h-full bg-gray-100 py-3 px-10 overflow-y-auto">
       <header className="flex items-center mb-6">
-        <Link
-          to={"./../"}
-          className="flex items-center bg-gray-300 text-gray-700 py-2 px-4 rounded-full hover:bg-gray-400 hover:text-white transition duration-200"
-        >
-          <AiOutlineArrowLeft className="mr-2" />
-          Back
+        <Link to={"./../"} className="flex items-center">
+          <AiOutlineArrowLeft />
         </Link>
         <h1 className="text-2xl font-bold ml-3">Roles</h1>
       </header>
@@ -182,6 +179,7 @@ const Roles = () => {
                           >
                             <input
                               type="checkbox"
+                              className="h-5 w-5"
                               checked={
                                 tempRoles[staff.id]?.[role]?.[action] || false
                               }
@@ -224,6 +222,7 @@ const Roles = () => {
                           <td className="border border-gray-300 px-4 py-2 text-center">
                             <input
                               type="checkbox"
+                              className="h-5 w-5"
                               checked={
                                 tempRoles[staff.id]?.[role]?.access || false
                               }
