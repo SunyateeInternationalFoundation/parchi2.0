@@ -16,7 +16,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
 import { setAllCustomersDetails } from "../../../store/CustomerSlice";
 import Sidebar from "./Sidebar";
-import { use } from "react";
 
 const SetInvoice = () => {
   const { invoiceId } = useParams();
@@ -162,7 +161,7 @@ const SetInvoice = () => {
 
         if (companySnapshot.exists()) {
           const companyData = companySnapshot.data();
-          setPrefix(companyData.prefix.invoice);
+          setPrefix(companyData.prefix.invoice || "Invoice");
         } else {
           console.error("No company document found.");
         }

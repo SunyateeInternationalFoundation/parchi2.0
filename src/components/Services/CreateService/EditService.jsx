@@ -29,6 +29,7 @@ function EditService() {
   } else {
     companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   }
+  const [prefix, setPrefix] = useState("Service");
   const [serviceDate, setServiceDate] = useState(new Date());
   const [serviceDueDate, setServiceDueDate] = useState(new Date());
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
@@ -117,6 +118,21 @@ function EditService() {
   }, [formData.servicesList]);
 
   useEffect(() => {
+    const fetchPrefix = async () => {
+      try {
+        const companyDocRef = doc(db, "companies", companyDetails.companyId);
+        const companySnapshot = await getDoc(companyDocRef);
+
+        if (companySnapshot.exists()) {
+          const companyData = companySnapshot.data();
+          setPrefix(companyData.prefix.service || "Service");
+        } else {
+          console.error("No company document found.");
+        }
+      } catch (error) {
+        console.error("Error fetching company details:", error);
+      }
+    };
     async function fetchServiceData() {
       try {
         const docRef = doc(
@@ -198,7 +214,7 @@ function EditService() {
         console.log("🚀 ~ customerDetails ~ error:", error);
       }
     }
-
+    fetchPrefix();
     fetchServiceData();
     customerDetails();
     fetchServices();
@@ -511,19 +527,24 @@ function EditService() {
                     </span>
                   )}
                 </label>
-                <input
-                  type="text"
-                  placeholder="Enter Service No. "
-                  className="border p-1 rounded w-full mt-1"
-                  value={formData?.serviceNo || ""}
-                  onChange={(e) => {
-                    setFormData((val) => ({
-                      ...val,
-                      serviceNo: e.target.value,
-                    }));
-                  }}
-                  required
-                />
+                <div className="flex items-center">
+                  <span className="px-4 py-1 mt-1 border rounded-l-md text-gray-700 flex-grow">
+                    {prefix}
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Enter Service No. "
+                    className="border p-1 rounded w-full mt-1 flex-grow"
+                    value={formData?.serviceNo || ""}
+                    onChange={(e) => {
+                      setFormData((val) => ({
+                        ...val,
+                        serviceNo: e.target.value,
+                      }));
+                    }}
+                    required
+                  />
+                </div>
               </div>
             </div>
           </div>

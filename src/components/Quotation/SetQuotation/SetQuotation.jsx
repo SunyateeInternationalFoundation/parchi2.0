@@ -35,7 +35,7 @@ const SetQuotation = () => {
     companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   }
   const phoneNo = userDetails.phone;
-
+  const [prefix, setPrefix] = useState("Quotation");
   const [date, setDate] = useState(Timestamp.fromDate(new Date()));
   const [warehouses, setWarehouses] = useState([]);
   const [taxSelect, setTaxSelect] = useState("");
@@ -150,6 +150,21 @@ const SetQuotation = () => {
   }
 
   useEffect(() => {
+    const fetchPrefix = async () => {
+      try {
+        const companyDocRef = doc(db, "companies", companyDetails.companyId);
+        const companySnapshot = await getDoc(companyDocRef);
+
+        if (companySnapshot.exists()) {
+          const companyData = companySnapshot.data();
+          setPrefix(companyData.prefix.quotation || "Quotation");
+        } else {
+          console.error("No company document found.");
+        }
+      } catch (error) {
+        console.error("Error fetching company details:", error);
+      }
+    };
     async function fetchQuotationData() {
       if (!quotationId) {
         return;
@@ -324,7 +339,7 @@ const SetQuotation = () => {
     if (!quotationId) {
       fetchQuotationNumbers();
     }
-
+    fetchPrefix();
     fetchProducts();
     fetchWarehouse();
     fetchQuotationData();
@@ -751,20 +766,25 @@ const SetQuotation = () => {
                     </span>
                   )}
                 </label>
-                <input
-                  type="text"
-                  placeholder="Enter quotation No. "
-                  className="border p-1 rounded w-full mt-1"
-                  value={formData.quotationNo}
-                  onChange={(e) => {
-                    const { value } = e.target;
-                    setFormData((val) => ({
-                      ...val,
-                      quotationNo: value,
-                    }));
-                  }}
-                  required
-                />
+                <div className="flex items-center">
+                  <span className="px-4 py-1 mt-1 border rounded-l-md text-gray-700 flex-grow">
+                    {prefix}
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Enter quotation No. "
+                    className="border p-1 rounded w-full mt-1 flex-grow"
+                    value={formData.quotationNo}
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      setFormData((val) => ({
+                        ...val,
+                        quotationNo: value,
+                      }));
+                    }}
+                    required
+                  />
+                </div>
               </div>
             </div>
           </div>

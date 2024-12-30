@@ -18,6 +18,7 @@ const PREFIX_FIELDS = [
     placeholder: "Prefix for ProFormaInvoice",
   },
   { name: "po", label: "PO", placeholder: "Prefix for PO" },
+  { name: "pos", label: "POS", placeholder: "Prefix for POS" },
   {
     name: "deliveryChallan",
     label: "Delivery Challan",
@@ -28,7 +29,11 @@ const PREFIX_FIELDS = [
     label: "Credit Note",
     placeholder: "Prefix for CreditNote",
   },
-  { name: "pos", label: "POS", placeholder: "Prefix for POS" },
+  {
+    name: "debitNote",
+    label: "Debit Note",
+    placeholder: "Prefix for DebitNote",
+  },
 ];
 
 const Prefix = () => {

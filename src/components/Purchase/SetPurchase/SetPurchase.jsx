@@ -32,6 +32,7 @@ const SetPurchase = () => {
     companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   }
   const phoneNo = userDetails.phone;
+  const [prefix, setPrefix] = useState("Purchase");
   const [dueDate, setDueDate] = useState(Timestamp.fromDate(new Date()));
 
   const [date, setDate] = useState(Timestamp.fromDate(new Date()));
@@ -146,6 +147,21 @@ const SetPurchase = () => {
   }
 
   useEffect(() => {
+    const fetchPrefix = async () => {
+      try {
+        const companyDocRef = doc(db, "companies", companyDetails.companyId);
+        const companySnapshot = await getDoc(companyDocRef);
+
+        if (companySnapshot.exists()) {
+          const companyData = companySnapshot.data();
+          setPrefix(companyData.prefix.purchase || "Purchase");
+        } else {
+          console.error("No company document found.");
+        }
+      } catch (error) {
+        console.error("Error fetching company details:", error);
+      }
+    };
     async function fetchPurchaseData() {
       if (!purchaseId) {
         return;
@@ -325,7 +341,7 @@ const SetPurchase = () => {
     if (!purchaseId) {
       fetchPurchaseNumbers();
     }
-
+    fetchPrefix();
     fetchProducts();
     fetchWarehouse();
     fetchPurchaseData();
@@ -766,20 +782,25 @@ const SetPurchase = () => {
                     </span>
                   )}
                 </label>
-                <input
-                  type="text"
-                  placeholder="Enter Purchase No. "
-                  className="border p-1 rounded w-full mt-1"
-                  value={formData.purchaseNo}
-                  onChange={(e) => {
-                    const { value } = e.target;
-                    setFormData((val) => ({
-                      ...val,
-                      purchaseNo: value,
-                    }));
-                  }}
-                  required
-                />
+                <div className="flex items-center">
+                  <span className="px-4 py-1 mt-1 border rounded-l-md text-gray-700 flex-grow">
+                    {prefix}
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Enter Purchase No. "
+                    className="border p-1 rounded w-full mt-1 flex-grow"
+                    value={formData.purchaseNo}
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      setFormData((val) => ({
+                        ...val,
+                        purchaseNo: value,
+                      }));
+                    }}
+                    required
+                  />
+                </div>
               </div>
             </div>
           </div>
