@@ -43,19 +43,6 @@ function PO() {
 
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredPO = POList.filter((po) => {
-    const { vendorDetails, no, orderStatus } = po;
-    const vendorName = vendorDetails?.name || "";
-    const matchesSearch =
-      vendorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      no?.toString().toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesStatus =
-      filterStatus === "All" || orderStatus === filterStatus;
-
-    return matchesSearch && matchesStatus;
-  });
-
   useEffect(() => {
     async function fetchPoList() {
       setLoading(true);
@@ -109,10 +96,26 @@ function PO() {
     }
   }
   useEffect(() => {
+    const filteredPO = POList.filter((po) => {
+      const { vendorDetails, poNo, orderStatus } = po;
+      const vendorName = vendorDetails?.name || "";
+      const matchesSearch =
+        vendorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        poNo?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+        vendorDetails?.phone
+          .toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+
+      const matchesStatus =
+        filterStatus === "All" || orderStatus === filterStatus;
+
+      return matchesSearch && matchesStatus;
+    });
     setPaginationData(
       filteredPO.slice(currentPage * 10, currentPage * 10 + 10)
     );
-  }, [currentPage]);
+  }, [currentPage, POList, searchTerm, filterStatus]);
   return (
     <div className="w-full">
       <div

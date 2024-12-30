@@ -6,7 +6,6 @@ import {
   query,
   updateDoc,
 } from "firebase/firestore";
-import jsPDF from "jspdf";
 import { useEffect, useRef, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
@@ -55,11 +54,7 @@ const CreditNoteList = () => {
           companyId,
           "creditNote"
         );
-        // const querySnapshot = await getDocs(creditNoteRef);
-        // const creditNoteData = querySnapshot.docs.map((doc) => ({
-        //   id: doc.id,
-        //   ...doc.data(),
-        // }));
+
         const q = query(creditNoteRef, orderBy("creditNoteNo", "asc"));
         const querySnapshot = await getDocs(q);
         const creditNoteData = querySnapshot.docs.map((doc) => ({
@@ -104,53 +99,42 @@ const CreditNoteList = () => {
     }
   };
 
-  const filteredCreditNote = creditNote.filter((creditnote) => {
-    const { customerDetails, creditNoteNo, paymentStatus } = creditnote;
-    const customerName = customerDetails?.name || "";
-    const matchesSearch =
-      customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      creditNoteNo
-        ?.toString()
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      customerDetails?.phone
-        .toString()
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-
-    const matchesStatus =
-      filterStatus === "All" || paymentStatus === filterStatus;
-
-    return matchesSearch && matchesStatus;
-  });
-
-  const totalAmount = filteredCreditNote.reduce(
+  const totalAmount = creditNote.reduce(
     (sum, creditnote) => sum + creditnote.total,
     0
   );
 
-  const paidAmount = filteredCreditNote
+  const paidAmount = creditNote
     .filter((creditnote) => creditnote.paymentStatus === "Paid")
     .reduce((sum, creditnote) => sum + creditnote.total, 0);
-  const pendingAmount = filteredCreditNote
+  const pendingAmount = creditNote
     .filter((creditnote) => creditnote.paymentStatus === "Pending")
     .reduce((sum, creditnote) => sum + creditnote.total, 0);
 
-  const handleDownloadPdf = (creditnote) => {
-    const doc = new jsPDF("p", "pt", "a4");
-    doc.html(creditNoteRef.current, {
-      callback: function (doc) {
-        doc.save(`${creditnote.customerDetails.name}'s creditnote.pdf`);
-      },
-      x: 0,
-      y: 0,
-    });
-  };
   useEffect(() => {
+    const filteredCreditNote = creditNote.filter((creditNote) => {
+      const { customerDetails, creditNoteNo, paymentStatus } = creditNote;
+      const customerName = customerDetails?.name || "";
+      const matchesSearch =
+        customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        creditNoteNo
+          ?.toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        customerDetails?.phone
+          .toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+
+      const matchesStatus =
+        filterStatus === "All" || paymentStatus === filterStatus;
+
+      return matchesSearch && matchesStatus;
+    });
     setPaginationData(
       filteredCreditNote.slice(currentPage * 10, currentPage * 10 + 10)
     );
-  }, [currentPage]);
+  }, [currentPage, creditNote, searchTerm, filterStatus]);
 
   return (
     <div className="w-full">

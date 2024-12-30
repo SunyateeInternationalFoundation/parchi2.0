@@ -6,7 +6,6 @@ import {
   query,
   updateDoc,
 } from "firebase/firestore";
-import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
@@ -42,21 +41,6 @@ function Services() {
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.services;
-  const filteredServices = services.filter((service) => {
-    const { customerDetails, status, serviceNo } = service;
-    const customerName = customerDetails?.name || "";
-    const matchesSearch =
-      customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      serviceNo?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customerDetails?.phoneNumber
-        .toString()
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-
-    const matchesStatus = filterStatus === "All" || status === filterStatus;
-
-    return matchesSearch && matchesStatus;
-  });
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -95,22 +79,39 @@ function Services() {
     }
   }
 
-  const totalAmount = filteredServices.reduce(
-    (sum, invoice) => sum + invoice.total,
-    0
-  );
+  const totalAmount = services.reduce((sum, invoice) => sum + invoice.total, 0);
 
-  const paidAmount = filteredServices
+  const paidAmount = services
     .filter((service) => service.status === "Paid")
     .reduce((sum, service) => sum + service.total, 0);
-  const pendingAmount = filteredServices
+  const pendingAmount = services
     .filter((service) => service.status === "Pending")
     .reduce((sum, invoice) => sum + invoice.total, 0);
+
   useEffect(() => {
+    const filteredServices = services.filter((service) => {
+      const { customerDetails, status, serviceNo } = service;
+      const customerName = customerDetails?.name || "";
+      const matchesSearch =
+        customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        serviceNo
+          ?.toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        customerDetails?.phone
+          .toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+
+      const matchesStatus = filterStatus === "All" || status === filterStatus;
+
+      return matchesSearch && matchesStatus;
+    });
     setPaginationData(
       filteredServices.slice(currentPage * 10, currentPage * 10 + 10)
     );
-  }, [currentPage]);
+  }, [currentPage, services, searchTerm, filterStatus]);
+
   return (
     <div className="w-full">
       <div
@@ -343,10 +344,5 @@ function Services() {
     </div>
   );
 }
-Services.propTypes = {
-  companyDetails: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-  }),
-};
 
 export default Services;

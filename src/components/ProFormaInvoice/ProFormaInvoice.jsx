@@ -96,34 +96,40 @@ const ProFormaProForma = () => {
     }
   };
 
-  const filteredProForma = proForma.filter((proForma) => {
-    const { customerDetails, proFormaNo, paymentStatus } = proForma;
-    const customerName = customerDetails?.name || "";
-    const matchesSearch =
-      customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      proFormaNo?.toString().toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesStatus =
-      filterStatus === "All" || paymentStatus === filterStatus;
-
-    return matchesSearch && matchesStatus;
-  });
-
-  const totalAmount = filteredProForma.reduce(
+  const totalAmount = proForma.reduce(
     (sum, proForma) => sum + proForma.total,
     0
   );
-  const paidAmount = filteredProForma
+  const paidAmount = proForma
     .filter((proForma) => proForma.paymentStatus === "Paid")
     .reduce((sum, proForma) => sum + proForma.total, 0);
-  const pendingAmount = filteredProForma
+  const pendingAmount = proForma
     .filter((proForma) => proForma.paymentStatus === "Pending")
     .reduce((sum, proForma) => sum + proForma.total, 0);
   useEffect(() => {
+    const filteredProForma = proForma.filter((proForma) => {
+      const { customerDetails, proFormaNo, paymentStatus } = proForma;
+      const customerName = customerDetails?.name || "";
+      const matchesSearch =
+        customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        proFormaNo
+          ?.toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        customerDetails?.phone
+          .toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+
+      const matchesStatus =
+        filterStatus === "All" || paymentStatus === filterStatus;
+
+      return matchesSearch && matchesStatus;
+    });
     setPaginationData(
       filteredProForma.slice(currentPage * 10, currentPage * 10 + 10)
     );
-  }, [currentPage]);
+  }, [currentPage, proForma, searchTerm, filterStatus]);
   return (
     <div className="w-full">
       <div

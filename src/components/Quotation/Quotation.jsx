@@ -97,35 +97,42 @@ function Quotation() {
     }
   };
 
-  const filteredQuotations = quotations.filter((quotation) => {
-    const { customerDetails, quotationNo, paymentStatus } = quotation;
-    const customerName = customerDetails?.name || "";
-    const matchesSearch =
-      customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      quotationNo?.toString().toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesStatus =
-      filterStatus === "All" || paymentStatus === filterStatus;
-
-    return matchesSearch && matchesStatus;
-  });
-
-  const totalAmount = filteredQuotations.reduce(
+  const totalAmount = quotations.reduce(
     (sum, quotation) => sum + quotation.total,
     0
   );
 
-  const paidAmount = filteredQuotations
+  const paidAmount = quotations
     .filter((quotation) => quotation.paymentStatus === "Paid")
     .reduce((sum, quotation) => sum + quotation.total, 0);
-  const pendingAmount = filteredQuotations
+  const pendingAmount = quotations
     .filter((quotation) => quotation.paymentStatus === "Pending")
     .reduce((sum, quotation) => sum + quotation.total, 0);
+
   useEffect(() => {
+    const filteredQuotations = quotations.filter((quotation) => {
+      const { customerDetails, quotationNo, paymentStatus } = quotation;
+      const customerName = customerDetails?.name || "";
+      const matchesSearch =
+        customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        quotationNo
+          ?.toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        customerDetails?.phone
+          .toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+
+      const matchesStatus =
+        filterStatus === "All" || paymentStatus === filterStatus;
+
+      return matchesSearch && matchesStatus;
+    });
     setPaginationData(
       filteredQuotations.slice(currentPage * 10, currentPage * 10 + 10)
     );
-  }, [currentPage]);
+  }, [currentPage, quotations, searchTerm, filterStatus]);
   return (
     <div className="w-full">
       <div

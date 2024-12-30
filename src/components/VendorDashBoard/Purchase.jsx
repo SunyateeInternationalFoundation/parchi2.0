@@ -92,35 +92,41 @@ const Purchase = () => {
     }
   };
 
-  const filteredPurchases = purchases.filter((purchase) => {
-    const { vendorDetails, purchaseNo, paymentStatus } = purchase;
-    const VendorName = vendorDetails?.name || "";
-    const matchesSearch =
-      VendorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      purchaseNo?.toString().toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesStatus =
-      filterStatus === "All" || paymentStatus === filterStatus;
-
-    return matchesSearch && matchesStatus;
-  });
-
-  const totalAmount = filteredPurchases.reduce(
+  const totalAmount = purchases.reduce(
     (sum, purchase) => sum + purchase.total,
     0
   );
 
-  const paidAmount = filteredPurchases
+  const paidAmount = purchases
     .filter((purchase) => purchase.paymentStatus === "Paid")
     .reduce((sum, purchase) => sum + purchase.total, 0);
-  const pendingAmount = filteredPurchases
+  const pendingAmount = purchases
     .filter((purchase) => purchase.paymentStatus === "Pending")
     .reduce((sum, purchase) => sum + purchase.total, 0);
   useEffect(() => {
+    const filteredPurchases = purchases.filter((purchase) => {
+      const { vendorDetails, purchaseNo, paymentStatus } = purchase;
+      const VendorName = vendorDetails?.name || "";
+      const matchesSearch =
+        VendorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        purchaseNo
+          ?.toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        vendorDetails?.phone
+          .toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+
+      const matchesStatus =
+        filterStatus === "All" || paymentStatus === filterStatus;
+
+      return matchesSearch && matchesStatus;
+    });
     setPaginationData(
       filteredPurchases.slice(currentPage * 10, currentPage * 10 + 10)
     );
-  }, [currentPage]);
+  }, [currentPage, purchases, searchTerm, filterStatus]);
   return (
     <div className="w-full">
       <div

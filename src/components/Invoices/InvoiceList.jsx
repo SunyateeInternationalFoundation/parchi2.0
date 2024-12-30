@@ -90,41 +90,41 @@ const InvoiceList = () => {
     }
   };
 
-  const filteredInvoices = invoices.filter((invoice) => {
-    const { customerDetails, invoiceNo, paymentStatus } = invoice;
-    const customerName = customerDetails?.name || "";
-    const matchesSearch =
-      customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      invoiceNo?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customerDetails?.phone
-        .toString()
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+  const totalAmount = invoices.reduce((sum, invoice) => sum + invoice.total, 0);
 
-    const matchesStatus =
-      filterStatus === "All" || paymentStatus === filterStatus;
-
-    return matchesSearch && matchesStatus;
-  });
-
-  const totalAmount = filteredInvoices.reduce(
-    (sum, invoice) => sum + invoice.total,
-    0
-  );
-
-  const paidAmount = filteredInvoices
+  const paidAmount = invoices
     .filter((invoice) => invoice.paymentStatus === "Paid")
     .reduce((sum, invoice) => sum + invoice.total, 0);
 
-  const pendingAmount = filteredInvoices
+  const pendingAmount = invoices
     .filter((invoice) => invoice.paymentStatus === "Pending")
     .reduce((sum, invoice) => sum + invoice.total, 0);
 
   useEffect(() => {
+    const filteredInvoices = invoices.filter((invoice) => {
+      const { customerDetails, invoiceNo, paymentStatus } = invoice;
+      const customerName = customerDetails?.name || "";
+      const matchesSearch =
+        customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        invoiceNo
+          ?.toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        customerDetails?.phone
+          .toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+
+      const matchesStatus =
+        filterStatus === "All" || paymentStatus === filterStatus;
+
+      return matchesSearch && matchesStatus;
+    });
+
     setInvoicePaginationData(
       filteredInvoices.slice(currentPage * 10, currentPage * 10 + 10)
     );
-  }, [currentPage]);
+  }, [currentPage, invoices, searchTerm, filterStatus]);
 
   return (
     <div className="w-full">

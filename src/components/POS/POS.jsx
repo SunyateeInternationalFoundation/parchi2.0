@@ -22,7 +22,6 @@ const POS = () => {
   const [pos, setPos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedPosData, setSelectedPosData] = useState(null);
   const [filterStatus, setFilterStatus] = useState("All");
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -95,37 +94,36 @@ const POS = () => {
     }
   };
 
-  const filteredPos = pos.filter((dc) => {
-    const { customerDetails, posNo, paymentStatus } = dc;
-    const customerName = customerDetails?.name || "";
-    const matchesSearch =
-      customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      posNo?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customerDetails?.phone
-        .toString()
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+  const totalAmount = pos.reduce((sum, pos) => sum + pos.total, 0);
 
-    const matchesStatus =
-      filterStatus === "All" || paymentStatus === filterStatus;
-
-    return matchesSearch && matchesStatus;
-  });
-
-  const totalAmount = filteredPos.reduce((sum, pos) => sum + pos.total, 0);
-
-  const paidAmount = filteredPos
+  const paidAmount = pos
     .filter((pos) => pos.paymentStatus === "Paid")
     .reduce((sum, pos) => sum + pos.total, 0);
-  const pendingAmount = filteredPos
+  const pendingAmount = pos
     .filter((pos) => pos.paymentStatus === "Pending")
     .reduce((sum, pos) => sum + pos.total, 0);
 
   useEffect(() => {
+    const filteredPos = pos.filter((dc) => {
+      const { customerDetails, posNo, paymentStatus } = dc;
+      const customerName = customerDetails?.name || "";
+      const matchesSearch =
+        customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        posNo?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+        customerDetails?.phone
+          .toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+
+      const matchesStatus =
+        filterStatus === "All" || paymentStatus === filterStatus;
+
+      return matchesSearch && matchesStatus;
+    });
     setPaginationData(
       filteredPos.slice(currentPage * 10, currentPage * 10 + 10)
     );
-  }, [currentPage]);
+  }, [currentPage, pos, searchTerm, filterStatus]);
   return (
     <div className="w-full">
       <div
