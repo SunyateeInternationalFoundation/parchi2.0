@@ -195,6 +195,9 @@ function CreateService() {
       if (SelectedServicesList.length == 0) {
         return;
       }
+      if (!selectedCustomerData?.customerId) {
+        return alert("select Customer");
+      }
       const customerRef = doc(db, "customers", selectedCustomerData.customerId);
 
       const companyRef = doc(db, "companies", companyDetails.companyId);
@@ -408,7 +411,7 @@ function CreateService() {
                   onChange={handleInputChange}
                   onFocus={() => {
                     setIsDropdownVisible(true);
-                    setSuggestions(customersDetails || []);
+                    setSuggestions(suggestions || []);
                   }}
                   onBlur={() => {
                     if (!selectedCustomerData.customerId) {
