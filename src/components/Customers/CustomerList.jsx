@@ -54,7 +54,7 @@ const CustomerList = () => {
         querySnapshot.docs.map(async (doc) => {
           const { createdAt, companyRef, ...data } = doc.data();
 
-          const amount = await fetchInvoiceList(doc);
+          const amount = await fetchTotalAmount(doc.id);
           return {
             id: doc.id,
             createdAt: JSON.stringify(createdAt),
@@ -72,30 +72,36 @@ const CustomerList = () => {
     }
   };
 
-  async function fetchInvoiceList(customersRef) {
-    console.log("🚀 ~ fetchInvoiceList ~ customersRef:", customersRef.id);
+  async function fetchTotalAmount(customerId) {
     try {
       const invoiceRef = collection(db, "companies", companyId, "invoices");
-      console.log("🚀 ~ fetchInvoiceList ~ invoiceRef:", invoiceRef);
-      const custRef = doc("customers", customersRef.id);
-      console.log("🚀 ~ fetchInvoiceList ~ custRef:", custRef.id);
-      const q = query(
+      const serviceRef = collection(db, "companies", companyId, "services");
+      const customerRef = doc(db, "customers", customerId);
+      const invoiceQ = query(
         invoiceRef,
-        where("customerDetails.customerRef", "==", custRef)
+        where("customerDetails.customerRef", "==", customerRef)
       );
-      const querySnapshot = await getDocs(q);
-      console.log("🚀 ~ fetchInvoiceList ~ querySnapshot:", querySnapshot);
-
-      const customersInvoicesAmount = querySnapshot.docs.reduce((acc, cur) => {
-        console.log("🚀 ~ customersInvoicesAmount ~ acc, cur:", acc, cur);
-        const { total } = cur.data();
-        return (acc += +total);
-      }, 0);
-      console.log(
-        "🚀 ~ customersInvoicesAmount ~ customersInvoicesAmount:",
-        customersInvoicesAmount
+      const serviceQ = query(
+        serviceRef,
+        where("customerDetails.customerRef", "==", customerRef)
       );
-      return customersInvoicesAmount;
+      const invoiceQuerySnapshot = await getDocs(invoiceQ);
+      const serviesQuerySnapshot = await getDocs(serviceQ);
+      const customersInvoicesAmount = invoiceQuerySnapshot.docs.reduce(
+        (acc, cur) => {
+          const { total } = cur.data();
+          return (acc += +total);
+        },
+        0
+      );
+      const customersServiceAmount = serviesQuerySnapshot.docs.reduce(
+        (acc, cur) => {
+          const { total } = cur.data();
+          return (acc += +total);
+        },
+        0
+      );
+      return customersInvoicesAmount + customersServiceAmount;
     } catch (error) {
       console.log("🚀 ~ fetchInvoiceList ~ error:", error);
     }
@@ -235,7 +241,9 @@ const CustomerList = () => {
                   <td className="py-3 px-6">{customer.phone || "N/A"}</td>
 
                   <td className="py-3 px-6">{customer.email || ""}</td>
-                  <td className="py-3 px-6">{customer.amount || ""}</td>
+                  <td className="py-3 px-6">
+                    {customer.amount.toFixed(2) || ""}
+                  </td>
                   {/* 
                   <td className="py-3 px-6">
                     <div className="text-red-500 font-semibold">

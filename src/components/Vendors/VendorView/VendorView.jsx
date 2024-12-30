@@ -63,7 +63,7 @@ function VendorView() {
   useEffect(() => {
     async function fetchPOList() {
       try {
-        const invoiceRef = collection(db, `/companies/${companyId}/purchases`);
+        const invoiceRef = collection(db, `/companies/${companyId}/po`);
         const q = query(
           invoiceRef,
           where("vendorDetails.vendorRef", "==", vendorsRef)

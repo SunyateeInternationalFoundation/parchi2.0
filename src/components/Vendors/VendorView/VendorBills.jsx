@@ -1,5 +1,3 @@
-
-
 function VendorBills({ PoData }) {
   return (
     <div className=" p-4 rounded-lg">
@@ -23,7 +21,7 @@ function VendorBills({ PoData }) {
                 </div>
               </div>
               <div className="flex justify-between px-4 pt-3">
-                <div className="font-bold">{ele.no || "N/A"}</div>
+                <div className="font-bold">{ele.poNo || "N/A"}</div>
                 <div>₹ {ele.total}</div>
               </div>
               <div className="flex justify-between px-4 py-3">
