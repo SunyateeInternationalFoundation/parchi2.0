@@ -34,7 +34,7 @@ const SetDebitNote = () => {
     companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   }
   const phoneNo = userDetails.phone;
-  const [prefix, setPrefix] = useState("Debit Note");
+  const [prefix, setPrefix] = useState("");
   const [dueDate, setDueDate] = useState(Timestamp.fromDate(new Date()));
 
   const [date, setDate] = useState(Timestamp.fromDate(new Date()));
@@ -681,7 +681,7 @@ const SetDebitNote = () => {
       warehouse: { name: data.name, warehouseRef },
     }));
   }
-
+  console.log("formData", formData);
   return (
     <div
       className="px-5 pb-5 bg-gray-100 overflow-y-auto"

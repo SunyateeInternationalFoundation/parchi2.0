@@ -31,7 +31,8 @@ const SetCreditNote = () => {
   } else {
     companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   }
-  const [prefix, setPrefix] = useState("Credit Note");
+  const phoneNo = userDetails.phone;
+  const [prefix, setPrefix] = useState("");
   const [dueDate, setDueDate] = useState(Timestamp.fromDate(new Date()));
 
   const [date, setDate] = useState(Timestamp.fromDate(new Date()));
@@ -549,7 +550,21 @@ const SetCreditNote = () => {
         tdsSection: taxSelect === "tds" ? selectedTaxDetails.tdsSection : "",
         tds_amount: taxSelect === "tds" ? total_Tax_Amount : 0,
       };
+      const baseCreatedBy = {
+        companyRef: companyRef,
+        name: companyDetails.name,
+        address: companyDetails.address ?? "",
+        city: companyDetails.city ?? "",
+        zipCode: companyDetails.zipCode ?? "",
+        phoneNo: phoneNo,
+      };
 
+      const createdBy = creditnoteId
+        ? { ...baseCreatedBy, who: formData.createdBy.who }
+        : {
+            ...baseCreatedBy,
+            who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+          };
       const payload = {
         ...formData,
         tds,
