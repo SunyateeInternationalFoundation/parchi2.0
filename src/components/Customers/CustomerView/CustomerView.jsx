@@ -69,7 +69,7 @@ function CustomerView() {
         const invoiceRef = collection(db, `/companies/${companyId}/invoices`);
         const q = query(
           invoiceRef,
-          where("customerDetails.custRef", "==", customersRef)
+          where("customerDetails.customerRef", "==", customersRef)
         );
         const querySnapshot = await getDocs(q);
 

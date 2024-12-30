@@ -52,6 +52,13 @@ function SideBar() {
           name: "Credit Note",
           path: "/credit-note",
         },
+      ],
+    },
+
+    purchase: {
+      // image: <GrUserManager size={30} />,
+      isExpend: true,
+      items: [
         {
           id: "purchase",
           name: "Purchase",
@@ -69,7 +76,6 @@ function SideBar() {
         },
       ],
     },
-
     manage: {
       // image: <GrUserManager size={30} />,
       isExpend: true,
@@ -213,7 +219,11 @@ function SideBar() {
                 isExpend: false,
               },
               parties: {
-                ...sideBarDetails.more,
+                ...sideBarDetails.parties,
+                isExpend: false,
+              },
+              purchase: {
+                ...sideBarDetails.purchase,
                 isExpend: false,
               },
             });
@@ -309,6 +319,73 @@ function SideBar() {
             </div>
           </div>
         )}
+        {sideBarDetails.purchase.items.length > 0 && (
+          <div className="mt-3  border-b-2">
+            <div
+              className="flex items-center justify-between"
+              onClick={() =>
+                setSideBarDetails({
+                  ...sideBarDetails,
+                  purchase: {
+                    ...sideBarDetails.purchase,
+                    isExpend: !sideBarDetails.purchase.isExpend,
+                  },
+                })
+              }
+            >
+              <div className="flex items-center">
+                {/* <div>{sideBarDetails.manage.image}</div> */}
+                <div
+                  className="text-lg font-semibold pl-3"
+                  hidden={!isSideBarExpend}
+                >
+                  Purchase
+                </div>
+              </div>
+              <div hidden={!isSideBarExpend}>
+                {sideBarDetails.purchase.isExpend ? (
+                  <FaAngleUp />
+                ) : (
+                  <FaAngleDown />
+                )}
+              </div>
+            </div>
+            <div
+              className={
+                "" +
+                (isSideBarExpend
+                  ? ""
+                  : "absolute left-full ml-2 mt-2 bg-white rounded-lg shadow-lg")
+              }
+            >
+              {sideBarDetails.purchase.isExpend &&
+                sideBarDetails.purchase.items.map((item, index) => (
+                  <Link
+                    key={index}
+                    to={
+                      (selectedDashboardUser
+                        ? "/" + selectedDashboardUser
+                        : "") + item.path
+                    }
+                    className=" cursor-pointer"
+                  >
+                    <div
+                      className={
+                        "w-full py-2 px-3 border-t hover:bg-gray-300 hover:rounded-lg  " +
+                        (location.pathname
+                          .split("/")
+                          .includes(item.path.split("/")[1])
+                          ? "bg-gray-300 rounded-lg"
+                          : "")
+                      }
+                    >
+                      {item.name}
+                    </div>
+                  </Link>
+                ))}
+            </div>
+          </div>
+        )}
         {selectedDashboardUser === "" && (
           <div className="border-b-2 mt-3">
             <Link to="/pos" className=" cursor-pointer mb-10">
@@ -316,6 +393,7 @@ function SideBar() {
             </Link>
           </div>
         )}
+
         {sideBarDetails.manage.items.length > 0 && (
           <div className="mt-3  border-b-2">
             <div
