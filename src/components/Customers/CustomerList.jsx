@@ -50,16 +50,21 @@ const CustomerList = () => {
       const q = query(customersRef, where("companyRef", "==", companyRef));
       const querySnapshot = await getDocs(q);
 
-      const customersData = querySnapshot.docs.map((doc) => {
-        const { createdAt, companyRef, ...data } = doc.data();
-        return {
-          id: doc.id,
-          createdAt: JSON.stringify(createdAt),
-          companyRef: JSON.stringify(companyRef),
-          ...data,
-        };
-      });
-      dispatch(setAllCustomersDetails(customersData));
+      const customersData = Promise.all(
+        querySnapshot.docs.map(async (doc) => {
+          const { createdAt, companyRef, ...data } = doc.data();
+
+          const amount = await fetchInvoiceList(doc);
+          return {
+            id: doc.id,
+            createdAt: JSON.stringify(createdAt),
+            companyRef: JSON.stringify(companyRef),
+            ...data,
+            amount,
+          };
+        })
+      );
+      dispatch(setAllCustomersDetails(await customersData));
     } catch (error) {
       console.error("Error fetching customers:", error);
     } finally {
@@ -67,6 +72,35 @@ const CustomerList = () => {
     }
   };
 
+  async function fetchInvoiceList(customersRef) {
+    console.log("🚀 ~ fetchInvoiceList ~ customersRef:", customersRef.id);
+    try {
+      const invoiceRef = collection(db, "companies", companyId, "invoices");
+      console.log("🚀 ~ fetchInvoiceList ~ invoiceRef:", invoiceRef);
+      const custRef = doc("customers", customersRef.id);
+      console.log("🚀 ~ fetchInvoiceList ~ custRef:", custRef.id);
+      const q = query(
+        invoiceRef,
+        where("customerDetails.customerRef", "==", custRef)
+      );
+      const querySnapshot = await getDocs(q);
+      console.log("🚀 ~ fetchInvoiceList ~ querySnapshot:", querySnapshot);
+
+      const customersInvoicesAmount = querySnapshot.docs.reduce((acc, cur) => {
+        console.log("🚀 ~ customersInvoicesAmount ~ acc, cur:", acc, cur);
+        const { total } = cur.data();
+        return (acc += +total);
+      }, 0);
+      console.log(
+        "🚀 ~ customersInvoicesAmount ~ customersInvoicesAmount:",
+        customersInvoicesAmount
+      );
+      return customersInvoicesAmount;
+    } catch (error) {
+      console.log("🚀 ~ fetchInvoiceList ~ error:", error);
+    }
+    return 0;
+  }
   useEffect(() => {
     if (companyId) {
       fetchCustomers();
@@ -155,6 +189,7 @@ const CustomerList = () => {
                 Contact Info
               </th>
               <th className="py-3 px-6 text-left font-semibold ">Email Id</th>
+              <th className="py-3 px-6 text-left font-semibold ">Amount</th>
               {/* <th className="py-3 px-6 text-left font-semibold ">
                 Closing Balance
               </th> */}
@@ -200,6 +235,7 @@ const CustomerList = () => {
                   <td className="py-3 px-6">{customer.phone || "N/A"}</td>
 
                   <td className="py-3 px-6">{customer.email || ""}</td>
+                  <td className="py-3 px-6">{customer.amount || ""}</td>
                   {/* 
                   <td className="py-3 px-6">
                     <div className="text-red-500 font-semibold">

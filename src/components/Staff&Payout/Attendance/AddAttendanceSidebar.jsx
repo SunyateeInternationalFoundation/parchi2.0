@@ -1,4 +1,5 @@
 import { deleteDoc, doc, setDoc, Timestamp } from "firebase/firestore";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { FaChevronRight } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
@@ -270,5 +271,12 @@ function AddAttendanceSidebar({
     </div>
   );
 }
+AddAttendanceSidebar.propTypes = {
+  onClose: PropTypes.func,
+  isOpen: PropTypes.bool,
+  staffData: PropTypes.array,
+  markedAttendance: PropTypes.func,
+  onUpdateAttendance: PropTypes.object,
+};
 
 export default AddAttendanceSidebar;
