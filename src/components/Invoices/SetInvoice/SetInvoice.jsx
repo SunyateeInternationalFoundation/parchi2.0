@@ -384,6 +384,7 @@ const SetInvoice = () => {
 
       setCategories(categoriesData);
     };
+
     fetchCategories();
     if (!invoiceId) {
       fetchInvoiceNumbers();
@@ -441,13 +442,14 @@ const SetInvoice = () => {
     setIsProductSelected(countOfSelect > 0);
     calculateProduct(updatedProducts);
   }
+
   function customActionQty(value, productId, isDelete = false) {
     if (!value && !isDelete) {
       return;
     }
     let updatedProducts = products.map((product) => {
       if (product.id === productId) {
-        if (product.quantity > value) {
+        if (product.quantity >= value) {
           product.actionQty = value;
         }
         product.totalAmount = product.netAmount * product.actionQty;
@@ -456,6 +458,7 @@ const SetInvoice = () => {
     });
     calculateProduct(updatedProducts);
   }
+
   function calculateProduct(products) {
     const totalTaxableAmount = products.reduce((sum, product) => {
       const cal =
@@ -907,31 +910,31 @@ const SetInvoice = () => {
 
             <div className="bg-white border-2 rounded-md overflow-hidden">
               <div className="mb-4 rounded-md">
-                <table className="min-w-full text-center text-gray-500 font-semibold rounded-md ">
+                <table className="min-w-full text-center text-gray-500 font-semibold rounded-md table-fixed">
                   <thead className="border-b bg-gray-50">
                     <tr>
-                      <th className="px-4 py-1 text-gray-500 font-semibold text-start">
+                      <th className=" px-4 py-1 text-gray-500 font-semibold text-start">
                         Product Name
                       </th>
-                      <th className="px-4 py-1 text-gray-500 font-semibold">
+                      <th className=" px-4 py-1 text-gray-500 font-semibold">
                         Unit Price
                       </th>
-                      <th className="px-4 py-1 text-gray-500 font-semibold">
+                      <th className=" px-4 py-1 text-gray-500 font-semibold">
                         Discount
                       </th>
-                      <th className="px-4 py-1 text-gray-500 font-semibold">
+                      <th className=" px-4 py-1 text-gray-500 font-semibold">
                         Net Amount
                       </th>
-                      <th className="px-4 py-1 text-gray-500 font-semibold">
+                      <th className=" px-4 py-1 text-gray-500 font-semibold">
                         Tax
                       </th>
-                      <th className="px-4 py-1 text-gray-500 font-semibold">
+                      <th className=" px-4 py-1 text-gray-500 font-semibold">
                         Total Amount
                       </th>
-                      <th className="px-4 py-1 text-gray-500 font-semibold">
+                      <th className=" px-6 py-1 text-gray-500 font-semibold">
                         Quantity
                       </th>
-                      <th className="px-4 py-1 text-gray-500 font-semibold">
+                      <th className=" px-4 py-1 text-gray-500 font-semibold">
                         Delete
                       </th>
                     </tr>
@@ -965,11 +968,11 @@ const SetInvoice = () => {
                                     <div>
                                       <input
                                         type="text"
-                                        value={product.description}
-                                        className="border  rounded-md px-2 py-1"
+                                        defaultValue={product.description}
+                                        className="border rounded-md px-2 py-1"
                                         onBlur={(e) => {
-                                          setProducts(
-                                            products.map((ele) => {
+                                          setProducts((val) =>
+                                            val.map((ele) => {
                                               if (ele.id == product.id) {
                                                 ele.description =
                                                   e.target.value;
@@ -987,12 +990,22 @@ const SetInvoice = () => {
                               <td className="px-4 py-2">
                                 ₹{product.sellingPrice.toFixed(2)}
                               </td>
-                              <td className="px-4 py-2">
+                              <td className="py-2 ">
                                 ₹ &nbsp;
                                 <input
-                                  type="text"
+                                  type="number"
                                   defaultValue={product.discount.toFixed(2)}
                                   className="border-2 w-1/4 rounded-md px-2"
+                                  onChange={(e) => {
+                                    // setProducts(
+                                    //   products.map((ele) => {
+                                    //     if (ele.id == product.id) {
+                                    //       ele.discount = +e.target.value;
+                                    //     }
+                                    //     return ele;
+                                    //   })
+                                    // );
+                                  }}
                                 />
                               </td>
                               <td className="px-4 py-2">
@@ -1302,9 +1315,9 @@ const SetInvoice = () => {
               </div>
             </div>
           </div>
-          <div className=" mt-4   p-4 ">
-            <div className="flex justify-between">
-              <div className="w-full">
+          <div className=" mt-4">
+            <div className="flex justify-between space-x-8">
+              <div className="w-full bg-zinc-50 p-5 rounded-lg">
                 <div className="w-full text-gray-500 space-y-2 ">
                   <div className="font-semibold">Notes</div>
                   <textarea
@@ -1335,7 +1348,10 @@ const SetInvoice = () => {
                   />
                 </div>
               </div>
-              <div className="p-6" style={{ width: "700px" }}>
+              <div
+                className="p-8 bg-blue-50 rounded-lg"
+                style={{ width: "700px" }}
+              >
                 {formData.shippingCharges > 0 && (
                   <div className="flex justify-between text-gray-700 mb-2">
                     <span>Shipping Charges</span>
@@ -1438,7 +1454,7 @@ const SetInvoice = () => {
                   </div>
                 </div>
                 {/* )} */}
-                <div className="flex justify-between font-bold text-xl mb-2">
+                <div className="flex justify-between font-bold text-xl mb-2 border-t pt-2">
                   <span>Total Amount</span>
                   <span>₹ {calculateTotal()}</span>
                 </div>

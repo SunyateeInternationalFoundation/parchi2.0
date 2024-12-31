@@ -9,6 +9,7 @@ import {
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
 import { db } from "../../firebase";
+import FormatTimestamp from "../../constants/FormatTimestamp";
 
 const VendorPurchase = () => {
   const [loading, setLoading] = useState(false);
@@ -117,10 +118,10 @@ const VendorPurchase = () => {
         className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
         style={{ height: "92vh" }}
       >
-        <div className="bg-white  py-8 rounded-lg shadow my-6">
+        <div className="bg-white pb-8 pt-6 rounded-lg shadow my-6">
           <nav className="flex mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">
-              <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg w-full">
+              <div className="flex items-center space-x-4 mb-4 border px-5  py-3 rounded-md w-full">
                 <input
                   type="text"
                   placeholder="Search by Purchase #..."
@@ -130,7 +131,7 @@ const VendorPurchase = () => {
                 />
                 <IoSearch />
               </div>
-              <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg ">
+              <div className="flex items-center space-x-4 mb-4 border px-5 py-3 rounded-md  ">
                 <select onChange={(e) => setFilterStatus(e.target.value)}>
                   <option value="All"> All Transactions</option>
                   <option value="Received">Received</option>
@@ -148,25 +149,26 @@ const VendorPurchase = () => {
                 <table className="w-full border-collapse text-start">
                   <thead className=" bg-white">
                     <tr className="border-b">
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
-                        Purchase No
-                      </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
-                        Company
-                      </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
                         Date
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold  text-center">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-center">
+                        Purchase No
+                      </td>
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                        Company
+                      </td>
+
+                      <td className="px-5 py-1 text-gray-400 font-semibold  text-center">
                         Amount
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-center ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-center ">
                         Status
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
                         Mode
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
                         Created By
                       </td>
                     </tr>
@@ -178,8 +180,11 @@ const VendorPurchase = () => {
                           key={purchase.id}
                           className="border-b text-center cursor-pointer text-start"
                         >
-                          <td className="px-5 py-3 font-bold">
-                            {purchase.purchaseNo}
+                          <td className="px-8 py-3 text-start">
+                            <FormatTimestamp timestamp={purchase.date} />
+                          </td>
+                          <td className="px-5 py-3 font-bold text-center">
+                            {purchase.prefix || ""}- {purchase.purchaseNo}
                           </td>
 
                           <td className="px-5 py-3 text-start">
@@ -189,12 +194,6 @@ const VendorPurchase = () => {
                             </span>
                           </td>
 
-                          <td className="px-5 py-3">
-                            {new Date(
-                              purchase.date.seconds * 1000 +
-                                purchase.date.nanoseconds / 1000000
-                            ).toLocaleString()}
-                          </td>
                           <td className="px-5 py-3  text-center">{`₹ ${purchase.total.toFixed(
                             2
                           )}`}</td>
@@ -204,7 +203,7 @@ const VendorPurchase = () => {
                           >
                             {" "}
                             <div
-                              className={`px-1 text-center py-2 rounded-lg text-xs font-bold ${
+                              className={`px-1 text-center py-2 rounded-lg text-xs  ${
                                 purchase.paymentStatus !== "Pending"
                                   ? "bg-green-200 "
                                   : "bg-red-200 "

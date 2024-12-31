@@ -8,6 +8,7 @@ import {
   LuChevronsRight,
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
+import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
 
 const VendorPO = () => {
@@ -106,10 +107,10 @@ const VendorPO = () => {
         className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
         style={{ height: "92vh" }}
       >
-        <div className="bg-white  py-8 rounded-lg shadow my-6">
+        <div className="bg-white pb-8 pt-6 rounded-lg shadow my-6">
           <nav className="flex mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">
-              <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg w-full">
+              <div className="flex items-center space-x-4 mb-4 border px-5  py-3 rounded-md w-full">
                 <input
                   type="text"
                   placeholder="Search by PO #..."
@@ -119,7 +120,7 @@ const VendorPO = () => {
                 />
                 <IoSearch />
               </div>
-              <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg ">
+              <div className="flex items-center space-x-4 mb-4 border px-5 py-3 rounded-md  ">
                 <select onChange={(e) => setFilterStatus(e.target.value)}>
                   <option value="All"> All Transactions</option>
                   <option value="Received">Received</option>
@@ -137,25 +138,26 @@ const VendorPO = () => {
                 <table className="w-full border-collapse text-start">
                   <thead className=" bg-white">
                     <tr className="border-b">
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
-                        PO No
-                      </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
-                        Company
-                      </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
                         Date
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold  text-center">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-center">
+                        PO No
+                      </td>
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                        Company
+                      </td>
+
+                      <td className="px-5 py-1 text-gray-400 font-semibold  text-center">
                         Amount
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-center ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-center ">
                         Status
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
                         Mode
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
                         Created By
                       </td>
                     </tr>
@@ -167,7 +169,12 @@ const VendorPO = () => {
                           key={po.id}
                           className="border-b text-center cursor-pointer text-start"
                         >
-                          <td className="px-5 py-3 font-bold">{po.poNo}</td>
+                          <td className="px-8 py-3 text-start">
+                            <FormatTimestamp timestamp={po.date} />
+                          </td>
+                          <td className="px-5 py-3 font-bold text-center">
+                            {po.prefix || ""}-{po.poNo}
+                          </td>
 
                           <td className="px-5 py-3 text-start">
                             {po.createdBy?.name} <br />
@@ -176,12 +183,6 @@ const VendorPO = () => {
                             </span>
                           </td>
 
-                          <td className="px-5 py-3">
-                            {new Date(
-                              po.date.seconds * 1000 +
-                                po.date.nanoseconds / 1000000
-                            ).toLocaleString()}
-                          </td>
                           <td className="px-5 py-3  text-center">{`₹ ${po.total.toFixed(
                             2
                           )}`}</td>
@@ -191,7 +192,7 @@ const VendorPO = () => {
                           >
                             {" "}
                             <div
-                              className={`px-1 text-center py-2 rounded-lg text-xs font-bold ${
+                              className={`px-1 text-center py-2 rounded-lg text-xs  ${
                                 po.orderStatus !== "Pending"
                                   ? "bg-green-200 "
                                   : "bg-red-200 "

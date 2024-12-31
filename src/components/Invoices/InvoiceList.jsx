@@ -18,6 +18,7 @@ import {
   LuChevronsLeft,
   LuChevronsRight,
 } from "react-icons/lu";
+import FormatTimestamp from "../../constants/FormatTimestamp";
 
 const InvoiceList = () => {
   const [invoices, setInvoices] = useState([]);
@@ -126,35 +127,6 @@ const InvoiceList = () => {
     );
   }, [currentPage, invoices, searchTerm, filterStatus]);
 
-  function formatTimestamp(timestamp) {
-    if (!timestamp) {
-      return;
-    }
-    const milliseconds =
-      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
-    const date = new Date(milliseconds);
-    const day = date.getDate();
-    const month = date.toLocaleString("default", { month: "short" }); // 'Jan', 'Feb', etc.
-    const year = date.getFullYear();
-    let hours = date.getHours();
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const ampm = hours >= 12 ? "PM" : "AM";
-
-    // Convert to 12-hour format
-    hours = hours % 12 || 12;
-
-    return (
-      <>
-        <div>
-          {day}-{month}-{year}
-        </div>{" "}
-        <div className="text-sm text-gray-400">
-          {" "}
-          {hours}:{minutes} {ampm}
-        </div>
-      </>
-    );
-  }
   return (
     <div className="w-full">
       <div
@@ -268,7 +240,7 @@ const InvoiceList = () => {
                           }}
                         >
                           <td className="px-8 py-3 text-start">
-                            {formatTimestamp(invoice.date)}
+                            <FormatTimestamp timestamp={invoice.date} />
                           </td>
                           <td className="px-5 py-3 font-bold">
                             {invoice.prefix || ""}-{invoice.invoiceNo}

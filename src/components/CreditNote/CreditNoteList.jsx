@@ -6,7 +6,7 @@ import {
   query,
   updateDoc,
 } from "firebase/firestore";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
   LuChevronLeft,
@@ -16,11 +16,11 @@ import {
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
 
 const CreditNoteList = () => {
   const [creditNote, setCreditNote] = useState([]);
-  const creditNoteRef = useRef();
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
@@ -44,6 +44,7 @@ const CreditNoteList = () => {
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.creditNote;
+
   useEffect(() => {
     const fetchCreditNote = async () => {
       setLoading(true);
@@ -143,42 +144,40 @@ const CreditNoteList = () => {
         style={{ height: "92vh" }}
       >
         <div className="bg-white rounded-lg shadow mt-4 py-5">
-          <h1 className="text-2xl font-bold pb-3 px-10 ">
-            Credit Note Overview
-          </h1>
-          <div className="grid grid-cols-4 gap-12  px-10 ">
-            <div className="rounded-lg p-5 bg-[hsl(240,100%,98%)] ">
+          <h1 className="text-2xl font-bold pb-3 ">Credit Note Overview</h1>
+          <div className="grid grid-cols-4 gap-8 ">
+            <div className="rounded-lg p-5 bg-white shadow  ">
               <div className="text-lg">Total Amount</div>
-              <div className="text-3xl text-indigo-600 font-bold">
+              <div className="text-3xl text-indigo-600 font-bold  p-2">
                 ₹ {totalAmount}
               </div>
             </div>
-            <div className="rounded-lg p-5 bg-green-50 ">
+            <div className="rounded-lg p-5 bg-white shadow ">
               <div className="text-lg"> Paid Amount</div>
-              <div className="text-3xl text-emerald-600 font-bold">
+              <div className="text-3xl text-emerald-600 font-bold  p-2">
                 {" "}
                 ₹ {paidAmount}
               </div>
             </div>
-            <div className="rounded-lg p-5 bg-orange-50 ">
+            <div className="rounded-lg p-5 bg-white shadow ">
               <div className="text-lg"> Pending Amount</div>
-              <div className="text-3xl text-orange-600 font-bold">
+              <div className="text-3xl text-orange-600 font-bold  p-2">
                 ₹ {pendingAmount}
               </div>
             </div>
-            <div className="rounded-lg p-5 bg-red-50 ">
+            <div className="rounded-lg p-5 bg-white shadow ">
               <div className="text-lg"> UnPaid Amount</div>
-              <div className="text-3xl text-red-600 font-bold">
+              <div className="text-3xl text-red-600 font-bold  p-2">
                 ₹ {totalAmount - paidAmount}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white  py-8 rounded-lg shadow my-6">
+        <div className="bg-white pb-8 pt-6 rounded-lg shadow my-6">
           <nav className="flex mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">
-              <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg w-full">
+              <div className="flex items-center space-x-4 mb-4 border px-5  py-3 rounded-md w-full">
                 <input
                   type="text"
                   placeholder="Search by Credit Note #..."
@@ -188,7 +187,7 @@ const CreditNoteList = () => {
                 />
                 <IoSearch />
               </div>
-              <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg ">
+              <div className="flex items-center space-x-4 mb-4 border px-5 py-3 rounded-md  ">
                 <select onChange={(e) => setFilterStatus(e.target.value)}>
                   <option value="All"> All Transactions</option>
                   <option value="Pending">Pending</option>
@@ -200,7 +199,7 @@ const CreditNoteList = () => {
             <div className="w-full text-end ">
               {(userDetails.selectedDashboard === "" || role?.create) && (
                 <Link
-                  className="bg-blue-500 text-white py-2 px-2 rounded-lg"
+                  className="bg-[#442799] text-white text-center px-5 py-3 font-semibold rounded-md"
                   to="create-creditnote"
                 >
                   + Create Credit Note
@@ -217,25 +216,25 @@ const CreditNoteList = () => {
                 <table className="w-full border-collapse text-start">
                   <thead className=" bg-white">
                     <tr className="border-b">
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
-                        Credit Note No
-                      </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
-                        Customer
-                      </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
                         Date
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold  text-center ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-center">
+                        Credit Note No
+                      </td>
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                        Customer
+                      </td>
+                      <td className="px-5 py-1 text-gray-400 font-semibold  text-center ">
                         Amount
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-center ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-center ">
                         Status
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
                         Mode
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
                         Created By
                       </td>
                     </tr>
@@ -250,8 +249,11 @@ const CreditNoteList = () => {
                             navigate(creditNote.id);
                           }}
                         >
-                          <td className="px-5 py-3 font-bold">
-                            {creditNote.creditNoteNo}
+                          <td className="px-8 py-3 text-start">
+                            <FormatTimestamp timestamp={creditNote.date} />
+                          </td>
+                          <td className="px-5 py-3 font-bold text-center">
+                            {creditNote.prefix || ""}-{creditNote.creditNoteNo}
                           </td>
 
                           <td className="px-5 py-3 text-start">
@@ -261,12 +263,6 @@ const CreditNoteList = () => {
                             </span>
                           </td>
 
-                          <td className="px-5 py-3">
-                            {new Date(
-                              creditNote.date.seconds * 1000 +
-                                creditNote.date.nanoseconds / 1000000
-                            ).toLocaleString()}
-                          </td>
                           <td className="px-5 py-3 font-bold text-center">{`₹ ${creditNote.total.toFixed(
                             2
                           )}`}</td>
@@ -276,7 +272,7 @@ const CreditNoteList = () => {
                           >
                             {" "}
                             <div
-                              className={`px-1 text-center py-2 rounded-lg text-xs font-bold ${
+                              className={`px-1 text-center py-2 rounded-lg text-xs ${
                                 creditNote.paymentStatus === "Paid"
                                   ? "bg-green-100 "
                                   : creditNote.paymentStatus === "Pending"
@@ -311,9 +307,6 @@ const CreditNoteList = () => {
                           </td>
 
                           <td className="px-5 py-3">
-                            {/* {creditnote?.createdBy?.name == userDetails.name
-                              ? "Owner"
-                              : userDetails.name} */}
                             {creditNote?.createdBy?.who}
                           </td>
                         </tr>

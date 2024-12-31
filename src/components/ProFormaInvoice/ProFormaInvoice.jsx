@@ -16,6 +16,7 @@ import {
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
 
 const ProFormaProForma = () => {
@@ -41,6 +42,7 @@ const ProFormaProForma = () => {
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.proFormaInvoice;
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchProForma = async () => {
       setLoading(true);
@@ -130,47 +132,48 @@ const ProFormaProForma = () => {
       filteredProForma.slice(currentPage * 10, currentPage * 10 + 10)
     );
   }, [currentPage, proForma, searchTerm, filterStatus]);
+
   return (
     <div className="w-full">
       <div
         className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
         style={{ height: "92vh" }}
       >
-        <div className="bg-white rounded-lg shadow mt-4 py-5">
-          <h1 className="text-2xl font-bold pb-3 px-10 ">ProForma Overview</h1>
-          <div className="grid grid-cols-4 gap-12  px-10 ">
-            <div className="rounded-lg p-5 bg-[hsl(240,100%,98%)] ">
+        <div className="mt-4 py-3">
+          <h1 className="text-2xl font-bold pb-3 ">ProForma Overview</h1>
+          <div className="grid grid-cols-4 gap-8">
+            <div className="rounded-lg p-5 bg-white shadow  ">
               <div className="text-lg">Total Amount</div>
-              <div className="text-3xl text-[hsl(240,92.20%,70.00%)] font-bold">
+              <div className="text-3xl text-[hsl(240,92.20%,70.00%)] font-bold  p-2">
                 ₹ {totalAmount}
               </div>
             </div>
-            <div className="rounded-lg p-5 bg-green-50 ">
+            <div className="rounded-lg p-5 bg-white shadow ">
               <div className="text-lg"> Paid Amount</div>
-              <div className="text-3xl text-emerald-600 font-bold">
+              <div className="text-3xl text-emerald-600 font-bold  p-2">
                 {" "}
                 ₹ {paidAmount}
               </div>
             </div>
-            <div className="rounded-lg p-5 bg-orange-50 ">
+            <div className="rounded-lg p-5 bg-white shadow ">
               <div className="text-lg">Pending Amount</div>
-              <div className="text-3xl text-orange-600 font-bold">
+              <div className="text-3xl text-orange-600 font-bold  p-2">
                 ₹ {pendingAmount}
               </div>
             </div>
-            <div className="rounded-lg p-5 bg-red-50 ">
+            <div className="rounded-lg p-5 bg-white shadow ">
               <div className="text-lg">UnPaid Amount</div>
-              <div className="text-3xl text-red-600 font-bold">
+              <div className="text-3xl text-red-600 font-bold  p-2">
                 ₹ {totalAmount - paidAmount}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white  py-8 rounded-lg shadow my-6">
+        <div className="bg-white pb-8 pt-6 rounded-lg shadow my-6">
           <nav className="flex mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">
-              <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg w-full">
+              <div className="flex items-center space-x-4 mb-4 border px-5  py-3 rounded-md w-full">
                 <input
                   type="text"
                   placeholder="Search by proForma #..."
@@ -180,7 +183,7 @@ const ProFormaProForma = () => {
                 />
                 <IoSearch />
               </div>
-              <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg ">
+              <div className="flex items-center space-x-4 mb-4 border px-5 py-3 rounded-md  ">
                 <select onChange={(e) => setFilterStatus(e.target.value)}>
                   <option value="All"> All Transactions</option>
                   <option value="Pending">Pending</option>
@@ -192,7 +195,7 @@ const ProFormaProForma = () => {
             <div className="w-full text-end ">
               {(userDetails.selectedDashboard === "" || role?.create) && (
                 <Link
-                  className="bg-blue-500 text-white py-2 px-2 rounded-lg"
+                  className="bg-[#442799] text-white text-center px-5 py-3 font-semibold rounded-md"
                   to="create-proForma"
                 >
                   + Create ProForma
@@ -209,25 +212,25 @@ const ProFormaProForma = () => {
                 <table className="w-full border-collapse text-start">
                   <thead className=" bg-white">
                     <tr className="border-b">
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
-                        ProForma No
-                      </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
-                        Customer
-                      </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
                         Date
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-center ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-center">
+                        ProForma No
+                      </td>
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                        Customer
+                      </td>
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-center ">
                         Amount
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-center ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-center ">
                         Status
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
                         Mode
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
                         Created By
                       </td>
                     </tr>
@@ -242,8 +245,11 @@ const ProFormaProForma = () => {
                             navigate(proForma.id);
                           }}
                         >
-                          <td className="px-5 py-3 font-bold">
-                            {proForma.proFormaNo}
+                          <td className="px-5 py-3">
+                            <FormatTimestamp timestamp={proForma.date} />
+                          </td>
+                          <td className="px-5 py-3 text-center">
+                            {proForma.prefix || ""}-{proForma.proFormaNo}
                           </td>
 
                           <td className="px-5 py-3 text-start">
@@ -253,12 +259,6 @@ const ProFormaProForma = () => {
                             </span>
                           </td>
 
-                          <td className="px-5 py-3">
-                            {new Date(
-                              proForma.date.seconds * 1000 +
-                                proForma.date.nanoseconds / 1000000
-                            ).toLocaleString()}
-                          </td>
                           <td className="px-5 py-3 font-bold text-center">{`₹ ${proForma.total.toFixed(
                             2
                           )}`}</td>
@@ -268,7 +268,7 @@ const ProFormaProForma = () => {
                           >
                             {" "}
                             <div
-                              className={`px-1 text-center py-2 rounded-lg text-xs font-bold ${
+                              className={`px-1 text-center py-2 rounded-lg text-xs ${
                                 proForma.paymentStatus === "Paid"
                                   ? "bg-green-100 "
                                   : proForma.paymentStatus === "Pending"
@@ -303,9 +303,6 @@ const ProFormaProForma = () => {
                           </td>
 
                           <td className="px-5 py-3">
-                            {/* {proForma?.createdBy?.name == userDetails.name
-                              ? "Owner"
-                              : userDetails.name} */}
                             {proForma?.createdBy?.who}
                           </td>
                         </tr>

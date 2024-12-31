@@ -8,6 +8,7 @@ import {
   LuChevronsRight,
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
+import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
 
 function Quotations() {
@@ -145,10 +146,10 @@ function Quotations() {
           </div>
         </div> */}
 
-        <div className="bg-white  py-8 rounded-lg shadow my-6">
+        <div className="bg-white pb-8 pt-6 rounded-lg shadow my-6">
           <nav className="flex mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">
-              <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg w-full">
+              <div className="flex items-center space-x-4 mb-4 border px-5  py-3 rounded-md w-full">
                 <input
                   type="text"
                   placeholder="Search by quotation #..."
@@ -158,7 +159,7 @@ function Quotations() {
                 />
                 <IoSearch />
               </div>
-              <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg ">
+              <div className="flex items-center space-x-4 mb-4 border px-5 py-3 rounded-md  ">
                 <select onChange={(e) => setFilterStatus(e.target.value)}>
                   <option value="All"> All Transactions</option>
                   <option value="Pending">Pending</option>
@@ -177,25 +178,26 @@ function Quotations() {
                 <table className="w-full border-collapse text-start">
                   <thead className=" bg-white">
                     <tr className="border-b">
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
-                        Quotation No
-                      </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
-                        Company
-                      </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
                         Date
                       </td>
-                      <td className="px-5 py-1 text-gray-600 text-center font-semibold  ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-center">
+                        Quotation No
+                      </td>
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                        Company
+                      </td>
+
+                      <td className="px-5 py-1 text-gray-400 text-center font-semibold  ">
                         Amount
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-center ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-center ">
                         Status
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
                         Mode
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
                         Created By
                       </td>
                     </tr>
@@ -207,8 +209,11 @@ function Quotations() {
                           key={quotation.id}
                           className="border-b cursor-pointer text-start"
                         >
-                          <td className="px-5 py-3 font-bold">
-                            {quotation.quotationNo}
+                          <td className="px-8 py-3 text-start">
+                            <FormatTimestamp timestamp={quotation.date} />
+                          </td>
+                          <td className="px-5 py-3 font-bold text-center">
+                            {quotation.prefix || ""}-{quotation.quotationNo}
                           </td>
 
                           <td className="px-5 py-3 text-start">
@@ -217,12 +222,7 @@ function Quotations() {
                               Ph.No {quotation.createdBy.phoneNo}
                             </span>
                           </td>
-                          <td className="px-5 py-3">
-                            {new Date(
-                              quotation.date.seconds * 1000 +
-                                quotation.date.nanoseconds / 1000000
-                            ).toLocaleString()}
-                          </td>
+
                           <td className="px-5 py-3 font-bold  text-center">{`₹ ${quotation.total.toFixed(
                             2
                           )}`}</td>
@@ -232,7 +232,7 @@ function Quotations() {
                           >
                             {" "}
                             <div
-                              className={`px-1 text-center py-2 rounded-lg text-xs font-bold ${
+                              className={`px-1 text-center py-2 rounded-lg text-xs  ${
                                 quotation.paymentStatus === "Paid"
                                   ? "bg-green-100 "
                                   : quotation.paymentStatus === "Pending"
@@ -258,9 +258,6 @@ function Quotations() {
                           </td>
 
                           <td className="px-5 py-3">
-                            {/* {quotation?.createdBy?.name == userDetails.name
-                              ? "Owner"
-                              : userDetails.name} */}
                             {quotation?.createdBy?.who}
                           </td>
                         </tr>
