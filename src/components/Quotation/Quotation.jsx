@@ -6,7 +6,6 @@ import {
   query,
   updateDoc,
 } from "firebase/firestore";
-import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
@@ -375,9 +374,5 @@ function Quotation() {
     </div>
   );
 }
-Quotation.propTypes = {
-  companyDetails: PropTypes.object,
-  isStaff: PropTypes.bool,
-};
 
 export default Quotation;

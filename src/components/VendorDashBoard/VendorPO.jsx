@@ -1,6 +1,12 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { IoMdDownload } from "react-icons/io";
+import { IoSearch } from "react-icons/io5";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 import { useSelector } from "react-redux";
 import { db } from "../../firebase";
 
@@ -10,6 +16,11 @@ const VendorPO = () => {
   const [po, setPo] = useState([]);
   const userDetails = useSelector((state) => state.users);
   const phone = userDetails.phone;
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function fetchVendorCompanies() {
@@ -43,12 +54,7 @@ const VendorPO = () => {
         const POList = [];
         const phoneNo = phone.startsWith("+91") ? phone.slice(3) : phone;
         for (const company of companiesId) {
-          const poRef = collection(
-            db,
-            "companies",
-            company.companyId,
-            "purchases"
-          );
+          const poRef = collection(db, "companies", company.companyId, "po");
           const q = query(poRef, where("vendorDetails.phone", "==", phoneNo));
           const getData = await getDocs(q);
           const getAllPO = getData.docs.map((doc) => {
@@ -60,7 +66,8 @@ const VendorPO = () => {
           });
           POList.push(...getAllPO);
         }
-
+        setTotalPages(Math.ceil(POList.length / 10));
+        setPaginationData(POList.slice(0, 10));
         setPo(POList);
       } catch (error) {
         console.log("🚀 ~ fetchPO ~ error:", error);
@@ -71,90 +78,196 @@ const VendorPO = () => {
     fetchPO();
   }, [companiesId]);
 
+  useEffect(() => {
+    const filteredPO = po.filter((item) => {
+      const { createdBy, poNo, orderStatus } = item;
+      const vendorName = createdBy?.name || "";
+      const matchesSearch =
+        vendorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        poNo?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+        createdBy?.phoneNo
+          .toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+
+      const matchesStatus =
+        filterStatus === "All" || orderStatus === filterStatus;
+
+      return matchesSearch && matchesStatus;
+    });
+    setPaginationData(
+      filteredPO.slice(currentPage * 10, currentPage * 10 + 10)
+    );
+  }, [currentPage, po, searchTerm, filterStatus]);
+
   return (
     <div className="w-full">
       <div
         className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
         style={{ height: "92vh" }}
       >
-        <header className="flex items-center justify-between mb-3">
-          <h1 className="text-2xl font-bold">PO</h1>
-        </header>
-        <div className="bg-white p-4 rounded-lg shadow mb-4">
+        <div className="bg-white  py-8 rounded-lg shadow my-6">
+          <nav className="flex mb-4 px-5">
+            <div className="space-x-4 w-full flex items-center">
+              <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg w-full">
+                <input
+                  type="text"
+                  placeholder="Search by PO #..."
+                  className=" w-full focus:outline-none"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <IoSearch />
+              </div>
+              <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg ">
+                <select onChange={(e) => setFilterStatus(e.target.value)}>
+                  <option value="All"> All Transactions</option>
+                  <option value="Received">Received</option>
+                  <option value="Pending">Pending</option>
+                </select>
+              </div>
+            </div>
+          </nav>
+
           {loading ? (
-            <div className="text-center py-6">Loading PO...</div>
+            <div className="text-center py-6">Loading po...</div>
           ) : (
-            <div className="overflow-y-auto" style={{ height: "70vh" }}>
-              <table className="w-full border-collapse  h-28 text-center">
-                <thead className=" bg-white">
-                  <tr className="border-b">
-                    <th className="p-4">Company Name</th>
-                    <th className="p-4">Amount</th>
-                    <th className="p-4">Status</th>
-                    <th className="p-4">Mode</th>
-                    <th className="p-4">PO No</th>
-                    <th className="p-4">Date / Updated Time</th>
-                    <th className="p-4">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {po.length > 0 ? (
-                    po.map((p) => (
-                      <tr key={p.id} className="border-b text-center">
-                        <td className="py-3">
-                          {p.createdBy?.name} <br />
-                          <span className="text-gray-500">
-                            {p.vendorDetails.phone}
-                          </span>
-                        </td>
-                        <td className="py-3">{`₹ ${p.total.toFixed(2)}`}</td>
-                        <td className="py-3">{p.paymentStatus}</td>
-                        <td className="py-3">{p.mode || "Online"}</td>
-                        <td className="py-3">{p.poNo}</td>
-
-                        <td className="py-3">
-                          {(() => {
-                            if (
-                              p.date.seconds &&
-                              typeof p.date.seconds === "number"
-                            ) {
-                              const date = new Date(p.date.seconds * 1000);
-                              const today = new Date();
-                              const timeDiff =
-                                today.setHours(0, 0, 0, 0) -
-                                date.setHours(0, 0, 0, 0);
-                              const daysDiff = Math.floor(
-                                timeDiff / (1000 * 60 * 60 * 24)
-                              );
-
-                              if (daysDiff === 0) return "Today";
-                              if (daysDiff === 1) return "Yesterday";
-                              return `${daysDiff} days ago`;
-                            } else {
-                              return "Date not available";
-                            }
-                          })()}
-                        </td>
-
-                        <td className="py-3 space-x-2">
-                          <button className="relative group text-green-500 hover:text-green-700 text-xl">
-                            <IoMdDownload />
-                            <div className="absolute left-1/2 transform -translate-x-1/2 top-5 px-2 py-1 bg-gray-600 text-white text-xs rounded-md opacity-0 group-hover:opacity-100">
-                              Download
-                            </div>
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="6" className="text-center py-4">
-                        No PO found
+            <div className="" style={{ height: "96vh" }}>
+              <div className="" style={{ height: "92vh" }}>
+                <table className="w-full border-collapse text-start">
+                  <thead className=" bg-white">
+                    <tr className="border-b">
+                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
+                        PO No
+                      </td>
+                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
+                        Company
+                      </td>
+                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                        Date
+                      </td>
+                      <td className="px-5 py-1 text-gray-600 font-semibold  text-center">
+                        Amount
+                      </td>
+                      <td className="px-5 py-1 text-gray-600 font-semibold text-center ">
+                        Status
+                      </td>
+                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                        Mode
+                      </td>
+                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                        Created By
                       </td>
                     </tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {paginationData.length > 0 ? (
+                      paginationData.map((po) => (
+                        <tr
+                          key={po.id}
+                          className="border-b text-center cursor-pointer text-start"
+                        >
+                          <td className="px-5 py-3 font-bold">{po.poNo}</td>
+
+                          <td className="px-5 py-3 text-start">
+                            {po.createdBy?.name} <br />
+                            <span className="text-gray-500">
+                              Ph.No {po.createdBy.phoneNo}
+                            </span>
+                          </td>
+
+                          <td className="px-5 py-3">
+                            {new Date(
+                              po.date.seconds * 1000 +
+                                po.date.nanoseconds / 1000000
+                            ).toLocaleString()}
+                          </td>
+                          <td className="px-5 py-3  text-center">{`₹ ${po.total.toFixed(
+                            2
+                          )}`}</td>
+                          <td
+                            className="px-5 py-1"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {" "}
+                            <div
+                              className={`px-1 text-center py-2 rounded-lg text-xs font-bold ${
+                                po.orderStatus !== "Pending"
+                                  ? "bg-green-200 "
+                                  : "bg-red-200 "
+                              }`}
+                            >
+                              <div
+                                className={` ${
+                                  po.orderStatus !== "Pending"
+                                    ? "bg-green-200 "
+                                    : "bg-red-200 "
+                                }`}
+                              >
+                                {po.orderStatus}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-5 py-3">{po.mode || "Online"}</td>
+
+                          <td className="px-5 py-3">{po?.createdBy?.who}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="6" className="h-24 text-center py-4">
+                          No po found
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
+                <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+                  {currentPage + 1} of {totalPages || 1} row(s) selected.
+                </div>
+                <div className="flex flex-wrap items-center gap-6">
+                  <div className="flex items-center gap-2">
+                    <button
+                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                      onClick={() => setCurrentPage(0)}
+                      disabled={currentPage <= 0}
+                    >
+                      <div className="flex justify-center">
+                        <LuChevronsLeft className="text-sm" />
+                      </div>
+                    </button>
+                    <button
+                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                      onClick={() => setCurrentPage((val) => val - 1)}
+                      disabled={currentPage <= 0}
+                    >
+                      <div className="flex justify-center">
+                        <LuChevronLeft className="text-sm" />
+                      </div>
+                    </button>
+                    <button
+                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                      onClick={() => setCurrentPage((val) => val + 1)}
+                      disabled={currentPage + 1 >= totalPages}
+                    >
+                      <div className="flex justify-center">
+                        <LuChevronRight className="text-sm" />
+                      </div>
+                    </button>
+                    <button
+                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                      onClick={() => setCurrentPage(totalPages - 1)}
+                      disabled={currentPage + 1 >= totalPages}
+                    >
+                      <div className="flex justify-center">
+                        <LuChevronsRight className="" />
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>

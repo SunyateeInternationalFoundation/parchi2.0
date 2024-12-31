@@ -1,5 +1,6 @@
 import { collection, getDoc, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
@@ -7,6 +8,9 @@ function Projects() {
   const userDetails = useSelector((state) => state.users);
   const [loading, setLoading] = useState(!true);
   const [projectsList, setProjectsList] = useState([]);
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [modifiedProjectsList, setModifiedProjectsList] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
 
   const navigate = useNavigate();
 
@@ -69,73 +73,116 @@ function Projects() {
     const { projectId } = project;
     navigate(projectId);
   }
+  useEffect(() => {
+    function onFilterFun() {
+      const filterData = projectsList.filter((ele) => {
+        const { name, status, startDate, dueDate } = ele;
+        const matchesSearch = name
+          .toLowerCase()
+          .includes(searchInput.toLowerCase());
+        const matchesStatus = filterStatus === "All" || status === filterStatus;
 
+        return matchesSearch && matchesStatus;
+      });
+      setModifiedProjectsList(filterData);
+    }
+    onFilterFun();
+  }, [filterStatus, searchInput, projectsList]);
   return (
-    <div className="w-full" style={{ width: "100%", height: "92vh" }}>
+    <div className="w-full">
       <div
-        className="px-8 pb-8 pt-5 bg-gray-100 overflow-y-auto"
-        style={{ width: "100%", height: "92vh" }}
+        className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
+        style={{ height: "92vh" }}
       >
-        <header className="flex items-center justify-between mb-3">
-          <h1 className="text-2xl font-bold">Projects</h1>
-        </header>
-
-        <div className="bg-white p-4 rounded-lg shadow mb-4">
-          {loading ? (
-            <div className="text-center py-6">Loading Projects...</div>
-          ) : (
-            <div className="overflow-y-auto" style={{ height: "70vh" }}>
+        <div className="bg-white p-4 mt-5 rounded-lg ">
+          <nav className="flex space-x-4 mb-4 items-center rounded-lg ">
+            <div className="space-x-4 w-full flex items-center">
+              <div className="flex items-center space-x-4  border p-2 rounded-lg w-full">
+                <input
+                  type="text"
+                  placeholder="Search by invoice #..."
+                  className=" w-full focus:outline-none"
+                  onChange={(e) => setSearchInput(e.target.value)}
+                />
+                <IoSearch />
+              </div>
+              <div className="flex items-center space-x-4 border p-2 rounded-lg ">
+                <select onChange={(e) => setFilterStatus(e.target.value)}>
+                  <option value="All"> All</option>
+                  <option value="On-Going">On-Going</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Delay">Delay</option>
+                </select>
+              </div>
+            </div>
+          </nav>
+          <div className=" ">
+            {loading ? (
+              <div className="text-center py-6">Loading Projects...</div>
+            ) : (
               <div className="">
-                {projectsList.length > 0 ? (
-                  projectsList.map((item) => (
-                    <div
-                      className={`border-2 shadow cursor-pointer rounded-lg p-3 mt-3 ${
-                        isDueDateEnd(item.dueDate) ? "bg-red-400" : " "
-                      }`}
-                      onClick={() => onViewProject(item)}
-                      key={item.projectId}
-                    >
-                      <div className="flex justify-between mb-2">
-                        <div className="font-bold">{item.name}</div>
-                        <div>
-                          <span>By</span> {item.companyName}
+                {modifiedProjectsList.length > 0 ? (
+                  <div className="grid grid-cols-3 gap-5">
+                    {modifiedProjectsList.map((item) => (
+                      <div
+                        className={` bg-white border cursor-pointer rounded-lg h-56 hover:shadow-lg `}
+                        onClick={() => onViewProject(item)}
+                        key={item.projectId}
+                      >
+                        <div className="p-3 h-40">
+                          <div
+                            className={
+                              "rounded-lg  w-fit px-2 text-xs font-bold " +
+                              (item.status === "Delay"
+                                ? " bg-rose-100"
+                                : item.status === "Completed"
+                                ? " bg-green-100"
+                                : " bg-[hsl(250deg_92%_70%_/10%)]")
+                            }
+                          >
+                            {item.status}
+                          </div>
+                          <div className="py-3 space-y-1">
+                            <div className="font-bold">{item.name}</div>
+                            <div className="text-xs line-clamp-3">
+                              {item.description}
+                            </div>
+                          </div>
+                          {isDueDateEnd(item.dueDate) && (
+                            <div className="text-xs">
+                              <i>Project due time over kindly check it</i>
+                            </div>
+                          )}
+                          <div className="">
+                            Team:{" "}
+                            <span className="font-bold">
+                              {item.staffRef?.length || 0}
+                            </span>
+                          </div>
+                        </div>
+                        <div className=" flex justify-between  border-t px-3 py-1">
+                          <div>
+                            <div className="text-gray-700 text-sm">
+                              Assigned Date :{" "}
+                            </div>
+                            <div className="font-bold">{item.startDate}</div>
+                          </div>
+                          <div>
+                            <div className="text-gray-700 text-sm">
+                              Due Date :{" "}
+                            </div>
+                            <div className="font-bold">{item.dueDate}</div>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex justify-between mb-2">
-                        <div>
-                          <span className="text-gray-700">Start Date : </span>
-                          <span>{item.startDate}</span>
-
-                          <span className="text-gray-700 ml-4">
-                            End Date :{" "}
-                          </span>
-                          <span>{item.dueDate}</span>
-                        </div>
-                        <div
-                          className={
-                            item.status === "Delay"
-                              ? "text-rose-800"
-                              : item.status === "Completed"
-                              ? "text-green-700"
-                              : ""
-                          }
-                        >
-                          {item.status}
-                        </div>
-                      </div>
-                      {isDueDateEnd(item.dueDate) && (
-                        <div className="text-xs">
-                          <i>Project due time over kindly check it</i>
-                        </div>
-                      )}
-                    </div>
-                  ))
+                    ))}
+                  </div>
                 ) : (
                   <div className="text-center">No Project Found</div>
                 )}
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>

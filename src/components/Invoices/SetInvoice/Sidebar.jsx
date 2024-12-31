@@ -8,6 +8,7 @@ function Sidebar({
   isOpen,
   handleActionQty,
   totalAmount,
+  customActionQty,
 }) {
   const [Products, setProducts] = useState(productList);
   const [searchTerm, setSearchTerm] = useState("");
@@ -66,14 +67,21 @@ function Sidebar({
                   {product.name} - Quantity: {product.quantity || "0"}
                 </div>
                 {product.quantity !== 0 && (
-                  <div className="border-2 rounded-lg flex justify-between w-20 text-lg mt-2">
+                  <div className="border-2 rounded-lg flex justify-between w-24 text-lg mt-2 bg-gray-50">
                     <button
                       onClick={() => handleActionQty("-", product.id)}
                       className="px-2"
                     >
                       -
                     </button>
-                    <div>{product.actionQty}</div>
+                    <input
+                      type="number"
+                      value={product.actionQty || ""}
+                      onChange={(e) => {
+                        customActionQty(+e.target.value, product.id);
+                      }}
+                      className="border-x rounded-md text-sm w-10 px-2 text-center"
+                    />
                     <button
                       onClick={() => handleActionQty("+", product.id)}
                       className="px-2"

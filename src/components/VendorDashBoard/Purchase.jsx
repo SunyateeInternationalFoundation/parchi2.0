@@ -1,11 +1,4 @@
-import {
-  collection,
-  doc,
-  getDocs,
-  orderBy,
-  query,
-  updateDoc,
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
@@ -15,105 +8,96 @@ import {
   LuChevronsRight,
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
 
-const Purchase = () => {
-  const [purchases, setPurchases] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("All");
+const VendorPurchase = () => {
+  const [loading, setLoading] = useState(false);
+  const [companiesId, setCompaniesId] = useState([]);
+  const [purchaseList, setPurchaseList] = useState([]);
   const userDetails = useSelector((state) => state.users);
+  const phone = userDetails.phone;
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  let companyId;
-  if (userDetails.selectedDashboard === "staff") {
-    companyId =
-      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
-        .companyDetails.companyId;
-  } else {
-    companyId =
-      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  }
-
-  let role =
-    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
-      ?.purchase;
-
-  const navigate = useNavigate();
   useEffect(() => {
-    const fetchPurchases = async () => {
+    async function fetchVendorCompanies() {
       setLoading(true);
       try {
-        const purchaseRef = collection(db, "companies", companyId, "purchases");
-        const q = query(purchaseRef, orderBy("purchaseNo", "asc"));
-        const querySnapshot = await getDocs(q);
-        const purchasesData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setPurchases(purchasesData);
-        setTotalPages(Math.ceil(purchasesData.length / 10));
-        setPaginationData(purchasesData.slice(0, 10));
+        const customerRef = collection(db, "vendors");
+        const q = query(customerRef, where("phone", "==", phone));
+        const getData = await getDocs(q);
+        const getCompaniesId = getData.docs.map((doc) => {
+          const { name, companyRef } = doc.data();
+          return {
+            id: doc.id,
+            name,
+            companyId: companyRef.id,
+          };
+        });
+        setCompaniesId(getCompaniesId);
       } catch (error) {
-        console.error("Error fetching purchases:", error);
+        console.log("🚀 ~ fetchVendorCompanies ~ error:", error);
       } finally {
         setLoading(false);
       }
-    };
-    fetchPurchases();
-  }, [companyId]);
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleStatusChange = async (purchaseId, newStatus) => {
-    try {
-      const purchaseDoc = doc(
-        db,
-        "companies",
-        companyId,
-        "purchases",
-        purchaseId
-      );
-      await updateDoc(purchaseDoc, { paymentStatus: newStatus });
-      setPurchases((prevPurchases) =>
-        prevPurchases.map((purchase) =>
-          purchase.id === purchaseId
-            ? { ...purchase, paymentStatus: newStatus }
-            : purchase
-        )
-      );
-    } catch (error) {
-      console.error("Error updating status:", error);
     }
-  };
+    fetchVendorCompanies();
+  }, []);
 
-  const totalAmount = purchases.reduce(
-    (sum, purchase) => sum + purchase.total,
-    0
-  );
-
-  const paidAmount = purchases
-    .filter((purchase) => purchase.paymentStatus === "Paid")
-    .reduce((sum, purchase) => sum + purchase.total, 0);
-  const pendingAmount = purchases
-    .filter((purchase) => purchase.paymentStatus === "Pending")
-    .reduce((sum, purchase) => sum + purchase.total, 0);
   useEffect(() => {
-    const filteredPurchases = purchases.filter((purchase) => {
-      const { vendorDetails, purchaseNo, paymentStatus } = purchase;
-      const VendorName = vendorDetails?.name || "";
+    setLoading(true);
+    async function fetchPurchase() {
+      try {
+        const PurchaseList = [];
+        const phoneNo = phone.startsWith("+91") ? phone.slice(3) : phone;
+        for (const company of companiesId) {
+          const purchaseRef = collection(
+            db,
+            "companies",
+            company.companyId,
+            "purchases"
+          );
+          const q = query(
+            purchaseRef,
+            where("vendorDetails.phone", "==", phoneNo)
+          );
+          const getData = await getDocs(q);
+          const getAllPurchase = getData.docs.map((doc) => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              ...data,
+            };
+          });
+          PurchaseList.push(...getAllPurchase);
+        }
+        setTotalPages(Math.ceil(PurchaseList.length / 10));
+        setPaginationData(PurchaseList.slice(0, 10));
+        setPurchaseList(PurchaseList);
+      } catch (error) {
+        console.log("🚀 ~ fetchPurchase ~ error:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPurchase();
+  }, [companiesId]);
+
+  useEffect(() => {
+    console.log("🚀 ~ filteredPurchase ~ purchase:", purchaseList);
+    const filteredPurchase = purchaseList.filter((item) => {
+      const { createdBy, purchaseNo, paymentStatus } = item;
+      const vendorName = createdBy?.name || "";
       const matchesSearch =
-        VendorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        vendorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         purchaseNo
           ?.toString()
           .toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
-        vendorDetails?.phone
+        createdBy?.phoneNo
           .toString()
           .toLowerCase()
           .includes(searchTerm.toLowerCase());
@@ -124,107 +108,65 @@ const Purchase = () => {
       return matchesSearch && matchesStatus;
     });
     setPaginationData(
-      filteredPurchases.slice(currentPage * 10, currentPage * 10 + 10)
+      filteredPurchase.slice(currentPage * 10, currentPage * 10 + 10)
     );
-  }, [currentPage, purchases, searchTerm, filterStatus]);
+  }, [currentPage, purchaseList, searchTerm, filterStatus]);
   return (
     <div className="w-full">
       <div
         className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
         style={{ height: "92vh" }}
       >
-        <div className="bg-white rounded-lg shadow mt-4 py-5">
-          <h1 className="text-2xl font-bold pb-3 px-10 ">Purchase Overview</h1>
-          <div className="grid grid-cols-4 gap-12  px-10 ">
-            <div className="rounded-lg p-5 bg-[hsl(240,100%,98%)] ">
-              <div className="text-lg">Total Amount</div>
-              <div className="text-3xl text-[hsl(240,92.20%,70.00%)] font-bold">
-                ₹ {totalAmount}
-              </div>
-            </div>
-            <div className="rounded-lg p-5 bg-green-50 ">
-              <div className="text-lg"> Paid Amount</div>
-              <div className="text-3xl text-emerald-600 font-bold">
-                {" "}
-                ₹ {paidAmount}
-              </div>
-            </div>
-            <div className="rounded-lg p-5 bg-orange-50 ">
-              <div className="text-lg">Pending Amount</div>
-              <div className="text-3xl text-orange-600 font-bold">
-                ₹ {pendingAmount}
-              </div>
-            </div>
-            <div className="rounded-lg p-5 bg-red-50 ">
-              <div className="text-lg">UnPaid Amount</div>
-              <div className="text-3xl text-red-600 font-bold">
-                ₹ {totalAmount - paidAmount}
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div className="bg-white  py-8 rounded-lg shadow my-6">
           <nav className="flex mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">
               <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg w-full">
                 <input
                   type="text"
-                  placeholder="Search by purchase #..."
+                  placeholder="Search by Purchase #..."
                   className=" w-full focus:outline-none"
                   value={searchTerm}
-                  onChange={handleSearch}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <IoSearch />
               </div>
               <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg ">
                 <select onChange={(e) => setFilterStatus(e.target.value)}>
                   <option value="All"> All Transactions</option>
+                  <option value="Received">Received</option>
                   <option value="Pending">Pending</option>
-                  <option value="Paid">Paid</option>
-                  <option value="UnPaid">UnPaid</option>
                 </select>
               </div>
-            </div>
-            <div className="w-full text-end ">
-              {(userDetails.selectedDashboard === "staff" || role?.create) && (
-                <Link
-                  className="bg-blue-500 text-white py-2 px-2 rounded-lg"
-                  to="create-purchase"
-                >
-                  + Create Purchase
-                </Link>
-              )}
             </div>
           </nav>
 
           {loading ? (
-            <div className="text-center py-6">Loading purchases...</div>
+            <div className="text-center py-6">Loading purchase...</div>
           ) : (
             <div className="" style={{ height: "96vh" }}>
               <div className="" style={{ height: "92vh" }}>
                 <table className="w-full border-collapse text-start">
                   <thead className=" bg-white">
                     <tr className="border-b">
-                      <td className="px-5 py-3 text-gray-600 font-semibold text-start">
+                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
                         Purchase No
                       </td>
-                      <td className="px-5 py-3 text-gray-600 font-semibold text-start">
-                        Vendor
+                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
+                        Company
                       </td>
-                      <td className="px-5 py-3 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
                         Date
                       </td>
-                      <td className="px-5 py-3 text-center text-gray-600 font-semibold  ">
+                      <td className="px-5 py-1 text-gray-600 font-semibold  text-center">
                         Amount
                       </td>
-                      <td className="px-5 py-3 text-gray-600 font-semibold text-center ">
+                      <td className="px-5 py-1 text-gray-600 font-semibold text-center ">
                         Status
                       </td>
-                      <td className="px-5 py-3 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
                         Mode
                       </td>
-                      <td className="px-5 py-3 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
                         Created By
                       </td>
                     </tr>
@@ -235,18 +177,15 @@ const Purchase = () => {
                         <tr
                           key={purchase.id}
                           className="border-b text-center cursor-pointer text-start"
-                          onClick={(e) => {
-                            navigate(purchase.id);
-                          }}
                         >
                           <td className="px-5 py-3 font-bold">
                             {purchase.purchaseNo}
                           </td>
 
                           <td className="px-5 py-3 text-start">
-                            {purchase.vendorDetails?.name} <br />
-                            <span className="text-gray-500 text-sm">
-                              Ph.No {purchase.vendorDetails.phone}
+                            {purchase.createdBy?.name} <br />
+                            <span className="text-gray-500">
+                              Ph.No {purchase.createdBy.phoneNo}
                             </span>
                           </td>
 
@@ -256,7 +195,7 @@ const Purchase = () => {
                                 purchase.date.nanoseconds / 1000000
                             ).toLocaleString()}
                           </td>
-                          <td className="px-5 py-3 font-bold text-center">{`₹ ${purchase.total.toFixed(
+                          <td className="px-5 py-3  text-center">{`₹ ${purchase.total.toFixed(
                             2
                           )}`}</td>
                           <td
@@ -266,33 +205,20 @@ const Purchase = () => {
                             {" "}
                             <div
                               className={`px-1 text-center py-2 rounded-lg text-xs font-bold ${
-                                purchase.paymentStatus === "Paid"
-                                  ? "bg-green-100 "
-                                  : purchase.paymentStatus === "Pending"
-                                  ? "bg-yellow-100 "
-                                  : "bg-red-100 "
+                                purchase.paymentStatus !== "Pending"
+                                  ? "bg-green-200 "
+                                  : "bg-red-200 "
                               }`}
                             >
-                              <select
-                                value={purchase.paymentStatus}
-                                onChange={(e) => {
-                                  handleStatusChange(
-                                    purchase.id,
-                                    e.target.value
-                                  );
-                                }}
-                                className={`${
-                                  purchase.paymentStatus === "Paid"
-                                    ? "bg-green-100 "
-                                    : purchase.paymentStatus === "Pending"
-                                    ? "bg-yellow-100 "
-                                    : "bg-red-100 "
+                              <div
+                                className={` ${
+                                  purchase.paymentStatus !== "Pending"
+                                    ? "bg-green-200 "
+                                    : "bg-red-200 "
                                 }`}
                               >
-                                <option value="Pending">Pending</option>
-                                <option value="Paid">Paid</option>
-                                <option value="UnPaid">UnPaid</option>
-                              </select>
+                                {purchase.paymentStatus}
+                              </div>
                             </div>
                           </td>
                           <td className="px-5 py-3">
@@ -300,16 +226,14 @@ const Purchase = () => {
                           </td>
 
                           <td className="px-5 py-3">
-                            {purchase?.createdBy?.name == userDetails.name
-                              ? "Owner"
-                              : userDetails.name}
+                            {purchase?.createdBy?.who}
                           </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
                         <td colSpan="6" className="h-24 text-center py-4">
-                          No purchases found
+                          No purchase found
                         </td>
                       </tr>
                     )}
@@ -369,4 +293,4 @@ const Purchase = () => {
   );
 };
 
-export default Purchase;
+export default VendorPurchase;

@@ -18,6 +18,7 @@ function PO() {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
@@ -40,8 +41,6 @@ function PO() {
     received: 0,
     totalPrice: 0,
   });
-
-  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function fetchPoList() {
@@ -126,7 +125,7 @@ function PO() {
           <h1 className="text-2xl font-bold pb-3 px-10 ">PO Overview</h1>
           <div className="grid grid-cols-4 gap-12  px-10 ">
             <div className="rounded-lg p-5 bg-[hsl(240,100%,98%)] ">
-              <div className="text-lg">All PO's</div>
+              <div className="text-lg">All PO&apos;s</div>
               <div className="text-3xl text-[hsl(240,92.20%,70.00%)] font-bold">
                 ₹ {POCount.total}
               </div>

@@ -10,6 +10,7 @@ function Projects() {
   const [loading, setLoading] = useState(!true);
   const [projectsList, setProjectsList] = useState([]);
   const [modifiedProjectsList, setModifiedProjectsList] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
   const [projectCount, setProjectCount] = useState({
     onGoing: 0,
     completed: 0,
@@ -111,8 +112,6 @@ function Projects() {
     const currentDate = new Date();
     return timestampDate < currentDate;
   }
-
-  const [searchInput, setSearchInput] = useState("");
 
   function onSearchFilter(e) {
     setSearchInput(e.target.value);

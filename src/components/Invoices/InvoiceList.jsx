@@ -126,47 +126,76 @@ const InvoiceList = () => {
     );
   }, [currentPage, invoices, searchTerm, filterStatus]);
 
+  function formatTimestamp(timestamp) {
+    if (!timestamp) {
+      return;
+    }
+    const milliseconds =
+      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
+    const date = new Date(milliseconds);
+    const day = date.getDate();
+    const month = date.toLocaleString("default", { month: "short" }); // 'Jan', 'Feb', etc.
+    const year = date.getFullYear();
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+
+    // Convert to 12-hour format
+    hours = hours % 12 || 12;
+
+    return (
+      <>
+        <div>
+          {day}-{month}-{year}
+        </div>{" "}
+        <div className="text-sm text-gray-400">
+          {" "}
+          {hours}:{minutes} {ampm}
+        </div>
+      </>
+    );
+  }
   return (
     <div className="w-full">
       <div
         className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
         style={{ height: "92vh" }}
       >
-        <div className="bg-white rounded-lg shadow mt-4 py-5">
-          <h1 className="text-2xl font-bold pb-3 px-10 ">Invoice Overview</h1>
-          <div className="grid grid-cols-4 gap-12  px-10 ">
-            <div className="rounded-lg p-5 bg-[hsl(240,100%,98%)] ">
+        <div className=" mt-4 py-3">
+          <h1 className="text-2xl font-bold pb-3 ">Invoice Overview</h1>
+          <div className="grid grid-cols-4 gap-8  ">
+            <div className="rounded-lg p-5 bg-white shadow  ">
               <div className="text-lg">Total Amount</div>
-              <div className="text-3xl text-indigo-600 font-bold">
+              <div className="text-3xl text-indigo-600 font-bold p-2">
                 ₹ {totalAmount}
               </div>
             </div>
-            <div className="rounded-lg p-5 bg-green-50 ">
+            <div className="rounded-lg p-5 bg-white shadow ">
               <div className="text-lg"> Paid Amount</div>
-              <div className="text-3xl text-emerald-600 font-bold">
+              <div className="text-3xl text-emerald-600 font-bold p-2">
                 {" "}
                 ₹ {paidAmount}
               </div>
             </div>
-            <div className="rounded-lg p-5 bg-orange-50 ">
+            <div className="rounded-lg p-5 bg-white shadow ">
               <div className="text-lg"> Pending Amount</div>
-              <div className="text-3xl text-orange-600 font-bold">
+              <div className="text-3xl text-orange-600 font-bold p-2">
                 ₹ {pendingAmount}
               </div>
             </div>
-            <div className="rounded-lg p-5 bg-red-50 ">
+            <div className="rounded-lg p-5 bg-white shadow">
               <div className="text-lg"> UnPaid Amount</div>
-              <div className="text-3xl text-red-600 font-bold">
+              <div className="text-3xl text-red-600 font-bold p-2">
                 ₹ {totalAmount - paidAmount}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white  py-8 rounded-lg shadow my-6">
+        <div className="bg-white  pb-8 pt-6 rounded-lg shadow my-6">
           <nav className="flex mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">
-              <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg w-full">
+              <div className="flex items-center space-x-4 mb-4 border px-5  py-3 rounded-md w-full">
                 <input
                   type="text"
                   placeholder="Search by invoice #..."
@@ -176,7 +205,7 @@ const InvoiceList = () => {
                 />
                 <IoSearch />
               </div>
-              <div className="flex items-center space-x-4 mb-4 border p-2 rounded-lg ">
+              <div className="flex items-center space-x-4 mb-4 border px-5  py-3 rounded-md ">
                 <select onChange={(e) => setFilterStatus(e.target.value)}>
                   <option value="All"> All Transactions</option>
                   <option value="Pending">Pending</option>
@@ -188,10 +217,10 @@ const InvoiceList = () => {
             <div className="w-full text-end ">
               {(userDetails.selectedDashboard === "" || role?.create) && (
                 <Link
-                  className="bg-blue-500 text-white py-2 px-2 rounded-lg"
+                  className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
                   to="create-invoice"
                 >
-                  + Create Invoice
+                  <span className="text-2xl">+</span> Create Invoice
                 </Link>
               )}
             </div>
@@ -205,25 +234,25 @@ const InvoiceList = () => {
                 <table className="w-full border-collapse text-start">
                   <thead className=" bg-white">
                     <tr className="border-b">
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
-                        Invoice No
-                      </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start">
-                        Customer
-                      </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
                         Date
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold  text-center">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-center">
+                        Invoice No
+                      </td>
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                        Customer
+                      </td>
+                      <td className="px-5 py-1 text-gray-400 font-semibold  text-center">
                         Amount
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-center ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-center ">
                         Status
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
                         Mode
                       </td>
-                      <td className="px-5 py-1 text-gray-600 font-semibold text-start ">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
                         Created By
                       </td>
                     </tr>
@@ -238,10 +267,12 @@ const InvoiceList = () => {
                             navigate(invoice.id);
                           }}
                         >
-                          <td className="px-5 py-3 font-bold">
-                            {invoice.invoiceNo}
+                          <td className="px-8 py-3 text-start">
+                            {formatTimestamp(invoice.date)}
                           </td>
-
+                          <td className="px-5 py-3 font-bold">
+                            {invoice.prefix || ""}-{invoice.invoiceNo}
+                          </td>
                           <td className="px-5 py-3 text-start">
                             {invoice.customerDetails?.name} <br />
                             <span className="text-gray-500 text-sm">
@@ -249,12 +280,6 @@ const InvoiceList = () => {
                             </span>
                           </td>
 
-                          <td className="px-5 py-3 text-start">
-                            {new Date(
-                              invoice.date.seconds * 1000 +
-                                invoice.date.nanoseconds / 1000000
-                            ).toLocaleString()}
-                          </td>
                           <td className="px-5 py-3 font-bold  text-center">{`₹ ${invoice.total.toFixed(
                             2
                           )}`}</td>
@@ -263,7 +288,7 @@ const InvoiceList = () => {
                             onClick={(e) => e.stopPropagation()}
                           >
                             <div
-                              className={`px-1 text-center py-2 rounded-lg text-xs font-bold ${
+                              className={`px-1 text-center py-2 rounded-lg text-xs  ${
                                 invoice.paymentStatus === "Paid"
                                   ? "bg-green-100 "
                                   : invoice.paymentStatus === "Pending"
@@ -298,9 +323,6 @@ const InvoiceList = () => {
                           </td>
 
                           <td className="px-5 py-3 text-start">
-                            {/* {invoice?.createdBy?.name == userDetails.name
-                              ? "Owner"
-                              : "staff"} */}
                             {invoice?.createdBy?.who}
                           </td>
                         </tr>

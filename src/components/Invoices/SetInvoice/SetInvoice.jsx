@@ -12,14 +12,17 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import addItem from "../../../assets/addItem.png";
 import { db } from "../../../firebase";
 import { setAllCustomersDetails } from "../../../store/CustomerSlice";
+import CreateCustomer from "../../Customers/CreateCustomer";
 import Sidebar from "./Sidebar";
-
 const SetInvoice = () => {
   const { invoiceId } = useParams();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const userDetails = useSelector((state) => state.users);
   const customersDetails = useSelector((state) => state.customers).data;
@@ -57,6 +60,8 @@ const SetInvoice = () => {
   const [books, setBooks] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const navigate = useNavigate();
 
@@ -112,6 +117,8 @@ const SetInvoice = () => {
       for (let ele of formData.products) {
         productData = products.map((pro) => {
           if (pro.id === ele.productRef.id) {
+            pro.description = ele.description;
+            pro.isAddDescription = ele.description ? true : false;
             pro.actionQty = ele.quantity;
             pro.quantity += ele.quantity;
             pro.totalAmount = ele.quantity * pro.netAmount;
@@ -355,6 +362,7 @@ const SetInvoice = () => {
             sgstAmount,
             cgstAmount,
             taxAmount,
+            isAddDescription: false,
           };
         });
         setProducts(productsData);
@@ -363,6 +371,20 @@ const SetInvoice = () => {
       }
     };
 
+    const fetchCategories = async () => {
+      const categoriesRef = collection(
+        db,
+        "companies",
+        userDetails.companies[userDetails.selectedCompanyIndex].companyId,
+        "categories"
+      );
+      const snapshot = await getDocs(categoriesRef);
+
+      const categoriesData = snapshot.docs.map((doc) => doc.data().name);
+
+      setCategories(categoriesData);
+    };
+    fetchCategories();
     if (!invoiceId) {
       fetchInvoiceNumbers();
     }
@@ -418,7 +440,21 @@ const SetInvoice = () => {
     });
     setIsProductSelected(countOfSelect > 0);
     calculateProduct(updatedProducts);
-    // Calculate totals based on updated quantities
+  }
+  function customActionQty(value, productId, isDelete = false) {
+    if (!value && !isDelete) {
+      return;
+    }
+    let updatedProducts = products.map((product) => {
+      if (product.id === productId) {
+        if (product.quantity > value) {
+          product.actionQty = value;
+        }
+        product.totalAmount = product.netAmount * product.actionQty;
+      }
+      return product;
+    });
+    calculateProduct(updatedProducts);
   }
   function calculateProduct(products) {
     const totalTaxableAmount = products.reduce((sum, product) => {
@@ -598,6 +634,7 @@ const SetInvoice = () => {
           };
       const payload = {
         ...formData,
+        prefix,
         tds,
         tcs,
         date,
@@ -698,264 +735,389 @@ const SetInvoice = () => {
     }));
   }
   return (
-    <div
-      className="px-5 pb-5 bg-gray-100 overflow-y-auto"
-      style={{ height: "92vh" }}
-    >
-      <header className="flex items-center space-x-3  my-2">
-        <Link
-          className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-          to={"./../"}
-        >
-          <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
-        </Link>
-        <h1 className="text-2xl font-bold">
-          {invoiceId ? "Edit" : "Create"} Invoice
-        </h1>
-      </header>
-      <div className="bg-white p-6 rounded-lg shadow-lg">
-        <div className="flex gap-8 mb-6">
-          <div className="flex-1">
-            <h2 className="font-semibold mb-2">Customer Details</h2>
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <label className="text-sm text-gray-600">
-                Select Customer <span className="text-red-500">*</span>{" "}
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search your Customers, Company Name, GSTIN..."
-                  className="text-base text-gray-900 font-semibold border p-1 rounded w-full mt-1"
-                  value={selectedCustomerData?.name}
-                  onChange={handleInputChange}
-                  onFocus={() => {
-                    setIsDropdownVisible(true);
-                    setSuggestions(customersDetails || []);
-                  }}
-                  onBlur={() => {
-                    setTimeout(() => {
-                      if (!selectedCustomerData.id) {
-                        setSelectedCustomerData({ name: "" });
-                      }
-                      setIsDropdownVisible(false);
-                    }, 200);
-                  }}
-                  required
-                />
-                {isDropdownVisible && suggestions.length > 0 && (
-                  <div className="absolute z-20 bg-white border border-gray-300 rounded-lg shadow-md max-h-60 overflow-y-auto w-full">
-                    {suggestions.map((item) => (
-                      <div
-                        key={item.id}
-                        onMouseDown={() => handleSelectCustomer(item)}
-                        className="flex flex-col px-4 py-3 text-gray-800 hover:bg-blue-50 cursor-pointer transition-all duration-150 ease-in-out"
-                      >
-                        <span className="font-medium text-sm">
-                          Name:{" "}
-                          <span className="font-semibold">{item.name}</span>
-                        </span>
-                        <span className="text-xs text-gray-600">
-                          Phone No.: {item.phone}
-                        </span>
+    <div className="bg-gray-100 overflow-y-auto" style={{ height: "92vh" }}>
+      <div className="px-5 pb-5s">
+        <header className="flex items-center space-x-3  my-2">
+          <Link className="flex items-center" to={"./../"}>
+            <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
+          </Link>
+          <h1 className="text-2xl font-bold">
+            {invoiceId ? "Edit" : "Create"} Invoice
+          </h1>
+        </header>
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <div className="flex gap-8 mb-6">
+            <div className="flex-1">
+              <h2 className="font-semibold mb-2">Customer Details</h2>
+              <div className="border p-3 rounded-lg">
+                <label className="text-sm text-gray-600">
+                  Select Customer <span className="text-red-500">*</span>{" "}
+                </label>
+                <div className=" flex">
+                  <div className="relative w-full">
+                    <input
+                      type="text"
+                      placeholder="Search your Customers, Company Name, GSTIN... "
+                      className="text-base text-gray-900 font-semibold border  rounded-s-md w-full mt-1 px-5  py-2"
+                      value={selectedCustomerData?.name}
+                      onChange={handleInputChange}
+                      onFocus={() => {
+                        setIsDropdownVisible(true);
+                        setSuggestions(customersDetails || []);
+                      }}
+                      onBlur={() => {
+                        setTimeout(() => {
+                          if (!selectedCustomerData.id) {
+                            setSelectedCustomerData({ name: "" });
+                          }
+                          setIsDropdownVisible(false);
+                        }, 200);
+                      }}
+                      required
+                    />
+                    {isDropdownVisible && suggestions.length > 0 && (
+                      <div className="absolute z-20 bg-white border border-gray-300 rounded-lg shadow-md max-h-60 overflow-y-auto w-full">
+                        {suggestions.map((item) => (
+                          <div
+                            key={item.id}
+                            onMouseDown={() => handleSelectCustomer(item)}
+                            className="flex flex-col px-4 py-2 text-gray-800 hover:bg-blue-50 cursor-pointer transition-all duration-150 ease-in-out"
+                          >
+                            <span className="font-medium text-sm">
+                              Name:{" "}
+                              <span className="font-semibold">{item.name}</span>
+                            </span>
+                            <span className="text-xs text-gray-600">
+                              Phone No.: {item.phone}
+                            </span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    )}
                   </div>
-                )}
+                  <div className="w-1/4">
+                    <button
+                      className="text-base text-gray-500 font-semibold border  rounded-e-md w-full mt-1 px-5  py-2"
+                      onClick={() => setIsModalOpen(true)}
+                    >
+                      + New
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="flex-1">
-            <h2 className="font-semibold mb-2">Other Details</h2>
-            <div className="grid grid-cols-3 gap-4 bg-pink-50 p-4 rounded-lg">
-              <div>
-                <label className="text-sm text-gray-600">
-                  Invoice Date <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  value={DateFormate(date)}
-                  className="border p-1 rounded w-full mt-1"
-                  onChange={(e) => {
-                    setDate(Timestamp.fromDate(new Date(e.target.value)));
-                  }}
-                  required
-                />
-              </div>
-              <div>
-                <label className="text-sm text-gray-600">
-                  Due Date <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  value={DateFormate(dueDate)}
-                  className="border p-1 rounded w-full mt-1"
-                  onChange={(e) => {
-                    setDueDate(Timestamp.fromDate(new Date(e.target.value)));
-                  }}
-                />
-              </div>
-              <div>
-                <label className="text-sm text-gray-600">
-                  Invoice No. <span className="text-red-500">*</span>
-                  {preInvoiceList.includes(formData.invoiceNo) && (
-                    <span className="text-red-800 text-xs">
-                      "Already Invoice No. exist"{" "}
-                    </span>
-                  )}
-                  {Number(formData.invoiceNo) == 0 && (
-                    <span className="text-red-800 text-xs">
-                      "Kindly Enter valid Invoice No."{" "}
-                    </span>
-                  )}
-                </label>
-                <div className="flex items-center">
-                  <span className="px-4 py-1 mt-1 border rounded-l-md text-gray-700 flex-grow">
-                    {prefix}
-                  </span>
+            <div className="flex-1">
+              <h2 className="font-semibold mb-2">Invoice Details</h2>
+              <div className="grid grid-cols-3 gap-4 bg-blue-50 p-3 rounded-lg">
+                <div>
+                  <label className="text-sm text-gray-600">
+                    Invoice Date <span className="text-red-500">*</span>
+                  </label>
                   <input
-                    type="text"
-                    placeholder="Enter Invoice No. "
-                    className="border p-1 rounded-r-md w-full mt-1 flex-grow"
-                    value={formData.invoiceNo}
+                    type="date"
+                    value={DateFormate(date)}
+                    className="border p-1 rounded-md w-full mt-1  px-5  py-2"
                     onChange={(e) => {
-                      const { value } = e.target;
-                      setFormData((val) => ({
-                        ...val,
-                        invoiceNo: value,
-                      }));
+                      setDate(Timestamp.fromDate(new Date(e.target.value)));
                     }}
                     required
                   />
                 </div>
+                <div>
+                  <label className="text-sm text-gray-600">
+                    Due Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={DateFormate(dueDate)}
+                    className="border p-1 rounded-md w-full mt-1  px-5  py-2"
+                    onChange={(e) => {
+                      setDueDate(Timestamp.fromDate(new Date(e.target.value)));
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-gray-600">
+                    Invoice No. <span className="text-red-500">*</span>
+                    {preInvoiceList.includes(formData.invoiceNo) && (
+                      <span className="text-red-800 text-xs">
+                        "Already Invoice No. exist"{" "}
+                      </span>
+                    )}
+                    {Number(formData.invoiceNo) == 0 && (
+                      <span className="text-red-800 text-xs">
+                        "Kindly Enter valid Invoice No."{" "}
+                      </span>
+                    )}
+                  </label>
+                  <div className="flex items-center">
+                    <span className="px-4 py-1 mt-1 border rounded-l-md text-gray-700 flex-grow  px-5  py-2">
+                      {prefix}
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="Enter Invoice No. "
+                      className="border p-1 rounded-r-md w-full mt-1 flex-grow  px-5  py-2"
+                      value={formData.invoiceNo}
+                      onChange={(e) => {
+                        const { value } = e.target;
+                        setFormData((val) => ({
+                          ...val,
+                          invoiceNo: value,
+                        }));
+                      }}
+                      required
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex justify-between">
-          <h2 className="font-semibold mb-2">Products & Services</h2>
-          <div className="flex justify-between items-center gap-4 mb-4"></div>
-        </div>
-        <div className="bg-blue-50 p-4 rounded-lg shadow-inner mb-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold flex-grow">Items</h2>
-            <button
-              className="bg-blue-500 text-white py-1 px-4 rounded mt-1 ml-auto"
-              onClick={() => setIsSidebarOpen(true)}
-            >
-              + Add Items
-            </button>
-          </div>
-
-          <div className="bg-white">
-            <div className="mb-4">
-              <table className="min-w-full text-center text-gray-500 font-semibold">
-                <thead className="border-b bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-2">Product Name</th>
-                    <th className="px-4 py-2">Quantity</th>
-                    <th className="px-4 py-2">Unit Price</th>
-                    <th className="px-4 py-2">Discount</th>
-                    <th className="px-4 py-2">Net Amount</th>
-                    <th className="px-2 py-2">Is Tax Included</th>
-                    <th className="px-4 py-2">Total Amount</th>
-                    <th className="px-4 py-2">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.length > 0 && isProductSelected ? (
-                    products.map(
-                      (product) =>
-                        product.actionQty > 0 && (
-                          <tr key={product.id}>
-                            <td className="px-4 py-2">{product.name}</td>
-                            <td className="px-4 py-2">{product.quantity}</td>
-                            <td className="px-4 py-2">
-                              ₹{product.sellingPrice.toFixed(2)}
-                            </td>
-                            <td className="px-4 py-2">
-                              ₹{product.discount.toFixed(2)}
-                            </td>
-                            <td className="px-4 py-2">
-                              ₹{product.netAmount.toFixed(2)}
-                            </td>
-                            <td className="px-2 py-2">
-                              {product.sellingPriceTaxType ? "Yes" : "No"}
-                            </td>
-                            <td className="px-4 py-2">
-                              ₹{product.totalAmount.toFixed(2)}
-                            </td>
-                            <td className="px-4 py-2">
-                              {product.actionQty >= 1 && (
-                                <>
-                                  <button
-                                    className="bg-blue-500 text-white rounded w-1/5"
-                                    onClick={() =>
-                                      handleActionQty("-", product.id)
-                                    }
-                                  >
-                                    -
-                                  </button>
-                                  <span className="px-2">
-                                    {product.actionQty}
-                                  </span>{" "}
-                                </>
-                              )}
-                              <button
-                                className="bg-blue-500 text-white  rounded w-1/5 "
-                                onClick={() => handleActionQty("+", product.id)}
-                                disabled={product.quantity === 0}
-                              >
-                                +
-                              </button>
-                            </td>
-                          </tr>
-                        )
-                    )
-                  ) : (
-                    <tr>
-                      <td colSpan="7" className="py-10 text-center">
-                        No Product Selected
-                      </td>
-                    </tr>
-                    // <tr>
-                    //   <td colSpan="7" className="py-10 text-center">
-                    //     <div className="flex flex-col items-center">
-                    //       <p>
-                    //         Search existing products to add to this list or add
-                    //         a new product to get started!
-                    //       </p>
-                    //       <button
-                    //         className="bg-blue-500 text-white py-1 px-4 rounded mt-4"
-                    //         onClick={() => setIsSidebarOpen(true)}
-                    //       >
-                    //         + Add Items
-                    //       </button>
-                    //     </div>
-                    //   </td>
-                    // </tr>
-                  )}
-                </tbody>
-              </table>
-              {isSidebarOpen && (
-                <Sidebar
-                  isOpen={isSidebarOpen}
-                  onClose={() => setIsSidebarOpen(false)}
-                  productList={products}
-                  handleActionQty={handleActionQty}
-                  totalAmount={+totalAmounts.totalAmount}
+          <div className="bg-violet-50 p-4 rounded-lg mb-6">
+            <h2 className="font-semibold mb-2">Products Details</h2>
+            <div className="flex justify-between items-center mb-4 space-x-3">
+              <div className="flex  items-center w-full">
+                <select
+                  className="w-1/4 rounded-s-md py-3 bg-gray-200 px-3 border-r-2"
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                >
+                  <option value={""}>All Categories</option>
+                  {categories.map((ele) => (
+                    <option key={ele} value={ele}>
+                      {ele}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="text"
+                  className="w-1/2 rounded-e-md py-3 px-3"
+                  placeholder="Search..."
+                  // onChange={(e) => {}}
                 />
-              )}
+              </div>
+              <button
+                className="bg-[#442799] text-white text-center w-48  px-5 py-3 pt-2 font-semibold rounded-md"
+                onClick={() => setIsSidebarOpen(true)}
+              >
+                <span className="text-2xl">+</span> Add Items
+              </button>
             </div>
-            <div className="w-full mt-4 border-t pt-4 bg-gray-50 p-4 ">
+
+            <div className="bg-white border-2 rounded-md overflow-hidden">
+              <div className="mb-4 rounded-md">
+                <table className="min-w-full text-center text-gray-500 font-semibold rounded-md ">
+                  <thead className="border-b bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-1 text-gray-500 font-semibold text-start">
+                        Product Name
+                      </th>
+                      <th className="px-4 py-1 text-gray-500 font-semibold">
+                        Unit Price
+                      </th>
+                      <th className="px-4 py-1 text-gray-500 font-semibold">
+                        Discount
+                      </th>
+                      <th className="px-4 py-1 text-gray-500 font-semibold">
+                        Net Amount
+                      </th>
+                      <th className="px-4 py-1 text-gray-500 font-semibold">
+                        Tax
+                      </th>
+                      <th className="px-4 py-1 text-gray-500 font-semibold">
+                        Total Amount
+                      </th>
+                      <th className="px-4 py-1 text-gray-500 font-semibold">
+                        Quantity
+                      </th>
+                      <th className="px-4 py-1 text-gray-500 font-semibold">
+                        Delete
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.length > 0 && isProductSelected ? (
+                      products.map(
+                        (product) =>
+                          product.actionQty > 0 && (
+                            <tr key={product.id} className="text-black">
+                              <td className="px-4 py-2 text-start space-y-2">
+                                <div>{product.name}</div>
+                                <div className="text-xs text-gray-400">
+                                  {!product.isAddDescription ? (
+                                    <button
+                                      className="border-2 rounded-md px-2 py-1"
+                                      onClick={() => {
+                                        setProducts(
+                                          products.map((ele) => {
+                                            if (ele.id == product.id) {
+                                              ele.isAddDescription = true;
+                                            }
+                                            return ele;
+                                          })
+                                        );
+                                      }}
+                                    >
+                                      + Add Description
+                                    </button>
+                                  ) : (
+                                    <div>
+                                      <input
+                                        type="text"
+                                        value={product.description}
+                                        className="border  rounded-md px-2 py-1"
+                                        onBlur={(e) => {
+                                          setProducts(
+                                            products.map((ele) => {
+                                              if (ele.id == product.id) {
+                                                ele.description =
+                                                  e.target.value;
+                                              }
+                                              return ele;
+                                            })
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                              {/* <td className="px-4 py-2">{product.quantity}</td> */}
+                              <td className="px-4 py-2">
+                                ₹{product.sellingPrice.toFixed(2)}
+                              </td>
+                              <td className="px-4 py-2">
+                                ₹ &nbsp;
+                                <input
+                                  type="text"
+                                  defaultValue={product.discount.toFixed(2)}
+                                  className="border-2 w-1/4 rounded-md px-2"
+                                />
+                              </td>
+                              <td className="px-4 py-2">
+                                ₹{product.netAmount.toFixed(2)}
+                              </td>
+                              <td className="px-2 py-2">
+                                {/* {product.sellingPriceTaxType ? "Yes" : "No"} */}
+                                {product.tax}%{" "}
+                                <span className="text-xs">
+                                  ({product.taxAmount.toFixed(2)})
+                                </span>
+                              </td>
+                              <td className="px-4 py-2">
+                                ₹{product.totalAmount.toFixed(2)}
+                              </td>
+                              <td className="px-1 py-2 space-x-1">
+                                {product.actionQty >= 1 && (
+                                  <>
+                                    <button
+                                      className="bg-blue-500 text-white rounded w-1/4 "
+                                      onClick={() =>
+                                        handleActionQty("-", product.id)
+                                      }
+                                    >
+                                      -
+                                    </button>
+                                    <input
+                                      type="number"
+                                      value={product.actionQty}
+                                      onChange={(e) => {
+                                        const { value } = e.target;
+                                        customActionQty(+value, product.id);
+                                      }}
+                                      className="border rounded-md text-sm w-10 px-2 py-1 text-center"
+                                    />
+                                  </>
+                                )}
+                                <button
+                                  className="bg-blue-500 text-white  rounded w-1/4 "
+                                  onClick={() =>
+                                    handleActionQty("+", product.id)
+                                  }
+                                  disabled={product.quantity === 0}
+                                >
+                                  +
+                                </button>
+                              </td>
+                              <td className=" text-red-600">
+                                <div
+                                  className="flex item-center justify-center"
+                                  onClick={() =>
+                                    customActionQty(0, product.id, true)
+                                  }
+                                >
+                                  <RiDeleteBin6Line />
+                                </div>
+                              </td>
+                            </tr>
+                          )
+                      )
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan="7"
+                          className="py-10 text-center space-y-3  w-full"
+                        >
+                          <div className="w-full flex justify-center">
+                            <img
+                              src={addItem}
+                              alt="add Item"
+                              className="w-24 h-24"
+                            />
+                          </div>
+
+                          <div>No Products added to the Invoice</div>
+                          <button
+                            className=" bg-[#442799] text-white text-center w-48  px-3 py-2 pt-1 font-semibold rounded-md"
+                            onClick={() => setIsSidebarOpen(true)}
+                          >
+                            <div>Choose Products</div>
+                          </button>
+                        </td>
+                      </tr>
+                      // <tr>
+                      //   <td colSpan="7" className="py-10 text-center">
+                      //     <div className="flex flex-col items-center">
+                      //       <p>
+                      //         Search existing products to add to this list or add
+                      //         a new product to get started!
+                      //       </p>
+                      //       <button
+                      //         className="bg-blue-500 text-white py-1 px-4 rounded mt-4"
+                      //         onClick={() => setIsSidebarOpen(true)}
+                      //       >
+                      //         + Add Items
+                      //       </button>
+                      //     </div>
+                      //   </td>
+                      // </tr>
+                    )}
+                  </tbody>
+                </table>
+                {isSidebarOpen && (
+                  <Sidebar
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)}
+                    productList={products}
+                    handleActionQty={handleActionQty}
+                    totalAmount={+totalAmounts.totalAmount}
+                    customActionQty={customActionQty}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="bg-orange-50 p-4 rounded-lg  mb-6">
+            <div className="pb-3 font-semibold">Shipping & Banking Details</div>
+            <div className="w-full pt-4 bg-white p-4 rounded-lg">
               <div className="w-full grid grid-cols-3 gap-4">
-                <div className="w-full ">
-                  <div>Dispatch From</div>
+                <div className="w-full text-gray-500 space-y-2">
+                  <div>Shipping From</div>
                   <select
                     value={formData?.warehouse?.warehouseRef?.id || ""}
                     onChange={onSelectWarehouse}
-                    className="border p-2 rounded w-full"
+                    className="border p-2 rounded-md w-full"
                   >
                     <option value="" disabled>
                       Select WareHouse
@@ -968,7 +1130,7 @@ const SetInvoice = () => {
                       ))}
                   </select>
                 </div>
-                <div className="w-full ">
+                <div className="w-full text-gray-500 space-y-2">
                   <div>Bank/Book</div>
                   <select
                     value={formData.book.bookRef?.id || ""}
@@ -986,21 +1148,20 @@ const SetInvoice = () => {
                       ))}
                   </select>
                 </div>
-                <div className="w-full ">
+                <div className="w-full text-gray-500 space-y-2">
                   <div>Sign</div>
                   <select
                     value=""
                     onChange={() => {}}
-                    className="border p-2 rounded w-full"
+                    className="border p-2 rounded-md w-full"
                   >
                     <option value="" disabled>
                       Select Sign
                     </option>
                   </select>
                 </div>
-                <div className="w-full ">
+                <div className="w-full text-gray-500 space-y-2 ">
                   <div>Attach Files</div>
-
                   <input
                     type="file"
                     className="flex h-10 w-full rounded-md border border-input
@@ -1009,13 +1170,13 @@ const SetInvoice = () => {
                   file:font-medium"
                   />
                 </div>
-                <div className="w-full ">
+                <div className="w-full text-gray-500 space-y-2 ">
                   <div>Shipping Charges</div>
                   <input
                     type="number"
                     value={formData.shippingCharges || ""}
                     placeholder="Shipping Charges"
-                    className="border p-2 rounded w-full"
+                    className="border p-2 rounded-md w-full"
                     min={0}
                     onChange={(e) => {
                       setFormData((val) => ({
@@ -1025,13 +1186,13 @@ const SetInvoice = () => {
                     }}
                   />
                 </div>
-                <div className="w-full ">
+                <div className="w-full text-gray-500 space-y-2 ">
                   <div>Packaging Charges</div>
                   <input
                     type="number"
                     value={formData.packagingCharges || ""}
                     placeholder="Packaging Charges"
-                    className="border p-2 rounded w-full"
+                    className="border p-2 rounded-md w-full"
                     min={0}
                     onChange={(e) => {
                       setFormData((val) => ({
@@ -1041,35 +1202,7 @@ const SetInvoice = () => {
                     }}
                   />
                 </div>
-                <div className="w-full ">
-                  <div>Notes</div>
-                  <input
-                    type="text"
-                    value={formData.notes}
-                    placeholder="Notes"
-                    className="border p-2 rounded w-full"
-                    onChange={(e) => {
-                      setFormData((val) => ({
-                        ...val,
-                        notes: e.target.value,
-                      }));
-                    }}
-                  />
-                </div>
-                <div className="w-full ">
-                  <div>Terms</div>
-                  <textarea
-                    type="text"
-                    value={formData.terms}
-                    className="border p-2 rounded w-full max-h-16 min-h-16"
-                    onChange={(e) => {
-                      setFormData((val) => ({
-                        ...val,
-                        terms: e.target.value,
-                      }));
-                    }}
-                  />
-                </div>
+
                 <div className="w-full flex justify-between items-center mt-5 space-x-3">
                   <div>TDS</div>
                   <div>
@@ -1168,15 +1301,120 @@ const SetInvoice = () => {
                 </div>
               </div>
             </div>
-            <div className="flex justify-end items-center mt-4 border-t pt-4 bg-gray-50 p-4 ">
-              <div className="flex justify-between">
-                <div className="flex space-x-3 items-center">
-                  <div className=""> Extra Discount: </div>
+          </div>
+          <div className=" mt-4   p-4 ">
+            <div className="flex justify-between">
+              <div className="w-full">
+                <div className="w-full text-gray-500 space-y-2 ">
+                  <div className="font-semibold">Notes</div>
+                  <textarea
+                    type="text"
+                    value={formData.notes}
+                    placeholder="Notes"
+                    className="border p-2 rounded-md w-full max-h-24 min-h-24 resize-none"
+                    onChange={(e) => {
+                      setFormData((val) => ({
+                        ...val,
+                        notes: e.target.value,
+                      }));
+                    }}
+                  />
+                </div>
+                <div className="w-full text-gray-500 space-y-2 ">
+                  <div className="font-semibold">Terms</div>
+                  <textarea
+                    type="text"
+                    value={formData.terms}
+                    className="border p-2 rounded-md w-full max-h-24 min-h-24 resize-none "
+                    onChange={(e) => {
+                      setFormData((val) => ({
+                        ...val,
+                        terms: e.target.value,
+                      }));
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="p-6" style={{ width: "700px" }}>
+                {formData.shippingCharges > 0 && (
+                  <div className="flex justify-between text-gray-700 mb-2">
+                    <span>Shipping Charges</span>
+                    <span>₹ {formData.shippingCharges.toFixed(2)}</span>
+                  </div>
+                )}
+                {formData.packagingCharges > 0 && (
+                  <div className="flex justify-between text-gray-700 mb-2">
+                    <span>Packaging Charges</span>
+                    <span>₹ {formData.packagingCharges.toFixed(2)}</span>
+                  </div>
+                )}
+                {taxSelect !== "" && (
+                  <div className="flex justify-between text-gray-700 mb-2">
+                    <span>{taxSelect.toUpperCase()}</span>
+                    <span>₹ {total_Tax_Amount.toFixed(2)}</span>
+                  </div>
+                )}
+
+                {totalAmounts.totalTaxableAmount > 0 && (
+                  <div className="flex justify-between text-gray-700 mb-2">
+                    <span>Taxable Amount</span>
+                    <span>₹ {totalAmounts.totalTaxableAmount.toFixed(2)}</span>
+                  </div>
+                )}
+                {totalAmounts.totalSgstAmount_2_5 > 0 && (
+                  <div className="flex justify-between text-gray-700 mb-2">
+                    <span>SGST(2.5%)</span>
+                    <span>₹ {totalAmounts.totalSgstAmount_2_5.toFixed(2)}</span>
+                  </div>
+                )}
+                {totalAmounts.totalCgstAmount_2_5 > 0 && (
+                  <div className="flex justify-between text-gray-700 mb-2">
+                    <span>CGST(2.5%)</span>
+                    <span>₹ {totalAmounts.totalCgstAmount_2_5.toFixed(2)}</span>
+                  </div>
+                )}
+                {totalAmounts.totalSgstAmount_6 > 0 && (
+                  <div className="flex justify-between text-gray-700 mb-2">
+                    <span>SGST(6%)</span>
+                    <span>₹ {totalAmounts.totalSgstAmount_6.toFixed(2)}</span>
+                  </div>
+                )}
+                {totalAmounts.totalCgstAmount_6 > 0 && (
+                  <div className="flex justify-between text-gray-700 mb-2">
+                    <span>CGST(6%)</span>
+                    <span>₹ {totalAmounts.totalCgstAmount_6.toFixed(2)}</span>
+                  </div>
+                )}
+                {totalAmounts.totalSgstAmount_9 > 0 && (
+                  <div className="flex justify-between text-gray-700 mb-2">
+                    <span>SGST(9%)</span>
+                    <span>₹ {totalAmounts.totalSgstAmount_9.toFixed(2)}</span>
+                  </div>
+                )}
+                {totalAmounts.totalCgstAmount_9 > 0 && (
+                  <div className="flex justify-between text-gray-700 mb-2">
+                    <span>CGST(9%)</span>
+                    <span>₹ {totalAmounts.totalCgstAmount_9.toFixed(2)}</span>
+                  </div>
+                )}
+                {/* {formData?.extraDiscount > 0 && isProductSelected && ( */}
+                <div className="flex justify-between text-gray-700 mb-2">
+                  <span>Extra Discount Amount</span>
+                  {/* <span>
+                    ₹{" "}
+                    {formData.extraDiscountType === "percentage"
+                      ? (
+                          (+totalAmounts.totalAmount *
+                            formData?.extraDiscount) /
+                          100
+                        ).toFixed(2)
+                      : formData?.extraDiscount}
+                  </span> */}
                   <div>
                     <input
                       type="number"
-                      className="border p-2 rounded"
-                      value={formData?.extraDiscount || ""}
+                      className="border px-2 py-1 rounded-s-md w-20 focus:outline-none text-sm"
+                      defaultValue={formData?.extraDiscount || 0}
                       onChange={(e) => {
                         setFormData((val) => ({
                           ...val,
@@ -1185,7 +1423,7 @@ const SetInvoice = () => {
                       }}
                     />
                     <select
-                      className="border p-2 rounded"
+                      className="border px-2 rounded-e-md text-sm py-1"
                       value={formData?.extraDiscountType || "percentage"}
                       onChange={(e) => {
                         setFormData((val) => ({
@@ -1195,121 +1433,42 @@ const SetInvoice = () => {
                       }}
                     >
                       <option value="percentage">%</option>
-                      <option value="fixed">Fixed</option>
+                      <option value="fixed">₹</option>
                     </select>
                   </div>
                 </div>
-                <div className=" p-6" style={{ width: "600px" }}>
-                  {formData.shippingCharges > 0 && (
-                    <div className="flex justify-between text-gray-700 mb-2">
-                      <span>Shipping Charges</span>
-                      <span>₹ {formData.shippingCharges.toFixed(2)}</span>
-                    </div>
-                  )}
-                  {formData.packagingCharges > 0 && (
-                    <div className="flex justify-between text-gray-700 mb-2">
-                      <span>Packaging Charges</span>
-                      <span>₹ {formData.packagingCharges.toFixed(2)}</span>
-                    </div>
-                  )}
-                  {taxSelect !== "" && (
-                    <div className="flex justify-between text-gray-700 mb-2">
-                      <span>{taxSelect.toUpperCase()}</span>
-                      <span>₹ {total_Tax_Amount.toFixed(2)}</span>
-                    </div>
-                  )}
-
-                  {totalAmounts.totalTaxableAmount > 0 && (
-                    <div className="flex justify-between text-gray-700 mb-2">
-                      <span>Taxable Amount</span>
-                      <span>
-                        ₹ {totalAmounts.totalTaxableAmount.toFixed(2)}
-                      </span>
-                    </div>
-                  )}
-                  {totalAmounts.totalSgstAmount_2_5 > 0 && (
-                    <div className="flex justify-between text-gray-700 mb-2">
-                      <span>SGST(2.5%)</span>
-                      <span>
-                        ₹ {totalAmounts.totalSgstAmount_2_5.toFixed(2)}
-                      </span>
-                    </div>
-                  )}
-                  {totalAmounts.totalCgstAmount_2_5 > 0 && (
-                    <div className="flex justify-between text-gray-700 mb-2">
-                      <span>CGST(2.5%)</span>
-                      <span>
-                        ₹ {totalAmounts.totalCgstAmount_2_5.toFixed(2)}
-                      </span>
-                    </div>
-                  )}
-                  {totalAmounts.totalSgstAmount_6 > 0 && (
-                    <div className="flex justify-between text-gray-700 mb-2">
-                      <span>SGST(6%)</span>
-                      <span>₹ {totalAmounts.totalSgstAmount_6.toFixed(2)}</span>
-                    </div>
-                  )}
-                  {totalAmounts.totalCgstAmount_6 > 0 && (
-                    <div className="flex justify-between text-gray-700 mb-2">
-                      <span>CGST(6%)</span>
-                      <span>₹ {totalAmounts.totalCgstAmount_6.toFixed(2)}</span>
-                    </div>
-                  )}
-                  {totalAmounts.totalSgstAmount_9 > 0 && (
-                    <div className="flex justify-between text-gray-700 mb-2">
-                      <span>SGST(9%)</span>
-                      <span>₹ {totalAmounts.totalSgstAmount_9.toFixed(2)}</span>
-                    </div>
-                  )}
-                  {totalAmounts.totalCgstAmount_9 > 0 && (
-                    <div className="flex justify-between text-gray-700 mb-2">
-                      <span>CGST(9%)</span>
-                      <span>₹ {totalAmounts.totalCgstAmount_9.toFixed(2)}</span>
-                    </div>
-                  )}
-                  {formData?.extraDiscount > 0 && isProductSelected && (
-                    <div className="flex justify-between text-gray-700 mb-2">
-                      <span>Extra Discount Amount</span>
-                      <span>
-                        ₹{" "}
-                        {formData.extraDiscountType === "percentage"
-                          ? (+totalAmounts.totalAmount *
-                              formData?.extraDiscount) /
-                            100
-                          : formData?.extraDiscount}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex justify-between font-bold text-xl mb-2">
-                    <span>Total Amount</span>
-                    <span>₹ {calculateTotal()}</span>
-                  </div>
+                {/* )} */}
+                <div className="flex justify-between font-bold text-xl mb-2">
+                  <span>Total Amount</span>
+                  <span>₹ {calculateTotal()}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="mt-6 flex justify-end">
-          <div className="flex gap-2">
-            {/* <button className="border border-blue-500 text-blue-500 py-1 px-4 rounded-lg flex items-center gap-1">
-              <span className="text-lg">+</span> Add to Product
-            </button> */}
-            <button
-              className="bg-blue-500 text-white py-1 px-4 rounded-lg flex items-center gap-1"
-              onClick={() => {
-                {
-                  products.length > 0 && isProductSelected
-                    ? onSetInvoice()
-                    : alert("Please select items to proceed.");
-                }
-              }}
-            >
-              <span className="text-lg">+</span> {invoiceId ? "Edit" : "Create"}{" "}
-              Invoice
-            </button>
-          </div>
-        </div>
       </div>
+      <div className="flex justify-end sticky bottom-0 bg-white p-2 pe-10 border-t mt-5">
+        <button
+          className=" py-1 px-4 rounded-lg flex items-center gap-1 bg-[#442799] text-white text-center w-48  px-5 py-3 pt-2 font-semibold rounded-md"
+          onClick={() => {
+            {
+              products.length > 0 && isProductSelected
+                ? onSetInvoice()
+                : alert("Please select items to proceed.");
+            }
+          }}
+        >
+          <span className="text-lg">+</span> {invoiceId ? "Edit" : "Create"}{" "}
+          Invoice
+        </button>
+      </div>
+
+      <CreateCustomer
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+        }}
+      />
     </div>
   );
 };
