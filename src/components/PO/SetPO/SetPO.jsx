@@ -593,6 +593,7 @@ const SetPO = () => {
           };
       const payload = {
         ...formData,
+        prefix,
         tds,
         tcs,
         date,

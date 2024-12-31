@@ -263,6 +263,7 @@ function EditService() {
 
       const payload = {
         ...formData,
+        prefix,
         date: serviceDate,
         dueDate: serviceDueDate,
         subTotal: +totalAmounts.subTotalAmount,

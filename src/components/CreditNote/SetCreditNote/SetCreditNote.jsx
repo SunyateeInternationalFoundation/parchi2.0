@@ -567,6 +567,7 @@ const SetCreditNote = () => {
           };
       const payload = {
         ...formData,
+        prefix,
         tds,
         tcs,
         date,

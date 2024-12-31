@@ -571,6 +571,7 @@ const SetPurchase = () => {
           };
       const payload = {
         ...formData,
+        prefix,
         tds,
         tcs,
         date,

@@ -597,6 +597,7 @@ const SetDebitNote = () => {
           };
       const payload = {
         ...formData,
+        prefix,
         tds,
         tcs,
         date,
