@@ -78,11 +78,11 @@ const Purchase = () => {
         "purchases",
         purchaseId
       );
-      await updateDoc(purchaseDoc, { paymentStatus: newStatus });
+      await updateDoc(purchaseDoc, { orderStatus: newStatus });
       setPurchases((prevPurchases) =>
         prevPurchases.map((purchase) =>
           purchase.id === purchaseId
-            ? { ...purchase, paymentStatus: newStatus }
+            ? { ...purchase, orderStatus: newStatus }
             : purchase
         )
       );
@@ -96,15 +96,15 @@ const Purchase = () => {
     0
   );
 
-  const paidAmount = purchases
-    .filter((purchase) => purchase.paymentStatus === "Paid")
+  const receivedAmount = purchases
+    .filter((purchase) => purchase.orderStatus === "Received")
     .reduce((sum, purchase) => sum + purchase.total, 0);
   const pendingAmount = purchases
-    .filter((purchase) => purchase.paymentStatus === "Pending")
+    .filter((purchase) => purchase.orderStatus === "Pending")
     .reduce((sum, purchase) => sum + purchase.total, 0);
   useEffect(() => {
     const filteredPurchases = purchases.filter((purchase) => {
-      const { vendorDetails, purchaseNo, paymentStatus } = purchase;
+      const { vendorDetails, purchaseNo, orderStatus } = purchase;
       const VendorName = vendorDetails?.name || "";
       const matchesSearch =
         VendorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -118,7 +118,7 @@ const Purchase = () => {
           .includes(searchTerm.toLowerCase());
 
       const matchesStatus =
-        filterStatus === "All" || paymentStatus === filterStatus;
+        filterStatus === "All" || orderStatus === filterStatus;
 
       return matchesSearch && matchesStatus;
     });
@@ -143,10 +143,10 @@ const Purchase = () => {
               </div>
             </div>
             <div className="rounded-lg p-5 bg-white shadow ">
-              <div className="text-lg"> Paid Amount</div>
+              <div className="text-lg"> Received Amount</div>
               <div className="text-3xl text-emerald-600 font-bold p-2">
                 {" "}
-                ₹ {paidAmount}
+                ₹ {receivedAmount}
               </div>
             </div>
             <div className="rounded-lg p-5 bg-white shadow ">
@@ -156,9 +156,9 @@ const Purchase = () => {
               </div>
             </div>
             <div className="rounded-lg p-5 bg-white shadow">
-              <div className="text-lg">UnPaid Amount</div>
+              <div className="text-lg">Total Amount</div>
               <div className="text-3xl text-red-600 font-bold p-2">
-                ₹ {totalAmount - paidAmount}
+                ₹ {totalAmount}
               </div>
             </div>
           </div>
@@ -181,8 +181,7 @@ const Purchase = () => {
                 <select onChange={(e) => setFilterStatus(e.target.value)}>
                   <option value="All"> All Transactions</option>
                   <option value="Pending">Pending</option>
-                  <option value="Paid">Paid</option>
-                  <option value="UnPaid">UnPaid</option>
+                  <option value="Received">Received</option>
                 </select>
               </div>
             </div>
@@ -259,35 +258,29 @@ const Purchase = () => {
                             className="px-5 py-1"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            {" "}
                             <div
                               className={`px-1 text-center py-2 rounded-lg text-xs  ${
-                                purchase.paymentStatus === "Paid"
-                                  ? "bg-green-100 "
-                                  : purchase.paymentStatus === "Pending"
-                                  ? "bg-yellow-100 "
-                                  : "bg-red-100 "
+                                purchase.orderStatus !== "Pending"
+                                  ? "bg-green-200 "
+                                  : "bg-red-200 "
                               }`}
                             >
                               <select
-                                value={purchase.paymentStatus}
+                                value={purchase.orderStatus}
                                 onChange={(e) => {
                                   handleStatusChange(
                                     purchase.id,
                                     e.target.value
                                   );
                                 }}
-                                className={`${
-                                  purchase.paymentStatus === "Paid"
-                                    ? "bg-green-100 "
-                                    : purchase.paymentStatus === "Pending"
-                                    ? "bg-yellow-100 "
-                                    : "bg-red-100 "
+                                className={` ${
+                                  purchase.orderStatus !== "Pending"
+                                    ? "bg-green-200 "
+                                    : "bg-red-200 "
                                 }`}
                               >
                                 <option value="Pending">Pending</option>
-                                <option value="Paid">Paid</option>
-                                <option value="UnPaid">UnPaid</option>
+                                <option value="Received">Received</option>
                               </select>
                             </div>
                           </td>

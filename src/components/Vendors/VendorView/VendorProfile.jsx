@@ -1,9 +1,11 @@
 import { doc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import { FaUserEdit } from "react-icons/fa";
+import { FaArrowDown, FaArrowUp, FaUserEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { db, storage } from "../../../firebase";
+
 const VendorProfile = ({ vendorData, refresh }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [UpdatedData, setUpdatedData] = useState(vendorData);
@@ -86,7 +88,7 @@ const VendorProfile = ({ vendorData, refresh }) => {
   return (
     <>
       {UpdatedData.id ? (
-        <div className="p-6 max-w-4xl mx-auto">
+        <div className="p-8  mx-auto">
           <div className="bg-white shadow-sm rounded-lg overflow-hidden">
             {progress > 0 && (
               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -98,18 +100,20 @@ const VendorProfile = ({ vendorData, refresh }) => {
             )}
             <div className="p-6">
               <div className="flex items-center space-x-6 mb-6">
-                {UpdatedData.profileImage ? (
-                  <img
-                    src={UpdatedData.profileImage}
-                    alt="Profile"
-                    className="w-20 h-20 rounded-full object-cover shadow-md"
-                  />
-                ) : (
-                  <span className="bg-purple-500 text-white w-20 h-20 flex items-center justify-center rounded-full text-2xl shadow-md">
-                    {UpdatedData.name.charAt(0).toUpperCase()}
-                  </span>
-                )}
-                <div className="flex-1">
+                <div className="w-1/5">
+                  {UpdatedData.profileImage ? (
+                    <img
+                      src={UpdatedData.profileImage}
+                      alt="Profile"
+                      className="w-20 h-20 rounded-full object-cover shadow-md"
+                    />
+                  ) : (
+                    <span className="bg-purple-500 text-white w-20 h-20 flex items-center justify-center rounded-full text-2xl shadow-md">
+                      {UpdatedData.name.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                </div>
+                <div className="w-full">
                   <div className="text-xl font-semibold">
                     {isEdit ? (
                       <input
@@ -128,17 +132,7 @@ const VendorProfile = ({ vendorData, refresh }) => {
                     )}
                   </div>
                   {!isEdit &&
-                    (userDetails.selectedDashboard === "staff" ? (
-                      role?.edit && (
-                        <button
-                          className="flex items-center space-x-2 text-purple-600 hover:text-purple-800 mt-2"
-                          onClick={() => setIsEdit(true)}
-                        >
-                          <FaUserEdit />
-                          <span>Edit Profile</span>
-                        </button>
-                      )
-                    ) : (
+                    (userDetails.selectedDashboard === "" || role?.edit) && (
                       <button
                         className="flex items-center space-x-2 text-purple-600 hover:text-purple-800 mt-2"
                         onClick={() => setIsEdit(true)}
@@ -146,7 +140,7 @@ const VendorProfile = ({ vendorData, refresh }) => {
                         <FaUserEdit />
                         <span>Edit Profile</span>
                       </button>
-                    ))}
+                    )}
                   {isEdit && (
                     <input
                       type="file"
@@ -154,6 +148,26 @@ const VendorProfile = ({ vendorData, refresh }) => {
                       onChange={handleFileChange}
                     />
                   )}
+                </div>
+                <div className="w-full flex space-x-3">
+                  <div className="bg-green-50 rounded-lg p-5 w-full flex items-center space-x-3">
+                    <div className="text-green-500 p-3 bg-sky-100 rounded-lg text-xl">
+                      <FaArrowDown />
+                    </div>
+                    <div>
+                      <div className="text-lg">Income</div>
+                      <div className="text-3xl text-green-600 font-bold">0</div>
+                    </div>
+                  </div>
+                  <div className="bg-red-50 rounded-lg p-5 w-full flex items-center space-x-3 text-xl">
+                    <div className="text-red-500 p-3 bg-sky-100 rounded-lg">
+                      <FaArrowUp />
+                    </div>
+                    <div>
+                      <div className="text-lg">Expenses</div>
+                      <div className="text-3xl text-red-600 font-bold">0</div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -285,6 +299,10 @@ const VendorProfile = ({ vendorData, refresh }) => {
       )}
     </>
   );
+};
+VendorProfile.propTypes = {
+  vendorData: PropTypes.object.isRequired,
+  refresh: PropTypes.func.isRequired,
 };
 
 export default VendorProfile;

@@ -1,5 +1,6 @@
 import { addDoc, collection, doc, serverTimestamp } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
@@ -228,6 +229,11 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded }) => {
       </div>
     </div>
   );
+};
+CreateVendor.propTypes = {
+  isOpen: PropTypes.bool,
+  onClose: PropTypes.func,
+  onVendorAdded: PropTypes.func,
 };
 
 export default CreateVendor;

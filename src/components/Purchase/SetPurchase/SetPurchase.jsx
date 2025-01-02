@@ -56,7 +56,7 @@ const SetPurchase = () => {
   const [formData, setFormData] = useState({
     warehouse: {},
     discount: 0,
-    paymentStatus: "Pending",
+    orderStatus: "Pending",
     notes: "",
     purchaseNo: "",
     packagingCharges: 0,

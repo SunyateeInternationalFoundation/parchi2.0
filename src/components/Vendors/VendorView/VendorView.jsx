@@ -7,7 +7,7 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { AiOutlineArrowLeft } from "react-icons/ai";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
@@ -32,7 +32,7 @@ function VendorView() {
   const [activeTab, setActiveTab] = useState("Profile");
   const [vendorsPOData, setVendorsPOData] = useState([]);
   const [vendorsProjectsData, setvendorsProjectsData] = useState([]);
-  const [vendorData, setVendorData] = useState([]);
+  const [vendorData, setVendorData] = useState({});
 
   function DateFormate(timestamp) {
     const milliseconds =
@@ -62,24 +62,32 @@ function VendorView() {
 
   useEffect(() => {
     async function fetchPOList() {
+      const tabs = {
+        purchases: "purchaseNo",
+        po: "poNo",
+        debitNote: "debitNoteNo",
+      };
       try {
-        const invoiceRef = collection(db, `/companies/${companyId}/po`);
-        const q = query(
-          invoiceRef,
-          where("vendorDetails.vendorRef", "==", vendorsRef)
-        );
-        const querySnapshot = await getDocs(q);
+        let purchasesData = {};
+        for (let tab of Object.keys(tabs)) {
+          const invoiceRef = collection(db, `/companies/${companyId}/${tab}`);
+          const q = query(
+            invoiceRef,
+            where("vendorDetails.vendorRef", "==", vendorsRef)
+          );
+          const querySnapshot = await getDocs(q);
 
-        const vendorsInvoices = querySnapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            ...data,
-            date: DateFormate(data.date),
-          };
-        });
-
-        setVendorsPOData(vendorsInvoices);
+          const vendorsInvoices = querySnapshot.docs.map((doc) => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              ...data,
+              no: data[tabs[tab]],
+            };
+          });
+          purchasesData[tab] = vendorsInvoices;
+        }
+        setVendorsPOData(purchasesData);
       } catch (error) {
         console.log("🚀 ~ fetchInvoiceList ~ error:", error);
       }
@@ -116,18 +124,12 @@ function VendorView() {
   }, []);
 
   return (
-    <div className="px-5 pb-5 bg-gray-100" style={{ width: "100%" }}>
-      <header className="flex items-center space-x-3 my-2 ">
-        <Link
-          className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-          to={"./../"}
-        >
-          <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
+    <div className=" bg-gray-100" style={{ width: "100%" }}>
+      <header className="flex items-center bg-white  px-3 space-x-3 ">
+        <Link className="flex items-center" to={"./../"}>
+          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
         </Link>
         <h1 className="text-2xl font-bold">{vendorData.name}</h1>
-      </header>
-      <hr />
-      <div>
         <nav className="flex space-x-4 mt-3 mb-3">
           <button
             className={
@@ -151,17 +153,6 @@ function VendorView() {
           >
             Projects
           </button>
-          {/* <button
-            className={
-              "px-4 py-1" +
-              (activeTab === "Services"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
-            }
-            onClick={() => setActiveTab("Services")}
-          >
-            Services
-          </button> */}
           <button
             className={
               "px-4 py-1" +
@@ -171,10 +162,10 @@ function VendorView() {
             }
             onClick={() => setActiveTab("Bills")}
           >
-            Bills
+            Purchase
           </button>
         </nav>
-      </div>
+      </header>
       <hr />
       <div className="w-full">
         {activeTab === "Profile" && (
@@ -194,7 +185,7 @@ function VendorView() {
         )}
         {activeTab === "Bills" && (
           <div>
-            <VendorBills PoData={vendorsPOData} />
+            <VendorBills purchasesData={vendorsPOData} />
           </div>
         )}
       </div>

@@ -429,21 +429,17 @@ const SetInvoice = () => {
   };
 
   useEffect(() => {
-    setIsProductDropdownVisible(true);
     if (selectedCategory === "" && productSearch === "") {
       setProductSuggestions(products);
       return;
     }
-    console.log("🚀 ~ useEffect ~ selectedCategory:", selectedCategory);
     const filteredSuggestions = products.filter((item) => {
       return (
         item.name.toLowerCase().includes(productSearch.toLowerCase()) &&
         item.category === selectedCategory
       );
     });
-    console.log("🚀 ~ useEffect ~ filteredSuggestions:", filteredSuggestions);
     setProductSuggestions(filteredSuggestions);
-    setIsProductDropdownVisible(true);
   }, [productSearch, selectedCategory]);
 
   const handleSelectCustomer = (item) => {
@@ -950,7 +946,9 @@ const SetInvoice = () => {
                     onChange={(e) => setProductSearch(e.target.value.trim())}
                     onFocus={() => {
                       setIsProductDropdownVisible(true);
-                      setProductSuggestions((val) => val || []);
+                      setProductSuggestions((val) =>
+                        val.length > 0 ? val : products
+                      );
                     }}
                     onBlur={() => {
                       setTimeout(() => {
