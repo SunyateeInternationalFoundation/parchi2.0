@@ -87,11 +87,11 @@ const Profile = ({ customerData, refresh }) => {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className=" px-8 py-8">
       {!UpdatedData.id ? (
         <div className="text-gray-500 text-center">Loading customer...</div>
       ) : (
-        <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div className="bg-white shadow rounded-lg overflow-hidden">
           {progress > 0 && (
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
@@ -115,7 +115,7 @@ const Profile = ({ customerData, refresh }) => {
                 </span>
               )}
               <div className="flex-1">
-                <div className="text-xl font-semibold">
+                <div className="text-2xl font-semibold">
                   {isEdit ? (
                     <input
                       type="text"

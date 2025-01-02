@@ -7,7 +7,7 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { AiOutlineArrowLeft } from "react-icons/ai";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
@@ -28,9 +28,6 @@ function CustomerView() {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   }
-  let role =
-    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
-      ?.customers;
   const [activeTab, setActiveTab] = useState("Profile");
   const [customersInvoicesData, setCustomersInvoicesData] = useState([]);
   const [customersServicesData, setCustomersServicesData] = useState([]);
@@ -66,7 +63,48 @@ function CustomerView() {
   useEffect(() => {
     async function fetchInvoiceList() {
       try {
-        const invoiceRef = collection(db, `/companies/${companyId}/invoices`);
+        const sales = [
+          "invoices",
+          "quotations",
+          "proFormaInvoice",
+          "creditNote",
+          "deliveryChallan",
+        ];
+        const saleNo = {
+          invoices: "invoiceNo",
+          quotations: "quotationNo",
+          proFormaInvoice: "proFormaInvoiceNo",
+          creditNote: "creditNoteNo",
+          deliveryChallan: "deliveryChallanNo",
+        };
+        let salesData = {};
+        for (let sale of sales) {
+          const invoiceRef = collection(db, `/companies/${companyId}/${sale}`);
+          const q = query(
+            invoiceRef,
+            where("customerDetails.customerRef", "==", customersRef)
+          );
+          const querySnapshot = await getDocs(q);
+
+          const data = querySnapshot.docs.map((doc) => {
+            const data = doc.data();
+
+            return {
+              id: doc.id,
+              ...data,
+              no: data[saleNo[sale]],
+            };
+          });
+          salesData[sale] = data;
+        }
+        setCustomersInvoicesData(salesData);
+      } catch (error) {
+        console.log("🚀 ~ fetchInvoiceList ~ error:", error);
+      }
+    }
+    async function fetchServicesList() {
+      try {
+        const invoiceRef = collection(db, `/companies/${companyId}/services`);
         const q = query(
           invoiceRef,
           where("customerDetails.customerRef", "==", customersRef)
@@ -78,30 +116,6 @@ function CustomerView() {
           return {
             id: doc.id,
             ...data,
-            date: DateFormate(data.date),
-          };
-        });
-
-        setCustomersInvoicesData(customersInvoices);
-      } catch (error) {
-        console.log("🚀 ~ fetchInvoiceList ~ error:", error);
-      }
-    }
-    async function fetchServicesList() {
-      try {
-        const invoiceRef = collection(db, `/companies/${companyId}/services`);
-        const q = query(
-          invoiceRef,
-          where("customerDetails.custRef", "==", customersRef)
-        );
-        const querySnapshot = await getDocs(q);
-
-        const customersInvoices = querySnapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            ...data,
-            date: DateFormate(data.date),
           };
         });
 
@@ -143,25 +157,17 @@ function CustomerView() {
   }, []);
 
   return (
-    <div className="px-5 pb-5 bg-gray-100" style={{ width: "100%" }}>
-      <header className="flex items-center space-x-3 my-2 ">
-        <Link
-          className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-          to={"./../"}
-        >
-          <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
+    <div className=" bg-gray-100" style={{ width: "100%" }}>
+      <header className="flex items-center bg-white  px-3 space-x-3 ">
+        <Link className="flex items-center" to={"./../"}>
+          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
         </Link>
-        <h1 className="text-2xl font-bold">{customerData.name}</h1>
-      </header>
-      <hr />
-      <div>
-        <nav className="flex space-x-4 mt-3 mb-3">
+        <h1 className="text-xl font-bold pe-4">{customerData.name}</h1>
+        <nav className="flex space-x-4 ">
           <button
             className={
-              "px-4 py-1" +
-              (activeTab === "Profile"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
+              "px-4 py-4 font-semibold text-gray-500 " +
+              (activeTab === "Profile" && " border-b-4 border-blue-500")
             }
             onClick={() => setActiveTab("Profile")}
           >
@@ -169,10 +175,8 @@ function CustomerView() {
           </button>
           <button
             className={
-              "px-4 py-1" +
-              (activeTab === "Projects"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
+              "px-4 py-4 font-semibold text-gray-500 " +
+              (activeTab === "Projects" && " border-b-4 border-blue-500")
             }
             onClick={() => setActiveTab("Projects")}
           >
@@ -180,28 +184,26 @@ function CustomerView() {
           </button>
           <button
             className={
-              "px-4 py-1" +
-              (activeTab === "Services"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
+              "px-4 py-4 font-semibold text-gray-500 " +
+              (activeTab === "Services" && " border-b-4 border-blue-500")
             }
             onClick={() => setActiveTab("Services")}
           >
-            Services
+            Subscription
           </button>
           <button
             className={
-              "px-4 py-1" +
-              (activeTab === "Bills"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
+              "px-4 py-4 font-semibold text-gray-500 " +
+              (activeTab === "Bills" && " border-b-4 border-blue-500")
             }
             onClick={() => setActiveTab("Bills")}
           >
-            Bills
+            Sales
           </button>
         </nav>
-      </div>
+      </header>
+      <hr />
+
       <hr />
       <div className="w-full">
         {activeTab === "Profile" && (
@@ -211,7 +213,7 @@ function CustomerView() {
         )}
         {activeTab === "Projects" && (
           <div>
-            <Projects customersProjectsData={customersProjectsData} />
+            <Projects projectsData={customersProjectsData} />
           </div>
         )}
         {activeTab === "Services" && (
@@ -221,7 +223,7 @@ function CustomerView() {
         )}
         {activeTab === "Bills" && (
           <div>
-            <Bills customersInvoicesData={customersInvoicesData} />
+            <Bills salesData={customersInvoicesData} />
           </div>
         )}
       </div>

@@ -194,7 +194,7 @@ function Projects() {
               <div className="flex items-center space-x-4  border p-2 rounded-lg w-full">
                 <input
                   type="text"
-                  placeholder="Search by invoice #..."
+                  placeholder="Search by Project #..."
                   className=" w-full focus:outline-none"
                   onChange={onSearchFilter}
                 />

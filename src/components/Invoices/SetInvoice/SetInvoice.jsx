@@ -16,16 +16,17 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import addItem from "../../../assets/addItem.png";
+import SelectProductSide from "../../../constants/SelectProductSide";
 import { db } from "../../../firebase";
 import { setAllCustomersDetails } from "../../../store/CustomerSlice";
 import CreateCustomer from "../../Customers/CreateCustomer";
-import Sidebar from "./Sidebar";
 const SetInvoice = () => {
   const { invoiceId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const userDetails = useSelector((state) => state.users);
   const customersDetails = useSelector((state) => state.customers).data;
+
   const dispatch = useDispatch();
   // let companyDetails;
   // if (!companyDetail) {
@@ -83,7 +84,7 @@ const SetInvoice = () => {
     terms: "",
     mode: "Cash",
     extraDiscount: 0,
-    extraDiscountType: "percentage",
+    extraDiscountType: true,
   });
 
   const [totalAmounts, setTotalAmounts] = useState({
@@ -100,8 +101,14 @@ const SetInvoice = () => {
   const [selectedCustomerData, setSelectedCustomerData] = useState({
     name: "",
   });
-  const [suggestions, setSuggestions] = useState([]);
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [customerSuggestions, setCustomerSuggestions] = useState([]);
+  const [productSuggestions, setProductSuggestions] = useState([]);
+  const [productSearch, setProductSearch] = useState("");
+
+  const [isCustomerDropdownVisible, setIsCustomerDropdownVisible] =
+    useState(false);
+  const [isProductDropdownVisible, setIsProductDropdownVisible] =
+    useState(false);
 
   useEffect(() => {
     function addActionQty() {
@@ -234,7 +241,7 @@ const SetInvoice = () => {
           };
         });
         dispatch(setAllCustomersDetails(customersData));
-        setSuggestions(customersData);
+        setCustomerSuggestions(customersData);
       } catch (error) {
         console.log("🚀 ~ customerDetails ~ error:", error);
       }
@@ -327,22 +334,9 @@ const SetInvoice = () => {
 
         const productsData = querySnapshot.docs.map((doc) => {
           const data = doc.data();
-          let discount = +data.discount || 0;
-
-          if (data.discountType) {
-            discount = (+data.sellingPrice / 100) * data.discount;
-          }
-          const netAmount = +data.sellingPrice - discount;
-          const taxRate = data.tax || 0;
-
-          const sgst = taxRate / 2;
-          const cgst = taxRate / 2;
-          const taxAmount = netAmount * (taxRate / 100);
-          const sgstAmount = netAmount * (sgst / 100);
-          const cgstAmount = netAmount * (cgst / 100);
-
-          return {
+          const temp = {
             id: doc.id,
+            category: data.category,
             description: data.description ?? "",
             name: data.name ?? "N/A",
             quantity: data.stock ?? 0,
@@ -350,20 +344,14 @@ const SetInvoice = () => {
             sellingPriceTaxType: data.sellingPriceTaxType,
             purchasePrice: data.purchasePrice ?? 0,
             purchasePriceTaxType: data.purchasePriceTaxType,
-            discount: discount ?? 0,
-            fieldDiscount: data.discount,
+            discount: data.discount ?? 0,
             discountType: data.discountType,
-            tax: data.tax,
-            actionQty: 0,
-            totalAmount: 0,
-            netAmount: netAmount,
-            sgst,
-            cgst,
-            sgstAmount,
-            cgstAmount,
-            taxAmount,
             isAddDescription: false,
+            actionQty: 0,
+            tax: data.tax,
+            totalAmount: 0,
           };
+          return ModifiedProductData(temp);
         });
         setProducts(productsData);
       } catch (error) {
@@ -398,31 +386,75 @@ const SetInvoice = () => {
     customerDetails();
   }, [companyDetails.companyId, userDetails.selectedDashboard]);
 
-  const handleInputChange = (e) => {
+  function ModifiedProductData(data) {
+    let discount = +data.discount || 0;
+
+    if (data.discountType) {
+      discount = (+data.sellingPrice / 100) * data.discount;
+    }
+    const netAmount = +data.sellingPrice - discount;
+    const taxRate = data.tax || 0;
+
+    const sgst = taxRate / 2;
+    const cgst = taxRate / 2;
+    const taxAmount = netAmount * (taxRate / 100);
+    const sgstAmount = netAmount * (sgst / 100);
+    const cgstAmount = netAmount * (cgst / 100);
+    const totalAmount = data.actionQty * netAmount;
+    return {
+      ...data,
+      netAmount: netAmount,
+      sgst,
+      cgst,
+      sgstAmount,
+      cgstAmount,
+      taxAmount,
+      totalAmount,
+    };
+  }
+
+  const handleCustomerInputChange = (e) => {
     const value = e.target.value.trim();
     setSelectedCustomerData({ name: value });
-    setIsDropdownVisible(true);
+    setIsCustomerDropdownVisible(true);
     if (value) {
       const filteredSuggestions = customersDetails.filter((item) =>
         item.name.toLowerCase().includes(value.toLowerCase())
       );
-      setSuggestions(filteredSuggestions);
-      setIsDropdownVisible(true);
+      setCustomerSuggestions(filteredSuggestions);
+      setIsCustomerDropdownVisible(true);
     } else {
-      setSuggestions(customersDetails);
+      setCustomerSuggestions(customersDetails);
     }
   };
 
+  useEffect(() => {
+    setIsProductDropdownVisible(true);
+    if (selectedCategory === "" && productSearch === "") {
+      setProductSuggestions(products);
+      return;
+    }
+    console.log("🚀 ~ useEffect ~ selectedCategory:", selectedCategory);
+    const filteredSuggestions = products.filter((item) => {
+      return (
+        item.name.toLowerCase().includes(productSearch.toLowerCase()) &&
+        item.category === selectedCategory
+      );
+    });
+    console.log("🚀 ~ useEffect ~ filteredSuggestions:", filteredSuggestions);
+    setProductSuggestions(filteredSuggestions);
+    setIsProductDropdownVisible(true);
+  }, [productSearch, selectedCategory]);
+
   const handleSelectCustomer = (item) => {
     setSelectedCustomerData(item);
-    setIsDropdownVisible(false);
+    setIsCustomerDropdownVisible(false);
   };
 
   function handleActionQty(op, productId) {
     let countOfSelect = 0;
     let updatedProducts = products.map((product) => {
       if (product.id === productId) {
-        // Update action quantity
         if (op === "+") {
           if (product.quantity > product.actionQty) {
             ++product.actionQty;
@@ -530,10 +562,9 @@ const SetInvoice = () => {
   }
 
   const calculateTotal = () => {
-    const discountAmount =
-      formData.extraDiscountType === "percentage"
-        ? (+totalAmounts.totalAmount * formData.extraDiscount) / 100
-        : formData.extraDiscount || 0;
+    const discountAmount = formData.extraDiscountType
+      ? (+totalAmounts.totalAmount * formData.extraDiscount) / 100
+      : formData.extraDiscount || 0;
 
     const total =
       totalAmounts.totalAmount +
@@ -589,7 +620,7 @@ const SetInvoice = () => {
         items.push({
           name: product.name,
           description: product.description,
-          discount: product.fieldDiscount,
+          discount: product.discount,
           discountType: product.discountType,
           purchasePrice: product.purchasePrice,
           purchasePriceTaxType: product.purchasePriceTaxType,
@@ -707,6 +738,7 @@ const SetInvoice = () => {
 
     return `${getFullYear}-${getMonth}-${getDate}`;
   }
+
   function onSelectBook(e) {
     const { value } = e.target;
     const data = books.find((ele) => ele.id === value);
@@ -722,6 +754,7 @@ const SetInvoice = () => {
       book: { name: data.name, bookRef },
     }));
   }
+
   function onSelectWarehouse(e) {
     const { value } = e.target;
     const data = warehouses.find((ele) => ele.id === value);
@@ -737,6 +770,19 @@ const SetInvoice = () => {
       warehouse: { name: data.name, warehouseRef },
     }));
   }
+
+  function onChangeDiscount(value, name, id) {
+    const updatedProducts = products.map((product) => {
+      if (product.id === id) {
+        product[name] = value;
+        return ModifiedProductData(product);
+      }
+      return product;
+    });
+    setProducts(updatedProducts);
+    calculateProduct(updatedProducts);
+  }
+
   return (
     <div className="bg-gray-100 overflow-y-auto" style={{ height: "92vh" }}>
       <div className="px-5 pb-5s">
@@ -763,40 +809,43 @@ const SetInvoice = () => {
                       placeholder="Search your Customers, Company Name, GSTIN... "
                       className="text-base text-gray-900 font-semibold border  rounded-s-md w-full mt-1 px-5  py-2"
                       value={selectedCustomerData?.name}
-                      onChange={handleInputChange}
+                      onChange={handleCustomerInputChange}
                       onFocus={() => {
-                        setIsDropdownVisible(true);
-                        setSuggestions(customersDetails || []);
+                        setIsCustomerDropdownVisible(true);
+                        setCustomerSuggestions(customersDetails || []);
                       }}
                       onBlur={() => {
                         setTimeout(() => {
                           if (!selectedCustomerData.id) {
                             setSelectedCustomerData({ name: "" });
                           }
-                          setIsDropdownVisible(false);
+                          setIsCustomerDropdownVisible(false);
                         }, 200);
                       }}
                       required
                     />
-                    {isDropdownVisible && suggestions.length > 0 && (
-                      <div className="absolute z-20 bg-white border border-gray-300 rounded-lg shadow-md max-h-60 overflow-y-auto w-full">
-                        {suggestions.map((item) => (
-                          <div
-                            key={item.id}
-                            onMouseDown={() => handleSelectCustomer(item)}
-                            className="flex flex-col px-4 py-2 text-gray-800 hover:bg-blue-50 cursor-pointer transition-all duration-150 ease-in-out"
-                          >
-                            <span className="font-medium text-sm">
-                              Name:{" "}
-                              <span className="font-semibold">{item.name}</span>
-                            </span>
-                            <span className="text-xs text-gray-600">
-                              Phone No.: {item.phone}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    {isCustomerDropdownVisible &&
+                      customerSuggestions.length > 0 && (
+                        <div className="absolute z-20 bg-white border border-gray-300 rounded-lg shadow-md max-h-60 overflow-y-auto w-full">
+                          {customerSuggestions.map((item) => (
+                            <div
+                              key={item.id}
+                              onMouseDown={() => handleSelectCustomer(item)}
+                              className="flex flex-col px-4 py-2 text-gray-800 hover:bg-blue-50 cursor-pointer transition-all duration-150 ease-in-out"
+                            >
+                              <span className="font-medium text-sm">
+                                Name:{" "}
+                                <span className="font-semibold">
+                                  {item.name}
+                                </span>
+                              </span>
+                              <span className="text-xs text-gray-600">
+                                Phone No.: {item.phone}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                   </div>
                   <div className="w-1/4">
                     <button
@@ -883,7 +932,7 @@ const SetInvoice = () => {
             <div className="flex justify-between items-center mb-4 space-x-3">
               <div className="flex  items-center w-full">
                 <select
-                  className="w-1/4 rounded-s-md py-3 bg-gray-200 px-3 border-r-2"
+                  className="w-1/4 rounded-s-md py-3  px-3 border"
                   onChange={(e) => setSelectedCategory(e.target.value)}
                 >
                   <option value={""}>All Categories</option>
@@ -893,12 +942,45 @@ const SetInvoice = () => {
                     </option>
                   ))}
                 </select>
-                <input
-                  type="text"
-                  className="w-1/2 rounded-e-md py-3 px-3"
-                  placeholder="Search..."
-                  // onChange={(e) => {}}
-                />
+                <div className="relative w-full">
+                  <input
+                    type="text"
+                    className="w-1/2 rounded-e-md py-3 px-3 border"
+                    placeholder="Search..."
+                    onChange={(e) => setProductSearch(e.target.value.trim())}
+                    onFocus={() => {
+                      setIsProductDropdownVisible(true);
+                      setProductSuggestions((val) => val || []);
+                    }}
+                    onBlur={() => {
+                      setTimeout(() => {
+                        setIsProductDropdownVisible(false);
+                      }, 200);
+                    }}
+                  />
+                  {isProductDropdownVisible &&
+                    productSuggestions.length > 0 && (
+                      <div className="absolute z-20 bg-white border border-gray-300 rounded-b-lg shadow-md max-h-60 overflow-y-auto w-1/2">
+                        {productSuggestions.map((product) => (
+                          <div
+                            key={product.id}
+                            onMouseDown={() => handleActionQty("+", product.id)}
+                            className="flex flex-col   text-gray-800 hover:bg-blue-50 cursor-pointer transition-all duration-150 ease-in-out"
+                          >
+                            <div className="font-medium text-sm border-b px-4 py-2">
+                              <div className="font-semibold">
+                                {product.name}
+                              </div>
+                              <div className="text-xs text-gray-500 space-x-2">
+                                <span>Qty- {product.quantity}</span>
+                                <span>Price -{product.sellingPrice}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                </div>
               </div>
               <button
                 className="bg-[#442799] text-white text-center w-48  px-5 py-3 pt-2 font-semibold rounded-md"
@@ -913,28 +995,28 @@ const SetInvoice = () => {
                 <table className="min-w-full text-center text-gray-500 font-semibold rounded-md table-fixed">
                   <thead className="border-b bg-gray-50">
                     <tr>
-                      <th className=" px-4 py-1 text-gray-500 font-semibold text-start">
+                      <th className=" px-4 py-3 text-gray-500 font-semibold text-start">
                         Product Name
                       </th>
-                      <th className=" px-4 py-1 text-gray-500 font-semibold">
+                      <th className=" px-4 py-3 text-gray-500 font-semibold">
                         Unit Price
                       </th>
-                      <th className=" px-4 py-1 text-gray-500 font-semibold">
+                      <th className=" px-4 py-3 text-gray-500 font-semibold">
                         Discount
                       </th>
-                      <th className=" px-4 py-1 text-gray-500 font-semibold">
+                      <th className=" px-4 py-3 text-gray-500 font-semibold">
                         Net Amount
                       </th>
-                      <th className=" px-4 py-1 text-gray-500 font-semibold">
+                      <th className=" px-4 py-3 text-gray-500 font-semibold">
                         Tax
                       </th>
-                      <th className=" px-4 py-1 text-gray-500 font-semibold">
+                      <th className=" px-4 py-3 text-gray-500 font-semibold">
                         Total Amount
                       </th>
-                      <th className=" px-6 py-1 text-gray-500 font-semibold">
+                      <th className=" px-6 py-3 text-gray-500 font-semibold">
                         Quantity
                       </th>
-                      <th className=" px-4 py-1 text-gray-500 font-semibold">
+                      <th className=" px-4 py-3 text-gray-500 font-semibold">
                         Delete
                       </th>
                     </tr>
@@ -952,14 +1034,15 @@ const SetInvoice = () => {
                                     <button
                                       className="border-2 rounded-md px-2 py-1"
                                       onClick={() => {
-                                        setProducts(
-                                          products.map((ele) => {
+                                        const updatedProducts = products.map(
+                                          (ele) => {
                                             if (ele.id == product.id) {
                                               ele.isAddDescription = true;
                                             }
                                             return ele;
-                                          })
+                                          }
                                         );
+                                        setProducts(updatedProducts);
                                       }}
                                     >
                                       + Add Description
@@ -971,15 +1054,16 @@ const SetInvoice = () => {
                                         defaultValue={product.description}
                                         className="border rounded-md px-2 py-1"
                                         onBlur={(e) => {
-                                          setProducts((val) =>
-                                            val.map((ele) => {
+                                          const updatedProducts = products.map(
+                                            (ele) => {
                                               if (ele.id == product.id) {
                                                 ele.description =
                                                   e.target.value;
                                               }
                                               return ele;
-                                            })
+                                            }
                                           );
+                                          setProducts(updatedProducts);
                                         }}
                                       />
                                     </div>
@@ -990,23 +1074,38 @@ const SetInvoice = () => {
                               <td className="px-4 py-2">
                                 ₹{product.sellingPrice.toFixed(2)}
                               </td>
-                              <td className="py-2 ">
-                                ₹ &nbsp;
-                                <input
-                                  type="number"
-                                  defaultValue={product.discount.toFixed(2)}
-                                  className="border-2 w-1/4 rounded-md px-2"
-                                  onChange={(e) => {
-                                    // setProducts(
-                                    //   products.map((ele) => {
-                                    //     if (ele.id == product.id) {
-                                    //       ele.discount = +e.target.value;
-                                    //     }
-                                    //     return ele;
-                                    //   })
-                                    // );
-                                  }}
-                                />
+                              <td className="w-32">
+                                <div className="flex items-center">
+                                  <input
+                                    type="number"
+                                    defaultValue={product.discount.toFixed(2)}
+                                    className="border w-full rounded-s-md p-2"
+                                    onChange={(e) =>
+                                      onChangeDiscount(
+                                        +e.target.value,
+                                        "discount",
+                                        product.id
+                                      )
+                                    }
+                                  />
+                                  <select
+                                    className="border w-fit rounded-e-md p-2"
+                                    name="discountType"
+                                    value={product.discountType}
+                                    onChange={(e) =>
+                                      onChangeDiscount(
+                                        e.target.value === "true"
+                                          ? true
+                                          : false,
+                                        "discountType",
+                                        product.id
+                                      )
+                                    }
+                                  >
+                                    <option value="true">%</option>
+                                    <option value="false">₹</option>
+                                  </select>
+                                </div>
                               </td>
                               <td className="px-4 py-2">
                                 ₹{product.netAmount.toFixed(2)}
@@ -1109,13 +1208,14 @@ const SetInvoice = () => {
                   </tbody>
                 </table>
                 {isSidebarOpen && (
-                  <Sidebar
+                  <SelectProductSide
                     isOpen={isSidebarOpen}
                     onClose={() => setIsSidebarOpen(false)}
                     productList={products}
                     handleActionQty={handleActionQty}
                     totalAmount={+totalAmounts.totalAmount}
                     customActionQty={customActionQty}
+                    categories={categories}
                   />
                 )}
               </div>
@@ -1415,17 +1515,7 @@ const SetInvoice = () => {
                 )}
                 {/* {formData?.extraDiscount > 0 && isProductSelected && ( */}
                 <div className="flex justify-between text-gray-700 mb-2">
-                  <span>Extra Discount Amount</span>
-                  {/* <span>
-                    ₹{" "}
-                    {formData.extraDiscountType === "percentage"
-                      ? (
-                          (+totalAmounts.totalAmount *
-                            formData?.extraDiscount) /
-                          100
-                        ).toFixed(2)
-                      : formData?.extraDiscount}
-                  </span> */}
+                  <span>Extra Discount</span>
                   <div>
                     <input
                       type="number"
@@ -1440,16 +1530,17 @@ const SetInvoice = () => {
                     />
                     <select
                       className="border px-2 rounded-e-md text-sm py-1"
-                      value={formData?.extraDiscountType || "percentage"}
+                      value={formData?.extraDiscountType}
                       onChange={(e) => {
                         setFormData((val) => ({
                           ...val,
-                          extraDiscountType: e.target.value,
+                          extraDiscountType:
+                            e.target.value == "true" ? true : false,
                         }));
                       }}
                     >
-                      <option value="percentage">%</option>
-                      <option value="fixed">₹</option>
+                      <option value="true">%</option>
+                      <option value="false">₹</option>
                     </select>
                   </div>
                 </div>

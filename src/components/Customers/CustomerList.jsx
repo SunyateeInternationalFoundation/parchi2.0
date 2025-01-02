@@ -7,7 +7,13 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { FaSearch } from "react-icons/fa";
+import { IoSearch } from "react-icons/io5";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +30,9 @@ const CustomerList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const userDetails = useSelector((state) => state.users);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
     companyId =
@@ -41,6 +50,8 @@ const CustomerList = () => {
 
   const fetchCustomers = async () => {
     if (customersDetails.length !== 0) {
+      setTotalPages(Math.ceil(customersDetails.length / 10));
+      setPaginationData(customersDetails.slice(0, 10));
       return;
     }
     setLoading(true);
@@ -50,7 +61,7 @@ const CustomerList = () => {
       const q = query(customersRef, where("companyRef", "==", companyRef));
       const querySnapshot = await getDocs(q);
 
-      const customersData = Promise.all(
+      const customersData = await Promise.all(
         querySnapshot.docs.map(async (doc) => {
           const { createdAt, companyRef, ...data } = doc.data();
 
@@ -64,7 +75,10 @@ const CustomerList = () => {
           };
         })
       );
-      dispatch(setAllCustomersDetails(await customersData));
+
+      setTotalPages(Math.ceil(customersData.length / 10));
+      setPaginationData(customersData.slice(0, 10));
+      dispatch(setAllCustomersDetails(customersData));
     } catch (error) {
       console.error("Error fetching customers:", error);
     } finally {
@@ -113,18 +127,19 @@ const CustomerList = () => {
     }
   }, [companyId]);
 
-  const filteredCustomers = customersDetails.filter((customer) =>
-    `${customer.name} ${customer.phone} ${customer.email}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
-  const navigator = useNavigate();
+  useEffect(() => {
+    const filteredCustomers = customersDetails.filter((customer) =>
+      `${customer.name} ${customer.phone} ${customer.email}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+    );
 
-  const handleEditClick = (customer) => {
-    setSelectedCustomer(customer); // Set the selected customer
-    // setIsModalOpen(true); // Open the modal
-    navigator(customer.id);
-  };
+    setPaginationData(
+      filteredCustomers.slice(currentPage * 10, currentPage * 10 + 10)
+    );
+  }, [currentPage, customersDetails, searchQuery]);
+
+  const navigator = useNavigate();
 
   function viewCustomer(customerId) {
     navigator(customerId);
@@ -138,167 +153,188 @@ const CustomerList = () => {
       if (!confirmDelete) return;
       await deleteDoc(doc(db, "customers", customerId));
       dispatch(deleteCustomerDetails(customerId));
-      // setCustomers((val) => val.filter((ele) => ele.id !== customerId));
     } catch (error) {
       console.log("🚀 ~ onHandleDeleteCustomer ~ error:", error);
     }
   }
 
   return (
-    <div className="p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">Customers</h2>
-        <div className="flex items-center justify-between">
-          <div className="flex-grow mx-4 w-80 m-2 relative">
-            <input
-              type="text"
-              placeholder="Search customers by name, phone, etc.."
-              className="w-full h-8 p-2 pl-8 border border-gray-300 rounded-md text-sm"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <FaSearch
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-600"
-              size={16}
-            />
+    <div
+      className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
+      style={{ height: "92vh" }}
+    >
+      <div className="bg-white  pb-8 pt-6 rounded-lg shadow my-6">
+        <nav className="flex mb-4 px-5">
+          <div className="space-x-4 w-full">
+            <div className="flex items-center space-x-4 mb-4 border px-5  py-3 rounded-md w-full">
+              <input
+                type="text"
+                placeholder="Search by customer #..."
+                className=" w-full focus:outline-none"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <IoSearch />
+            </div>
           </div>
-
-          {userDetails.selectedDashboard === "staff" ? (
-            role?.create && (
+          <div className="w-full text-end ">
+            {(userDetails.selectedDashboard === "" || role?.create) && (
               <button
-                className="bg-blue-700 text-white px-4 py-1 rounded-md ml-4"
+                className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
                 onClick={() => setIsModalOpen(true)}
               >
                 + New Customer
               </button>
-            )
-          ) : (
-            <button
-              className="bg-blue-700 text-white px-4 py-1 rounded-md ml-4"
-              onClick={() => setIsModalOpen(true)}
-            >
-              + New Customer
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div
-        className="overflow-y-auto bg-white shadow rounded-lg"
-        style={{ height: "70vh" }}
-      >
-        <table className="min-w-full border border-gray-200">
-          <thead className="sticky z-10 bg-white p-0" style={{ top: "-1px" }}>
-            <tr className="bg-gray-200  border-b">
-              <th className="py-3 px-6 text-left font-semibold ">Name</th>
-              <th className="py-3 px-6 text-left font-semibold ">
-                Contact Info
-              </th>
-              <th className="py-3 px-6 text-left font-semibold ">Email Id</th>
-              <th className="py-3 px-6 text-left font-semibold ">Amount</th>
-              {/* <th className="py-3 px-6 text-left font-semibold ">
-                Closing Balance
-              </th> */}
-              <th className="py-3 px-6 text-center font-semibold ">Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="4" className="text-center py-4">
-                  Loading...
-                </td>
-              </tr>
-            ) : filteredCustomers.length > 0 ? (
-              filteredCustomers.map((customer) => (
-                <tr
-                  key={customer.id}
-                  className="border-b hover:bg-blue-100 cursor-pointer"
-                  onClick={() => viewCustomer(customer.id)}
-                >
-                  <td className="py-3 px-6">
-                    <div className="flex items-center space-x-3">
-                      {customer.profileImage ? (
-                        <img
-                          src={customer.profileImage}
-                          alt="Profile"
-                          className="mt-2 w-10 h-10 rounded-full object-cover"
-                        />
-                      ) : (
-                        <span className="bg-purple-500 text-white rounded-full h-10 w-10 flex items-center justify-center font-semibold">
-                          {customer.name.charAt(0)}
-                        </span>
-                      )}
-
-                      <div>
-                        <div className="text-gray-800 font-semibold">
-                          {customer.name}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-
-                  <td className="py-3 px-6">{customer.phone || "N/A"}</td>
-
-                  <td className="py-3 px-6">{customer.email || ""}</td>
-                  <td className="py-3 px-6">
-                    {customer?.amount?.toFixed(2) || ""}
-                  </td>
-                  {/* 
-                  <td className="py-3 px-6">
-                    <div className="text-red-500 font-semibold">
-                      ₹{" "}
-                      {customer.closingBalance
-                        ? customer.closingBalance.toFixed(2)
-                        : "0.00"}
-                    </div>
-                  </td> */}
-                  <td
-                    className="py-3 px-6"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    <div
-                      className="text-red-500 flex items-center justify-center"
-                      onClick={() => onHandleDeleteCustomer(customer.id)}
-                    >
-                      <RiDeleteBin6Line />
-                    </div>
-                  </td>
-                  {/* <td className="py-3 px-6">
-                    <div className="text-gray-500 text-sm">
-                      <button
-                        className="relative group text-green-500 hover:text-green-700 text-xl"
-                        onClick={() => handleEditClick(customer)}
-                      >
-                        <FaRegEye />
-                        <div className="absolute left-1/2 transform -translate-x-1/2 top-5 px-2 py-1 bg-gray-600 text-white text-xs rounded-md opacity-0 group-hover:opacity-100">
-                          View
-                        </div>
-                      </button>
-                    </div>
-                  </td> */}
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="text-center py-4">
-                  No customers found
-                </td>
-              </tr>
             )}
-          </tbody>
-        </table>
+          </div>
+        </nav>
+
+        {loading ? (
+          <div className="text-center py-6">Loading customers...</div>
+        ) : (
+          <div className="" style={{ height: "96vh" }}>
+            <div className="" style={{ height: "92vh" }}>
+              <table className="w-full border-collapse text-start">
+                <thead className=" bg-white">
+                  <tr className="border-b">
+                    <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
+                      Name
+                    </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold text-center">
+                      Contact Info
+                    </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                      Email Id
+                    </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold  text-center">
+                      Amount
+                    </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold text-center ">
+                      Delete
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginationData.length > 0 ? (
+                    paginationData.map((customer) => (
+                      <tr
+                        key={customer.id}
+                        className="border-b border-gray-200 text-center cursor-pointer"
+                        onClick={() => viewCustomer(customer.id)}
+                      >
+                        <td className="px-5 py-3 font-bold">
+                          <div className="flex items-center space-x-3">
+                            {customer.profileImage ? (
+                              <img
+                                src={customer.profileImage}
+                                alt="Profile"
+                                className="mt-2 w-10 h-10 rounded-full object-cover"
+                              />
+                            ) : (
+                              <span className="bg-purple-500 text-white rounded-full h-10 w-10 flex items-center justify-center font-semibold">
+                                {customer.name.charAt(0)}
+                              </span>
+                            )}
+                            <div>
+                              <div className="text-gray-800 font-semibold">
+                                {customer.name}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td className="px-5 py-3 font-bold  text-center">
+                          {customer.phone || "N/A"}
+                        </td>
+
+                        <td className="px-5 py-3 text-start">
+                          {customer.email || ""}
+                        </td>
+
+                        <td className="px-5 py-3 text-center">
+                          {customer?.amount?.toFixed(2) || ""}
+                        </td>
+                        <td
+                          className="px-5 py-3 text-start"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
+                          <div
+                            className="text-red-500 flex items-center justify-center"
+                            onClick={() => onHandleDeleteCustomer(customer.id)}
+                          >
+                            <RiDeleteBin6Line />
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="h-24 text-center py-4">
+                        No customers found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
+              <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+                {currentPage + 1} of {totalPages || 1} row(s) selected.
+              </div>
+              <div className="flex flex-wrap items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <button
+                    className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                    onClick={() => setCurrentPage(0)}
+                    disabled={currentPage <= 0}
+                  >
+                    <div className="flex justify-center">
+                      <LuChevronsLeft className="text-sm" />
+                    </div>
+                  </button>
+                  <button
+                    className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                    onClick={() => setCurrentPage((val) => val - 1)}
+                    disabled={currentPage <= 0}
+                  >
+                    <div className="flex justify-center">
+                      <LuChevronLeft className="text-sm" />
+                    </div>
+                  </button>
+                  <button
+                    className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                    onClick={() => setCurrentPage((val) => val + 1)}
+                    disabled={currentPage + 1 >= totalPages}
+                  >
+                    <div className="flex justify-center">
+                      <LuChevronRight className="text-sm" />
+                    </div>
+                  </button>
+                  <button
+                    className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                    onClick={() => setCurrentPage(totalPages - 1)}
+                    disabled={currentPage + 1 >= totalPages}
+                  >
+                    <div className="flex justify-center">
+                      <LuChevronsRight className="" />
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        <CreateCustomer
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedCustomer(null);
+          }}
+          customerData={selectedCustomer}
+        />
       </div>
-      <CreateCustomer
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setSelectedCustomer(null);
-        }}
-        customerData={selectedCustomer}
-      />
     </div>
   );
 };

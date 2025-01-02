@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 
-function Sidebar({
+function SelectProductSide({
   onClose,
   productList,
   isOpen,
@@ -134,7 +134,7 @@ function Sidebar({
     </div>
   );
 }
-Sidebar.propTypes = {
+SelectProductSide.propTypes = {
   onClose: PropTypes.func,
   productList: PropTypes.array,
   categories: PropTypes.array,
@@ -144,4 +144,4 @@ Sidebar.propTypes = {
   customActionQty: PropTypes.func,
 };
 
-export default Sidebar;
+export default SelectProductSide;

@@ -129,21 +129,21 @@ function Returns({ invoice }) {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full ">
       <div
-        className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
+        className="pb-8 pt-2 bg-gray-100 overflow-y-auto"
         style={{ height: "76vh" }}
       >
-        <div className="text-end pb-2 space-x-3">
+        <div className="text-end pb-2 space-x-3 space-y-3">
           <button
-            className="bg-green-700 text-white rounded-full py-1 px-3"
+            className="px-4 py-2 text-gray-600  rounded-md border hover:bg-black hover:text-white"
             onClick={onSubmit}
           >
             Submit
           </button>
 
           <button
-            className="bg-gray-400 text-white rounded-full py-1 px-3"
+            className="px-4 py-2 text-gray-600  rounded-md border hover:bg-black hover:text-white"
             onClick={() => {
               setProducts((val) =>
                 val.map((item) => {
@@ -159,101 +159,97 @@ function Returns({ invoice }) {
           </button>
         </div>
 
-        <div className="bg-white">
-          <div className="mb-4">
-            <table className="min-w-full text-center text-gray-500 font-semibold">
-              <thead className="border-b bg-gray-50">
-                <tr>
-                  <th className="px-1 py-2">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4"
-                      checked={isAllReturnsChecked}
-                      onChange={(e) => {
-                        handleCheckBox(e.target.checked, true);
-                      }}
-                    />
-                    All
-                  </th>
-                  <th className="px-1 py-2">Product Name</th>
-                  <th className="px-1 py-2">Quantity</th>
-                  <th className="px-1 py-2">Unit Price</th>
-                  <th className="px-1 py-2">Discount</th>
-                  <th className="px-1 py-2">Net Amount</th>
-                  <th className="px-1 py-2">Is Tax Included</th>
-                  <th className="px-1 py-2">Return Amount</th>
-                  <th className="px-1 py-2">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.length > 0 ? (
-                  products.map((product) => (
-                    <tr key={product.productRef.id}>
-                      <td className="px-1 py-2">
-                        <input
-                          type="checkbox"
-                          className="w-4 h-4"
-                          checked={product.actionQty === product.quantity}
-                          onChange={(e) => {
-                            handleCheckBox(
-                              e.target.checked,
-                              false,
-                              product.productRef.id
-                            );
-                          }}
-                        />
-                      </td>
-                      <td className="px-1 py-2">{product.name}</td>
-                      <td className="px-1 py-2">
-                        {product.quantity - product.returnQty}
-                      </td>
-                      <td className="px-1 py-2">₹{product.sellingPrice}</td>
-                      <td className="px-1 py-2">₹{product.discount}</td>
-                      <td className="px-1 py-2">₹{product.netAmount}</td>
-                      <td className="px-1 py-2">
-                        {product.sellingPriceTaxType ? "Yes" : "No"}
-                      </td>
-                      <td className="px-1 py-2">₹{product.totalAmount || 0}</td>
-                      <td className="px-1 py-2">
-                        <div className="flex justify-center -items-center">
-                          {product.actionQty >= 1 && (
-                            <>
-                              <button
-                                className="bg-blue-500 text-white rounded w-1/2"
-                                onClick={() =>
-                                  handleActionQty("-", product.productRef.id)
-                                }
-                              >
-                                -
-                              </button>
-                              <span className="px-2">{product.actionQty}</span>{" "}
-                            </>
-                          )}
-                          <button
-                            className="bg-blue-500 text-white  rounded w-1/2 "
-                            onClick={() =>
-                              handleActionQty("+", product.productRef.id)
-                            }
-                            disabled={
-                              product.quantity - product.returnQty === 0
-                            }
-                          >
-                            +
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="7" className="py-10 text-center">
-                      No Product Found
+        <div className="bg-white mt-3 rounded-lg shadow-md overflow-hidden">
+          <table className="min-w-full text-center text-gray-500 font-semibold">
+            <thead className="border-b bg-gray-50">
+              <tr>
+                <th className="px-1 py-4">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4"
+                    checked={isAllReturnsChecked}
+                    onChange={(e) => {
+                      handleCheckBox(e.target.checked, true);
+                    }}
+                  />
+                  &nbsp; All
+                </th>
+                <th className="px-1 py-4">Product Name</th>
+                <th className="px-1 py-4">Quantity</th>
+                <th className="px-1 py-4">Unit Price</th>
+                <th className="px-1 py-4">Discount</th>
+                <th className="px-1 py-4">Net Amount</th>
+                <th className="px-1 py-4">Is Tax Included</th>
+                <th className="px-1 py-4">Return Amount</th>
+                <th className="px-1 py-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.length > 0 ? (
+                products.map((product) => (
+                  <tr key={product.productRef.id} className="border-b">
+                    <td className="px-1 py-4">
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4"
+                        checked={product.actionQty === product.quantity}
+                        onChange={(e) => {
+                          handleCheckBox(
+                            e.target.checked,
+                            false,
+                            product.productRef.id
+                          );
+                        }}
+                      />
+                    </td>
+                    <td className="px-1 py-4">{product.name}</td>
+                    <td className="px-1 py-4">
+                      {product.quantity - product.returnQty}
+                    </td>
+                    <td className="px-1 py-4">₹{product.sellingPrice}</td>
+                    <td className="px-1 py-4">₹{product.discount}</td>
+                    <td className="px-1 py-4">₹{product.netAmount}</td>
+                    <td className="px-1 py-4">
+                      {product.sellingPriceTaxType ? "Yes" : "No"}
+                    </td>
+                    <td className="px-1 py-4">₹{product.totalAmount || 0}</td>
+                    <td className="px-1 py-4">
+                      <div className="flex justify-center -items-center">
+                        {product.actionQty >= 1 && (
+                          <>
+                            <button
+                              className="bg-blue-500 text-white rounded w-1/2"
+                              onClick={() =>
+                                handleActionQty("-", product.productRef.id)
+                              }
+                            >
+                              -
+                            </button>
+                            <span className="px-2">{product.actionQty}</span>{" "}
+                          </>
+                        )}
+                        <button
+                          className="bg-blue-500 text-white  rounded w-1/2 "
+                          onClick={() =>
+                            handleActionQty("+", product.productRef.id)
+                          }
+                          disabled={product.quantity - product.returnQty === 0}
+                        >
+                          +
+                        </button>
+                      </div>
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" className="py-10 text-center">
+                    No Product Found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

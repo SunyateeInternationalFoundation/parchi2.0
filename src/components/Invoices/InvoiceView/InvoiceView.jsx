@@ -7,10 +7,12 @@ import {
   query,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { AiOutlineArrowLeft } from "react-icons/ai";
+import { CiSettings } from "react-icons/ci";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
+import SelectTemplateSideBar from "../../Templates/SelectTemplateSideBar";
 import Invoice from "./Invoice";
 import Returns from "./Returns";
 import ReturnsHistory from "./ReturnsHistory";
@@ -133,7 +135,7 @@ function InvoiceView() {
         return {
           id: doc.id,
           ...data,
-          createdAt: DateFormate(createdAt),
+          createdAt: createdAt,
         };
       });
       setReturnData(getData);
@@ -141,7 +143,9 @@ function InvoiceView() {
       console.log("🚀 ~ fetchReturnData ~ error:", error);
     }
   }
+  const [isSelectTemplateOpen, setIsSelectTemplateOpen] = useState(false);
 
+  const [selectTemplate, setSelectTemplate] = useState("template1");
   useEffect(() => {
     fetchReturnData();
   }, [companyId]);
@@ -162,25 +166,20 @@ function InvoiceView() {
   }
 
   return (
-    <div className="px-5 pb-5 bg-gray-100" style={{ width: "100%" }}>
-      <header className="flex items-center space-x-3 my-2 ">
-        <Link
-          className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-          to={"./../"}
-        >
-          <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
+    <div className=" pb-5 bg-gray-100" style={{ width: "100%" }}>
+      <header className="flex items-center bg-white  px-3 space-x-3">
+        <Link className="flex items-center" to={"./../"}>
+          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
         </Link>
-        <h1 className="text-2xl font-bold">{invoice.no}</h1>
-      </header>
-      <hr />
-      <div>
-        <nav className="flex space-x-4 mt-3 mb-3">
+        <h1 className="text-xl font-bold pe-4">
+          {invoice.prefix}-{invoice.no}
+        </h1>
+
+        <nav className="flex space-x-4 w-full">
           <button
             className={
-              "px-4 py-1" +
-              (activeTab === "Invoice"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
+              "px-4 py-4 font-semibold text-gray-500 " +
+              (activeTab === "Invoice" ? " border-b-4 border-blue-500 " : "")
             }
             onClick={() => setActiveTab("Invoice")}
           >
@@ -188,10 +187,8 @@ function InvoiceView() {
           </button>
           <button
             className={
-              "px-4 py-1" +
-              (activeTab === "Returns"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
+              "px-4 py-4 font-semibold text-gray-500 " +
+              (activeTab === "Returns" ? " border-b-4 border-blue-500 " : "")
             }
             onClick={() => setActiveTab("Returns")}
           >
@@ -199,22 +196,37 @@ function InvoiceView() {
           </button>
           <button
             className={
-              "px-4 py-1" +
+              "px-4 py-4 font-semibold text-gray-500 " +
               (activeTab === "ReturnsHistory"
-                ? " bg-blue-700 text-white rounded-full"
+                ? " border-b-4 border-blue-500 "
                 : "")
             }
             onClick={() => setActiveTab("ReturnsHistory")}
           >
-            ReturnsHistory
+            Return History
           </button>
         </nav>
-      </div>
-      <hr />
-      <div className="w-full">
+        <div className="flex justify-end w-full">
+          <button
+            className={
+              "px-4 py-2 flex items-center text-blue-500 border-2 rounded-md hover:bg-blue-500 hover:text-white"
+            }
+            onClick={() => setIsSelectTemplateOpen(true)}
+          >
+            <CiSettings className="w-6 h-6" />
+            &nbsp; Change Template
+          </button>
+        </div>
+      </header>
+
+      <div className="w-full px-5">
         {activeTab === "Invoice" && (
           <div>
-            <Invoice invoice={invoice} bankDetails={bankDetails} />
+            <Invoice
+              invoice={invoice}
+              bankDetails={bankDetails}
+              selectTemplate={selectTemplate}
+            />
           </div>
         )}
         {activeTab === "Returns" && (
@@ -228,6 +240,17 @@ function InvoiceView() {
           </div>
         )}
       </div>
+      <hr />
+
+      <SelectTemplateSideBar
+        isOpen={isSelectTemplateOpen}
+        onClose={() => setIsSelectTemplateOpen(false)}
+        preSelectedTemplate={selectTemplate}
+        onSelectedTemplate={(template) => {
+          setSelectTemplate(template);
+          setIsSelectTemplateOpen(false);
+        }}
+      />
     </div>
   );
 }

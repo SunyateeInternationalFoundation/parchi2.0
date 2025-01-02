@@ -226,7 +226,7 @@ function Services() {
                             navigate(service.id);
                           }}
                         >
-                          <td className="px-5 py-3">
+                          <td className="px-8 py-3">
                             <FormatTimestamp timestamp={service.date} />
                           </td>
 

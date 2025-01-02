@@ -1,19 +1,13 @@
-import {
-  addDoc,
-  collection,
-  doc,
-  Timestamp,
-  updateDoc,
-} from "firebase/firestore";
+import { addDoc, collection, doc, Timestamp } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import { FaUserEdit } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { db, storage } from "../../firebase";
 import { setCustomerDetails } from "../../store/CustomerSlice";
 
-const CreateCustomer = ({ isOpen, onClose, customerData, isEdit }) => {
+const CreateCustomer = ({ isOpen, onClose }) => {
   const userDetails = useSelector((state) => state.users);
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
@@ -26,7 +20,6 @@ const CreateCustomer = ({ isOpen, onClose, customerData, isEdit }) => {
   }
 
   const [isUploading, setIsUploading] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [fileName, setFileName] = useState("No file chosen");
   const dispatch = useDispatch();
 
@@ -53,36 +46,6 @@ const CreateCustomer = ({ isOpen, onClose, customerData, isEdit }) => {
     city: "",
     zipCode: "",
   });
-
-  useEffect(() => {
-    if (customerData) {
-      setFormData({
-        name: customerData.name || "",
-        phone: customerData.phone || "",
-        email: customerData.email || "",
-        profileImage: customerData.profileImage || "",
-        gstNumber: customerData?.gstNumber || "",
-        panNumber: customerData?.panNumber || "",
-        address: customerData?.address || "",
-        city: customerData?.city || "",
-        zipCode: customerData?.zipCode || "",
-      });
-      setIsEditing(false);
-    } else {
-      setFormData({
-        name: "",
-        phone: "",
-        email: "",
-        profileImage: "",
-        gstNumber: "",
-        panNumber: "",
-        address: "",
-        city: "",
-        zipCode: "",
-      });
-      setIsEditing(true);
-    }
-  }, [customerData, isOpen]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -120,26 +83,20 @@ const CreateCustomer = ({ isOpen, onClose, customerData, isEdit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (customerData?.id) {
-        const customerDocRef = doc(db, "customers", customerData.id);
-        await updateDoc(customerDocRef, formData);
-      } else {
-        const companyRef = doc(db, "companies", companyId);
-        const newCustomer = await addDoc(collection(db, "customers"), {
-          ...formData,
-          companyRef: companyRef,
-          createdAt: Timestamp.fromDate(new Date()),
-        });
-        const payload = {
-          id: newCustomer.id,
-          ...formData,
-          createdAt: JSON.stringify(Timestamp.fromDate(new Date())),
-        };
-        dispatch(setCustomerDetails(payload));
-      }
+      const companyRef = doc(db, "companies", companyId);
+      const newCustomer = await addDoc(collection(db, "customers"), {
+        ...formData,
+        companyRef: companyRef,
+        createdAt: Timestamp.fromDate(new Date()),
+      });
+      const payload = {
+        id: newCustomer.id,
+        ...formData,
+        createdAt: JSON.stringify(Timestamp.fromDate(new Date())),
+      };
+      dispatch(setCustomerDetails(payload));
       setFileName("No file chosen");
       onClose();
-      // onCustomerAdded();
     } catch (error) {
       console.error("Error saving customer:", error);
     }
@@ -159,140 +116,40 @@ const CreateCustomer = ({ isOpen, onClose, customerData, isEdit }) => {
         style={{ maxHeight: "100vh" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-xl font-semibold mb-4">
-          {customerData ? "Edit Customer" : "New Customer"}
-        </h2>
+        <h2 className="text-xl font-semibold mb-4">New Customer</h2>
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
         >
           <IoMdClose size={24} />
         </button>
-
-        {/* {customerData && !isEditing && (
-          <div className="space-y-4">
-            <div className="flex flex-col items-center space-y-3">
-              {customerData.profileImage ? (
-                <img
-                  src={formData.profileImage}
-                  alt="Profile"
-                  className="mt-2 w-24 h-24 rounded-full object-cover"
-                />
-              ) : (
-                <span className="bg-purple-500 text-white rounded-full size-20 flex items-center justify-center font-semibold text-4xl">
-                  {customerData.name.charAt(0)}
-                </span>
-              )}
-              <button
-                className="flex items-center space-x-1 text-gray-600 hover:text-black"
-                onClick={() => setIsEditing(true)}
-              >
-                <FaUserEdit />
-
-                <span className="font-semibold">Edit</span>
-              </button>
-            </div>
-            <div className="p-4">
-              <p className="text-gray-800 flex justify-between mb-3">
-                <strong className="text-grey-500 font-bold">Name: </strong>
-
-                <span className="text-gray-500 font-semibold">
-                  {customerData.name ? customerData.name : " - "}
-                </span>
-              </p>
-              <p className="text-gray-800 flex justify-between mb-3">
-                <strong className="text-grey-500 font-bold">Phone:</strong>
-                <span className="text-gray-500 font-semibold">
-                  {customerData.phone ? customerData.phone : " - "}
-                </span>
-              </p>
-              <p className="text-gray-800 flex justify-between mb-3">
-                <strong className="text-grey-500 font-bold">Email:</strong>
-                <span className="text-gray-500 font-semibold">
-                  {customerData.email ? customerData.email : " - "}
-                </span>
-              </p>
-              <p className="text-gray-800 flex justify-between mb-3">
-                <strong className="text-grey-500 font-bold">Address:</strong>{" "}
-                {customerData.length > 0 ? (
-                  <span className="text-gray-500 font-semibold">
-                    {customerData.address?.address || "  "} -
-                    {customerData.address?.city || "  "} -
-                    {customerData.address?.zip_code || " "}
-                  </span>
-                ) : (
-                  " - "
-                )}
-              </p>
-              <p className="text-gray-800 flex justify-between mb-3">
-                <strong className="text-grey-500 font-bold">GST:</strong>{" "}
-                <span className="text-gray-500 font-semibold">
-                  {customerData.businessDetails?.gst_number || " - "}
-                </span>
-              </p>
-              <p className="text-gray-800 flex justify-between mb-3">
-                <strong className="text-grey-500 font-bold">PAN:</strong>{" "}
-                <span className="text-gray-500 font-semibold">
-                  {customerData.businessDetails?.pan_number || " - "}
-                </span>
-              </p>
-            </div>
-          </div>
-        )} */}
-
         <form onSubmit={handleSubmit} className="space-y-4">
-          {customerData && isEdit && (
-            <>
-              <div className="flex flex-col items-center space-y-3">
-                {formData.profileImage ? (
-                  <img
-                    src={formData.profileImage}
-                    alt="Profile"
-                    className="mt-2 w-24 h-24 rounded-full object-cover"
-                  />
-                ) : (
-                  <span className="bg-purple-500 text-white rounded-full size-20 flex items-center justify-center font-semibold text-4xl">
-                    {customerData.name.charAt(0)}
-                  </span>
-                )}
-                <button
-                  className="flex items-center space-x-1 text-gray-600 hover:text-black"
-                  onClick={() => setIsEditing(true)}
-                >
-                  <FaUserEdit />
-
-                  <span className="font-semibold">Edit</span>
-                </button>
-              </div>
-              <div className="flex flex-col w-full max-w-sm mx-auto mt-10">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Profile Image
-                </label>
-                <div className="border border-gray-300 rounded-md px-3 py-2 flex items-center">
-                  <label
-                    htmlFor="profile-image"
-                    className="text-sm text-gray-500 cursor-pointer"
-                  >
-                    Choose File
-                  </label>
-                  <input
-                    type="file"
-                    id="profile-image"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-                  <span id="file-name" className="text-sm text-gray-400 ml-2">
-                    {fileName}
-                  </span>
-                </div>
-                {isUploading && (
-                  <p className="text-sm text-blue-500 mt-2">Uploading...</p>
-                )}
-              </div>
-            </>
-          )}
-
+          <div className="flex flex-col w-full max-w-sm mx-auto ">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Profile Image
+            </label>
+            <div className="border border-gray-300 rounded-md px-3 py-2 flex items-center">
+              <label
+                htmlFor="profile-image"
+                className="text-sm text-gray-500 cursor-pointer"
+              >
+                Choose File
+              </label>
+              <input
+                type="file"
+                id="profile-image"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              <span id="file-name" className="text-sm text-gray-400 ml-2">
+                {fileName}
+              </span>
+            </div>
+            {isUploading && (
+              <p className="text-sm text-blue-500 mt-2">Uploading...</p>
+            )}
+          </div>
           <div>
             <label className="block font-semibold">*Name</label>
             <input
@@ -392,12 +249,17 @@ const CreateCustomer = ({ isOpen, onClose, customerData, isEdit }) => {
             type="submit"
             className="w-full bg-purple-500 text-white p-2 rounded-md mt-4"
           >
-            {customerData ? "Update Customer" : "Add Customer"}
+            Add Customer
           </button>
         </form>
       </div>
     </div>
   );
+};
+CreateCustomer.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  customerData: PropTypes.object,
 };
 
 export default CreateCustomer;
