@@ -41,8 +41,7 @@ import SetPurchase from "../Purchase/SetPurchase/SetPurchase";
 import Quotation from "../Quotation/Quotation";
 import QuotationViewHome from "../Quotation/QuotationView/QuotationViewHome";
 import SetQuotation from "../Quotation/SetQuotation/SetQuotation";
-import CreateService from "../Services/CreateService/CreateService";
-import EditService from "../Services/CreateService/EditService";
+import SetService from "../Services/CreateService/SetService";
 import Services from "../Services/Services";
 import StaffView from "../Staff&Payout/Staff/StaffView/StaffView";
 import Navbar from "../UI/Navbar";
@@ -251,13 +250,13 @@ const StaffHome = () => {
             {checkPermission("services", "view") && (
               <Route
                 path="/services/create-service"
-                element={<CreateService />}
+                element={<SetService />}
               ></Route>
             )}
             {checkPermission("services", "edit") && (
               <Route
                 path="/services/:id/edit-service"
-                element={<EditService />}
+                element={<SetService />}
               ></Route>
             )}
             {checkPermission("deliveryChallan", "view") && (
