@@ -9,7 +9,6 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
-import { AiOutlineArrowLeft } from "react-icons/ai";
 import { FaFilter } from "react-icons/fa";
 import { IoMdClose, IoMdSend } from "react-icons/io";
 import { MdOutlineShowChart } from "react-icons/md";
@@ -17,6 +16,7 @@ import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../../../firebase";
 import TaskSideBar from "./TaskSideBar";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 function Tasks() {
   const { id } = useParams();
@@ -202,7 +202,7 @@ function Tasks() {
     fetchTaskMessagesData();
     setInterval(() => {
       fetchTaskMessagesData();
-    },2000)
+    }, 2000);
     setProgressRange(0);
     setIsProgressOpen(false);
     setTaskMessage("");
@@ -227,7 +227,7 @@ function Tasks() {
                 className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
                 to={"./../"}
               >
-                <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
+                <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
               </Link>
               <h2 className="text-xl font-semibold ">TASKS</h2>
             </div>

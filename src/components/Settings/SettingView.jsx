@@ -1,5 +1,6 @@
-import { AiOutlineArrowLeft } from "react-icons/ai";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+
 const SettingsView = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -7,11 +8,8 @@ const SettingsView = () => {
   return (
     <div className="space-y-2">
       <div className="flex items-center">
-        <Link
-          to="/invoice"
-          className="flex items-center text-gray-700 py-1 px-4 rounded-full hover:bg-gray-200 transition duration-200"
-        >
-          <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
+        <Link to="/invoice" className="flex items-center ">
+          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
           <span className="text-lg font-medium"></span>
         </Link>
         <h1 className="text-2xl font-bold text-gray-800">Settings</h1>

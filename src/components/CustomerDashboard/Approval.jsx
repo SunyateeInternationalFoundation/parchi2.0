@@ -1,9 +1,16 @@
-import { collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../firebase"; // Ensure Firebase is configured correctly
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 const Approval = () => {
   const { id } = useParams();
@@ -39,7 +46,7 @@ const Approval = () => {
           className="flex items-center bg-gray-300 text-gray-700 py-2 px-5 rounded-full hover:bg-gray-400 hover:text-white transition duration-200"
           to={"./../"}
         >
-          <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
+          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
           Back
         </Link>
         <h1 className="text-2xl font-bold text-gray-800">Approvals</h1>
@@ -66,7 +73,11 @@ const ApprovalCard = ({ approval, projectId, onUpdate }) => {
     setStatus(newStatus);
 
     try {
-      const approvalRef = doc(db, `projects/${projectId}/approvals`, approval.id);
+      const approvalRef = doc(
+        db,
+        `projects/${projectId}/approvals`,
+        approval.id
+      );
       await updateDoc(approvalRef, { status: newStatus });
       onUpdate(); // Refresh the approvals list after the update
     } catch (error) {
@@ -83,9 +94,12 @@ const ApprovalCard = ({ approval, projectId, onUpdate }) => {
           className="w-16 h-16 rounded-full border-2 border-gray-200 mr-4"
         />
         <div>
-          <h2 className="text-lg font-semibold text-gray-800">{approval.name}</h2>
+          <h2 className="text-lg font-semibold text-gray-800">
+            {approval.name}
+          </h2>
           <p className="text-sm text-gray-600">
-            Approver: <span className="font-medium">{approval.approvalBelongsTo}</span>
+            Approver:{" "}
+            <span className="font-medium">{approval.approvalBelongsTo}</span>
           </p>
           <p
             className={`text-sm font-medium ${

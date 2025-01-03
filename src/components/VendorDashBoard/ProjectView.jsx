@@ -1,10 +1,10 @@
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { AiOutlineArrowLeft } from "react-icons/ai";
 import { BsFileEarmarkCheck, BsFolderPlus } from "react-icons/bs";
 import { MdDateRange } from "react-icons/md";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { db } from "../../firebase";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 function ProjectView() {
   const { id } = useParams();
@@ -69,7 +69,7 @@ function ProjectView() {
           <div className="flex justify-between items-center p-4">
             <div className="text-2xl font-semibold flex">
               <Link className="flex items-center px-2" to="./../">
-                <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
+                <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
               </Link>
               {project.name}
             </div>

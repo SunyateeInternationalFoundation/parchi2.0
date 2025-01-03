@@ -1,19 +1,19 @@
 import {
-    addDoc,
-    collection,
-    doc,
-    getDoc,
-    getDocs,
-    orderBy,
-    query,
-    Timestamp,
-    where,
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  Timestamp,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { AiOutlineArrowLeft } from "react-icons/ai";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../../../firebase";
 import CreateGroupSideBar from "./CreateGroupSideBar";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 const Chats = () => {
   const { id } = useParams();
@@ -36,8 +36,12 @@ const Chats = () => {
         const projectDoc = await getDoc(doc(db, "projects", projectId));
         if (projectDoc.exists()) {
           const projectData = projectDoc.data();
-          const customerRefs = Array.isArray(projectData.customerRef) ? projectData.customerRef : [];
-          const vendorRefs = Array.isArray(projectData.vendorRef) ? projectData.vendorRef : [];
+          const customerRefs = Array.isArray(projectData.customerRef)
+            ? projectData.customerRef
+            : [];
+          const vendorRefs = Array.isArray(projectData.vendorRef)
+            ? projectData.vendorRef
+            : [];
 
           const customerDetails = await Promise.all(
             customerRefs.map(async (ref) => {
@@ -47,7 +51,7 @@ const Chats = () => {
           );
 
           const vendorDetails = await Promise.all(
-           vendorRefs.map(async (ref) => {
+            vendorRefs.map(async (ref) => {
               const vendorDoc = await getDoc(ref);
               return { id: vendorDoc.id, ...vendorDoc.data() };
             })
@@ -167,7 +171,7 @@ const Chats = () => {
                 className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
                 to={"./../"}
               >
-                <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
+                <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
               </Link>
               <h2 className="text-xl font-semibold">Chats</h2>
             </div>

@@ -1,17 +1,17 @@
 import {
-    collection,
-    doc,
-    getDocs,
-    query,
-    updateDoc,
-    where,
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { db } from "../../../firebase";
 import { updateCompanyDetails } from "../../../store/UserSlice";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 const WeekOff = () => {
   const [selectedWeekDays, setSelectedWeekDays] = useState([]);
@@ -126,7 +126,7 @@ const WeekOff = () => {
             to={"./../"}
             className="flex items-center text-gray-700 py-1 px-4 rounded-full hover: transition duration-200"
           >
-            <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
+            <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
           </Link>
           <h1 className="text-2xl font-bold">Week Off Preferences</h1>
         </div>

@@ -10,7 +10,7 @@ import { LiaTrashAltSolid } from "react-icons/lia";
 import { MdOutlineMarkEmailRead } from "react-icons/md";
 import { TbEdit } from "react-icons/tb";
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { db, storage } from "../../../firebase";
 import Template1 from "../../Templates/Template1";
 import Template10 from "../../Templates/Template10";
@@ -337,7 +337,7 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
                   }
                   onClick={handleDelete}
                 >
-                  <LiaTrashAltSolid className="" />
+                  <LiaTrashAltSolid />
                   &nbsp; Delete
                 </button>
               )}
@@ -349,11 +349,9 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
         <div className="p-5 bg-white rounded-lg">
           <div className="flex gap-6 flex-col md:flex-row pt-8">
             <div className="flex-1">
-              <Link href="#">
-                <span className="text-3xl font-bold text-primary-600">
-                  {invoice.createdBy?.name}
-                </span>
-              </Link>
+              <span className="text-3xl font-bold text-primary-600">
+                {invoice.createdBy?.name}
+              </span>
               <div className="mt-5">
                 <div className="text-lg font-semibold text-gray-900">
                   Billing To:
@@ -372,7 +370,9 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
               <div className="text-4xl font-semibold text-gray-900">
                 Invoice #
               </div>
-              <div className="mt-1.5 text-xl  text-gray-600">{invoice.no}</div>
+              <div className="mt-1.5 text-xl  text-gray-600">
+                {invoice.prefix}-{invoice.no}
+              </div>
               <div className="mt-4  text-gray-600">
                 {invoice.createdBy?.name} <br />
                 {invoice.createdBy?.address} <br />
@@ -504,7 +504,7 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
           <div className="text-xs text-gray-800 mt-2">{userDetails.email}</div>
           <div className="text-xs text-gray-800 mt-1">{userDetails.phone}</div>
           <div className="mt-8 text-xs text-gray-800">
-            © 2024 {invoice?.createdBy?.name}
+            © 2025 {invoice?.createdBy?.name}
           </div>
         </div>
       </div>

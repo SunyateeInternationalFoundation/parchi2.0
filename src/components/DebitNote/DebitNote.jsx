@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AiOutlineArrowLeft } from "react-icons/ai";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import { Link } from "react-router-dom";
 
 const DebitNote = () => {
@@ -15,13 +15,7 @@ const DebitNote = () => {
 
   const addDebitNote = (e) => {
     e.preventDefault();
-    if (
-      !customerName ||
-      !invoiceNumber ||
-      !debitNoteDate ||
-      !reason ||
-      !amount
-    )
+    if (!customerName || !invoiceNumber || !debitNoteDate || !reason || !amount)
       return;
 
     const newDebitNote = {
@@ -51,11 +45,8 @@ const DebitNote = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center">
-          <Link
-            to={"./../"}
-            className="flex items-center text-gray-700 py-1 px-4 rounded-full hover:bg-gray-200 transition duration-200"
-          >
-            <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
+          <Link to={"./../"} className="flex items-center ">
+            <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
             <span className="text-lg font-medium"></span>
           </Link>
           <h1 className="text-2xl font-bold text-gray-800">Debit Notes</h1>

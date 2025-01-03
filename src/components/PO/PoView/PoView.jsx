@@ -1,9 +1,11 @@
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { AiOutlineArrowLeft } from "react-icons/ai";
+import { CiSettings } from "react-icons/ci";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
+import SelectTemplateSideBar from "../../Templates/SelectTemplateSideBar";
 import Po from "./Po";
 
 const PoView = () => {
@@ -11,6 +13,8 @@ const PoView = () => {
   const [po, setPo] = useState({});
   const userDetails = useSelector((state) => state.users);
   const [bankDetails, setBankDetails] = useState({});
+  const [selectTemplate, setSelectTemplate] = useState("template1");
+  const [isSelectTemplateOpen, setIsSelectTemplateOpen] = useState(false);
 
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
@@ -103,21 +107,40 @@ const PoView = () => {
   }, [companyId]);
 
   return (
-    <div className="px-5 pb-5 bg-gray-100" style={{ width: "100%" }}>
-      <header className="flex items-center space-x-3 my-2 ">
-        <Link
-          className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-          to={"./../"}
-        >
-          <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
+    <div className=" pb-5 bg-gray-100" style={{ width: "100%" }}>
+      <header className="flex items-center bg-white  p-3 space-x-3">
+        <Link className="flex items-center" to={"./../"}>
+          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
         </Link>
-        <h1 className="text-2xl font-bold">{po.poNo}</h1>
+        <h1 className="text-xl font-bold pe-4 w-full">
+          {po.prefix}-{po.no}
+        </h1>
+        <div className="flex justify-end w-full">
+          <button
+            className={
+              "px-4 py-2 flex items-center text-blue-500 border-2 rounded-md hover:bg-blue-500 hover:text-white"
+            }
+            onClick={() => setIsSelectTemplateOpen(true)}
+          >
+            <CiSettings className="w-6 h-6" />
+            &nbsp; Change Template
+          </button>
+        </div>
       </header>
 
       <hr />
-      <div className="w-full">
+      <div className="w-full px-5">
         <Po Po={po} bankDetails={bankDetails} />
       </div>
+      <SelectTemplateSideBar
+        isOpen={isSelectTemplateOpen}
+        onClose={() => setIsSelectTemplateOpen(false)}
+        preSelectedTemplate={selectTemplate}
+        onSelectedTemplate={(template) => {
+          setSelectTemplate(template);
+          setIsSelectTemplateOpen(false);
+        }}
+      />
     </div>
   );
 };

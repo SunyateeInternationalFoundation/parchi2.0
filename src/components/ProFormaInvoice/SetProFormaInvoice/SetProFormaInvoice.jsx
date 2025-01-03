@@ -295,7 +295,7 @@ const SetProFormaInvoice = () => {
   return (
     <SetForm
       formId={proFormaId}
-      formName={"ProFormaInvoice"}
+      formName={"ProForma"}
       personDetails={customersDetails}
       setFormData={setFormData}
       formData={formData}

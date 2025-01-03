@@ -1,12 +1,12 @@
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { AiOutlineArrowLeft } from "react-icons/ai";
 import { FaArrowDown, FaArrowUp, FaFilter } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../firebase";
 import ExpenseSidebar from "./ExpenseSidebar";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 function Expense() {
   const { id } = useParams();
@@ -153,7 +153,7 @@ function Expense() {
               className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
               to={"./../"}
             >
-              <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
+              <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
             </Link>{" "}
             <h1 className="text-2xl font-bold">Expenses</h1>
           </div>

@@ -154,17 +154,6 @@ function InvoiceView() {
     fetchInvoices();
   }, [returnData]);
 
-  function DateFormate(timestamp) {
-    const milliseconds =
-      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
-    const date = new Date(milliseconds);
-    const getDate = String(date.getDate()).padStart(2, "0");
-    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
-    const getFullYear = date.getFullYear();
-
-    return `${getDate}/${getMonth}/${getFullYear}`;
-  }
-
   return (
     <div className=" pb-5 bg-gray-100" style={{ width: "100%" }}>
       <header className="flex items-center bg-white  px-3 space-x-3">
@@ -178,7 +167,7 @@ function InvoiceView() {
         <nav className="flex space-x-4 w-full">
           <button
             className={
-              "px-4 py-4 font-semibold text-gray-500 " +
+              "p-4 font-semibold text-gray-500 " +
               (activeTab === "Invoice" ? " border-b-4 border-blue-500 " : "")
             }
             onClick={() => setActiveTab("Invoice")}
@@ -187,7 +176,7 @@ function InvoiceView() {
           </button>
           <button
             className={
-              "px-4 py-4 font-semibold text-gray-500 " +
+              "p-4 font-semibold text-gray-500 " +
               (activeTab === "Returns" ? " border-b-4 border-blue-500 " : "")
             }
             onClick={() => setActiveTab("Returns")}
@@ -196,7 +185,7 @@ function InvoiceView() {
           </button>
           <button
             className={
-              "px-4 py-4 font-semibold text-gray-500 " +
+              "p-4 font-semibold text-gray-500 " +
               (activeTab === "ReturnsHistory"
                 ? " border-b-4 border-blue-500 "
                 : "")

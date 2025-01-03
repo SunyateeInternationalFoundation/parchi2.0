@@ -8,7 +8,7 @@ import {
 } from "firebase/firestore";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import { AiOutlineArrowLeft } from "react-icons/ai";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import addItem from "../assets/addItem.png";
@@ -548,10 +548,10 @@ function SetForm(props) {
   }
   return (
     <div className="bg-gray-100 overflow-y-auto" style={{ height: "92vh" }}>
-      <div className="px-5 pb-5s">
+      <div className="px-5 pb-5">
         <header className="flex items-center space-x-3  my-2">
           <Link className="flex items-center" to={"./../"}>
-            <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
+            <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
           </Link>
           <h1 className="text-2xl font-bold">
             {formId ? "Edit" : "Create"} {formName}
@@ -1316,7 +1316,7 @@ function SetForm(props) {
       </div>
       <div className="flex justify-end sticky bottom-0 bg-white p-2 pe-10 border-t mt-5">
         <button
-          className=" py-1 px-4 rounded-lg flex items-center gap-1 bg-[#442799] text-white text-center w-48  px-5 py-3 pt-2 font-semibold rounded-md"
+          className="rounded-lg  bg-[#442799] text-white text-center   px-5 py-3 pt-2 font-semibold rounded-md"
           onClick={() => {
             {
               products.length > 0 && isProductSelected
@@ -1325,7 +1325,7 @@ function SetForm(props) {
             }
           }}
         >
-          <span className="text-lg">+</span> {formId ? "Edit" : "Create"}
+          <span className="text-lg">+</span> {formId ? "Edit " : "Create "}
           {formName}
         </button>
       </div>
