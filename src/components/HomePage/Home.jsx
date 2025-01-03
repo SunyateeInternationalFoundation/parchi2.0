@@ -28,7 +28,6 @@ import Tasks from "../Projects/ProjectView/Tasks/Tasks";
 import Users from "../Projects/ProjectView/Users/Users";
 import Quotation from "../Quotation/Quotation";
 import QuotationViewHome from "../Quotation/QuotationView/QuotationViewHome";
-import CreateService from "../Services/CreateService/CreateService";
 import Services from "../Services/Services";
 import ServicesList from "../ServicesList/ServicesList";
 import Branches from "../Staff&Payout/Branches/Branches";
@@ -65,7 +64,7 @@ import PurchaseViewHome from "../Purchase/PurchaseView/PurchaseViewHome";
 import SetPurchase from "../Purchase/SetPurchase/SetPurchase";
 import SetQuotation from "../Quotation/SetQuotation/SetQuotation";
 import Reminder from "../Reminder/Reminder";
-import EditService from "../Services/CreateService/EditService";
+import SetService from "../Services/CreateService/SetService";
 import ServiceView from "../Services/ServicesView/ServiceView";
 import Prefix from "../Settings/Prefix";
 import Settings from "../Settings/Settings";
@@ -227,11 +226,11 @@ const Home = () => {
             <Route path="/services" element={<Services />}></Route>
             <Route
               path="/services/create-service"
-              element={<CreateService />}
+              element={<SetService />}
             ></Route>
             <Route
               path="/services/:id/edit-service"
-              element={<EditService />}
+              element={<SetService />}
             ></Route>
             <Route path="/po" element={<PO />}></Route>
 

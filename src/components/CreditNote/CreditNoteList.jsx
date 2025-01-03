@@ -140,10 +140,10 @@ const CreditNoteList = () => {
   return (
     <div className="w-full">
       <div
-        className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
+        className="px-8 pb-8 pt-2  bg-gray-100 overflow-y-auto"
         style={{ height: "92vh" }}
       >
-        <div className="bg-white rounded-lg shadow mt-4 py-5">
+        <div className="mt-4 py-3">
           <h1 className="text-2xl font-bold pb-3 ">Credit Note Overview</h1>
           <div className="grid grid-cols-4 gap-8 ">
             <div className="rounded-lg p-5 bg-white shadow  ">

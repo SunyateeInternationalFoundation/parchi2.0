@@ -1,4 +1,5 @@
 import {
+  addDoc,
   arrayUnion,
   collection,
   doc,
@@ -16,11 +17,9 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
 import SideBarAddServices from "./SideBarAddServices";
 
-function EditService() {
+function SetService() {
   const { id } = useParams();
   const userDetails = useSelector((state) => state.users);
-  // const companyDetails =
-  //   userDetails.companies[userDetails.selectedCompanyIndex];
   let companyDetails;
   if (userDetails.selectedDashboard === "staff") {
     companyDetails =
@@ -29,17 +28,20 @@ function EditService() {
   } else {
     companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   }
+  const phoneNo = userDetails.phone;
   const [prefix, setPrefix] = useState("");
-  const [serviceDate, setServiceDate] = useState(new Date());
-  const [serviceDueDate, setServiceDueDate] = useState(new Date());
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const [membershipPeriod, setMembershipPeriod] = useState("");
   const [membershipEndDate, setMembershipEndDate] = useState("");
-  const [membershipStartDate, setMembershipStartDate] = useState(new Date());
+  const [membershipStartDate, setMembershipStartDate] = useState(
+    Timestamp.fromDate(new Date())
+  );
 
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
+    date: Timestamp.fromDate(new Date()),
+    dueDate: Timestamp.fromDate(new Date()),
     extraDiscount: 0,
     extraDiscountType: true,
     status: "Active",
@@ -77,7 +79,11 @@ function EditService() {
 
   useEffect(() => {
     function addSelectedService() {
-      if (formData?.servicesList?.length === 0 || servicesList.length === 0) {
+      if (
+        formData?.servicesList?.length === 0 ||
+        servicesList.length === 0 ||
+        !id
+      ) {
         return;
       }
       let serviceData = [];
@@ -97,25 +103,32 @@ function EditService() {
       setSelectedServicesList(service);
       calculationService(service);
     }
-    const fetchServicesNumbers = async () => {
-      try {
-        const querySnapshot = await getDocs(
-          collection(db, "companies", companyDetails.companyId, "services")
-        );
+    addSelectedService();
+    if (id) {
+      fetchServicesNumbers();
+    }
+  }, [formData.servicesList]);
 
-        const noList = querySnapshot.docs.map((doc) => doc.data().serviceNo);
+  const fetchServicesNumbers = async () => {
+    try {
+      const querySnapshot = await getDocs(
+        collection(db, "companies", companyDetails.companyId, "services")
+      );
+
+      const noList = querySnapshot.docs.map((doc) => doc.data().serviceNo);
+      if (id) {
         setPreServicesList(noList.filter((ele) => ele !== formData.serviceNo));
+      } else {
+        setPreServicesList(noList);
         setFormData((val) => ({
           ...val,
           serviceNo: String(noList.length + 1).padStart(4, 0),
         }));
-      } catch (error) {
-        console.error("Error fetching data:", error);
       }
-    };
-    addSelectedService();
-    fetchServicesNumbers();
-  }, [formData.servicesList]);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchPrefix = async () => {
@@ -134,6 +147,9 @@ function EditService() {
       }
     };
     async function fetchServiceData() {
+      if (!id) {
+        return;
+      }
       try {
         const docRef = doc(
           db,
@@ -143,8 +159,7 @@ function EditService() {
           id
         );
         const getData = (await getDoc(docRef)).data();
-        setServiceDate(getData.date);
-        setServiceDueDate(getData.dueDate);
+
         const customerData = (
           await getDoc(getData.customerDetails.customerRef)
         ).data();
@@ -214,11 +229,14 @@ function EditService() {
         console.log("🚀 ~ customerDetails ~ error:", error);
       }
     }
+    if (!id) {
+      fetchServicesNumbers();
+    }
     fetchPrefix();
     fetchServiceData();
     customerDetails();
     fetchServices();
-  }, [companyDetails, id]);
+  }, [companyDetails, userDetails.selectedDashboard]);
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -239,12 +257,16 @@ function EditService() {
     setIsDropdownVisible(false);
   };
 
-  async function onEditService() {
+  async function onSetService() {
     try {
       if (selectedServicesList.length == 0) {
         return;
       }
+      if (!selectedCustomerData?.customerId) {
+        return alert("select Customer");
+      }
       const customerRef = doc(db, "customers", selectedCustomerData.customerId);
+      const companyRef = doc(db, "companies", companyDetails.companyId);
 
       const serviceListPayload = [];
       for (const service of selectedServicesList) {
@@ -264,10 +286,17 @@ function EditService() {
       const payload = {
         ...formData,
         prefix,
-        date: serviceDate,
-        dueDate: serviceDueDate,
         subTotal: +totalAmounts.subTotalAmount,
         total: +totalAmounts.totalAmount,
+        createdBy: {
+          companyRef: companyRef,
+          name: companyDetails.name,
+          address: companyDetails.address ?? "",
+          city: companyDetails.city ?? "",
+          zipCode: companyDetails.zipCode ?? "",
+          phoneNo: phoneNo,
+          who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+        },
         customerDetails: {
           gstNumber: selectedCustomerData.gstNumber ?? "",
           customerRef: customerRef,
@@ -276,23 +305,30 @@ function EditService() {
           zipCode: selectedCustomerData.zipCode ?? "",
           phone: selectedCustomerData.phone ?? "",
           name: selectedCustomerData.name,
-          who: formData.createdBy.who,
+          //   who: formData.createdBy.who,
         },
         servicesList: serviceListPayload,
         membershipStartDate: membershipStartDate,
         membershipEndDate,
         typeOfEndMembership: membershipPeriod,
       };
-      await updateDoc(
-        doc(db, "companies", companyDetails.companyId, "services", id),
-        payload
-      );
+      if (id) {
+        await updateDoc(
+          doc(db, "companies", companyDetails.companyId, "services", id),
+          payload
+        );
+      } else {
+        await addDoc(
+          collection(db, "companies", companyDetails.companyId, "services"),
+          payload
+        );
+      }
       if (formData.membershipId) {
         await updateDoc(customerRef, {
           memberships: arrayUnion(formData.membershipId),
         });
       }
-      alert("successfully Updated Service");
+      alert(`successfully ${id ? "Updated" : "Created"}  Service`);
       navigate(
         userDetails.selectedDashboard === "staff"
           ? "/staff/services"
@@ -329,11 +365,6 @@ function EditService() {
   }, [selectedServicesList]);
 
   function calculationService(data) {
-    // const totalTaxableAmount = data.reduce(
-    //   (sum, product) => sum + product.totalAmount,
-    //   0
-    // );
-
     const totalTaxableAmount = data.reduce((sum, product) => {
       const cal = sum + (product.totalAmount - product.taxAmount);
       if (!product.sellingPriceTaxType) {
@@ -427,6 +458,7 @@ function EditService() {
     }
     setMembershipDate();
   }, [membershipStartDate, membershipPeriod]);
+
   return (
     <div
       className="w-full px-5 pb-5 bg-gray-100 overflow-y-auto"
@@ -439,7 +471,7 @@ function EditService() {
         >
           <AiOutlineArrowLeft className="w-5 h-5 mr-2" />
         </Link>
-        <h1 className="text-2xl font-bold">Edit Service</h1>
+        <h1 className="text-2xl font-bold">{id ? "Edit" : "Create"} Service</h1>
       </header>
       <div className="bg-white p-6 rounded-lg shadow-lg ">
         <div className="flex gap-8 mb-6">
@@ -458,7 +490,7 @@ function EditService() {
                   onChange={handleInputChange}
                   onFocus={() => {
                     setIsDropdownVisible(true);
-                    setSuggestions(customersDetails || []);
+                    setSuggestions(customersData || []);
                   }}
                   onBlur={() => {
                     if (!selectedCustomerData?.name) {
@@ -493,12 +525,10 @@ function EditService() {
                 </label>
                 <input
                   type="date"
-                  value={DateFormate(serviceDate) || ""}
+                  value={DateFormate(formData.date) || ""}
                   className="border p-1 rounded w-full mt-1"
                   onChange={(e) => {
-                    setServiceDate(
-                      Timestamp.fromDate(new Date(e.target.value))
-                    );
+                    formData.date(Timestamp.fromDate(new Date(e.target.value)));
                   }}
                   required
                 />
@@ -509,10 +539,10 @@ function EditService() {
                 </label>
                 <input
                   type="date"
-                  value={DateFormate(serviceDueDate)}
+                  value={DateFormate(formData.dueDate)}
                   className="border p-1 rounded w-full mt-1"
                   onChange={(e) => {
-                    setServiceDueDate(
+                    formData.dueDate(
                       Timestamp.fromDate(new Date(e.target.value))
                     );
                   }}
@@ -523,12 +553,12 @@ function EditService() {
                   Service No. <span className="text-red-500">*</span>
                   {preServicesList.includes(formData.serviceNo) && (
                     <span className="text-red-800 text-xs">
-                      "Already Service No. exist"{" "}
+                      &quot;Already Service No. exist&quot;{" "}
                     </span>
                   )}
                   {Number(formData.serviceNo) === 0 && (
                     <span className="text-red-800 text-xs">
-                      "Kindly Enter valid Service No."{" "}
+                      &quot;Kindly Enter valid Service No.&quot;{" "}
                     </span>
                   )}
                 </label>
@@ -846,9 +876,10 @@ function EditService() {
           <div className="flex gap-2">
             <button
               className="bg-blue-500 text-white py-1 px-4 rounded-lg flex items-center gap-1"
-              onClick={onEditService}
+              onClick={onSetService}
             >
-              <span className="text-lg">+</span> Edit service
+              <span className="text-lg">+</span> {id ? "Edit" : "Create"}{" "}
+              service
             </button>
           </div>
         </div>
@@ -862,4 +893,4 @@ function EditService() {
     </div>
   );
 }
-export default EditService;
+export default SetService;
