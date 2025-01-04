@@ -8,9 +8,8 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { db } from "../../firebase"; // Ensure Firebase is configured correctly
-import { IoMdArrowRoundBack } from "react-icons/io";
 
 const Approval = () => {
   const { id } = useParams();
@@ -42,13 +41,6 @@ const Approval = () => {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="flex items-center space-x-3 mb-6">
-        <Link
-          className="flex items-center bg-gray-300 text-gray-700 py-2 px-5 rounded-full hover:bg-gray-400 hover:text-white transition duration-200"
-          to={"./../"}
-        >
-          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
-          Back
-        </Link>
         <h1 className="text-2xl font-bold text-gray-800">Approvals</h1>
       </div>
       <div className="space-y-6">

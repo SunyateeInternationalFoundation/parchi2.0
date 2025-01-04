@@ -1,80 +1,13 @@
-import { doc, getDoc } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { BsFileEarmarkCheck, BsFolderPlus } from "react-icons/bs";
-import { MdDateRange } from "react-icons/md";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { db } from "../../firebase";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { MdDateRange } from "react-icons/md";
+import { Link } from "react-router-dom";
 
-function ProjectView() {
-  const { id } = useParams();
-  const [project, setProject] = useState({});
-
-  const manageProjectItems = [
-    {
-      name: "Files",
-      icon: <BsFolderPlus />,
-      onClick: () => {
-        navigate("files");
-      },
-    },
-    {
-      name: "Approvals",
-      icon: <BsFileEarmarkCheck />,
-      onClick: () => {
-        navigate("approvals");
-      },
-    },
-  ];
-  const navigate = useNavigate();
-
-  function DateFormate(timestamp, format = "dd/mm/yyyy") {
-    const milliseconds =
-      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
-    const date = new Date(milliseconds);
-    const getDate = String(date.getDate()).padStart(2, "0");
-    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
-    const getFullYear = date.getFullYear();
-
-    return format === "yyyy-mm-dd"
-      ? `${getFullYear}-${getMonth}-${getDate}`
-      : `${getDate}/${getMonth}/${getFullYear}`;
-  }
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  async function fetchData() {
-    const getData = await getDoc(doc(db, "projects", id));
-    const data = getData.data();
-    const payload = {
-      ...data,
-      companyRef: data.companyRef.id,
-      createdAt: DateFormate(data.createdAt),
-      startDate: DateFormate(data.startDate, "yyyy-mm-dd"),
-      dueDate: DateFormate(data.dueDate, "yyyy-mm-dd"),
-      vendorRef: data?.vendorRef?.map((ref) => ref.id),
-      customerRef: data?.customerRef?.map((ref) => ref.id),
-      staffRef: data?.staffRef?.map((ref) => ref.id),
-    };
-
-    setProject(payload);
-  }
-
+function ProjectView({ project }) {
   return (
     <div className="w-full" style={{ width: "100%" }}>
       <div className="px-8 pb-8 pt-2 bg-gray-100" style={{ width: "100%" }}>
         <div className="bg-white rounded-lg">
-          <div className="flex justify-between items-center p-4">
-            <div className="text-2xl font-semibold flex">
-              <Link className="flex items-center px-2" to="./../">
-                <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
-              </Link>
-              {project.name}
-            </div>
-          </div>
-          <div className="border-t-2 px-6 py-4 flex">
+          <div className="px-6 py-4 flex">
             <div className="uppercase rounded-lg border p-8 text-6xl bg-[rgb(159,142,247)] flex justify-center items-center">
               {project.name?.slice(0, 2)}
             </div>
@@ -142,7 +75,7 @@ function ProjectView() {
           </div>
         </div>
 
-        <div className="p-5 bg-white shadow rounded-lg mt-4">
+        {/* <div className="p-5 bg-white shadow rounded-lg mt-4">
           <div className="mb-4">Manage Project</div>
           <div className="grid grid-cols-4 gap-4 gap-y-8">
             {manageProjectItems.map((item) => (
@@ -158,7 +91,7 @@ function ProjectView() {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

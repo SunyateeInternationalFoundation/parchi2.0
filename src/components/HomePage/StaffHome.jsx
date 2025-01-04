@@ -192,7 +192,7 @@ const StaffHome = () => {
 
             <Route path="/projects/:id" element={<ProjectViewHome />} />
 
-            <Route path="/projects/:id/user" element={<Users />} />
+            {/* <Route path="/projects/:id/user" element={<Users />} />
 
             <Route path="/projects/:id/tasks" element={<Tasks />}></Route>
 
@@ -206,7 +206,7 @@ const StaffHome = () => {
             <Route
               path="/projects/:id/approvals"
               element={<Approval />}
-            ></Route>
+            ></Route> */}
 
             {/* {checkPermission("projects", "view") && (
               <Route

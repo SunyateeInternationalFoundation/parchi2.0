@@ -7,9 +7,8 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { db } from "../../firebase"; // Ensure Firebase is configured correctly
 
 const Approval = () => {
@@ -42,9 +41,6 @@ const Approval = () => {
   return (
     <div className="p-4">
       <div className="flex space-x-3 mb-4">
-        <Link className="flex items-center " to={"./../"}>
-          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
-        </Link>
         <h1 className="text-xl font-bold">Approvals</h1>
       </div>
       <div className="space-y-4">

@@ -18,13 +18,6 @@ import ProductHome from "../Products/ProductHome";
 import ProFormaInvoice from "../ProFormaInvoice/ProFormaInvoice";
 import CreateProject from "../Projects/CreateProject/CreateProject";
 import Projects from "../Projects/Projects";
-import Approval from "../Projects/ProjectView/Approvals/Approval";
-import Chats from "../Projects/ProjectView/Chats/Chats";
-import Files from "../Projects/ProjectView/Files/Files";
-import Items from "../Projects/ProjectView/Items/Items";
-import Milestone from "../Projects/ProjectView/Milestone/Milestone";
-import Tasks from "../Projects/ProjectView/Tasks/Tasks";
-import Users from "../Projects/ProjectView/Users/Users";
 import Quotation from "../Quotation/Quotation";
 import QuotationViewHome from "../Quotation/QuotationView/QuotationViewHome";
 import Services from "../Services/Services";
@@ -57,7 +50,6 @@ import SetPos from "../POS/SetPos/SetPos";
 import ProductViewHome from "../Products/ProductView/ProductViewHome";
 import ProFormaView from "../ProFormaInvoice/ProFormaInvoiceView/ProFormaView";
 import SetProFormaInvoice from "../ProFormaInvoice/SetProFormaInvoice/SetProFormaInvoice";
-import Payment from "../Projects/ProjectView/Payment/Payment";
 import ProjectViewHome from "../Projects/ProjectView/ProjectViewHome";
 import Purchase from "../Purchase/Purchase";
 import PurchaseViewHome from "../Purchase/PurchaseView/PurchaseViewHome";
@@ -186,7 +178,7 @@ const Home = () => {
               element={<CreateProject />}
             ></Route>
             <Route path="/projects/:id" element={<ProjectViewHome />} />
-            <Route path="/projects/:id/user" element={<Users />} />
+            {/* <Route path="/projects/:id/user" element={<Users />} />
             <Route path="/projects/:id/tasks" element={<Tasks />}></Route>
             <Route
               path="/projects/:id/milestones"
@@ -199,7 +191,7 @@ const Home = () => {
             ></Route>
             <Route path="/projects/:id/payments" element={<Payment />}></Route>
             <Route path="/projects/:id/items" element={<Items />}></Route>
-            <Route path="/projects/:id/chats" element={<Chats />}></Route>
+            <Route path="/projects/:id/chats" element={<Chats />}></Route> */}
             <Route path="/staff-payout" element={<StaffPayout />}></Route>
             <Route path="/staff-payout/staff" element={<Staff />}></Route>
             <Route
