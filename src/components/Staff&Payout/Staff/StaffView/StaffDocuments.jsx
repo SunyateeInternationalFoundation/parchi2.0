@@ -4,8 +4,8 @@ import {
   doc,
   getDocs,
   query,
-  where,
   Timestamp,
+  where,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import React, { useEffect, useState } from "react";
@@ -153,14 +153,8 @@ const StaffDocuments = (StaffData) => {
     window.open(fileUrl, "_blank");
   };
 
-  const formatDate = (timestamp) => {
-    if (!timestamp) return "";
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return date.toLocaleDateString();
-  };
-
   return (
-    <div className="p-6">
+    <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
           {currentPath.length > 0 && (
@@ -217,8 +211,7 @@ const StaffDocuments = (StaffData) => {
           </div>
         </div>
       </div>
-      <div></div>
-      <div className="grid grid-cols-10 gap-4">
+      <div className="grid grid-cols-10 gap-4 ">
         {folders.map((folder) => (
           <div
             key={folder.id}

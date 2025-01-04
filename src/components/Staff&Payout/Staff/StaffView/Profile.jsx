@@ -1,9 +1,9 @@
 import { doc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { useEffect, useState } from "react";
-import { FaUserEdit } from "react-icons/fa";
-import { db, storage } from "../../../../firebase";
+import { FaArrowDown, FaArrowUp, FaUserEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { db, storage } from "../../../../firebase";
 
 const Profile = ({ staffData, refresh }) => {
   const [isEdit, setIsEdit] = useState(false);
@@ -66,7 +66,7 @@ const Profile = ({ staffData, refresh }) => {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-8">
       {!UpdatedData.id ? (
         <div className="text-gray-500 text-center">Loading staff...</div>
       ) : (
@@ -82,18 +82,20 @@ const Profile = ({ staffData, refresh }) => {
           <div className="p-6">
             {/* Profile Section */}
             <div className="flex items-center space-x-6 mb-6">
-              {UpdatedData.profileImage ? (
-                <img
-                  src={UpdatedData.profileImage}
-                  alt="Profile"
-                  className="w-20 h-20 rounded-full object-cover shadow-md"
-                />
-              ) : (
-                <span className="bg-purple-500 text-white w-20 h-20 flex items-center justify-center rounded-full text-2xl shadow-md">
-                  {UpdatedData.name.charAt(0)}
-                </span>
-              )}
-              <div className="flex-1">
+              <div className="w-1/5">
+                {UpdatedData.profileImage ? (
+                  <img
+                    src={UpdatedData.profileImage}
+                    alt="Profile"
+                    className="w-20 h-20 rounded-full object-cover shadow-md"
+                  />
+                ) : (
+                  <span className="bg-purple-500 text-white w-20 h-20 flex items-center justify-center rounded-full text-2xl shadow-md">
+                    {UpdatedData.name.charAt(0)}
+                  </span>
+                )}
+              </div>
+              <div className="w-full">
                 <div className="text-xl font-semibold">
                   {isEdit ? (
                     <input
@@ -127,6 +129,26 @@ const Profile = ({ staffData, refresh }) => {
                     onChange={handleFileChange}
                   />
                 )}
+              </div>
+              <div className="w-full flex space-x-3">
+                <div className="bg-green-50 rounded-lg p-5 w-full flex items-center space-x-3">
+                  <div className="text-green-500 p-3 bg-sky-100 rounded-lg text-xl">
+                    <FaArrowDown />
+                  </div>
+                  <div>
+                    <div className="text-lg">Income</div>
+                    <div className="text-3xl text-green-600 font-bold">0</div>
+                  </div>
+                </div>
+                <div className="bg-red-50 rounded-lg p-5 w-full flex items-center space-x-3 text-xl">
+                  <div className="text-red-500 p-3 bg-sky-100 rounded-lg">
+                    <FaArrowUp />
+                  </div>
+                  <div>
+                    <div className="text-lg">Expenses</div>
+                    <div className="text-3xl text-red-600 font-bold">0</div>
+                  </div>
+                </div>
               </div>
             </div>
 

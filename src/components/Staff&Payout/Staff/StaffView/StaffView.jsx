@@ -8,6 +8,7 @@ import {
 } from "firebase/firestore";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../../../firebase";
@@ -16,7 +17,6 @@ import Payments from "./Payments";
 import Profile from "./Profile";
 import Projects from "./Projects";
 import StaffDocuments from "./StaffDocuments";
-import { IoMdArrowRoundBack } from "react-icons/io";
 
 function StaffView({ staffCompanyId }) {
   const { id } = useParams();
@@ -110,79 +110,66 @@ function StaffView({ staffCompanyId }) {
     fetchStaffData();
     fetchProjectList();
   }, []);
-  console.log("staffcompanyId", staffCompanyId);
-  console.log("attendance data", attendanceData);
+
   return (
-    <div className="px-5 pb-5 bg-gray-100" style={{ width: "100%" }}>
-      <header className="flex items-center  space-x-3 my-2 ">
-        <Link
-          className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-          to={"./../"}
-        >
+    <div className="bg-gray-100" style={{ width: "100%" }}>
+      <header className="flex items-center  space-x-3 px-3 bg-white">
+        <Link className="flex items-center " to={"./../"}>
           <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
         </Link>
         <h1 className="text-2xl font-bold">{staffData.name}</h1>
+        <div>
+          <nav className="flex space-x-4">
+            <button
+              className={
+                "px-4 py-3" +
+                (activeTab === "Profile" && " border-b-4 border-blue-700")
+              }
+              onClick={() => setActiveTab("Profile")}
+            >
+              Profile
+            </button>
+            <button
+              className={
+                "px-4 py-3" +
+                (activeTab === "Projects" && " border-b-4 border-blue-700")
+              }
+              onClick={() => setActiveTab("Projects")}
+            >
+              Projects
+            </button>
+            {/* <button
+              className={
+                "px-4 py-3" +
+                (activeTab === "Payments"
+                && " border-b-4 border-blue-700")
+              }
+              onClick={() => setActiveTab("Payments")}
+            >
+              Payments
+            </button> */}
+            <button
+              className={
+                "px-4 py-3" +
+                (activeTab === "Attendance" && " border-b-4 border-blue-700")
+              }
+              onClick={() => setActiveTab("Attendance")}
+            >
+              Attendance
+            </button>
+            <button
+              className={
+                "px-4 py-3" +
+                (activeTab === "Documents" && " border-b-4 border-blue-700")
+              }
+              onClick={() => setActiveTab("Documents")}
+            >
+              Documents
+            </button>
+          </nav>
+        </div>
       </header>
-      <hr />
-      <div>
-        <nav className="flex space-x-4 mt-3 mb-3">
-          <button
-            className={
-              "px-4 py-1" +
-              (activeTab === "Profile"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
-            }
-            onClick={() => setActiveTab("Profile")}
-          >
-            Profile
-          </button>
-          <button
-            className={
-              "px-4 py-1" +
-              (activeTab === "Projects"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
-            }
-            onClick={() => setActiveTab("Projects")}
-          >
-            Projects
-          </button>
-          {/* <button
-            className={
-              "px-4 py-1" +
-              (activeTab === "Payments"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
-            }
-            onClick={() => setActiveTab("Payments")}
-          >
-            Payments
-          </button> */}
-          <button
-            className={
-              "px-4 py-1" +
-              (activeTab === "Attendance"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
-            }
-            onClick={() => setActiveTab("Attendance")}
-          >
-            Attendance
-          </button>
-          <button
-            className={
-              "px-4 py-1" +
-              (activeTab === "Documents"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
-            }
-            onClick={() => setActiveTab("Documents")}
-          >
-            Documents
-          </button>
-        </nav>
-      </div>
+
       <hr />
       <div className="w-full">
         {activeTab === "Profile" && (

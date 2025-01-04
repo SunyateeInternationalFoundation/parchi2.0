@@ -215,12 +215,12 @@ function Tasks() {
   }, [taskMessagesData[selectedTask.id]]);
   return (
     <div
-      className="w-full bg-gray-100"
-      style={{ width: "100%", height: "82vh" }}
+      className="w-full bg-gray-100 overflow-y-auto"
+      style={{ height: "82vh" }}
     >
       <div
         className="w-full grid grid-cols-2 overflow-y-auto"
-        style={{ width: "100%", height: "82vh" }}
+        style={{ height: "82vh" }}
       >
         <div
           className="p-3 border-r-2  overflow-y-auto"

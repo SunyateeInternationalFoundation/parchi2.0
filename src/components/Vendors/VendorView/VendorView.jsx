@@ -130,13 +130,11 @@ function VendorView() {
           <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
         </Link>
         <h1 className="text-2xl font-bold">{vendorData.name}</h1>
-        <nav className="flex space-x-4 mt-3 mb-3">
+        <nav className="flex space-x-4">
           <button
             className={
-              "px-4 py-1" +
-              (activeTab === "Profile"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
+              "px-4 py-3" +
+              (activeTab === "Profile" && " border-b-4 border-blue-700")
             }
             onClick={() => setActiveTab("Profile")}
           >
@@ -144,10 +142,8 @@ function VendorView() {
           </button>
           <button
             className={
-              "px-4 py-1" +
-              (activeTab === "Projects"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
+              "px-4  py-3" +
+              (activeTab === "Projects" && " border-b-4 border-blue-700")
             }
             onClick={() => setActiveTab("Projects")}
           >
@@ -155,10 +151,8 @@ function VendorView() {
           </button>
           <button
             className={
-              "px-4 py-1" +
-              (activeTab === "Bills"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
+              "px-4  py-3" +
+              (activeTab === "Bills" && " border-b-4 border-blue-700")
             }
             onClick={() => setActiveTab("Bills")}
           >
