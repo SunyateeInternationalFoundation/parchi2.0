@@ -13,10 +13,9 @@ import { FaFilter } from "react-icons/fa";
 import { IoMdClose, IoMdSend } from "react-icons/io";
 import { MdOutlineShowChart } from "react-icons/md";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { db } from "../../../../firebase";
 import TaskSideBar from "./TaskSideBar";
-import { IoMdArrowRoundBack } from "react-icons/io";
 
 function Tasks() {
   const { id } = useParams();
@@ -217,18 +216,18 @@ function Tasks() {
   return (
     <div
       className="w-full bg-gray-100"
-      style={{ width: "100%", height: "92vh" }}
+      style={{ width: "100%", height: "82vh" }}
     >
-      <div className="w-full grid grid-cols-2 h-full">
-        <div className="p-3 border-r-2 ">
+      <div
+        className="w-full grid grid-cols-2 overflow-y-auto"
+        style={{ width: "100%", height: "82vh" }}
+      >
+        <div
+          className="p-3 border-r-2  overflow-y-auto"
+          style={{ height: "82vh" }}
+        >
           <div className="flex justify-between border-r-2">
             <div className="flex space-x-3">
-              <Link
-                className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-                to={"./../"}
-              >
-                <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
-              </Link>
               <h2 className="text-xl font-semibold ">TASKS</h2>
             </div>
 
@@ -337,8 +336,8 @@ function Tasks() {
           )}
         </div>
         {selectedTask.id ? (
-          <div className="px-4">
-            <div className="mt-4 flex justify-between cursor-pointer">
+          <div className="px-4 overflow-y-auto" style={{ height: "82vh" }}>
+            <div className="mt-2 flex justify-between cursor-pointer">
               <div className="text-lg">{selectedTask.name}</div>
               <div
                 className="text-3xl cursor-pointer"
@@ -348,7 +347,7 @@ function Tasks() {
               </div>
             </div>
 
-            <div className="bg-white p-4 rounded-lg shadow my-2">
+            <div className="bg-white p-2 rounded-lg shadow my-2">
               <div className="flex justify-between ">
                 <div className="flex items-center">
                   <div className="w-full">Start Date: </div>

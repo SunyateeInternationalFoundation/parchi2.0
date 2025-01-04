@@ -20,7 +20,6 @@ import ExpenseSidebar from "./ExpenseSidebar";
 
 function Expense() {
   const { id } = useParams();
-  const [filter, setFilter] = useState("All");
   const [filterUser, setFilterUser] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [expenses, setExpenses] = useState([]);

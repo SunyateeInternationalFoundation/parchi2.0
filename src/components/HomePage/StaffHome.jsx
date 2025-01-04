@@ -32,7 +32,7 @@ import Projects from "../Projects/Projects";
 import Approval from "../Projects/ProjectView/Approvals/Approval";
 import Files from "../Projects/ProjectView/Files/Files";
 import Milestone from "../Projects/ProjectView/Milestone/Milestone";
-import ProjectView from "../Projects/ProjectView/ProjectView";
+import ProjectViewHome from "../Projects/ProjectView/ProjectViewHome";
 import Tasks from "../Projects/ProjectView/Tasks/Tasks";
 import Users from "../Projects/ProjectView/Users/Users";
 import Purchase from "../Purchase/Purchase";
@@ -190,7 +190,7 @@ const StaffHome = () => {
               ></Route>
             )}
 
-            <Route path="/projects/:id" element={<ProjectView />} />
+            <Route path="/projects/:id" element={<ProjectViewHome />} />
 
             <Route path="/projects/:id/user" element={<Users />} />
 

@@ -10,10 +10,9 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { db } from "../../../../firebase";
 import CreateGroupSideBar from "./CreateGroupSideBar";
-import { IoMdArrowRoundBack } from "react-icons/io";
 
 const Chats = () => {
   const { id } = useParams();
@@ -162,17 +161,11 @@ const Chats = () => {
   };
 
   return (
-    <div className="w-full bg-gray-100" style={{ height: "92vh" }}>
-      <div className="w-full grid grid-cols-3" style={{ height: "92vh" }}>
-        <div className="p-3 border-r-2" style={{ height: "92vh" }}>
+    <div className="w-full bg-gray-100" style={{ height: "82vh" }}>
+      <div className="w-full grid grid-cols-3" style={{ height: "82vh" }}>
+        <div className="p-3 border-r-2" style={{ height: "82vh" }}>
           <div className="flex justify-between border-r-2 mb-5">
             <div className="flex space-x-3">
-              <Link
-                className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-                to={"./../"}
-              >
-                <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
-              </Link>
               <h2 className="text-xl font-semibold">Chats</h2>
             </div>
             <button
@@ -187,7 +180,7 @@ const Chats = () => {
           {loading ? (
             <div>Loading...</div>
           ) : (
-            <div className="overflow-y-auto" style={{ height: "82vh" }}>
+            <div className="overflow-y-auto" style={{ height: "70vh" }}>
               {groups.length > 0 ? (
                 groups.map((group) => (
                   <div
@@ -218,7 +211,7 @@ const Chats = () => {
           {selectedGroup ? (
             <div
               className="flex flex-col overflow-y-auto"
-              style={{ height: "82vh" }}
+              style={{ height: "80vh" }}
             >
               <div className="bg-gray-200 p-3 rounded-lg shadow">
                 <h3 className="text-xl font-bold">{selectedGroup.groupName}</h3>

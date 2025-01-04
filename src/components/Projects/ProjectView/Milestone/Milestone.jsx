@@ -8,9 +8,8 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { db } from "../../../../firebase"; // Ensure Firebase is initialized and configured
 const Milestone = () => {
   const [milestones, setMilestones] = useState([]);
@@ -64,15 +63,9 @@ const Milestone = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="px-8 py-4">
       <div className="flex justify-between mb-6">
         <div className="flex space-x-3">
-          <Link
-            className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-            to={"./../"}
-          >
-            <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
-          </Link>
           <h1 className="text-2xl font-bold  text-black">Milestones</h1>
         </div>
 
@@ -85,7 +78,7 @@ const Milestone = () => {
           </button>
         )}
       </div>
-      <div className="space-y-4">
+      <div className="space-y-4 overflow-y-auto" style={{ height: "70vh" }}>
         {milestones.map((milestone) => (
           <MilestoneCard key={milestone.id} milestone={milestone} />
         ))}

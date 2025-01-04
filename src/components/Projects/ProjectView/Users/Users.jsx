@@ -1,10 +1,9 @@
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { db } from "../../../../firebase";
 import UserSidebar from "./UserSidebar";
-import { IoMdArrowRoundBack } from "react-icons/io";
 
 function Users() {
   const { id } = useParams();
@@ -96,15 +95,9 @@ function Users() {
   }, [activeNav, projectDetails, searchTerm]);
 
   return (
-    <div className="p-4">
+    <div className="px-8 py-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex space-x-3">
-          <Link
-            className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-            to={"./../"}
-          >
-            <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
-          </Link>
           <h2 className="text-2xl font-bold">Project Members</h2>
         </div>
 
@@ -160,7 +153,7 @@ function Users() {
         {loading ? (
           <div className="text-center py-6">Loading...</div>
         ) : (
-          <div className="overflow-y-auto h-96">
+          <div className="overflow-y-auto" style={{ height: "50vh" }}>
             {modifiedProjectData.length > 0 ? (
               modifiedProjectData.map((item) => (
                 <div

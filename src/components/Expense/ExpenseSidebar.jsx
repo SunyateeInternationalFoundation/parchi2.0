@@ -132,7 +132,6 @@ function ExpenseSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
   }
 
   useEffect(() => {
-    console.log("🚀 ~ useEffect ~ updateData:", updateData);
     if (updateData?.id) {
       setFormData(updateData);
       setFilterUser(updateData.toWhom.userType);
@@ -160,7 +159,9 @@ function ExpenseSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
         );
       }
       alert(
-        `successfully  ${updateData?.id ? "Edit " : "Create "} isModalOpen.type`
+        `successfully  ${updateData?.id ? "Edit " : "Create "} ${
+          isModalOpen.type
+        }`
       );
       ResetForm();
       refresh();

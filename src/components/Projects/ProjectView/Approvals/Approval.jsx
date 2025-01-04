@@ -1,10 +1,9 @@
 import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { db } from "../../../../firebase"; // Ensure Firebase is configured correctly
 import CreateApproval from "./CreateApproval";
-import { IoMdArrowRoundBack } from "react-icons/io";
 
 const Approval = () => {
   const { id } = useParams();
@@ -48,14 +47,8 @@ const Approval = () => {
   );
 
   return (
-    <div className="p-4">
+    <div className="px-8 py-4">
       <div className="flex space-x-3 mb-4">
-        <Link
-          className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-          to={"./../"}
-        >
-          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
-        </Link>
         <h1 className="text-xl font-bold">Approvals</h1>
       </div>
       {/* Filter Buttons */}
@@ -88,7 +81,7 @@ const Approval = () => {
       </div>
 
       {/* Approval Cards */}
-      <div className="space-y-4">
+      <div className="space-y-4 overflow-y-auto " style={{ height: "64vh" }}>
         {filteredApprovals.map((approval) => (
           <ApprovalCard key={approval.id} approval={approval} />
         ))}
@@ -111,7 +104,7 @@ const Approval = () => {
 
 const ApprovalCard = ({ approval, isSideBarOpen }) => {
   return (
-    <div className="bg-white p-4 rounded shadow flex justify-between items-center">
+    <div className="bg-white p-4 rounded shadow flex justify-between items-center ">
       <div className="flex items-center">
         <img
           src={approval.imageUrl || "https://via.placeholder.com/50"}

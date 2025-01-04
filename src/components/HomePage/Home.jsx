@@ -23,7 +23,6 @@ import Chats from "../Projects/ProjectView/Chats/Chats";
 import Files from "../Projects/ProjectView/Files/Files";
 import Items from "../Projects/ProjectView/Items/Items";
 import Milestone from "../Projects/ProjectView/Milestone/Milestone";
-import ProjectView from "../Projects/ProjectView/ProjectView";
 import Tasks from "../Projects/ProjectView/Tasks/Tasks";
 import Users from "../Projects/ProjectView/Users/Users";
 import Quotation from "../Quotation/Quotation";
@@ -59,6 +58,7 @@ import ProductViewHome from "../Products/ProductView/ProductViewHome";
 import ProFormaView from "../ProFormaInvoice/ProFormaInvoiceView/ProFormaView";
 import SetProFormaInvoice from "../ProFormaInvoice/SetProFormaInvoice/SetProFormaInvoice";
 import Payment from "../Projects/ProjectView/Payment/Payment";
+import ProjectViewHome from "../Projects/ProjectView/ProjectViewHome";
 import Purchase from "../Purchase/Purchase";
 import PurchaseViewHome from "../Purchase/PurchaseView/PurchaseViewHome";
 import SetPurchase from "../Purchase/SetPurchase/SetPurchase";
@@ -185,7 +185,7 @@ const Home = () => {
               path="/projects/create-project"
               element={<CreateProject />}
             ></Route>
-            <Route path="/projects/:id" element={<ProjectView />} />
+            <Route path="/projects/:id" element={<ProjectViewHome />} />
             <Route path="/projects/:id/user" element={<Users />} />
             <Route path="/projects/:id/tasks" element={<Tasks />}></Route>
             <Route

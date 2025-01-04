@@ -167,17 +167,11 @@ const Files = () => {
 
   return (
     <div
-      className="bg-white-500  p-4 overflow-y-auto"
-      style={{ height: "92vh" }}
+      className="bg-white-500 px-8 py-4 overflow-y-auto"
+      style={{ height: "82vh" }}
     >
       <div className="flex items-center justify-between">
         <div className="flex space-x-3">
-          <Link
-            className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-            to={"./../"}
-          >
-            <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
-          </Link>
           <h1 className="text-xl font-bold">Files</h1>
         </div>
 
@@ -191,7 +185,7 @@ const Files = () => {
         )}
       </div>
 
-      <div className="rounded-lg p-6 space-y-4">
+      <div className="rounded-lg py-4 space-y-4">
         {files.map((file) => {
           const customer = customers.find(
             (customer) => customer.id === file.customerOrVendorRef

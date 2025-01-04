@@ -1,12 +1,20 @@
-import { collection, doc, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { FaArrowDown, FaArrowUp, FaFilter } from "react-icons/fa";
+import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
+import { LiaTrashAltSolid } from "react-icons/lia";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import FormatTimestamp from "../../../../constants/FormatTimestamp";
 import { db } from "../../../../firebase";
 import PaymentSidebar from "./PaymentSidebar";
-import { IoMdArrowRoundBack } from "react-icons/io";
 
 const Payment = () => {
   const { id } = useParams();
@@ -25,6 +33,7 @@ const Payment = () => {
   const [isModalOpen, setIsModalOpen] = useState({
     isOpen: false,
     type: "",
+    updateData: {},
   });
 
   const [userDataSet, setUserDataset] = useState({
@@ -128,218 +137,198 @@ const Payment = () => {
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
-  function DateFormate(timestamp) {
-    if (!timestamp) {
-      return;
-    }
-    const milliseconds =
-      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
-    const date = new Date(milliseconds);
-    const getDate = String(date.getDate()).padStart(2, "0");
-    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
-    const getFullYear = date.getFullYear();
 
-    return `${getDate}/${getMonth}/${getFullYear}`;
+  async function onDeleteExpense(expenseId) {
+    try {
+      if (!window.confirm("Are you sure you want to delete this expense?"))
+        return;
+      await deleteDoc(doc(db, "companies", companyId, "expenses", expenseId));
+      setExpenses((prev) => prev.filter((expense) => expense.id !== expenseId));
+    } catch (error) {
+      console.log("🚀 ~ onDeleteExpense ~ error:", error);
+    }
   }
   return (
-    <div className="w-full">
-      <div
-        className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
-        style={{ height: "92vh" }}
-      >
-        <header className="flex items-center justify-between mb-3">
-          <div className="flex space-x-3">
-            <Link
-              className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-              to={"./../"}
-            >
-              <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
-            </Link>{" "}
-            <h1 className="text-2xl font-bold">Payments</h1>
-          </div>
-          <div className="space-x-4">
-            <button
-              className="bg-red-500 text-white py-1 px-3 rounded"
-              onClick={() =>
-                setIsModalOpen({
-                  isOpen: true,
-                  type: "expense",
-                })
-              }
-            >
-              - Expense
-            </button>
-            <button
-              className="bg-green-700 text-white py-1 px-3 rounded"
-              onClick={() =>
-                setIsModalOpen({
-                  isOpen: true,
-                  type: "income",
-                })
-              }
-            >
-              + Income
-            </button>
-          </div>
-        </header>
-        <div className=" bg-white shadow rounded-lg mt-4">
-          <div className="px-4 py-2">
-            <div className="flex justify-between mb-2">
-              <div className="flex justify-around text-gray-600">
-                <button
-                  className={
-                    "px-4 py-1" +
-                    (filter === "All" ? " bg-gray-300 rounded-full" : "")
-                  }
-                  onClick={() => setFilter("All")}
-                >
-                  All
-                </button>
-                <button
-                  className={
-                    "px-4 py-1" +
-                    (filter === "Today" ? " bg-gray-300 rounded-full" : "")
-                  }
-                  onClick={() => setFilter("Today")}
-                >
-                  Today
-                </button>
-                <button
-                  className={
-                    "px-4 py-1" +
-                    (filter === "Week" ? " bg-gray-300 rounded-full" : "")
-                  }
-                  onClick={() => setFilter("Week")}
-                >
-                  Week
-                </button>
-                <button
-                  className={
-                    "px-4 py-1" +
-                    (filter === "Month" ? " bg-gray-300 rounded-full" : "")
-                  }
-                  onClick={() => setFilter("Month")}
-                >
-                  Month
-                </button>
-              </div>
-              <FaFilter />
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="">
-                <div className="flex items-center ">
-                  <div className="text-green-500 p-3 bg-sky-100 rounded-lg">
-                    <FaArrowDown />
-                  </div>
-                  <span className="font-bold ml-5">Income</span>
-                </div>
-                <div className="font-bold">{totalAmounts.income}</div>
-              </div>
-              <div className="">
-                <div className="flex items-center ">
-                  <span className=" font-bold mr-5">Expense</span>
-                  <div className="text-red-500 p-3 bg-red-200 rounded-lg">
-                    <FaArrowUp />
-                  </div>
-                </div>
-                <div className="text-end font-bold">{totalAmounts.expense}</div>
-              </div>
+    <div
+      className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
+      style={{ height: "82vh" }}
+    >
+      <div className=" mt-4 py-3">
+        <div className="grid grid-cols-4 gap-8 ">
+          <div className="rounded-lg p-5 bg-white shadow  ">
+            <div className="text-lg">Income Amount</div>
+            <div className="text-3xl text-indigo-600 font-bold p-2">
+              ₹ {totalAmounts.income}
             </div>
           </div>
-          <div className="flex justify-between bg-green-500  text-center p-2 rounded-b-lg">
-            <div>Balance</div>
-            <div className="font-bold">{totalAmounts.total}</div>
+          <div className="rounded-lg p-5 bg-white shadow ">
+            <div className="text-lg">Expense Amount</div>
+            <div className="text-3xl text-emerald-600 font-bold p-2">
+              {" "}
+              ₹ {totalAmounts.expense}
+            </div>
+          </div>
+          <div className="rounded-lg p-5 bg-white shadow ">
+            <div className="text-lg">Current Amount</div>
+            <div className="text-3xl text-orange-600 font-bold p-2">
+              ₹ {totalAmounts.total}
+            </div>
+          </div>
+          <div className="rounded-lg p-5 bg-white shadow">
+            <div className="text-lg">Budget Amount</div>
+            <div className="text-3xl text-red-600 font-bold p-2">₹ 0</div>
           </div>
         </div>
-        <div className="bg-white py-2 px-4  my-3 rounded-lg shadow mb-4">
-          <div className="flex  mb-2 text-gray-600">
-            <button
-              className={
-                "px-4 py-1" +
-                (filterUser === "All" ? " bg-gray-300 rounded-full" : "")
-              }
-              onClick={() => setFilterUser("All")}
-            >
-              All
-            </button>
-            <button
-              className={
-                "px-4 py-1" +
-                (filterUser === "Customer" ? " bg-gray-300 rounded-full" : "")
-              }
-              onClick={() => setFilterUser("Customer")}
-            >
-              Customers
-            </button>
-            <button
-              className={
-                "px-4 py-1" +
-                (filterUser === "Vendor" ? " bg-gray-300 rounded-full" : "")
-              }
-              onClick={() => setFilterUser("Vendor")}
-            >
-              Vendors
-            </button>
-            <button
-              className={
-                "px-4 py-1" +
-                (filterUser === "Staff" ? " bg-gray-300 rounded-full" : "")
-              }
-              onClick={() => setFilterUser("Staff")}
-            >
-              Staff
-            </button>
+      </div>
+
+      <div className="bg-white  pb-8 pt-6 rounded-lg shadow my-6">
+        <nav className="flex items-center  mb-4 px-5">
+          <div className="space-x-4 w-full flex items-center">
+            <div className="flex items-center space-x-4  border px-5  py-3 rounded-md w-full">
+              <input
+                type="text"
+                placeholder="Search ..."
+                className=" w-full focus:outline-none"
+                value={searchTerm}
+                onChange={handleSearch}
+              />
+              <IoSearch />
+            </div>
+            <div className="flex items-center space-x-4 border px-5  py-3 rounded-md ">
+              <select onChange={(e) => setFilterUser(e.target.value)}>
+                <option value="All"> All</option>
+                <option value="Customer">Customer</option>
+                <option value="Vendors">Vendors</option>
+                <option value="Staff">Staff</option>
+              </select>
+            </div>
           </div>
-          <div className="flex  items-center space-x-4 mb-4 border p-2 rounded">
-            <input
-              type="text"
-              placeholder="Search..."
-              className=" w-full focus:outline-none"
-              value={searchTerm}
-              onChange={handleSearch}
-            />
-            <IoSearch />
+          <div className="w-full">
+            <div className=" flex justify-end items-center space-x-4">
+              <button
+                className="bg-red-500 flex items-center justify-center text-white space-x-2  px-5 py-3 font-semibold rounded-md"
+                onClick={() =>
+                  setIsModalOpen({
+                    isOpen: true,
+                    type: "expense",
+                  })
+                }
+              >
+                <FaArrowUp />
+                <div>Expense</div>
+              </button>
+              <button
+                className="bg-green-700 flex items-center  text-white text-center space-x-2 px-5  py-3 font-semibold rounded-md"
+                onClick={() =>
+                  setIsModalOpen({
+                    isOpen: true,
+                    type: "income",
+                  })
+                }
+              >
+                <FaArrowDown /> <div>Income</div>
+              </button>
+            </div>
           </div>
-          <div className="overflow-y-auto" style={{ height: "44vh" }}>
-            {loading ? (
-              <div className="text-center py-6">Loading Expense...</div>
-            ) : filterExpensesData.length > 0 ? (
-              filterExpensesData.map((expense) => (
-                <div
-                  key={expense.id}
-                  className="bg-white-100 text-gray-800  border my-3 rounded-lg p-4 flex justify-between items-center shadow-lg hover:bg-blue-200 transition cursor-pointer"
-                >
-                  <div className="flex items-center space-x-3">
-                    {expense.transactionType === "income" ? (
-                      <div className="text-green-500 p-3 bg-sky-100 rounded-lg">
-                        <FaArrowDown />
-                      </div>
-                    ) : (
-                      <div className="text-red-500 p-3 bg-red-100 rounded-lg">
-                        <FaArrowUp />
-                      </div>
-                    )}
-                    <div>
-                      <div>{expense.toWhom?.name}</div>
-                      <div>Created at: {DateFormate(expense.date)}</div>
-                    </div>
-                  </div>
-                  <div className="text-end">
-                    <div>₹ {expense.amount}</div>
-                    {/* <div>
-                      category:{" "}
-                      <span className="font-bold">{expense.categoryType}</span>
-                    </div> */}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="h-20 overflow-y-auto">
-                <div className="text-center py-4">No Expense found</div>
-              </div>
-            )}
+        </nav>
+
+        {loading ? (
+          <div className="text-center py-6">Loading Expenses...</div>
+        ) : (
+          <div className="overflow-y-auto" style={{ height: "96vh" }}>
+            <table className="w-full border-collapse text-start">
+              <thead className=" bg-white">
+                <tr className="border-b">
+                  <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
+                    Type
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                    Date
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                    ToWhom
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold  text-center">
+                    Amount
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                    Mode
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                    Category
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-center">
+                    Delete
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                {filterExpensesData.length > 0 ? (
+                  filterExpensesData.map((expense) => (
+                    <tr
+                      key={expense.id}
+                      className="border-b border-gray-200 text-center cursor-pointer"
+                      onClick={() =>
+                        setIsModalOpen({
+                          isOpen: true,
+                          type: expense.transactionType,
+                          updateData: expense,
+                        })
+                      }
+                    >
+                      <td className="px-8 py-3 text-start w-24">
+                        {expense.transactionType === "income" ? (
+                          <div className="text-green-500 p-3 bg-sky-100 rounded-lg ">
+                            <FaArrowDown />
+                          </div>
+                        ) : (
+                          <div className="text-red-500 p-3 bg-red-100 rounded-lg">
+                            <FaArrowUp />
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-5 py-3 text-start">
+                        <FormatTimestamp timestamp={expense.date} />
+                      </td>
+                      <td className="px-5 py-3 text-start">
+                        {expense.toWhom.name} <br />
+                        <span className="text-gray-500 text-sm">
+                          Ph.No {expense.toWhom.phoneNumber}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 font-bold">
+                        ₹ {expense.amount}
+                      </td>
+                      <td className="px-5 py-3  text-start">
+                        {expense.paymentMode}
+                      </td>
+                      <td className="px-5 py-3  text-start">
+                        {expense.category}
+                      </td>
+                      <td
+                        className="px-5 py-3   text-center"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeleteExpense(expense.id);
+                        }}
+                      >
+                        <div className=" flex items-center justify-center">
+                          <LiaTrashAltSolid className=" text-red-500 text-xl " />
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="h-24 text-center py-4">
+                      No Expenses Found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
-        </div>
+        )}
       </div>
       <PaymentSidebar
         isModalOpen={isModalOpen}
@@ -348,6 +337,7 @@ const Payment = () => {
           setIsModalOpen({
             isOpen: false,
             type: "",
+            updateData: {},
           });
         }}
         refresh={fetchExpenses}

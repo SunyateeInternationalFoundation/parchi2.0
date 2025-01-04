@@ -2,12 +2,11 @@ import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { db } from "../../../../firebase";
 import InventoryAddSideBar from "./InventoryAddSideBar";
 import ItemView from "./ItemView";
 import QuickAddSideBar from "./QuickAddSideBar";
-import { IoMdArrowRoundBack } from "react-icons/io";
 
 function Items() {
   const { id } = useParams();
@@ -73,18 +72,12 @@ function Items() {
     }
   }
   return (
-    <div className="w-full" style={{ width: "100%", height: "92vh" }}>
+    <div className="w-full">
       <div
-        className="px-8 pb-8 pt-5 bg-gray-100 overflow-y-auto"
-        style={{ width: "100%", height: "92vh" }}
+        className="px-8 pt-5 bg-gray-100 overflow-y-auto"
+        style={{ width: "100%", height: "82vh" }}
       >
         <header className="flex space-x-3 mb-3">
-          <Link
-            className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-            to={"./../"}
-          >
-            <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
-          </Link>
           <h1 className="text-2xl font-bold">Project Material</h1>
         </header>
         <div className="flex items-center justify-between  mb-4">
