@@ -1,6 +1,4 @@
-import { IoMdArrowRoundBack } from "react-icons/io";
 import { MdDateRange } from "react-icons/md";
-import { Link } from "react-router-dom";
 
 function ProjectView({ project }) {
   return (
