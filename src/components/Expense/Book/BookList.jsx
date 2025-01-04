@@ -1,7 +1,9 @@
 import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import FormatTimestamp from "../../../constants/FormatTimestamp";
 import { db } from "../../../firebase";
 import CreateBookSidebar from "./CreateBookSidebar";
 
@@ -24,7 +26,6 @@ const BookList = () => {
         return {
           id: doc.id,
           ...data,
-          date: DateFormate(data.createdAt),
         };
       });
       setbooks(bookData);
@@ -39,71 +40,91 @@ const BookList = () => {
     fetchBooks();
   }, []);
 
-  function DateFormate(timestamp) {
-    if (!timestamp) {
-      return;
-    }
-    const milliseconds =
-      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
-    const date = new Date(milliseconds);
-    const getDate = String(date.getDate()).padStart(2, "0");
-    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
-    const getFullYear = date.getFullYear();
-
-    return `${getDate}/${getMonth}/${getFullYear}`;
-  }
   return (
     <div className="w-full">
       <div
         className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
         style={{ height: "92vh" }}
       >
-        <header className="flex items-center justify-between mb-3">
+        <header className="mt-4  py-3 flex items-center justify-between mb-3">
           <h1 className="text-2xl font-bold">Book/Accounts</h1>
-          <button
-            className="bg-blue-500 text-white py-1 px-2 rounded"
-            onClick={() => setIsSidebarOpen(true)}
-          >
-            + Create Book/Account
-          </button>
         </header>
-        <div className="pb-4">
-          <input
-            type="text"
-            placeholder="Search"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-          />
-        </div>
 
-        <div className="space-y-4  overflow-y-auto" style={{ height: "74vh" }}>
-          {loading ? (
-            <div className="w-full text-center">Loading...</div>
-          ) : books.length > 0 ? (
-            books.map((book) => (
-              <div
-                key={book.id}
-                className="bg-blue-200 text-gray-800 rounded-lg p-4 flex justify-between items-center shadow-md hover:bg-blue-200 transition cursor-pointer"
-                onClick={() => navigate(book.id)}
-              >
-                <div>
-                  <h2 className="text-xl font-bold">Balance</h2>
-                  <p className="text-lg mt-2">₹ {book.openingBalance}</p>
-                  <p className="text-sm mt-1 text-gray-600">
-                    Created on {book.date}
-                  </p>
-                </div>
-                <div>
-                  <span className="bg-green-500 text-white px-3 py-1 rounded-lg text-sm font-medium">
-                    {book.name}
-                  </span>
-                </div>
+        <div className="bg-white  pb-8 pt-6 rounded-lg shadow my-6">
+          <nav className="flex items-center  mb-4 px-5">
+            <div className="space-x-4 w-full flex items-center">
+              <div className="flex items-center space-x-4  border px-5  py-3 rounded-md w-full">
+                <input
+                  type="text"
+                  placeholder="Search ..."
+                  className=" w-full focus:outline-none"
+                  // value={searchTerm}
+                  // onChange={handleSearch}
+                />
+                <IoSearch />
               </div>
-            ))
+            </div>
+            <div className="w-full text-end ">
+              <button
+                className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                onClick={() => setIsSidebarOpen(true)}
+              >
+                Create Book/Account
+              </button>
+            </div>
+          </nav>
+
+          {loading ? (
+            <div className="text-center py-6">Loading ...</div>
           ) : (
-            <div className="w-full text-center">No Book Found</div>
+            <div className="overflow-y-auto" style={{ height: "96vh" }}>
+              <table className="w-full border-collapse text-start">
+                <thead className=" bg-white">
+                  <tr className="border-b">
+                    <td className="px-8 py-1 text-gray-400 font-semibold text-start">
+                      Date
+                    </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                      Book
+                    </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold  text-center">
+                      Opening Balance
+                    </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                      Branch
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {books.length > 0 ? (
+                    books.map((book) => (
+                      <tr
+                        key={book.id}
+                        className="border-b border-gray-200 text-center cursor-pointer"
+                        onClick={() => navigate(book.id)}
+                      >
+                        <td className="px-8 py-3 text-start">
+                          <FormatTimestamp timestamp={book.createdAt} />
+                        </td>
+                        <td className="px-5 py-3 text-start">{book.name}</td>
+                        <td className="px-5 py-3 font-bold">
+                          ₹ {book.openingBalance}
+                        </td>
+                        <td className="px-5 py-3  text-start">{book.branch}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="h-24 text-center py-4">
+                        No Expenses Found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
-
         {isSidebarOpen && (
           <CreateBookSidebar
             onClose={() => setIsSidebarOpen(false)}

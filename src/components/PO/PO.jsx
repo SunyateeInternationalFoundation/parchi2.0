@@ -129,21 +129,21 @@ function PO() {
             <div className="rounded-lg p-5  bg-white shadow  ">
               <div className="text-lg">All PO&apos;s</div>
               <div className="text-3xl text-[hsl(240,92.20%,70.00%)] font-bold p-2">
-                ₹ {POCount.total}
+                {POCount.total}
               </div>
             </div>
             <div className="rounded-lg p-5 bg-white shadow ">
               <div className="text-lg">Received PO</div>
               <div className="text-3xl text-green-600 font-bold p-2">
                 {" "}
-                ₹ {POCount.received}
+                {POCount.received}
               </div>
             </div>
             <div className="rounded-lg p-5 bg-white shadow ">
               <div className="text-lg">Pending PO</div>
               <div className="text-3xl text-orange-600 font-bold p-2">
                 {" "}
-                ₹ {POCount.total - POCount.received}
+                {POCount.total - POCount.received}
               </div>
             </div>
             <div className="rounded-lg p-5 bg-white shadow">
@@ -158,7 +158,10 @@ function PO() {
         <div className="bg-white  pb-8 pt-6  rounded-lg shadow my-6">
           <nav className="flex mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">
-              <div className="flex items-center space-x-4 mb-4 border px-5  py-3 rounded-md w-full">
+              <div
+                className="flex items-center space-x-4  border
+      px-5  py-3 rounded-md w-full"
+              >
                 <input
                   type="text"
                   placeholder="Search by PO #..."
@@ -168,7 +171,10 @@ function PO() {
                 />
                 <IoSearch />
               </div>
-              <div className="flex items-center space-x-4 mb-4 border px-5 py-3 rounded-md  ">
+              <div
+                className="flex items-center space-x-4  border
+      px-5 py-3 rounded-md  "
+              >
                 <select onChange={(e) => setFilterStatus(e.target.value)}>
                   <option value="All"> All Transactions</option>
                   <option value="Received">Received</option>

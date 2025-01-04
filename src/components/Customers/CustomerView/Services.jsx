@@ -43,7 +43,10 @@ function Services({ servicesList }) {
       <div className="bg-white  rounded-lg shadow ">
         <nav className="flex mb-2 py-4 px-5">
           <div className="space-x-4 w-full flex items-center">
-            <div className="flex items-center space-x-4 mb-4 border px-5  py-3 rounded-md w-3/2">
+            <div
+              className="flex items-center space-x-4  border
+      px-5  py-3 rounded-md w-3/2"
+            >
               <input
                 type="text"
                 placeholder="Search by service #..."
@@ -53,7 +56,10 @@ function Services({ servicesList }) {
               />
               <IoSearch />
             </div>
-            <div className="flex items-center space-x-4 mb-4 border px-5 py-3 rounded-md  ">
+            <div
+              className="flex items-center space-x-4  border
+      px-5 py-3 rounded-md  "
+            >
               <select onChange={(e) => setFilterStatus(e.target.value)}>
                 <option value="All"> All</option>
                 <option value="Active">Active</option>

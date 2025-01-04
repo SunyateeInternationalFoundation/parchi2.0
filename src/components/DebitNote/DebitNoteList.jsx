@@ -133,21 +133,19 @@ function DebitNoteList() {
             <div className="rounded-lg p-5  bg-white shadow  ">
               <div className="text-lg">All Debit Note's</div>
               <div className="text-3xl text-[hsl(240,92.20%,70.00%)] font-bold p-2">
-                ₹ {DebitNoteCount.total}
+                {DebitNoteCount.total}
               </div>
             </div>
             <div className="rounded-lg p-5 bg-white shadow ">
               <div className="text-lg">Received DebitNote</div>
               <div className="text-3xl text-green-600 font-bold p-2">
-                {" "}
-                ₹ {DebitNoteCount.received}
+                {DebitNoteCount.received}
               </div>
             </div>
             <div className="rounded-lg p-5 bg-white shadow ">
               <div className="text-lg">Pending DebitNote</div>
               <div className="text-3xl text-orange-600 font-bold p-2">
-                {" "}
-                ₹ {DebitNoteCount.total - DebitNoteCount.received}
+                {DebitNoteCount.total - DebitNoteCount.received}
               </div>
             </div>
             <div className="rounded-lg p-5 bg-white shadow">
@@ -162,7 +160,10 @@ function DebitNoteList() {
         <div className="bg-white  pb-8 pt-6  rounded-lg shadow my-6">
           <nav className="flex mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">
-              <div className="flex items-center space-x-4 mb-4 border px-5  py-3 rounded-md w-full">
+              <div
+                className="flex items-center space-x-4  border
+      px-5  py-3 rounded-md w-full"
+              >
                 <input
                   type="text"
                   placeholder="Search by DebitNote #..."
@@ -172,7 +173,10 @@ function DebitNoteList() {
                 />
                 <IoSearch />
               </div>
-              <div className="flex items-center space-x-4 mb-4 border px-5 py-3 rounded-md  ">
+              <div
+                className="flex items-center space-x-4  border
+      px-5 py-3 rounded-md  "
+              >
                 <select onChange={(e) => setFilterStatus(e.target.value)}>
                   <option value="All"> All Transactions</option>
                   <option value="Received">Received</option>

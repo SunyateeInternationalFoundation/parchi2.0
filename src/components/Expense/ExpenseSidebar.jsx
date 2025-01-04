@@ -1,12 +1,20 @@
-import { addDoc, collection, doc, Timestamp } from "firebase/firestore";
-import  { useEffect, useState } from "react";
+import {
+  addDoc,
+  collection,
+  doc,
+  Timestamp,
+  updateDoc,
+} from "firebase/firestore";
+import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { db } from "../../firebase";
 import { useParams } from "react-router-dom";
+import { db } from "../../firebase";
 
 function ExpenseSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
   const { id } = useParams();
+  const { updateData } = isModalOpen;
   const [filterUser, setFilterUser] = useState("Customer");
   const userDetails = useSelector((state) => state.users);
 
@@ -120,8 +128,16 @@ function ExpenseSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
       },
       transactionType: isModalOpen.type,
     });
+    setFilterUser("Customer");
   }
 
+  useEffect(() => {
+    console.log("🚀 ~ useEffect ~ updateData:", updateData);
+    if (updateData?.id) {
+      setFormData(updateData);
+      setFilterUser(updateData.toWhom.userType);
+    }
+  }, [updateData]);
   async function onSubmit() {
     try {
       const companyRef = doc(db, "companies", companyId);
@@ -132,8 +148,20 @@ function ExpenseSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
         bookRef,
         transactionType: isModalOpen.type,
       };
-      await addDoc(collection(db, "companies", companyId, "expenses"), payload);
-      alert("successfully Created " + isModalOpen.type);
+      if (updateData?.id) {
+        await updateDoc(
+          doc(db, "companies", companyId, "expenses", updateData.id),
+          payload
+        );
+      } else {
+        await addDoc(
+          collection(db, "companies", companyId, "expenses"),
+          payload
+        );
+      }
+      alert(
+        `successfully  ${updateData?.id ? "Edit " : "Create "} isModalOpen.type`
+      );
       ResetForm();
       refresh();
       onClose();
@@ -147,7 +175,10 @@ function ExpenseSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
       className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
         isModalOpen.isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
-      onClick={onClose}
+      onClick={() => {
+        onClose();
+        ResetForm();
+      }}
     >
       <div
         className={`bg-white w-[370px] p-4 transform transition-transform overflow-y-auto max-h-screen ${
@@ -159,7 +190,13 @@ function ExpenseSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
           <h2 className="text-xl font-semibold mb-4">
             {isModalOpen.type.toUpperCase()}
           </h2>
-          <button className="text-2xl mb-4" onClick={onClose}>
+          <button
+            className="text-2xl mb-4"
+            onClick={() => {
+              onClose();
+              ResetForm();
+            }}
+          >
             <IoMdClose size={24} />
           </button>
         </div>
@@ -190,6 +227,7 @@ function ExpenseSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
                 placeholder="Amount"
                 className="w-full p-2 border-2 rounded-lg focus:outline-none"
                 required
+                value={formData.amount || ""}
                 onChange={(e) => {
                   setFormData((val) => ({
                     ...val,
@@ -362,5 +400,12 @@ function ExpenseSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
     </div>
   );
 }
+ExpenseSidebar.propTypes = {
+  isModalOpen: PropTypes.object,
+  onClose: PropTypes.func,
+  userDataSet: PropTypes.object,
+  refresh: PropTypes.func,
+  updateData: PropTypes.object,
+};
 
 export default ExpenseSidebar;

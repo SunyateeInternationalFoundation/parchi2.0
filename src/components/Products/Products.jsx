@@ -45,7 +45,10 @@ const Products = () => {
         </div>
       </div>
       <div className="bg-white p-4 rounded-lg shadow mb-4 mt-5">
-        <div className="flex items-center space-x-4 mb-4 border p-2 rounded">
+        <div
+          className="flex items-center space-x-4  border
+      p-2 rounded"
+        >
           <input
             type="text"
             placeholder="Search by Project Name #..."

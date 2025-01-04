@@ -149,7 +149,10 @@ function Quotations() {
         <div className="bg-white pb-8 pt-6 rounded-lg shadow my-6">
           <nav className="flex mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">
-              <div className="flex items-center space-x-4 mb-4 border px-5  py-3 rounded-md w-full">
+              <div
+                className="flex items-center space-x-4  border
+      px-5  py-3 rounded-md w-full"
+              >
                 <input
                   type="text"
                   placeholder="Search by quotation #..."
@@ -159,7 +162,10 @@ function Quotations() {
                 />
                 <IoSearch />
               </div>
-              <div className="flex items-center space-x-4 mb-4 border px-5 py-3 rounded-md  ">
+              <div
+                className="flex items-center space-x-4  border
+      px-5 py-3 rounded-md  "
+              >
                 <select onChange={(e) => setFilterStatus(e.target.value)}>
                   <option value="All"> All Transactions</option>
                   <option value="Pending">Pending</option>
