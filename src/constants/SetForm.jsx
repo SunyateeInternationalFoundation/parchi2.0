@@ -640,9 +640,10 @@ function SetForm(props) {
                     value={DateFormate(formData.date)}
                     className="border p-1 rounded-md w-full mt-1  px-5  py-2"
                     onChange={(e) => {
-                      setFormData.date(
-                        Timestamp.fromDate(new Date(e.target.value))
-                      );
+                      setFormData((prevFormData) => ({
+                        ...prevFormData,
+                        date: Timestamp.fromDate(new Date(e.target.value)),
+                      }));
                     }}
                     required
                   />
@@ -656,9 +657,10 @@ function SetForm(props) {
                     value={DateFormate(formData.dueDate)}
                     className="border p-1 rounded-md w-full mt-1  px-5  py-2"
                     onChange={(e) => {
-                      setFormData.dueDate(
-                        Timestamp.fromDate(new Date(e.target.value))
-                      );
+                      setFormData((prevFormData) => ({
+                        ...prevFormData,
+                        dueDate: Timestamp.fromDate(new Date(e.target.value)),
+                      }));
                     }}
                   />
                 </div>

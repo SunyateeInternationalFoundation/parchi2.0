@@ -567,12 +567,13 @@ function SetService() {
                   </label>
                   <input
                     type="date"
-                    value={DateFormate(formData.date) || ""}
+                    value={DateFormate(formData.date)}
                     className="border p-1 rounded-md w-full mt-1  px-5  py-2"
                     onChange={(e) => {
-                      formData.date(
-                        Timestamp.fromDate(new Date(e.target.value))
-                      );
+                      setFormData((prevFormData) => ({
+                        ...prevFormData,
+                        date: Timestamp.fromDate(new Date(e.target.value)),
+                      }));
                     }}
                     required
                   />
@@ -584,12 +585,14 @@ function SetService() {
                   <input
                     type="date"
                     value={DateFormate(formData.dueDate)}
-                    className="border p-1 rounded-md w-full mt-1  px-5  py-2"
+                    className="border p-1 rounded-md w-full mt-1 px-5 py-2"
                     onChange={(e) => {
-                      formData.dueDate(
-                        Timestamp.fromDate(new Date(e.target.value))
-                      );
+                      setFormData((prevFormData) => ({
+                        ...prevFormData,
+                        dueDate: Timestamp.fromDate(new Date(e.target.value)),
+                      }));
                     }}
+                    required
                   />
                 </div>
                 <div>
