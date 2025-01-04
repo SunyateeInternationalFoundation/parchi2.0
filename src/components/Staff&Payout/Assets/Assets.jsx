@@ -10,12 +10,11 @@ import {
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
-import { IoMdClose } from "react-icons/io";
+import { IoMdArrowRoundBack, IoMdClose } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { db, storage } from "../../../firebase";
-import { IoMdArrowRoundBack } from "react-icons/io";
 
 const Assets = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -76,10 +75,7 @@ const Assets = () => {
       >
         <header className="flex items-center justify-between mb-3">
           <div className="flex space-x-3">
-            <Link
-              className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-              to={"./../"}
-            >
+            <Link className="flex items-center " to={"./../"}>
               <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
               Back
             </Link>

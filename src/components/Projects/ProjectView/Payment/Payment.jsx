@@ -18,10 +18,8 @@ import PaymentSidebar from "./PaymentSidebar";
 
 const Payment = () => {
   const { id } = useParams();
-  const [filter, setFilter] = useState("All");
   const [filterUser, setFilterUser] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const [expenses, setExpenses] = useState([]);
   const [totalAmounts, setTotalAmounts] = useState({
     total: 0,
@@ -124,14 +122,6 @@ const Payment = () => {
       filterUser === "All" || userTypeLower === filterUserLower;
 
     return matchesSearch && matchesStatus;
-  });
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 500);
-
-    return () => clearTimeout(handler);
   });
 
   const handleSearch = (e) => {

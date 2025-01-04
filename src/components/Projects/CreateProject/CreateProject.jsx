@@ -6,10 +6,10 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../../../firebase";
-import { IoMdArrowRoundBack } from "react-icons/io";
 
 function CreateProject() {
   const userDetails = useSelector((state) => state.users);
@@ -104,21 +104,18 @@ function CreateProject() {
 
   return (
     <div
-      className="p-5 pt-3 bg-gray-100"
+      className="p-8 pt-3 bg-gray-100"
       style={{ width: "100%", height: "92vh" }}
     >
       <header className="items-center my-2">
         <div className="flex space-x-3">
-          <Link
-            className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-            to={"./../"}
-          >
+          <Link className="flex items-center " to={"./../"}>
             <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
           </Link>
           <h1 className="text-2xl font-bold">Create Project</h1>
         </div>
       </header>
-      <div className="p-6">
+      <div className="">
         <div className="bg-white p-4 rounded-lg">
           <div className="">
             <label className="text-lg text-gray-600">
@@ -190,7 +187,7 @@ function CreateProject() {
           </div>
         </div>
         {isMoreChecked && (
-          <div className="bg-white p-4 rounded-lg">
+          <div className="grid grid-cols-2 gap-4 bg-white p-4 rounded-lg">
             <div className="">
               <label className="text-lg text-gray-600">Bank/Book Details</label>
               <select
@@ -210,6 +207,16 @@ function CreateProject() {
               </select>
             </div>
             <div className="">
+              <label className="text-lg text-gray-600">Budget</label>
+              <input
+                type="number"
+                placeholder="Enter budget"
+                className="text-base text-gray-900 font-semibold border p-1 rounded-lg w-full mt-1"
+                value={projectForm.budget || ""}
+                onChange={(e) => handleInputChange("budget", +e.target.value)}
+              />
+            </div>
+            <div className="">
               <label className="text-lg text-gray-600">Location</label>
               <input
                 type="text"
@@ -219,7 +226,7 @@ function CreateProject() {
                 onChange={(e) => handleInputChange("location", e.target.value)}
               />
             </div>
-            <div className="my-5">
+            <div className="">
               <label className="text-lg text-gray-600">Description</label>
               <input
                 type="text"

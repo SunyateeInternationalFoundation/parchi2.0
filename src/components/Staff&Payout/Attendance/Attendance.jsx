@@ -7,11 +7,11 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { db } from "../../../firebase";
 import AddAttendanceSidebar from "./AddAttendanceSidebar";
-import { IoMdArrowRoundBack } from "react-icons/io";
 
 function Attendance() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -204,10 +204,7 @@ function Attendance() {
     >
       <header className="flex justify-between items-center space-x-3  my-2">
         <div className="flex space-x-3">
-          <Link
-            className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
-            to={"./../"}
-          >
+          <Link className="flex items-center " to={"./../"}>
             <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
           </Link>
           <h1 className="text-2xl font-bold">Attendance</h1>

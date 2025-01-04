@@ -317,7 +317,9 @@ function ProjectView() {
           </div>
           <div className="rounded-lg p-5 bg-white shadow">
             <div className="text-lg">Budget Amount</div>
-            <div className="text-3xl text-red-600 font-bold p-2">₹ 0</div>
+            <div className="text-3xl text-red-600 font-bold p-2">
+              ₹ {project?.budget || 0}
+            </div>
           </div>
         </div>
         <div className="bg-white rounded-lg px-6 py-4  flex">
