@@ -24,6 +24,8 @@ function CreateProject() {
     name: "",
     dueDate: "",
     startDate: "",
+    priority: "Low",
+    budget: 0,
   });
 
   const [isMoreChecked, setIsMoreChecked] = useState(false);
@@ -124,7 +126,7 @@ function CreateProject() {
             <input
               type="text"
               placeholder="Enter Project Name"
-              className="text-base text-gray-900 font-semibold border p-1 rounded-lg w-full mt-1"
+              className="text-base text-gray-900 font-semibold border p-3 rounded-lg w-full mt-1"
               value={projectForm.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
               required
@@ -137,7 +139,7 @@ function CreateProject() {
                 <label className="text-gray-600">Start Date</label>
                 <input
                   type="date"
-                  className="border p-1 rounded-lg w-full mt-1"
+                  className="border p-3 rounded-lg w-full mt-1"
                   defaultValue={projectForm.startDate || ""}
                   onChange={(e) =>
                     handleDateChange("startDate", e.target.value)
@@ -148,7 +150,7 @@ function CreateProject() {
                 <label className="text-gray-600">Due Date</label>
                 <input
                   type="date"
-                  className="border p-1 rounded-lg w-full mt-1"
+                  className="border p-3 rounded-lg w-full mt-1"
                   defaultValue={projectForm.dueDate || ""}
                   onChange={(e) => handleDateChange("dueDate", e.target.value)}
                 />
@@ -156,7 +158,7 @@ function CreateProject() {
               <div>
                 <label className="text-gray-600">Priority</label>
                 <select
-                  className="border p-1 rounded-lg w-full mt-1"
+                  className="border p-3 rounded-lg w-full mt-1"
                   onChange={(e) => {
                     handleInputChange("priority", e.target.value);
                   }}
@@ -193,7 +195,7 @@ function CreateProject() {
               <select
                 onChange={onSelectBook}
                 defaultValue=""
-                className="border p-2 rounded-lg w-full mt-1"
+                className="text-base text-gray-900 font-semibold border p-3 rounded-lg w-full mt-1"
               >
                 <option value="" disabled>
                   Select Bank/Book
@@ -211,7 +213,7 @@ function CreateProject() {
               <input
                 type="number"
                 placeholder="Enter budget"
-                className="text-base text-gray-900 font-semibold border p-1 rounded-lg w-full mt-1"
+                className="text-base text-gray-900 font-semibold border p-3 rounded-lg w-full mt-1"
                 value={projectForm.budget || ""}
                 onChange={(e) => handleInputChange("budget", +e.target.value)}
               />
@@ -221,7 +223,7 @@ function CreateProject() {
               <input
                 type="text"
                 placeholder="Enter Location"
-                className="text-base text-gray-900 font-semibold border p-1 rounded-lg w-full mt-1"
+                className="text-base text-gray-900 font-semibold border p-3 rounded-lg w-full mt-1"
                 value={projectForm.location}
                 onChange={(e) => handleInputChange("location", e.target.value)}
               />
@@ -231,7 +233,7 @@ function CreateProject() {
               <input
                 type="text"
                 placeholder="Enter Description"
-                className="text-base text-gray-900 font-semibold border p-1 rounded-lg w-full mt-1"
+                className="text-base text-gray-900 font-semibold border p-3 rounded-lg w-full mt-1"
                 value={projectForm.description}
                 onChange={(e) =>
                   handleInputChange("description", e.target.value)

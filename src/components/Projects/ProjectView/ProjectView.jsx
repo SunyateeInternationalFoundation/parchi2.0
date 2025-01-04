@@ -2,36 +2,26 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDoc,
   getDocs,
   query,
   Timestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import {
-  BsBank,
-  BsCalendar4,
-  BsFileEarmarkCheck,
-  BsFolderPlus,
-  BsThreeDotsVertical,
-} from "react-icons/bs";
-import { FaTasks } from "react-icons/fa";
-import { HiOutlineShoppingCart } from "react-icons/hi2";
-import { IoWalletOutline } from "react-icons/io5";
+import { BsBank, BsThreeDotsVertical } from "react-icons/bs";
 import { LuUsersRound } from "react-icons/lu";
 import { MdDateRange } from "react-icons/md";
-import { RiDeleteBin6Line, RiUserAddLine } from "react-icons/ri";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import { TbEdit } from "react-icons/tb";
-import { TiMessages } from "react-icons/ti";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
 
-function ProjectView() {
+function ProjectView({ projectDetails, refreshProject }) {
   const { id } = useParams();
-  const [project, setProject] = useState({});
+  const [project, setProject] = useState(projectDetails);
   const [isEdit, setIsEdit] = useState(false);
   const [isOutlineDotsOpen, setIsOutlineDotsOpen] = useState(false);
   const [bankBooks, setBankBooks] = useState([]);
@@ -71,61 +61,31 @@ function ProjectView() {
       await updateDoc(projectDoc, updatedData);
       alert("Project updated successfully!");
       setIsEdit(false);
-      fetchData();
+      refreshProject();
     } catch (error) {
       console.error("Error updating project:", error);
       alert("Failed to update the project.");
     }
   };
 
-  function DateFormate(timestamp, format = "dd/mm/yyyy") {
-    const milliseconds =
-      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
-    const date = new Date(milliseconds);
-    const getDate = String(date.getDate()).padStart(2, "0");
-    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
-    const getFullYear = date.getFullYear();
-
-    return format === "yyyy-mm-dd"
-      ? `${getFullYear}-${getMonth}-${getDate}`
-      : `${getDate}/${getMonth}/${getFullYear}`;
-  }
-
   useEffect(() => {
-    fetchData();
-    fetchBankBooks();
-    fetchIncomeAndExpense();
-  }, [id]);
-
-  async function fetchData() {
-    const getData = await getDoc(doc(db, "projects", id));
-    const data = getData.data();
-    const payload = {
-      ...data,
-      companyRef: data.companyRef.id,
-      createdAt: DateFormate(data.createdAt),
-      startDate: DateFormate(data.startDate, "yyyy-mm-dd"),
-      dueDate: DateFormate(data.dueDate, "yyyy-mm-dd"),
-      vendorRef: data?.vendorRef?.map((ref) => ref.id),
-      customerRef: data?.customerRef?.map((ref) => ref.id),
-      staffRef: data?.staffRef?.map((ref) => ref.id),
-      book: data?.book,
-    };
     setFormData({
-      name: payload.name || "",
-      description: payload.description || "",
-      startDate: payload.startDate,
-      dueDate: payload.dueDate,
-      book: payload.book,
+      name: projectDetails?.name || "",
+      description: projectDetails?.description || "",
+      startDate: projectDetails?.startDate,
+      dueDate: projectDetails?.dueDate,
+      book: projectDetails?.book,
     });
 
-    setProject(payload);
+    setProject(projectDetails);
     setTotalPersons(
-      (payload.vendorRef?.length || 0) +
-        (payload.customerRef?.length || 0) +
-        (payload.staffRef?.length || 0)
+      (projectDetails?.vendorRef?.length || 0) +
+        (projectDetails?.customerRef?.length || 0) +
+        (projectDetails?.staffRef?.length || 0)
     );
-  }
+    fetchBankBooks();
+    fetchIncomeAndExpense();
+  }, [projectDetails?.id]);
 
   async function fetchBankBooks() {
     const bankBookRef = collection(
@@ -170,81 +130,6 @@ function ProjectView() {
       console.log("Error in fetching total balance:", error);
     }
   }
-  const manageProjectItems = [
-    {
-      name: "Users",
-      icon: <RiUserAddLine />,
-      onClick: () => navigate("user"),
-    },
-    {
-      name: "Milestones",
-      icon: <BsCalendar4 />,
-      onClick: () => {
-        navigate("milestones");
-      },
-    },
-    {
-      name: "Tasks",
-      icon: <FaTasks />,
-      onClick: () => {
-        navigate("tasks");
-      },
-    },
-    {
-      name: "Files",
-      icon: <BsFolderPlus />,
-      onClick: () => {
-        navigate("files");
-      },
-    },
-    {
-      name: "Approvals",
-      icon: <BsFileEarmarkCheck />,
-      onClick: () => {
-        navigate("approvals");
-      },
-    },
-    {
-      name: "Chat",
-      icon: <TiMessages />,
-      onClick: () => {
-        navigate("chats");
-      },
-    },
-    {
-      name: "Payments",
-      icon: <IoWalletOutline />,
-      onClick: () => {
-        if (!project?.book?.id) {
-          alert("Please select a bank book before proceeding to payments.");
-        } else {
-          navigate("payments");
-        }
-      },
-    },
-
-    {
-      name: "Items",
-      icon: <HiOutlineShoppingCart />,
-      onClick: () => {
-        navigate("items");
-      },
-    },
-  ];
-  const [manageItems, setManageItems] = useState([]);
-
-  useEffect(() => {
-    if (userDetails.selectedDashboard === "staff") {
-      const removedItems = ["Payments", "Items", "Chat"];
-
-      const updatedData = manageProjectItems.filter(
-        (ele) => !removedItems.includes(ele.name)
-      );
-      setManageItems(updatedData);
-    } else {
-      setManageItems(manageProjectItems);
-    }
-  }, [project]);
 
   const navigate = useNavigate();
 
@@ -324,43 +209,47 @@ function ProjectView() {
         </div>
         <div className="bg-white rounded-lg px-6 py-4  flex">
           <div className="uppercase rounded-lg border p-8 text-6xl bg-[rgb(159,142,247)] flex justify-center items-center">
-            {project.name?.slice(0, 2)}
+            {project?.name?.slice(0, 2)}
           </div>
           <div className="ps-3 w-full">
             <div className="flex ">
               <div className="text-xl font-semibold w-full">
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className={
-                    "w-full px-2 py-1 rounded focus:outline-none " +
-                    (isEdit && "border-2")
-                  }
-                  readOnly={!isEdit}
-                />
+                {isEdit ? (
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData?.name || ""}
+                    onChange={handleChange}
+                    className={
+                      "w-full px-2 py-1 rounded focus:outline-none border-2"
+                    }
+                  />
+                ) : (
+                  <div className="w-full px-2 py-1 rounded">
+                    {project?.name}
+                  </div>
+                )}
               </div>
               {!isEdit ? (
                 <div className="w-24 flex item-center justify-center text-xs h-fit ">
                   <div
                     className={
                       "rounded-full px-2 py-1 font-bold " +
-                      (project.priority == "Low"
+                      (project?.priority == "Low"
                         ? "bg-green-100"
-                        : project.priority == "Medium"
+                        : project?.priority == "Medium"
                         ? "bg-blue-100"
                         : "bg-red-100")
                     }
                   >
-                    {project.priority}
+                    {project?.priority}
                   </div>
                 </div>
               ) : (
                 <select
                   className="px-2 py-1 border-2 rounded-lg ms-2"
                   name="priority"
-                  defaultValue={project.priority}
+                  defaultValue={project?.priority}
                   onChange={handleChange}
                 >
                   <option value={"Low"}>Low</option>
@@ -373,14 +262,14 @@ function ProjectView() {
                   <div
                     className={
                       "rounded-full px-2 py-1 font-bold " +
-                      (project.status == "Completed"
+                      (project?.status == "Completed"
                         ? "bg-green-100"
-                        : project.status == "On-Going"
+                        : project?.status == "On-Going"
                         ? "bg-blue-100"
                         : "bg-red-100")
                     }
                   >
-                    {project.status}
+                    {project?.status}
                   </div>
                 </div>
               ) : (
@@ -388,7 +277,7 @@ function ProjectView() {
                   className="px-2 py-1 border-2 rounded-lg ms-2"
                   name="status"
                   onChange={handleChange}
-                  defaultValue={project.status}
+                  defaultValue={project?.status}
                 >
                   <option value="On-Going">On-Going</option>
                   <option value="Delay">Delay</option>
@@ -434,12 +323,12 @@ function ProjectView() {
             <div className="text-sm text-gray-500">
               {!isEdit ? (
                 <div className="text-ellipsis mt-1 max-h-12 min-h-12 w-full px-2 py-1">
-                  {formData.description}
+                  {project.description}
                 </div>
               ) : (
                 <textarea
                   name="description"
-                  value={formData.description}
+                  defaultValue={formData?.description}
                   onChange={handleChange}
                   className={
                     "w-full px-2 py-1 rounded focus:outline-none mt-1 max-h-12 min-h-12 resize-none " +
@@ -458,11 +347,11 @@ function ProjectView() {
                   <div className="text-gray-700 text-sm">Assigned Date</div>
                   <div className="font-semibold text-sm">
                     {!isEdit ? (
-                      project.startDate
+                      project?.startDate
                     ) : (
                       <input
                         type="date"
-                        value={formData.startDate}
+                        defaultValue={formData?.startDate}
                         onChange={(e) =>
                           setFormData((prev) => ({
                             ...prev,
@@ -481,11 +370,11 @@ function ProjectView() {
                   <div className="text-gray-700 text-sm">Due Date</div>
                   <div className="font-semibold text-sm">
                     {!isEdit ? (
-                      project.dueDate
+                      project?.dueDate
                     ) : (
                       <input
                         type="date"
-                        value={formData.dueDate}
+                        defaultValue={formData?.dueDate}
                         onChange={(e) =>
                           setFormData((prev) => ({
                             ...prev,
@@ -507,7 +396,7 @@ function ProjectView() {
                       project?.book?.name || "-"
                     ) : (
                       <select
-                        value={formData.book?.id || ""}
+                        defaultValue={formData?.book?.id || ""}
                         onChange={onSelectBook}
                         className={
                           "w-full px-2 py-1 rounded focus:outline-none " +
@@ -578,7 +467,16 @@ function ProjectView() {
               </button>
               <button
                 className="px-4 py-1 bg-gray-500 text-white rounded-full ml-2"
-                onClick={() => setIsEdit(false)}
+                onClick={() => {
+                  setFormData({
+                    name: projectDetails?.name || "",
+                    description: projectDetails?.description || "",
+                    startDate: projectDetails?.startDate,
+                    dueDate: projectDetails?.dueDate,
+                    book: projectDetails?.book,
+                  });
+                  setIsEdit(false);
+                }}
               >
                 Cancel
               </button>
@@ -607,5 +505,9 @@ function ProjectView() {
     </div>
   );
 }
+ProjectView.propTypes = {
+  projectDetails: PropTypes.object,
+  refreshProject: PropTypes.func,
+};
 
 export default ProjectView;

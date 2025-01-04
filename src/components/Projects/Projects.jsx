@@ -17,7 +17,6 @@ function Projects() {
     delay: 0,
     total: 0,
   });
-  // const [filterDate, setFilterDate] = useState({ from: "", to: "" });
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
     companyId =
@@ -156,40 +155,40 @@ function Projects() {
   return (
     <div className="w-full">
       <div
-        className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
+        className="px-8 pb-8 pt-2  bg-gray-100 overflow-y-auto"
         style={{ height: "92vh" }}
       >
-        <div className="bg-white rounded-lg shadow mt-4 py-5">
-          <h1 className="text-2xl font-bold pb-3 px-10 ">Projects Overview</h1>
-          <div className="grid grid-cols-4 gap-12  px-10 ">
-            <div className="rounded-lg p-5 bg-[hsl(240,100%,98%)] ">
+        <div className=" mt-4 py-3">
+          <h1 className="text-2xl font-bold pb-3">Projects Overview</h1>
+          <div className="grid grid-cols-4 gap-12 ">
+            <div className="rounded-lg p-5 bg-white shadow ">
               <div className="text-lg">Total Projects</div>
-              <div className="text-3xl text-indigo-600 font-bold">
+              <div className="text-3xl text-indigo-600 font-bold p-2">
                 {projectCount.total}
               </div>
             </div>
-            <div className="rounded-lg p-5 bg-green-50 ">
+            <div className="rounded-lg p-5 bg-white shadow ">
               <div className="text-lg"> On-Going Projects</div>
-              <div className="text-3xl text-emerald-600 font-bold">
+              <div className="text-3xl text-emerald-600 font-bold p-2">
                 {projectCount.onGoing}
               </div>
             </div>
-            <div className="rounded-lg p-5 bg-orange-50 ">
+            <div className="rounded-lg p-5 bg-white shadow">
               <div className="text-lg"> Delay Projects</div>
-              <div className="text-3xl text-orange-600 font-bold">
+              <div className="text-3xl text-orange-600 font-bold p-2">
                 {projectCount.delay}
               </div>
             </div>
-            <div className="rounded-lg p-5 bg-red-50 ">
+            <div className="rounded-lg p-5 bg-white shadow ">
               <div className="text-lg"> Completed Projects</div>
-              <div className="text-3xl text-red-600 font-bold">
+              <div className="text-3xl text-red-600 font-bold p-2">
                 {projectCount.completed}
               </div>
             </div>
           </div>
         </div>
-        <div className="bg-white p-4 mt-5 rounded-lg ">
-          <nav className="flex space-x-4 mb-4 items-center rounded-lg ">
+        <div className="bg-white pb-8 px-5 pt-6 rounded-lg shadow my-6 ">
+          <nav className="flex mb-4  ">
             <div className="space-x-4 w-full flex items-center">
               <div className="flex items-center space-x-4  border p-2 rounded-lg w-full">
                 <input
@@ -212,7 +211,7 @@ function Projects() {
             <div className="w-full text-end ">
               {(userDetails.selectedDashboard === "" || role?.create) && (
                 <Link
-                  className="bg-blue-500 text-white py-1 px-2 rounded"
+                  className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
                   to="create-project"
                 >
                   + Create Project

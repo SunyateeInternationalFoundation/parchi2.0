@@ -82,7 +82,7 @@ const SetDebitNote = () => {
         setPreDebitNoteList(noList);
         setFormData((val) => ({
           ...val,
-          debitNoteNo: String(noList.length + 1).padStart(4, 0),
+          no: String(noList.length + 1).padStart(4, 0),
         }));
       }
     } catch (error) {

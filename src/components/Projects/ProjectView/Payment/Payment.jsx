@@ -16,7 +16,7 @@ import FormatTimestamp from "../../../../constants/FormatTimestamp";
 import { db } from "../../../../firebase";
 import PaymentSidebar from "./PaymentSidebar";
 
-const Payment = () => {
+const Payment = ({ projectDetails }) => {
   const { id } = useParams();
   const [filterUser, setFilterUser] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
@@ -166,7 +166,9 @@ const Payment = () => {
           </div>
           <div className="rounded-lg p-5 bg-white shadow">
             <div className="text-lg">Budget Amount</div>
-            <div className="text-3xl text-red-600 font-bold p-2">₹ 0</div>
+            <div className="text-3xl text-red-600 font-bold p-2">
+              ₹ {projectDetails?.budget || 0}
+            </div>
           </div>
         </div>
       </div>

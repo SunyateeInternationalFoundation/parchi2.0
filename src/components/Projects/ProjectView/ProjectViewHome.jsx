@@ -8,6 +8,7 @@ import { IoWalletOutline } from "react-icons/io5";
 import { RiUserAddLine } from "react-icons/ri";
 import { TbLayoutDashboard } from "react-icons/tb";
 import { TiMessages } from "react-icons/ti";
+import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
 import Approval from "./Approvals/Approval";
@@ -24,11 +25,13 @@ function ProjectViewHome() {
   const [activeTab, setActiveTab] = useState("Dashboard");
   const { id } = useParams();
   const [project, setProject] = useState({});
+  const userDetails = useSelector((state) => state.users);
 
   async function fetchData() {
     const getData = await getDoc(doc(db, "projects", id));
     const data = getData.data();
     const payload = {
+      id,
       ...data,
       companyRef: data.companyRef.id,
       createdAt: DateFormate(data.createdAt),
@@ -62,7 +65,9 @@ function ProjectViewHome() {
     {
       name: "Dashboard",
       icon: <TbLayoutDashboard />,
-      component: <ProjectView />,
+      component: (
+        <ProjectView refreshProject={fetchData} projectDetails={project} />
+      ),
     },
     {
       name: "Users",
@@ -97,7 +102,7 @@ function ProjectViewHome() {
     {
       name: "Payments",
       icon: <IoWalletOutline />,
-      component: <Payment />,
+      component: <Payment projectDetails={project} />,
     },
 
     {
@@ -106,6 +111,22 @@ function ProjectViewHome() {
       component: <Items />,
     },
   ];
+
+  const [manageItems, setManageItems] = useState([]);
+
+  useEffect(() => {
+    if (userDetails.selectedDashboard === "staff") {
+      const removedItems = ["Payments", "Items", "Chat"];
+
+      const updatedData = tabsList.filter(
+        (ele) => !removedItems.includes(ele.name)
+      );
+      setManageItems(updatedData);
+    } else {
+      setManageItems(tabsList);
+    }
+  }, [project?.id]);
+
   return (
     <div className=" pb-5 bg-gray-100" style={{ width: "100%" }}>
       <header className="flex items-center bg-white  px-3 space-x-3">
@@ -117,7 +138,7 @@ function ProjectViewHome() {
         </h1>
 
         <nav className="flex space-x-2 w-full">
-          {tabsList.map((item) => (
+          {manageItems.map((item) => (
             <button
               key={item.name}
               className={
@@ -135,7 +156,7 @@ function ProjectViewHome() {
       </header>
 
       <div className="w-full ">
-        {tabsList.map(
+        {manageItems.map(
           (item) =>
             activeTab === item.name && (
               <div key={item.name}>{item.component}</div>
