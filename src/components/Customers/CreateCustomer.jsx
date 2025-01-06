@@ -89,6 +89,7 @@ const CreateCustomer = ({ isOpen, onClose }) => {
         companyRef: companyRef,
         createdAt: Timestamp.fromDate(new Date()),
       });
+
       const payload = {
         id: newCustomer.id,
         ...formData,

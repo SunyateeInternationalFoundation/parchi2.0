@@ -10,10 +10,12 @@ import { useEffect, useState } from "react";
 import { BsFileEarmarkCheck, BsFolderPlus } from "react-icons/bs";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { TbLayoutDashboard } from "react-icons/tb";
+import { TiMessages } from "react-icons/ti";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../firebase";
 import Approval from "./Approval";
+import Chats from "./Chats";
 import Files from "./Files";
 import ProjectView from "./ProjectView";
 
@@ -48,6 +50,11 @@ function ProjectViewHome() {
       name: "Dashboard",
       icon: <TbLayoutDashboard />,
       component: <ProjectView project={project} />,
+    },
+    {
+      name: "Chats",
+      icon: <TiMessages />,
+      component: <Chats />,
     },
     {
       name: "Files",

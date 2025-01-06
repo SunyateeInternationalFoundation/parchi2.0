@@ -128,7 +128,11 @@ function POSView() {
       <div></div>
       <hr />
       <div className="w-full px-5">
-        <POSViewHome POS={POS} bankDetails={bankDetails} />
+        <POSViewHome
+          POS={POS}
+          bankDetails={bankDetails}
+          selectTemplate={selectTemplate}
+        />
       </div>
       <SelectTemplateSideBar
         isOpen={isSelectTemplateOpen}

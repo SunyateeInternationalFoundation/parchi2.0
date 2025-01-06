@@ -19,6 +19,7 @@ function Projects() {
   }, []);
   async function fetchProject() {
     try {
+      // const customersRef = collection(db, "companies");
       const projectRef = collection(db, "projects");
       const q = query(
         projectRef,
@@ -73,10 +74,11 @@ function Projects() {
     const { projectId } = project;
     navigate(projectId);
   }
+
   useEffect(() => {
     function onFilterFun() {
       const filterData = projectsList.filter((ele) => {
-        const { name, status, startDate, dueDate } = ele;
+        const { name, status } = ele;
         const matchesSearch = name
           .toLowerCase()
           .includes(searchInput.toLowerCase());
@@ -88,6 +90,7 @@ function Projects() {
     }
     onFilterFun();
   }, [filterStatus, searchInput, projectsList]);
+
   return (
     <div className="w-full">
       <div

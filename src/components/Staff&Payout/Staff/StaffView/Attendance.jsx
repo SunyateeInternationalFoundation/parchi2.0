@@ -78,7 +78,7 @@ function Attendance({ attendanceData }) {
       setCalender(cells);
     };
     renderDays();
-  }, [attendanceData]);
+  }, [attendanceData, currentMonth, currentYear]);
 
   return (
     <div className="p-8">

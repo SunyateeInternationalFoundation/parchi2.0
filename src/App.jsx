@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
 import CustomerHome from "./components/HomePage/CustomerHome";
 import Home from "./components/HomePage/Home";
@@ -13,16 +13,21 @@ function App() {
   const isAuthenticated = usersDetails.isLogin;
   const isCompanyProfileDone = usersDetails.isCompanyProfileDone;
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (
       isAuthenticated &&
       isCompanyProfileDone &&
-      usersDetails.selectedDashboard !== ""
+      usersDetails.selectedDashboard !== "" &&
+      location.pathname == ""
     ) {
       navigate("/" + usersDetails.selectedDashboard);
     }
-  }, []);
+    if (!isAuthenticated || !isCompanyProfileDone) {
+      navigate("/");
+    }
+  }, [usersDetails.selectedDashboard]);
   return (
     <div>
       <Routes>
