@@ -7,7 +7,7 @@ import {
   query,
   setDoc,
   Timestamp,
-  where
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -57,10 +57,11 @@ const LandingPage = () => {
 
   const configureRecaptcha = () => {
     if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth,
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
         "recaptcha-container",
         {
-          size: "invisible", 
+          size: "invisible",
           callback: (response) => {
             console.log("ReCAPTCHA verified:", response);
           },
@@ -71,8 +72,6 @@ const LandingPage = () => {
       );
     }
   };
-  
-  
 
   const handlePhoneNumberSubmit = async () => {
     if (phoneNumber) {
@@ -96,7 +95,6 @@ const LandingPage = () => {
       alert("Please enter a valid phone number.");
     }
   };
-  
 
   const handleOtpSubmit = async () => {
     if (otp && confirmationResult) {
@@ -109,8 +107,7 @@ const LandingPage = () => {
         const userDoc = await getDoc(docRef);
         let user = {};
         let companiesData = [];
-        console.log("🚀 ~ handleOtpSubmit ~ isLogin:", isLogin)
-        let isCompanyProfileDone= false
+        let isCompanyProfileDone = false;
         if (!isLogin) {
           user = {
             uid: authUser.uid,
@@ -124,14 +121,13 @@ const LandingPage = () => {
           };
           await setDoc(docRef, user);
           setIsCompanyProfileDone(false);
-
         } else {
           user = userDoc.data();
           if (!user.isCompanyProfileDone) {
             setIsCompanyProfileDone(false);
             return;
           }
-          isCompanyProfileDone=true
+          isCompanyProfileDone = true;
           const companiesRef = collection(db, "companies");
           const q = query(companiesRef, where("userRef", "==", docRef));
           const company = await getDocs(q);
@@ -144,7 +140,7 @@ const LandingPage = () => {
           });
           navigate("/invoice");
         }
-        
+
         const payload = {
           userId: user.uid,
           name: user.displayName || "",
