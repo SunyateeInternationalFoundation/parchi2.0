@@ -254,7 +254,7 @@ const ProFormaProForma = () => {
                           <td className="px-5 py-3">
                             <FormatTimestamp timestamp={proForma.date} />
                           </td>
-                          <td className="px-5 py-3 text-center">
+                          <td className="px-5 py-3 font-bold text-center">
                             {proForma.prefix || ""}-{proForma.proFormaNo}
                           </td>
 

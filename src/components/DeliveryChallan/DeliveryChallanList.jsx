@@ -260,7 +260,7 @@ const DeliveryChallanList = () => {
                           <td className="px-5 py-3">
                             <FormatTimestamp timestamp={dcItem.date} />
                           </td>
-                          <td className="px-5 py-3 text-center">
+                          <td className="px-5 py-3 font-bold text-center">
                             {dcItem.prefix || ""}-{dcItem.deliveryChallanNo}
                           </td>
                           <td className="px-5 py-3 text-start">
