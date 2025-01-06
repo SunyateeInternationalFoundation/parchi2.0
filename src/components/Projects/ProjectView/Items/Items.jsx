@@ -77,115 +77,131 @@ function Items() {
         className="px-8 pt-5 bg-gray-100 overflow-y-auto"
         style={{ width: "100%", height: "82vh" }}
       >
-        <header className="flex space-x-3 mb-3">
+        <header className="flex space-x-3 ">
           <h1 className="text-2xl font-bold">Project Material</h1>
         </header>
-        <div className="flex items-center justify-between  mb-4">
-          <div className="space-x-4">
+
+        <div className="py-3">
+          <div className="grid grid-cols-4 gap-8 ">
+            <div className="rounded-lg p-5 bg-white shadow  ">
+              <div className="text-lg">Total Quantity</div>
+              <div className="text-3xl text-indigo-600 font-bold p-2">
+                {total.qty.toFixed(1)}
+              </div>
+            </div>
+            <div className="rounded-lg p-5 bg-white shadow ">
+              <div className="text-lg">Total Value</div>
+              <div className="text-3xl text-emerald-600 font-bold p-2">
+                {itemsData.length}
+              </div>
+            </div>
+            <div className="rounded-lg p-5 bg-white shadow ">
+              <div className="text-lg">Total Material Count</div>
+              <div className="text-3xl text-orange-600 font-bold p-2">
+                ₹ {total.price.toFixed(1)}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-lg ">
+          <div className="flex items-center justify-between px-5 py-5">
+            <div className="space-x-4">
+              <button
+                onClick={() => setTypeOfAdd("quick")}
+                className={` px-5  py-3 text-gray-600  rounded-md border hover:bg-black hover:text-white   ${
+                  typeOfAdd === "quick" && "bg-black text-white"
+                }`}
+              >
+                Quick Add
+              </button>
+              <button
+                onClick={() => setTypeOfAdd("inventory")}
+                className={` px-5  py-3 text-gray-600  rounded-md border hover:bg-black hover:text-white ${
+                  typeOfAdd === "inventory" && "bg-black text-white"
+                }`}
+              >
+                From Inventory
+              </button>
+            </div>
             <button
-              onClick={() => setTypeOfAdd("quick")}
-              className={`px-4 py-1 rounded-full ${
-                typeOfAdd === "quick"
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-200 text-gray-500"
-              }`}
+              className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+              onClick={() => {
+                setIsSideBarOpen(true);
+              }}
             >
-              Quick Add
-            </button>
-            <button
-              onClick={() => setTypeOfAdd("inventory")}
-              className={`px-4 py-1 rounded-full ${
-                typeOfAdd === "inventory"
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-200 text-gray-500"
-              }`}
-            >
-              From Inventory
+              + Create Items
             </button>
           </div>
-          <button
-            className="bg-blue-700 text-white py-1 px-2 rounded"
-            onClick={() => {
-              setIsSideBarOpen(true);
-            }}
+          <div
+            className="bg-white rounded-lg overflow-y-auto"
+            style={{ height: "80vh" }}
           >
-            + Create Items
-          </button>
-        </div>
-        <div className="bg-white text-lg rounded-lg shadow mb-4">
-          <div className="flex justify-between p-4">
-            <div className="w-full">
-              <div className="mb-2">Total Quantity</div>
-              <div>{total.qty.toFixed(1)}</div>
-            </div>
-
-            <div className="w-full text-end">
-              <div className="mb-2">Total Material Count</div>
-              <div>{itemsData.length}</div>
-            </div>
-          </div>
-          <div className="flex justify-between bg-blue-700 text-white text-center p-2 px-5 rounded-b-lg">
-            <div>Total Value</div>
-            <div>₹ {total.price.toFixed(1)}</div>
-          </div>
-        </div>
-
-        <div>
-          {loading ? (
-            <div className="text-center py-6">Loading Project Materials...</div>
-          ) : (
-            <div className="overflow-y-auto h-96 ">
-              <div className="">
+            <table className="w-full border-collapse text-start">
+              <thead className=" bg-white">
+                <tr className="border-b">
+                  <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
+                    Item
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                    Quantity
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                    Remaining Quantity
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                    Item Per Pc
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                    Price
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                    Delete
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
                 {itemsData.length > 0 ? (
                   itemsData.map((item) => (
-                    <div
-                      className={`border-2 shadow rounded-lg p-3 mt-3 cursor-pointer`}
+                    <tr
                       key={item.id}
+                      className="border-b border-gray-200 text-center cursor-pointer"
                       onClick={() => {
                         setViewItemData(item);
                         setIsItemView(true);
                       }}
                     >
-                      <div className="flex justify-between items-center px-4 mb-2">
-                        <div className="font-bold">
-                          <div className="">{item.itemName}</div>
-                          <div className="">
-                            <span className="text-gray-500 font-normal">
-                              Item Per Pc
-                            </span>{" "}
-                            {item.itemPricePerPiece}
-                          </div>
-                          <div className="">
-                            <span className="text-gray-500 font-normal">
-                              Quantity
-                            </span>{" "}
-                            {item.quantity}
-                          </div>
-                          <div className="">
-                            <span className="text-gray-500 font-normal">
-                              Remaining Quantity
-                            </span>{" "}
-                            {item.remainingQuantity}
-                          </div>
-                        </div>
-                        <div className="flex space-x-8 font-bold">
-                          <div>₹ {item.quantity * item.itemPricePerPiece}</div>
-                          <div
-                            className="text-red-700 text-2xl"
-                            onClick={(e) => OnDeleteItem(e, item.id)}
-                          >
-                            <MdDelete />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                      <td className="px-8 py-3 text-start">{item.name}</td>
+                      <td className="px-5 py-3 text-start">{item.quantity}</td>
+                      <td className="px-5 py-3 text-start">
+                        {item.remainingQuantity}
+                      </td>
+                      <td className="px-5 py-3 text-start">
+                        {item.itemPricePerPiece}
+                      </td>
+                      <td className="px-5 py-3 text-start">
+                        {item.quantity * item.itemPricePerPiece}
+                      </td>
+                      <td
+                        className="px-5 py-3 text-start text-red-700 text-2xl"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          OnDeleteItem(e, item.id);
+                        }}
+                      >
+                        <MdDelete />
+                      </td>
+                    </tr>
                   ))
                 ) : (
-                  <div className="text-lg text-center">No Item Found</div>
+                  <tr>
+                    <td colSpan="6" className="h-24 text-center py-4 ">
+                      No Item Found
+                    </td>
+                  </tr>
                 )}
-              </div>
-            </div>
-          )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
       {isSideBarOpen &&

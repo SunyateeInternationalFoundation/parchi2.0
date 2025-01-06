@@ -10,9 +10,9 @@ import {
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import FormatTimestamp from "../../../../constants/FormatTimestamp";
 import { db } from "../../../../firebase";
-import { IoMdArrowRoundBack } from "react-icons/io";
 
 const Files = () => {
   const [loading, setLoading] = useState(false);
@@ -170,70 +170,95 @@ const Files = () => {
       className="bg-white-500 px-8 py-4 overflow-y-auto"
       style={{ height: "82vh" }}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex space-x-3">
-          <h1 className="text-xl font-bold">Files</h1>
-        </div>
+      <div className="bg-white rounded-lg">
+        <div className="flex items-center justify-between p-5">
+          <div className="flex space-x-3">
+            <h1 className="text-xl font-bold">Files</h1>
+          </div>
 
-        {(userDetails.selectedDashboard === "" || role?.access) && (
-          <button
-            className="bg-blue-500 text-white text-2xl text-center px-3 pb-1 rounded hover:bg-blue-600 transition"
-            onClick={() => setIsModalOpen(true)}
-          >
-            +
-          </button>
-        )}
-      </div>
-
-      <div className="rounded-lg py-4 space-y-4">
-        {files.map((file) => {
-          const customer = customers.find(
-            (customer) => customer.id === file.customerOrVendorRef
-          );
-          const vendor = vendors.find(
-            (vendor) => vendor.id === file.customerOrVendorRef
-          );
-
-          const name = customer
-            ? `Customer - ${customer.name}`
-            : vendor
-            ? `Vendor - ${vendor.name}`
-            : "N/A";
-          const phoneNumber = customer
-            ? customer.phone
-            : vendor
-            ? vendor.phone
-            : "N/A";
-          const createdAt = file.createdAt?.toDate().toLocaleDateString();
-
-          return (
-            <div
-              key={file.id}
-              className="flex items-center justify-between bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out"
+          {(userDetails.selectedDashboard === "" || role?.access) && (
+            <button
+              className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+              onClick={() => setIsModalOpen(true)}
             >
-              {/* File Preview */}
-              <div className="flex items-center space-x-4">
-                <img
-                  src={file.fileURL}
-                  alt={file.name}
-                  className="w-16 h-16 rounded-md object-cover"
-                />
-                <div>
-                  <h2 className="text-gray-800 font-semibold">{file.name}</h2>
-                  <p className="text-gray-600 text-sm">{createdAt}</p>
-                </div>
-              </div>
+              + Add File
+            </button>
+          )}
+        </div>
+        <div className=" rounded-lg overflow-y-auto" style={{ height: "80vh" }}>
+          <table className="w-full border-collapse text-start">
+            <thead className=" bg-white">
+              <tr className="border-b">
+                <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
+                  File
+                </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                  Date
+                </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                  Whom
+                </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                  Name
+                </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                  Phone
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              {files.length > 0 ? (
+                files.map((file) => {
+                  const customer = customers.find(
+                    (customer) => customer.id === file.customerOrVendorRef
+                  );
+                  const vendor = vendors.find(
+                    (vendor) => vendor.id === file.customerOrVendorRef
+                  );
 
-              {/* File Details */}
-              <div className="text-right">
-                <p className="text-gray-800 font-medium">{name}</p>
-                <p className="text-gray-600 text-sm">{phoneNumber}</p>
-              </div>
-            </div>
-          );
-        })}
+                  const phoneNumber = customer
+                    ? customer.phone
+                    : vendor
+                    ? vendor.phone
+                    : "N/A";
+
+                  return (
+                    <tr
+                      key={file.id}
+                      className="border-b border-gray-200 text-center cursor-pointer"
+                    >
+                      <td className="px-8 py-3 text-start flex">
+                        <img
+                          src={file.fileURL}
+                          alt={file.name}
+                          className="w-16 h-16 rounded-md object-cover"
+                        />
+                        {file.name}
+                      </td>
+                      <td className="px-5 py-3 text-start">
+                        <FormatTimestamp timestamp={file.createdAt} />
+                      </td>
+                      <td className="px-5 py-3 text-start">
+                        {customer ? "Customer" : "Vendor"}
+                      </td>
+                      <td className="px-5 py-3 text-start">
+                        {customer ? customer?.name : vendor?.name}
+                      </td>
+                      <td className="px-5 py-3 text-start">{phoneNumber}</td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="3" className="h-24 text-center py-4 ">
+                    No Item Found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-
       {/* Modal */}
       {isModalOpen && (
         <div

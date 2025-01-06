@@ -38,6 +38,7 @@ function CreateApproval({ isOpen, projectId, onClose, newApprovalAdded }) {
     categories: "",
     createdAt: "",
     customerOrVendorRef: "",
+    approverName: "",
     status: "Pending",
     file: {
       image: "",
@@ -76,6 +77,7 @@ function CreateApproval({ isOpen, projectId, onClose, newApprovalAdded }) {
       categories: "",
       createdAt: "",
       customerOrVendorRef: "",
+      approverName: "",
       status: "Pending",
       file: {
         image: "",
@@ -102,6 +104,7 @@ function CreateApproval({ isOpen, projectId, onClose, newApprovalAdded }) {
       // const fileField = typeOfFile === "Image" ? "image" : "pdfUrl";
       const payload = {
         ...approvalForm,
+
         approvalBelongsTo: filter,
         categories: filter,
         createdAt: Timestamp.fromDate(new Date()),
@@ -192,13 +195,15 @@ function CreateApproval({ isOpen, projectId, onClose, newApprovalAdded }) {
             placeholder="Enter Description"
             onChange={(e) => {
               const id = e.target.value;
+              const userData = (
+                filter === "Customer" ? customers : vendors
+              ).find((ele) => ele.id === id);
 
               setApprovalForm((val) => ({
                 ...val,
                 customerOrVendorRef: id,
-                phoneNumber: (filter === "Customer" ? customers : vendors).find(
-                  (ele) => ele.id === id
-                ).phone,
+                approverName: userData.name,
+                phoneNumber: userData.phone,
               }));
             }}
             required

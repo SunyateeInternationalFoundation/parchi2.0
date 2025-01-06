@@ -1,12 +1,14 @@
 import {
-    addDoc,
-    collection,
-    deleteDoc,
-    doc,
-    getDocs,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { IoMdTrash } from "react-icons/io";
 import { useSelector } from "react-redux";
+import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
 
 const Categories = () => {
@@ -46,54 +48,11 @@ const Categories = () => {
 
   const handleAddCategory = (newCategory) => {
     setCategories((prev) => [...prev, newCategory]);
-      setCategoriesCount((prev) => ({
-    total: prev.total + 1
-  }));
-
+    setCategoriesCount((prev) => ({
+      total: prev.total + 1,
+    }));
   };
-  return (
-    <div className="p-4">
-      <div className="flex justify-between mb-2">
-        <div className="flex flex-col space-y-2">
-          <span className="text-xl font-bold  text-blue">
-            {categoriesCount.total}
-          </span>
-        </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-blue-500 text-white px-2 py-2 rounded hover:bg-blue-600 transition"
-        >
-          + Create Category
-        </button>
-      </div>
-      <h1 className="text-2xl font-bold  text-gray-700">Total Categories</h1>
-      <div className="space-y-4 mt-6">
-        {categories.map((category) => (
-          <CategoryCard
-            key={category.id}
-            category={category}
-            setCategories={setCategories}
-            setCategoriesCount={setCategoriesCount}
-            companyId={companyDetails.companyId}
-          />
-        ))}
-      </div>
-      {isModalOpen && (
-        <AddCategoryModal
-          onClose={() => setIsModalOpen(false)}
-          onAddCategory={handleAddCategory}
-        />
-      )}
-    </div>
-  );
-};
 
-const CategoryCard = ({
-  category,
-  setCategories,
-  setCategoriesCount,
-  companyId,
-}) => {
   async function OnDeleteCategory(e, categoryId) {
     e.stopPropagation();
     try {
@@ -103,7 +62,7 @@ const CategoryCard = ({
       if (!confirm) return;
 
       await deleteDoc(
-        doc(db, "companies", companyId, "categories", categoryId)
+        doc(db, "companies", companyDetails.companyId, "categories", categoryId)
       );
 
       setCategories((prev) => {
@@ -118,19 +77,106 @@ const CategoryCard = ({
     }
   }
   return (
-    <div className="bg-white p-4 rounded shadow">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">{category.name}</h2>
-        <button
-          onClick={(e) => OnDeleteCategory(e, category.id)}
-          className="text-white bg-red-500 h-6 w-6 font-bold text-center rounded-full flex items-center justify-center"
+    <div className=" p-4">
+      <div className="bg-white rounded-lg">
+        <div className="flex justify-end px-5 py-4">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+          >
+            + Create Category
+          </button>
+        </div>
+        <div
+          className=" rounded-lg   overflow-y-auto"
+          style={{ height: "65vh" }}
         >
-          <div className="w-3 h-1 bg-white"></div>
-        </button>
+          <table className="w-full border-collapse text-start  ">
+            <thead className=" bg-white">
+              <tr className="border-b">
+                <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
+                  Date
+                </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                  Name
+                </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                  Delete
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              {categories.length > 0 ? (
+                categories.map((category) => (
+                  <tr key={category.id} className="border-b-2 border-gray-200 ">
+                    <td className="px-8 py-3 text-start ">
+                      <FormatTimestamp timestamp={category.createdAt} />
+                    </td>
+                    <td className="px-5 py-3 text-start">{category.name}</td>
+
+                    <td
+                      className="px-5 py-3 text-start text-red-700 text-2xl"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        OnDeleteCategory(e, category.id);
+                      }}
+                    >
+                      <IoMdTrash />
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="h-24 text-center py-4 ">
+                    No Item Found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
+      {/* <div className="space-y-4 mt-6">
+        {categories.map((category) => (
+          <CategoryCard
+            key={category.id}
+            category={category}
+            setCategories={setCategories}
+            setCategoriesCount={setCategoriesCount}
+            companyId={companyDetails.companyId}
+          />
+        ))}
+      </div> */}
+      {isModalOpen && (
+        <AddCategoryModal
+          onClose={() => setIsModalOpen(false)}
+          onAddCategory={handleAddCategory}
+        />
+      )}
     </div>
   );
 };
+
+// const CategoryCard = ({
+//   category,
+//   setCategories,
+//   setCategoriesCount,
+//   companyId,
+// }) => {
+//   return (
+//     <div className="bg-white p-4 rounded shadow">
+//       <div className="flex justify-between items-center">
+//         <h2 className="text-xl font-semibold">{category.name}</h2>
+//         <button
+//
+//           className="text-white bg-red-500 h-6 w-6 font-bold text-center rounded-full flex items-center justify-center"
+//         >
+//           <div className="w-3 h-1 bg-white"></div>
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
 
 const AddCategoryModal = ({ onClose, onAddCategory }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -155,6 +201,7 @@ const AddCategoryModal = ({ onClose, onAddCategory }) => {
       );
       const newCategory = {
         name: categoryName,
+        createdAt: new Date(),
       };
 
       const docRef = await addDoc(categoryRef, newCategory);

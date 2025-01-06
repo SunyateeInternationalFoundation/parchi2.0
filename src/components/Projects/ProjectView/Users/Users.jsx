@@ -1,5 +1,6 @@
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { db } from "../../../../firebase";
@@ -67,6 +68,7 @@ function Users() {
           field = "staffRef";
         }
         setModifiedProjectData(payload[field]);
+        console.log("🚀 ~ fetchProjectData ~ payload:", payload);
       }
     } catch (error) {
       console.error("Error fetching project data:", error);
@@ -95,79 +97,137 @@ function Users() {
   }, [activeNav, projectDetails, searchTerm]);
 
   return (
-    <div className="px-8 py-4">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex space-x-3">
-          <h2 className="text-2xl font-bold">Project Members</h2>
-        </div>
-
-        {(userDetails.selectedDashboard === "" || role?.access) && (
-          <button
-            className="bg-blue-500 text-white px-4 pb-1 rounded-lg ml-4 "
-            onClick={() => setIsSideBarOpen(true)}
-          >
-            + Add Members
-          </button>
-        )}
-      </div>
-      <div className="bg-white p-4 rounded-lg shadow mb-4">
-        <nav className="flex space-x-4 mb-4">
-          <button
-            className={
-              "px-4 py-1" +
-              (activeNav === "customers" ? " bg-green-300 rounded-full" : "")
-            }
-            onClick={() => setActiveNav("customers")}
-          >
-            Customers
-          </button>
-          <button
-            className={
-              "px-4 py-1" +
-              (activeNav === "vendors" ? " bg-green-300 rounded-full" : "")
-            }
-            onClick={() => setActiveNav("vendors")}
-          >
-            Vendors
-          </button>
-          <button
-            className={
-              "px-4 py-1" +
-              (activeNav === "staff" ? " bg-green-300 rounded-full" : "")
-            }
-            onClick={() => setActiveNav("staff")}
-          >
-            Staff
-          </button>
+    <div
+      className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
+      style={{ height: "92vh" }}
+    >
+      <div className="bg-white  pb-8 pt-6 rounded-lg shadow my-6">
+        <nav className="flex mb-4 px-5">
+          <div className="flex items-center space-x-4 w-full">
+            <div className="w-full space-x-4">
+              <button
+                className={
+                  "px-4 py-1 text-gray-600  rounded-md border hover:bg-black hover:text-white " +
+                  (activeNav === "customers" && " bg-black text-white")
+                }
+                onClick={() => setActiveNav("customers")}
+              >
+                Customers
+              </button>
+              <button
+                className={
+                  "px-4 py-1 text-gray-600  rounded-md border hover:bg-black hover:text-white " +
+                  (activeNav === "vendors" && " bg-black text-white")
+                }
+                onClick={() => setActiveNav("vendors")}
+              >
+                Vendors
+              </button>
+              <button
+                className={
+                  "px-4 py-1 text-gray-600  rounded-md border hover:bg-black hover:text-white " +
+                  (activeNav === "staff" && " bg-black text-white")
+                }
+                onClick={() => setActiveNav("staff")}
+              >
+                Staff
+              </button>
+            </div>
+          </div>
+          <div className="flex items-center justify-end space-x-4 w-full text-end ">
+            <div
+              className="flex items-center  space-x-4  border
+    px-5  py-3 rounded-md w-1/2"
+            >
+              <input
+                type="text"
+                placeholder="Search..."
+                className=" w-full focus:outline-none"
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <IoSearch />
+            </div>
+            {(userDetails.selectedDashboard === "" || role?.access) && (
+              <button
+                className="bg-[#442799]  text-white text-center  px-5  py-3 font-semibold rounded-md"
+                onClick={() => setIsSideBarOpen(true)}
+              >
+                + Add Members
+              </button>
+            )}
+          </div>
         </nav>
 
-        <div className="flex items-center space-x-4 mb-4">
-          <input
-            type="text"
-            placeholder="Search by Name, Mobile Number..."
-            className="border p-2 rounded w-full"
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-
         {loading ? (
-          <div className="text-center py-6">Loading...</div>
+          <div className="text-center py-6">Loading vendors...</div>
         ) : (
-          <div className="overflow-y-auto" style={{ height: "50vh" }}>
-            {modifiedProjectData.length > 0 ? (
-              modifiedProjectData.map((item) => (
-                <div
-                  key={item.id}
-                  className="border-2 shadow cursor-pointer rounded-lg p-3 mt-3"
-                >
-                  <div className="font-bold">{item.name}</div>
-                  <div className="text-gray-500">{item.email}</div>
-                  <div className="text-gray-500">{item.phone}</div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-6">No users found.</div>
-            )}
+          <div className="" style={{ height: "96vh" }}>
+            <div className="" style={{ height: "92vh" }}>
+              <table className="w-full border-collapse text-start">
+                <thead className=" bg-white">
+                  <tr className="border-b">
+                    <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
+                      Name
+                    </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold text-center">
+                      Contact Info
+                    </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                      Email Id
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {modifiedProjectData.length > 0 ? (
+                    modifiedProjectData.map((vendor) => (
+                      <tr
+                        key={vendor.id}
+                        className="border-b border-gray-200 text-center "
+                      >
+                        <td className="px-5 py-3 font-bold">
+                          <div className="flex items-center space-x-3">
+                            {vendor.profileImage ? (
+                              <img
+                                src={vendor.profileImage}
+                                alt="Profile"
+                                className="mt-2 w-10 h-10 rounded-full object-cover"
+                              />
+                            ) : (
+                              <span className="bg-purple-500 text-white rounded-full h-10 w-10 flex items-center justify-center font-semibold">
+                                {vendor.name.charAt(0)}
+                              </span>
+                            )}
+                            <div>
+                              <div className="text-gray-800 font-semibold">
+                                {vendor.name}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td className="px-5 py-3 font-bold  text-center">
+                          {vendor.phone || "N/A"}
+                        </td>
+
+                        <td className="px-5 py-3 text-start">
+                          {vendor.email || ""}
+                        </td>
+
+                        {/* <td className="px-5 py-3 text-center">
+                          {vendor?.amount?.toFixed(2) || ""}
+                        </td> */}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="h-24 text-center py-4">
+                        No vendors found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
@@ -191,5 +251,83 @@ function Users() {
     </div>
   );
 }
+// <div className="px-8 py-4">
+//   <div className="flex items-center justify-between mb-4">
+//     <div className="flex space-x-3">
+//       <h2 className="text-2xl font-bold">Project Members</h2>
+//     </div>
+
+//     {(userDetails.selectedDashboard === "" || role?.access) && (
+//       <button
+//         className="bg-blue-500 text-white px-4 pb-1 rounded-lg ml-4 "
+//         onClick={() => setIsSideBarOpen(true)}
+//       >
+//         + Add Members
+//       </button>
+//     )}
+//   </div>
+//   <div className="bg-white p-4 rounded-lg shadow mb-4">
+//     <nav className="flex space-x-4 mb-4">
+//       <button
+//         className={
+//           "px-4 py-1" +
+//           (activeNav === "customers" ? " bg-green-300 rounded-full" : "")
+//         }
+//         onClick={() => setActiveNav("customers")}
+//       >
+//         Customers
+//       </button>
+//       <button
+//         className={
+//           "px-4 py-1" +
+//           (activeNav === "vendors" ? " bg-green-300 rounded-full" : "")
+//         }
+//         onClick={() => setActiveNav("vendors")}
+//       >
+//         Vendors
+//       </button>
+//       <button
+//         className={
+//           "px-4 py-1" +
+//           (activeNav === "staff" ? " bg-green-300 rounded-full" : "")
+//         }
+//         onClick={() => setActiveNav("staff")}
+//       >
+//         Staff
+//       </button>
+//     </nav>
+
+//     <div className="flex items-center space-x-4 mb-4">
+//       <input
+//         type="text"
+//         placeholder="Search by Name, Mobile Number..."
+//         className="border p-2 rounded w-full"
+//
+//       />
+//     </div>
+
+//     {loading ? (
+//       <div className="text-center py-6">Loading...</div>
+//     ) : (
+//       <div className="overflow-y-auto" style={{ height: "50vh" }}>
+//         {modifiedProjectData.length > 0 ? (
+//           modifiedProjectData.map((item) => (
+//             <div
+//               key={item.id}
+//               className="border-2 shadow cursor-pointer rounded-lg p-3 mt-3"
+//             >
+//               <div className="font-bold">{item.name}</div>
+//               <div className="text-gray-500">{item.email}</div>
+//               <div className="text-gray-500">{item.phone}</div>
+//             </div>
+//           ))
+//         ) : (
+//           <div className="text-center py-6">No users found.</div>
+//         )}
+//       </div>
+//     )}
+//   </div>
+//
+// </div>
 
 export default Users;

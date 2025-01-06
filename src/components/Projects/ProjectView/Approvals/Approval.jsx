@@ -2,6 +2,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import FormatTimestamp from "../../../../constants/FormatTimestamp";
 import { db } from "../../../../firebase"; // Ensure Firebase is configured correctly
 import CreateApproval from "./CreateApproval";
 
@@ -20,8 +21,6 @@ const Approval = () => {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   }
-  console.log("userDetails", userDetails);
-  console.log("companyId", companyId);
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.approvals;
@@ -48,43 +47,112 @@ const Approval = () => {
 
   return (
     <div className="px-8 py-4">
-      <div className="flex space-x-3 mb-4">
-        <h1 className="text-xl font-bold">Approvals</h1>
-      </div>
-      {/* Filter Buttons */}
-      <div className="flex justify-between">
-        <div className="flex space-x-2 mb-4">
-          {["All", "Customer", "Vendor"].map((category) => (
-            <button
-              key={category}
-              onClick={() => setFilter(category)}
-              className={`px-4 py-2 rounded-full ${
-                filter === category
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-200 text-gray-700"
-              }`}
-            >
-              {category}
-            </button>
-          ))}
+      <div className="bg-white rounded-lg ">
+        <div className="flex space-x-3 p-5">
+          <h1 className="text-xl font-bold">Approvals</h1>
         </div>
-        <div>
-          {(userDetails.selectedDashboard === "" || role?.access) && (
-            <button
-              className="bg-blue-500 text-white py-1 px-2 rounded"
-              onClick={() => setIsSideBarOpen(true)}
-            >
-              + Create Approval
-            </button>
-          )}
+        {/* Filter Buttons */}
+        <div className="flex justify-between px-5">
+          <div className="flex space-x-2 mb-4">
+            {["All", "Customer", "Vendor"].map((category) => (
+              <button
+                key={category}
+                onClick={() => setFilter(category)}
+                className={`px-5  py-3 text-gray-600  rounded-md border hover:bg-black hover:text-white ${
+                  filter === category && "bg-black text-white"
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+          <div>
+            {(userDetails.selectedDashboard === "" || role?.access) && (
+              <button
+                className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                onClick={() => setIsSideBarOpen(true)}
+              >
+                + Create Approval
+              </button>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Approval Cards */}
-      <div className="space-y-4 overflow-y-auto " style={{ height: "64vh" }}>
-        {filteredApprovals.map((approval) => (
-          <ApprovalCard key={approval.id} approval={approval} />
-        ))}
+        {/* Approval Cards */}
+        <div
+          className="bg-white rounded-lg   overflow-y-auto"
+          style={{ height: "62vh" }}
+        >
+          <table className="w-full border-collapse text-start  ">
+            <thead className=" bg-white">
+              <tr className="border-b">
+                <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
+                  Date
+                </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                  File
+                </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                  Approver
+                </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                  Phone
+                </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                  Status
+                </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                  ApprovalBelongsTo
+                </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                  Priority
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredApprovals.length > 0 ? (
+                filteredApprovals.map((approval) => (
+                  <tr key={approval.id} className="border-b-2 border-gray-200 ">
+                    <td className="px-8 py-3 text-start ">
+                      <FormatTimestamp timestamp={approval.createdAt} />
+                    </td>
+                    <td className="px-5 py-3 text-start flex items-center">
+                      <img
+                        src={
+                          approval.imageUrl || "https://via.placeholder.com/50"
+                        }
+                        alt={approval.name}
+                        className="w-12 h-12 rounded-full mr-4"
+                      />
+                      {approval.name}
+                    </td>
+                    <td className="px-5 py-3 text-start">
+                      {approval.approverName}
+                    </td>
+                    <td className="px-5 py-3 text-start">
+                      {approval.phoneNumber}
+                    </td>
+                    <td className="px-5 py-3 text-start">
+                      {approval.approvalBelongsTo}
+                    </td>
+                    <td className="px-5 py-3 text-start">
+                      {approval.approvalBelongsTo}
+                    </td>
+                    <td className="px-5 py-3 text-start">
+                      {approval.priority}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="h-24 text-center py-4 ">
+                    No Item Found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
       {isSideBarOpen && (
         <div>
@@ -102,36 +170,29 @@ const Approval = () => {
   );
 };
 
-const ApprovalCard = ({ approval, isSideBarOpen }) => {
-  return (
-    <div className="bg-white p-4 rounded shadow flex justify-between items-center ">
-      <div className="flex items-center">
-        <img
-          src={approval.imageUrl || "https://via.placeholder.com/50"}
-          alt={approval.name}
-          className="w-12 h-12 rounded-full mr-4"
-        />
-        <div>
-          <h2 className="text-lg font-semibold">{approval.name}</h2>
-          <p className="text-gray-500 text-sm">
-            Approver: {approval.approvalBelongsTo}
-          </p>
-          <p
-            className={`text-sm ${
-              approval.status === "Pending"
-                ? "text-yellow-500"
-                : "text-green-500"
-            }`}
-          >
-            Status: {approval.status}
-          </p>
-        </div>
-      </div>
-      <button className="text-blue-500 hover:text-blue-700">
-        View Details
-      </button>
-    </div>
-  );
-};
+// const ApprovalCard = ({ approval, isSideBarOpen }) => {
+//   return (
+//     <div className="bg-white p-4 rounded shadow flex justify-between items-center ">
+//       <div className="flex items-center">
+//         <div>
+//           <h2 className="text-lg font-semibold">{approval.name}</h2>
+//           <p className="text-gray-500 text-sm">:</p>
+//           <p
+//             className={`text-sm ${
+//               approval.status === "Pending"
+//                 ? "text-yellow-500"
+//                 : "text-green-500"
+//             }`}
+//           >
+//             Status: {approval.status}
+//           </p>
+//         </div>
+//       </div>
+//       <button className="text-blue-500 hover:text-blue-700">
+//         View Details
+//       </button>
+//     </div>
+//   );
+// };
 
 export default Approval;

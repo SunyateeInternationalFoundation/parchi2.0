@@ -7,12 +7,10 @@ import { IoMdArrowRoundBack } from "react-icons/io";
 import { IoWalletOutline } from "react-icons/io5";
 import { RiUserAddLine } from "react-icons/ri";
 import { TbLayoutDashboard } from "react-icons/tb";
-import { TiMessages } from "react-icons/ti";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
 import Approval from "./Approvals/Approval";
-import Chats from "./Chats/Chats";
 import Files from "./Files/Files";
 import Items from "./Items/Items";
 import Milestone from "./Milestone/Milestone";
@@ -94,11 +92,11 @@ function ProjectViewHome() {
       icon: <BsFileEarmarkCheck />,
       component: <Approval />,
     },
-    {
-      name: "Chat",
-      icon: <TiMessages />,
-      component: <Chats />,
-    },
+    // {
+    //   name: "Chat",
+    //   icon: <TiMessages />,
+    //   component: <Chats />,
+    // },
     {
       name: "Payments",
       icon: <IoWalletOutline />,
@@ -129,7 +127,7 @@ function ProjectViewHome() {
 
   return (
     <div className=" pb-5 bg-gray-100" style={{ width: "100%" }}>
-      <header className="flex items-center bg-white  px-3 space-x-3">
+      <header className="flex items-center bg-white  px-3 space-x-3 border-b">
         <Link className="flex items-center" to={"./../"}>
           <IoMdArrowRoundBack className="w-7 h-7 ms-3 hover:text-blue-500" />
         </Link>

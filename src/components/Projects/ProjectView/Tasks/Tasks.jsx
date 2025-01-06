@@ -10,10 +10,11 @@ import {
 } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import { FaFilter } from "react-icons/fa";
-import { IoMdClose, IoMdSend } from "react-icons/io";
+import { IoMdSend } from "react-icons/io";
 import { MdOutlineShowChart } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import FormatTimestamp from "../../../../constants/FormatTimestamp";
 import { db } from "../../../../firebase";
 import TaskSideBar from "./TaskSideBar";
 
@@ -213,20 +214,18 @@ function Tasks() {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [taskMessagesData[selectedTask.id]]);
+
   return (
-    <div
-      className="w-full bg-gray-100 overflow-y-auto"
-      style={{ height: "82vh" }}
-    >
+    <div className="w-full bg-gray-100 overflow-y-auto">
       <div
         className="w-full grid grid-cols-2 overflow-y-auto"
         style={{ height: "82vh" }}
       >
         <div
-          className="p-3 border-r-2  overflow-y-auto"
+          className="p-3 border-r-2  overflow-y-auto bg-white"
           style={{ height: "82vh" }}
         >
-          <div className="flex justify-between border-r-2">
+          <div className="flex justify-between  py-2 ">
             <div className="flex space-x-3">
               <h2 className="text-xl font-semibold ">TASKS</h2>
             </div>
@@ -244,7 +243,7 @@ function Tasks() {
               </button>
             )}
           </div>
-          <div className="bg-white p-4 rounded-lg shadow my-4">
+          <div className="bg-white py-4 border-y ">
             <div>
               <span className="text-blue-700 font-bold">Progress</span>(status)
             </div>
@@ -258,96 +257,110 @@ function Tasks() {
               </div>
             </div>
           </div>
-          <div className="p-4">
-            <div className="flex justify-between mb-2">
-              <div className="flex justify-around text-gray-600">
-                <button
-                  className={
-                    "px-4 py-1" +
-                    (filter === "All" ? " bg-gray-300 rounded-full" : "")
-                  }
-                  onClick={() => setFilter("All")}
-                >
-                  All
-                </button>
-                <button
-                  className={
-                    "px-4 py-1" +
-                    (filter === "Delay" ? " bg-gray-300 rounded-full" : "")
-                  }
-                  onClick={() => setFilter("Delay")}
-                >
-                  Delay
-                </button>
-                <button
-                  className={
-                    "px-4 py-1" +
-                    (filter === "On-Going" ? " bg-gray-300 rounded-full" : "")
-                  }
-                  onClick={() => setFilter("On-Going")}
-                >
-                  On-Going
-                </button>
-                <button
-                  className={
-                    "px-4 py-1" +
-                    (filter === "Completed" ? " bg-gray-300 rounded-full" : "")
-                  }
-                  onClick={() => setFilter("Completed")}
-                >
-                  Completed
-                </button>
-              </div>
-              <FaFilter />
-            </div>
-          </div>
-          {loading ? (
-            <div>Loading...</div>
-          ) : filterTasksDetails.length > 0 ? (
-            filterTasksDetails.map((task) => (
-              <div
-                className="bg-white p-4 rounded-lg shadow  flex justify-between items-center my-2 cursor-pointer"
-                key={task.id}
-                onClick={() => {
-                  setSelectedTask(task);
-                }}
+          <div className="flex justify-between my-2 ">
+            <div className="flex justify-around text-gray-600 space-x-4">
+              <button
+                className={
+                  "px-4 py-1 text-gray-600  rounded-md border hover:bg-black hover:text-white " +
+                  (filter === "All" ? " bg-black text-white rounded-full" : "")
+                }
+                onClick={() => setFilter("All")}
               >
-                <div>
-                  <div>{task.name}</div>
-                  <div>Date {DateFormate(task.endDate)}</div>
-                </div>
-                <div
-                  className={`px-3 py-1 rounded-bl-lg rounded-tr-lg ${
-                    task.status === "Delay"
-                      ? "bg-red-500"
-                      : task.status === "Completed"
-                      ? "bg-green-500"
-                      : "bg-blue-500"
-                  }`}
-                >
-                  Status {task.status}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="bg-white p-4 rounded-lg shadow  flex justify-between items-center my-2">
-              No Tasks Found
+                All
+              </button>
+              <button
+                className={
+                  "px-4 py-1 text-gray-600  rounded-md border hover:bg-black hover:text-white " +
+                  (filter === "Delay"
+                    ? " bg-black text-white rounded-full"
+                    : "")
+                }
+                onClick={() => setFilter("Delay")}
+              >
+                Delay
+              </button>
+              <button
+                className={
+                  "px-4 py-1 text-gray-600  rounded-md border hover:bg-black hover:text-white " +
+                  (filter === "On-Going"
+                    ? " bg-black text-white rounded-full"
+                    : "")
+                }
+                onClick={() => setFilter("On-Going")}
+              >
+                On-Going
+              </button>
+              <button
+                className={
+                  "px-4 py-1 text-gray-600  rounded-md border hover:bg-black hover:text-white " +
+                  (filter === "Completed"
+                    ? " bg-black text-white rounded-full"
+                    : "")
+                }
+                onClick={() => setFilter("Completed")}
+              >
+                Completed
+              </button>
             </div>
-          )}
+            <FaFilter />
+          </div>
+          <div
+            className="bg-white rounded-lg overflow-y-auto"
+            style={{ height: "50vh" }}
+          >
+            <table className="w-full border-collapse text-start">
+              <thead className=" bg-white">
+                <tr className="border-b">
+                  <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
+                    Task
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                    Date
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                    Status
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                {filterTasksDetails.length > 0 ? (
+                  filterTasksDetails.map((task) => (
+                    <tr
+                      key={task.id}
+                      className="border-b border-gray-200 text-center cursor-pointer"
+                      onClick={() => {
+                        setSelectedTask(task);
+                      }}
+                    >
+                      <td className="px-8 py-3 text-start">{task.name}</td>
+
+                      <td className="px-5 py-3 text-start">
+                        <FormatTimestamp timestamp={task.endDate} />
+                      </td>
+
+                      <td className="px-5 py-3 text-start">{task.status}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="3" className="h-24 text-center py-4">
+                      No Tasks Found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
         {selectedTask.id ? (
-          <div className="px-4 overflow-y-auto" style={{ height: "82vh" }}>
-            <div className="mt-2 flex justify-between cursor-pointer">
+          <div
+            className="px-4 overflow-y-auto bg-white"
+            style={{ height: "82vh" }}
+          >
+            <div className="mt-2 flex justify-between cursor-pointer border-b">
               <div className="text-lg">{selectedTask.name}</div>
-              <div
-                className="text-3xl cursor-pointer"
-                onClick={() => setSelectedTask({})}
-              >
-                <IoMdClose />
-              </div>
             </div>
-
-            <div className="bg-white p-2 rounded-lg shadow my-2">
+            <div className=" p-2 border-b">
               <div className="flex justify-between ">
                 <div className="flex items-center">
                   <div className="w-full">Start Date: </div>
@@ -436,10 +449,7 @@ function Tasks() {
                 </div>
               </div>
             </div>
-            <div
-              className="bg-white p-4 rounded-lg shadow my-4"
-              style={{ height: "50vh" }}
-            >
+            <div className="p-4  my-2 border-b" style={{ height: "48vh" }}>
               <div
                 ref={containerRef}
                 className="flex  flex-col-reverse  overflow-y-auto"
@@ -518,7 +528,7 @@ function Tasks() {
               <div className="flex w-full px-4">
                 <input
                   type="text"
-                  className="w-full py-2 border rounded-lg"
+                  className="w-full p-2 border rounded-lg "
                   value={taskMessage}
                   onChange={(e) => {
                     setTaskMessage(e.target.value);

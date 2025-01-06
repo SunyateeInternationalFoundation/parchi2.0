@@ -1,14 +1,15 @@
 import {
-    addDoc,
-    collection,
-    deleteDoc,
-    doc,
-    getDocs,
-    Timestamp,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  Timestamp,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { IoMdClose } from "react-icons/io";
+import { IoMdClose, IoMdTrash } from "react-icons/io";
 import { useSelector } from "react-redux";
+import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
 
 const Warehouse = () => {
@@ -52,50 +53,7 @@ const Warehouse = () => {
       total: prev.total + 1,
     }));
   };
-  return (
-    <div className="p-4">
-      <div className="flex justify-between mb-2">
-        <div className="flex flex-col space-y-2">
-          <span className="text-xl font-bold  text-blue">
-            {warehousesCount.total}
-          </span>
-        </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-blue-500 text-white px-2 py-2 rounded hover:bg-blue-600 transition"
-        >
-          + Create Warehouse
-        </button>
-      </div>
-      <h1 className="text-xl font-bold  text-gray-700">Total Warehouses</h1>
-      <div className="space-y-4 mt-6">
-        {warehouses.map((warehouse) => (
-          <WarehouseCard
-            key={warehouse.id}
-            warehouse={warehouse}
-            setWarehouses={setWarehouses}
-            setWarehousesCount={setWarehousesCount}
-            companyId={companyDetails.companyId}
-          />
-        ))}
-      </div>
 
-      <AddWarehouseModal
-        onClose={() => setIsModalOpen(false)}
-        isOpen={isModalOpen}
-        onAddWarehouse={handleAddWarehouse}
-        companyId={companyDetails.companyId}
-      />
-    </div>
-  );
-};
-
-const WarehouseCard = ({
-  warehouse,
-  setWarehouses,
-  setWarehousesCount,
-  companyId,
-}) => {
   async function OnDeleteWarehouse(e, warehouseId) {
     e.stopPropagation();
     try {
@@ -105,7 +63,13 @@ const WarehouseCard = ({
       if (!confirm) return;
 
       await deleteDoc(
-        doc(db, "companies", companyId, "warehouses", warehouseId)
+        doc(
+          db,
+          "companies",
+          companyDetails.companyId,
+          "warehouses",
+          warehouseId
+        )
       );
 
       setWarehouses((prev) => {
@@ -122,22 +86,85 @@ const WarehouseCard = ({
     }
   }
   return (
-    <div className="bg-white p-4 rounded shadow">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-xl font-semibold">{warehouse.name}</h2>
-          <h2 className="text-xl font-semibold">
-            {warehouse.location?.address || ""}
-          </h2>
+    <div className="p-4">
+      <div className="bg-white rounded-lg">
+        <div className="flex justify-end px-5 py-4">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+          >
+            + Create Warehouse
+          </button>
         </div>
-
-        <button
-          onClick={(e) => OnDeleteWarehouse(e, warehouse.id)}
-          className="text-white bg-red-500 h-6 w-6 font-bold text-center rounded-full flex items-center justify-center"
+        <div
+          className=" rounded-lg   overflow-y-auto"
+          style={{ height: "65vh" }}
         >
-          <div className="w-3 h-1 bg-white"></div>
-        </button>
+          <table className="w-full border-collapse text-start  ">
+            <thead className=" bg-white">
+              <tr className="border-b">
+                <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
+                  Date
+                </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                  Name
+                </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                  Phone
+                </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                  Address
+                </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                  Delete
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              {warehouses.length > 0 ? (
+                warehouses.map((warehouse) => (
+                  <tr
+                    key={warehouse.id}
+                    className="border-b-2 border-gray-200 "
+                  >
+                    <td className="px-8 py-3 text-start ">
+                      <FormatTimestamp timestamp={warehouse.createdAt} />
+                    </td>
+                    <td className="px-5 py-3 text-start">{warehouse.name}</td>
+                    <td className="px-5 py-3 text-start">
+                      {warehouse.phone || ""}
+                    </td>
+                    <td className="px-5 py-3 text-start">
+                      {warehouse.location?.address || ""}
+                    </td>
+                    <td
+                      className="px-5 py-3 text-start text-red-700 text-2xl"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        OnDeleteWarehouse(e, warehouse.id);
+                      }}
+                    >
+                      <IoMdTrash />
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="h-24 text-center py-4 ">
+                    No Item Found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
+      <AddWarehouseModal
+        onClose={() => setIsModalOpen(false)}
+        isOpen={isModalOpen}
+        onAddWarehouse={handleAddWarehouse}
+        companyId={companyDetails.companyId}
+      />
     </div>
   );
 };
