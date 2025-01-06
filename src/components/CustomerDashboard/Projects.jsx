@@ -1,4 +1,11 @@
-import { collection, getDoc, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
@@ -11,19 +18,25 @@ function Projects() {
   const [filterStatus, setFilterStatus] = useState("All");
   const [modifiedProjectsList, setModifiedProjectsList] = useState([]);
   const [searchInput, setSearchInput] = useState("");
-
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchProject();
   }, []);
+
   async function fetchProject() {
     try {
-      // const customersRef = collection(db, "companies");
+      const asOtherCompanies = userDetails.userAsOtherCompanies.customer;
+      const asCustomersList = asOtherCompanies.map((ele) =>
+        doc(db, "customers", ele.customerId)
+      );
+      if (asCustomersList.length === 0) {
+        return;
+      }
       const projectRef = collection(db, "projects");
       const q = query(
         projectRef,
-        where("phoneNum", "array-contains", userDetails.phone)
+        where("customerRef", "array-contains-any", asCustomersList)
       );
       const querySnapshot = await getDocs(q);
 
@@ -44,6 +57,7 @@ function Projects() {
           };
         })
       );
+      console.log("🚀 ~ fetchProject ~ projectsData:", projectsData);
       setProjectsList(projectsData);
     } catch (error) {
       console.error("Error fetching invoices:", error);

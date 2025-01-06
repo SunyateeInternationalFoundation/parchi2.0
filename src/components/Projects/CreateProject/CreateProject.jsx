@@ -69,6 +69,7 @@ function CreateProject() {
       const payload = {
         ...projectForm,
         companyRef,
+        companyName: companyDetails.name,
         createdAt: Timestamp.fromDate(new Date()),
       };
 

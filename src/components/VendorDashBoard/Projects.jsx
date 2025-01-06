@@ -1,4 +1,11 @@
-import { collection, getDoc, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
@@ -18,11 +25,19 @@ function Projects() {
   }, []);
   async function fetchProject() {
     try {
+      const asOtherCompanies = userDetails.userAsOtherCompanies.vendor;
+      const asVendorsList = asOtherCompanies.map((ele) =>
+        doc(db, "vendors", ele.vendorId)
+      );
+      if (asVendorsList.length === 0) {
+        return;
+      }
       const projectRef = collection(db, "projects");
       const q = query(
         projectRef,
-        where("phoneNum", "array-contains", userDetails.phone)
+        where("vendorRef", "array-contains-any", asVendorsList)
       );
+
       const querySnapshot = await getDocs(q);
 
       const projectsData = await Promise.all(

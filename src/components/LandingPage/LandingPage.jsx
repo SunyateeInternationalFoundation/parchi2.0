@@ -150,12 +150,12 @@ const LandingPage = () => {
           const asCustomer = await getDocs(customersQ);
           asCustomerData = asCustomer.docs.map((doc) => {
             const { companyRef } = doc.data();
-            return { [companyRef.id]: doc.id };
+            return { companyId: companyRef.id, customerId: doc.id };
           });
           const asVendor = await getDocs(vendorsQ);
           asVendorData = asVendor.docs.map((doc) => {
             const { companyRef } = doc.data();
-            return companyRef.id;
+            return { companyId: companyRef.id, vendorId: doc.id };
           });
 
           navigate("/invoice");
@@ -204,6 +204,7 @@ const LandingPage = () => {
         setCountdown(60);
         setIsResendAllowed(false);
       } catch (error) {
+        console.log("🚀 ~ handleResendOtp ~ error:", error);
         alert("Failed to resend OTP.");
       }
     }

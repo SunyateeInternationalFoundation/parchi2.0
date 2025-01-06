@@ -31,6 +31,7 @@ if (localStorage.getItem("user")) {
     selectedStaffCompanyIndex,
     selectedDashboard,
     isCompanyProfileDone,
+    userAsOtherCompanies,
   } = JSON.parse(localStorage.getItem("user"));
 
   initialState = {
@@ -46,10 +47,7 @@ if (localStorage.getItem("user")) {
     selectedDashboard: selectedDashboard,
     selectedStaffCompanyIndex,
     asAStaffCompanies: [],
-    userAsOtherCompanies: {
-      customer: [],
-      vendor: [],
-    },
+    userAsOtherCompanies,
   };
 }
 
