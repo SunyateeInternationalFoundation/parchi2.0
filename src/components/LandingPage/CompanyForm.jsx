@@ -1,4 +1,4 @@
-import { addDoc, arrayUnion, collection, updateDoc } from "firebase/firestore";
+import { addDoc, collection, updateDoc } from "firebase/firestore";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import { FaIndustry, FaSchool, FaTruck, FaUser } from "react-icons/fa";
@@ -52,7 +52,6 @@ const CompanyForm = ({ userRef }) => {
       });
       await updateDoc(userRef, {
         isCompanyProfileDone: true,
-        asOwner: arrayUnion(companyRef),
       });
       alert("Successfully Created!");
       dispatch(setCompanyData({ companyId: companyRef.id, ...formData }));

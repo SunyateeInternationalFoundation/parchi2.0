@@ -130,7 +130,7 @@ const PoView = () => {
 
       <hr />
       <div className="w-full px-5">
-        <Po Po={po} bankDetails={bankDetails} />
+        <Po Po={po} bankDetails={bankDetails} selectTemplate={selectTemplate} />
       </div>
       <SelectTemplateSideBar
         isOpen={isSelectTemplateOpen}

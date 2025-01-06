@@ -107,6 +107,8 @@ const LandingPage = () => {
         const userDoc = await getDoc(docRef);
         let user = {};
         let companiesData = [];
+        let asVendorData = [];
+        let asCustomerData = [];
         let isCompanyProfileDone = false;
         if (!isLogin) {
           user = {
@@ -130,6 +132,13 @@ const LandingPage = () => {
           isCompanyProfileDone = true;
           const companiesRef = collection(db, "companies");
           const q = query(companiesRef, where("userRef", "==", docRef));
+          const customersRef = collection(db, "customers");
+          const customersQ = query(
+            customersRef,
+            where("phone", "==", user.phone)
+          );
+          const vendorsRef = collection(db, "vendors");
+          const vendorsQ = query(vendorsRef, where("phone", "==", user.phone));
           const company = await getDocs(q);
           companiesData = company.docs.map((doc) => {
             const { userRef, ...rest } = doc.data();
@@ -138,6 +147,17 @@ const LandingPage = () => {
               ...rest,
             };
           });
+          const asCustomer = await getDocs(customersQ);
+          asCustomerData = asCustomer.docs.map((doc) => {
+            const { companyRef } = doc.data();
+            return { [companyRef.id]: doc.id };
+          });
+          const asVendor = await getDocs(vendorsQ);
+          asVendorData = asVendor.docs.map((doc) => {
+            const { companyRef } = doc.data();
+            return companyRef.id;
+          });
+
           navigate("/invoice");
         }
 
@@ -149,6 +169,10 @@ const LandingPage = () => {
           companies: companiesData || [],
           isLogin: true,
           selectedCompanyIndex: 0,
+          userAsOtherCompanies: {
+            customer: asCustomerData,
+            vendor: asVendorData,
+          },
           token,
           selectedDashboard: "",
           isCompanyProfileDone: isCompanyProfileDone,
@@ -158,6 +182,7 @@ const LandingPage = () => {
         alert("OTP verified successfully!");
         closeModal();
       } catch (error) {
+        console.log("🚀 ~ handleOtpSubmit ~ error:", error);
         alert("Invalid OTP. Please try again.");
         setOtp("");
       }

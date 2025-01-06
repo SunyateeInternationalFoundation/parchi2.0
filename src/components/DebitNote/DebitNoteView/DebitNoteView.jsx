@@ -132,7 +132,11 @@ const DebitNoteView = () => {
 
       <hr />
       <div className="w-full px-5">
-        <DebitNote debitNote={debitNote} bankDetails={bankDetails} />
+        <DebitNote
+          debitNote={debitNote}
+          bankDetails={bankDetails}
+          selectTemplate={selectTemplate}
+        />
       </div>
       <SelectTemplateSideBar
         isOpen={isSelectTemplateOpen}
