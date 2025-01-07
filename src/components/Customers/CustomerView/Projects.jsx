@@ -43,23 +43,20 @@ function Projects({ projectsData }) {
   }
 
   return (
-    <div
-      className="w-full px-8 py-8 bg-gray-100 overflow-y-auto"
-      style={{ height: "80vh" }}
-    >
-      <div className="bg-white p-4  rounded-lg shadow ">
-        <nav className="flex space-x-4 mb-4 items-center rounded-lg ">
+    <div className="w-full px-8 py-8 bg-gray-100 overflow-y-auto" style={{ height: "80vh" }}>
+      <div className="py-5">
+        <nav className="flex mb-4 bg-white rounded-lg shadow items-center py-3 px-5">
           <div className="space-x-4 w-full flex items-center">
-            <div className="flex items-center space-x-4  border p-2 rounded-lg">
+            <div className="flex items-center space-x-4 border px-5 py-3 rounded-lg w-full">
               <input
                 type="text"
-                placeholder="Search by projects #..."
-                className=" w-full focus:outline-none"
+                placeholder="Search by Project #..."
+                className="w-full focus:outline-none"
                 onChange={(e) => setSearchInput(e.target.value)}
               />
               <IoSearch />
             </div>
-            <div className="flex items-center space-x-4 border p-2 rounded-lg ">
+            <div className="flex items-center space-x-4 border px-5 py-3 rounded-lg">
               <select onChange={(e) => setFilterStatus(e.target.value)}>
                 <option value="All"> All</option>
                 <option value="On-Going">On-Going</option>
@@ -68,9 +65,11 @@ function Projects({ projectsData }) {
               </select>
             </div>
           </div>
+          <div className="w-full text-end">
+      
+          </div>
         </nav>
-        <div className=" ">
-          <div className="">
+        <div className="py-5">
             {modifiedProjectsList.length > 0 ? (
               <div className="grid grid-cols-3 gap-5">
                 {modifiedProjectsList.map((item) => (
@@ -81,12 +80,12 @@ function Projects({ projectsData }) {
                     <div className="p-3 h-40">
                       <div
                         className={
-                          "rounded-lg  w-fit px-2 text-xs font-bold " +
+                        "rounded-lg w-fit p-2 text-xs " +
                           (item.status === "Delay"
                             ? " bg-rose-100"
                             : item.status === "Completed"
-                            ? " bg-green-100"
-                            : " bg-[hsl(250deg_92%_70%_/10%)]")
+                          ? "bg-green-100"
+                          : "bg-[hsl(250deg_92%_70%_/10%)]")
                         }
                       >
                         {item.status}
@@ -102,27 +101,18 @@ function Projects({ projectsData }) {
                           <i>Project due time over kindly check it</i>
                         </div>
                       )}
-                      <div className="">
-                        Team:{" "}
-                        <span className="font-bold">
-                          {item.staffRef?.length || 0}
-                        </span>
-                      </div>
+                    <div>
+                      Team: <span className="font-bold">{item.staffRef?.length || 0}</span>
                     </div>
-                    <div className=" flex justify-between  border-t px-3 py-1">
-                      <div>
-                        <div className="text-gray-700 text-sm">
-                          Assigned Date :{" "}
-                        </div>
-                        <div className="font-bold">
-                          {DateFormate(item.startDate)}
-                        </div>
+                  </div>
+                  <div className="flex justify-between border-t px-3 py-1">
+                    <div>
+                      <div className="text-gray-700 text-sm">Assigned Date:</div>
+                      <div className="font-bold">{DateFormate(item.startDate)}</div>
                       </div>
                       <div>
-                        <div className="text-gray-700 text-sm">Due Date : </div>
-                        <div className="font-bold">
-                          {DateFormate(item.dueDate)}
-                        </div>
+                      <div className="text-gray-700 text-sm">Due Date:</div>
+                      <div className="font-bold">{DateFormate(item.dueDate)}</div>
                       </div>
                     </div>
                   </div>
@@ -131,14 +121,12 @@ function Projects({ projectsData }) {
             ) : (
               <div className="text-center">No Project Found</div>
             )}
-          </div>
         </div>
       </div>
     </div>
   );
 }
 Projects.propTypes = {
-  customersProjectsData: PropTypes.array,
   projectsData: PropTypes.array,
 };
 
