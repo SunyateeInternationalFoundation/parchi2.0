@@ -1,4 +1,4 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
@@ -12,10 +12,10 @@ import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
 
 function Quotations() {
-  const [loading, setLoading] = useState(false);
-  const [companiesId, setCompaniesId] = useState([]);
-  const [quotations, setQuotations] = useState([]);
   const userDetails = useSelector((state) => state.users);
+  const asCustomerDetails = userDetails.userAsOtherCompanies.customer;
+  const [loading, setLoading] = useState(false);
+  const [quotations, setQuotations] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [currentPage, setCurrentPage] = useState(0);
@@ -23,45 +23,24 @@ function Quotations() {
   const [paginationData, setPaginationData] = useState([]);
 
   useEffect(() => {
-    setLoading(true);
-    async function fetchCustomerCompanies() {
-      try {
-        const customerRef = collection(db, "customers");
-        const q = query(customerRef, where("phone", "==", userDetails.phone));
-        const getData = await getDocs(q);
-        const getCompaniesId = getData.docs.map((doc) => {
-          const { name, companyRef } = doc.data();
-          return {
-            id: doc.id,
-            name,
-            companyId: companyRef.id,
-          };
-        });
-        setCompaniesId(getCompaniesId);
-      } catch (error) {
-        console.log("🚀 ~ fetchCustomerCompanies ~ error:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchCustomerCompanies();
-  }, []);
-
-  useEffect(() => {
     async function fetchQuotations() {
       setLoading(true);
       try {
         const quotationList = [];
-        for (const company of companiesId) {
+        for (const item of asCustomerDetails) {
           const quotationRef = collection(
             db,
             "companies",
-            company.companyId,
+            item.companyId,
             "quotations"
           );
           const q = query(
             quotationRef,
-            where("customerDetails.phone", "==", userDetails.phone)
+            where(
+              "customerDetails.customerRef",
+              "==",
+              doc(db, "customers", item.customerId)
+            )
           );
           const getData = await getDocs(q);
           const getAllQuotations = getData.docs.map((doc) => {
@@ -83,7 +62,7 @@ function Quotations() {
       }
     }
     fetchQuotations();
-  }, [companiesId]);
+  }, [asCustomerDetails]);
 
   useEffect(() => {
     const filteredQuotations = quotations.filter((quotation) => {

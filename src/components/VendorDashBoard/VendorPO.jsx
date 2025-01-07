@@ -1,4 +1,4 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
@@ -12,11 +12,12 @@ import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
 
 const VendorPO = () => {
-  const [loading, setLoading] = useState(false);
-  const [companiesId, setCompaniesId] = useState([]);
-  const [po, setPo] = useState([]);
   const userDetails = useSelector((state) => state.users);
   const phone = userDetails.phone;
+  const asVendorDetails = userDetails.userAsOtherCompanies.vendor;
+
+  const [loading, setLoading] = useState(false);
+  const [po, setPo] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
@@ -24,39 +25,20 @@ const VendorPO = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    async function fetchVendorCompanies() {
-      setLoading(true);
-      try {
-        const customerRef = collection(db, "vendors");
-        const q = query(customerRef, where("phone", "==", phone));
-        const getData = await getDocs(q);
-        const getCompaniesId = getData.docs.map((doc) => {
-          const { name, companyRef } = doc.data();
-          return {
-            id: doc.id,
-            name,
-            companyId: companyRef.id,
-          };
-        });
-        setCompaniesId(getCompaniesId);
-      } catch (error) {
-        console.log("🚀 ~ fetchVendorCompanies ~ error:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchVendorCompanies();
-  }, []);
-
-  useEffect(() => {
     setLoading(true);
     async function fetchPO() {
       try {
         const POList = [];
-        const phoneNo = phone.startsWith("+91") ? phone.slice(3) : phone;
-        for (const company of companiesId) {
-          const poRef = collection(db, "companies", company.companyId, "po");
-          const q = query(poRef, where("vendorDetails.phone", "==", phoneNo));
+        for (const item of asVendorDetails) {
+          const poRef = collection(db, "companies", item.companyId, "po");
+          const q = query(
+            poRef,
+            where(
+              "vendorDetails.vendorRef",
+              "==",
+              doc(db, "vendors", item.vendorId)
+            )
+          );
           const getData = await getDocs(q);
           const getAllPO = getData.docs.map((doc) => {
             const data = doc.data();
@@ -77,7 +59,7 @@ const VendorPO = () => {
       }
     }
     fetchPO();
-  }, [companiesId]);
+  }, [asVendorDetails]);
 
   useEffect(() => {
     const filteredPO = po.filter((item) => {
