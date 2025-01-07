@@ -99,21 +99,16 @@ function ProductViewHome() {
   }, [productId, companyDetails.companyId]);
 
   return (
-    <div className="px-5 pb-5 bg-gray-100" style={{ width: "100%" }}>
-      <header className="flex items-center space-x-3 my-2 ">
+    <div className=" bg-gray-100 pb-5" style={{ width: "100%" }}>
+      <header className="flex items-center space-x-3  px-5  border-b">
         <Link className="flex items-center " to={"./../"}>
           <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
         </Link>
-      </header>
-      <hr />
-      <div>
-        <nav className="flex space-x-4 mt-3 mb-3">
+        <nav className="flex space-x-4 ">
           <button
             className={
-              "px-4 py-1" +
-              (activeTab === "Product"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
+              "p-4 font-semibold text-gray-500 " +
+              (activeTab === "Product" ? " border-b-4 border-blue-500 " : "")
             }
             onClick={() => setActiveTab("Product")}
           >
@@ -121,10 +116,8 @@ function ProductViewHome() {
           </button>
           <button
             className={
-              "px-4 py-1" +
-              (activeTab === "Logs"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
+              "p-4 font-semibold text-gray-500 " +
+              (activeTab === "Logs" ? " border-b-4 border-blue-500 " : "")
             }
             onClick={() => setActiveTab("Logs")}
           >
@@ -132,19 +125,17 @@ function ProductViewHome() {
           </button>
           <button
             className={
-              "px-4 py-1" +
-              (activeTab === "Returns"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
+              "p-4 font-semibold text-gray-500 " +
+              (activeTab === "Returns" ? " border-b-4 border-blue-500 " : "")
             }
             onClick={() => setActiveTab("Returns")}
           >
             Returns
           </button>
         </nav>
-      </div>
-      <hr />
-      <div className="w-full">
+      </header>
+
+      <div className="w-full px-5 ">
         {activeTab === "Product" && (
           <div>
             <ProductView productData={product} />

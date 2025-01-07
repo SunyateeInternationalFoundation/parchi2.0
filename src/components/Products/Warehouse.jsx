@@ -86,9 +86,11 @@ const Warehouse = () => {
     }
   }
   return (
-    <div className="p-4">
-      <div className="bg-white rounded-lg">
-        <div className="flex justify-end px-5 py-4">
+    <div className="p-5">
+      <div className="bg-white py-5 rounded-lg  shadow-md">
+        <div className="flex justify-between items-center px-5 ">
+          <h1 className="text-2xl font-semibold">Warehouses</h1>
+
           <button
             onClick={() => setIsModalOpen(true)}
             className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
@@ -97,7 +99,7 @@ const Warehouse = () => {
           </button>
         </div>
         <div
-          className=" rounded-lg   overflow-y-auto"
+          className=" rounded-lg py-3  overflow-y-auto"
           style={{ height: "65vh" }}
         >
           <table className="w-full border-collapse text-start  ">

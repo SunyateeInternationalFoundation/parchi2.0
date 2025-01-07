@@ -7,8 +7,8 @@ import Warehouse from "./Warehouse";
 const ProductHome = () => {
   const [activeTab, setActiveTab] = useState("Products");
   return (
-    <div className="px-5 pb-5 bg-gray-100" style={{ width: "100%" }}>
-      <header className="flex items-center  space-x-3 my-2 ">
+    <div className=" pb-5 bg-gray-100" style={{ width: "100%" }}>
+      <header className="flex items-center  space-x-3 ">
         {/* <Link
           className="flex items-center "
      
@@ -21,13 +21,11 @@ const ProductHome = () => {
       </header>
       <hr />
       <div>
-        <nav className="flex space-x-4 mt-3 mb-3">
+        <nav className="flex space-x-4 bg-white px-5">
           <button
             className={
-              "px-4 py-1" +
-              (activeTab === "Products"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
+              "p-4 font-semibold text-gray-500 " +
+              (activeTab === "Products" ? " border-b-4 border-blue-500 " : "")
             }
             onClick={() => setActiveTab("Products")}
           >
@@ -35,10 +33,8 @@ const ProductHome = () => {
           </button>
           <button
             className={
-              "px-4 py-1" +
-              (activeTab === "Categories"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
+              "p-4 font-semibold text-gray-500 " +
+              (activeTab === "Categories" ? " border-b-4 border-blue-500 " : "")
             }
             onClick={() => setActiveTab("Categories")}
           >
@@ -46,10 +42,8 @@ const ProductHome = () => {
           </button>
           <button
             className={
-              "px-4 py-1" +
-              (activeTab === "Warehouse"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
+              "p-4 font-semibold text-gray-500 " +
+              (activeTab === "Warehouse" ? " border-b-4 border-blue-500 " : "")
             }
             onClick={() => setActiveTab("Warehouse")}
           >
@@ -57,10 +51,8 @@ const ProductHome = () => {
           </button>
           <button
             className={
-              "px-4 py-1" +
-              (activeTab === "Stock"
-                ? " bg-blue-700 text-white rounded-full"
-                : "")
+              "p-4 font-semibold text-gray-500 " +
+              (activeTab === "Stock" ? " border-b-4 border-blue-500 " : "")
             }
             onClick={() => setActiveTab("Stock")}
           >

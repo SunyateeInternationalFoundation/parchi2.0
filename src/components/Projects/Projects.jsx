@@ -187,10 +187,10 @@ function Projects() {
             </div>
           </div>
         </div>
-        <div className="bg-white pb-8 px-5 pt-6 rounded-lg shadow my-6 ">
-          <nav className="flex mb-4  ">
+        <div className="py-5 ">
+          <nav className="flex mb-4 bg-white rounded-lg shadow items-center py-3 px-5">
             <div className="space-x-4 w-full flex items-center">
-              <div className="flex items-center space-x-4  border p-2 rounded-lg w-full">
+              <div className="flex items-center space-x-4  border  px-5  py-3  rounded-lg w-full">
                 <input
                   type="text"
                   placeholder="Search by Project #..."
@@ -199,7 +199,7 @@ function Projects() {
                 />
                 <IoSearch />
               </div>
-              <div className="flex items-center space-x-4 border p-2 rounded-lg ">
+              <div className="flex items-center space-x-4 border  px-5  py-3  rounded-lg ">
                 <select onChange={(e) => setFilterStatus(e.target.value)}>
                   <option value="All"> All</option>
                   <option value="On-Going">On-Going</option>
@@ -219,23 +219,23 @@ function Projects() {
               )}
             </div>
           </nav>
-          <div className=" ">
+          <div className="py-5 ">
             {loading ? (
               <div className="text-center py-6">Loading Projects...</div>
             ) : (
               <div className="">
                 {modifiedProjectsList.length > 0 ? (
-                  <div className="grid grid-cols-3 gap-5">
+                  <div className="grid grid-cols-3 gap-5 ">
                     {modifiedProjectsList.map((item) => (
                       <div
-                        className={` bg-white border cursor-pointer rounded-lg h-56 hover:shadow-lg `}
+                        className={` bg-white border cursor-pointer rounded-lg h-56 hover:shadow-lg shadow`}
                         onClick={() => onViewProject(item)}
                         key={item.projectId}
                       >
                         <div className="p-3 h-40">
                           <div
                             className={
-                              "rounded-lg  w-fit px-2 text-xs font-bold " +
+                              "rounded-lg  w-fit p-2 text-xs " +
                               (item.status === "Delay"
                                 ? " bg-rose-100"
                                 : item.status === "Completed"

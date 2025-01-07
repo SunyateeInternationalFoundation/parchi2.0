@@ -8,7 +8,12 @@ import { IoWalletOutline } from "react-icons/io5";
 import { RiUserAddLine } from "react-icons/ri";
 import { TbLayoutDashboard } from "react-icons/tb";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { db } from "../../../firebase";
 import Approval from "./Approvals/Approval";
 import Files from "./Files/Files";
@@ -20,11 +25,13 @@ import Tasks from "./Tasks/Tasks";
 import Users from "./Users/Users";
 
 function ProjectViewHome() {
-  const [activeTab, setActiveTab] = useState("Dashboard");
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+
+  const tab = searchParams.get("tab");
   const [project, setProject] = useState({});
   const userDetails = useSelector((state) => state.users);
-
+  const navigate = useNavigate();
   async function fetchData() {
     const getData = await getDoc(doc(db, "projects", id));
     const data = getData.data();
@@ -44,6 +51,9 @@ function ProjectViewHome() {
   }
 
   useEffect(() => {
+    if (!tab) {
+      navigate("?tab=Dashboard");
+    }
     fetchData();
   }, [id]);
 
@@ -141,10 +151,10 @@ function ProjectViewHome() {
               key={item.name}
               className={
                 "p-4 flex items-center space-x-1 font-semibold text-gray-500 " +
-                (activeTab === item.name ? " border-b-4 border-blue-500 " : "")
+                (tab === item.name ? " border-b-4 border-blue-500 " : "")
               }
               onClick={() => {
-                setActiveTab(item.name);
+                navigate("?tab=" + item.name);
               }}
             >
               {item.icon} <div>{item.name}</div>
@@ -156,9 +166,7 @@ function ProjectViewHome() {
       <div className="w-full ">
         {manageItems.map(
           (item) =>
-            activeTab === item.name && (
-              <div key={item.name}>{item.component}</div>
-            )
+            tab === item.name && <div key={item.name}>{item.component}</div>
         )}
       </div>
     </div>

@@ -243,37 +243,38 @@ const Documents = () => {
 
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          {currentPath.length > 0 && (
+      <div className="bg-white rounded-lg shadow-md p-5">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            {currentPath.length > 0 && (
+              <button
+                onClick={navigateBack}
+                className="p-2 rounded hover:bg-gray-200 flex items-center"
+              >
+                <AiOutlineArrowLeft className="w-5 h-5" />
+              </button>
+            )}
+            <h1 className="text-2xl font-bold">
+              Documents
+              {/* {currentPath.length === 0 ? 'Documents' : currentFolder.name} */}
+            </h1>
+            {isLoading && <span className="text-gray-500">Loading...</span>}
+          </div>
+          <div className="flex gap-4">
+            <input
+              type="text"
+              value={folderName}
+              onChange={(e) => setFolderName(e.target.value)}
+              placeholder="Folder name"
+              className="px-4 py-2 rounded bg-gray-200"
+            />
             <button
-              onClick={navigateBack}
-              className="p-2 rounded hover:bg-gray-200 flex items-center"
+              onClick={addFolder}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
-              <AiOutlineArrowLeft className="w-5 h-5" />
+              📂 Create New Folder
             </button>
-          )}
-          <h1 className="text-2xl font-bold">
-            Documents
-            {/* {currentPath.length === 0 ? 'Documents' : currentFolder.name} */}
-          </h1>
-          {isLoading && <span className="text-gray-500">Loading...</span>}
-        </div>
-        <div className="flex gap-4">
-          <input
-            type="text"
-            value={folderName}
-            onChange={(e) => setFolderName(e.target.value)}
-            placeholder="Folder name"
-            className="px-4 py-2 rounded bg-gray-200"
-          />
-          <button
-            onClick={addFolder}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            📂 Create New Folder
-          </button>
-          {/* <input
+            {/* <input
             type="file"
            
             className="px-4 py-2 rounded bg-gray-200"
@@ -285,164 +286,169 @@ const Documents = () => {
           >
             Add File
           </button> */}
-          <div>
-            {uploadProgress !== null ? (
-              <button
-                disabled
-                className="cursor-pointer bg-green-500 text-white border-gray-300 inline-block w-48 py-2 text-center rounded-lg hover:bg-green-600"
-                style={{ height: "40px" }}
-              >
-                <div className="flex justify-center items-center h-full">
-                  <div className="w-6 h-6 border-4 border-t-4 border-white border-solid rounded-full animate-spin"></div>
-                </div>
-              </button>
-            ) : (
-              <label
-                htmlFor="file-upload"
-                className="cursor-pointer bg-green-500 text-white border-gray-300 inline-block w-48 py-2 text-center rounded-lg hover:bg-green-600"
-                style={{ height: "40px" }} // Fixed height
-              >
-                📄 Upload File
-                <input
-                  id="file-upload"
-                  type="file"
-                  className="hidden"
-                  onChange={(e) => addFile(e.target.files[0])}
-                />
-              </label>
-            )}
+            <div>
+              {uploadProgress !== null ? (
+                <button
+                  disabled
+                  className="cursor-pointer bg-green-500 text-white border-gray-300 inline-block w-48 py-2 text-center rounded-lg hover:bg-green-600"
+                  style={{ height: "40px" }}
+                >
+                  <div className="flex justify-center items-center h-full">
+                    <div className="w-6 h-6 border-4 border-t-4 border-white border-solid rounded-full animate-spin"></div>
+                  </div>
+                </button>
+              ) : (
+                <label
+                  htmlFor="file-upload"
+                  className="cursor-pointer bg-green-500 text-white border-gray-300 inline-block w-48 py-2 text-center rounded-lg hover:bg-green-600"
+                  style={{ height: "40px" }} // Fixed height
+                >
+                  📄 Upload File
+                  <input
+                    id="file-upload"
+                    type="file"
+                    className="hidden"
+                    onChange={(e) => addFile(e.target.files[0])}
+                  />
+                </label>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div>
-        <nav>
-          <ul style={{ display: "flex", listStyle: "none" }}>
-            <li>
-              <div
-                className="cursor-pointer"
-                onClick={() => {
-                  setCurrentPath([]);
-                  setCurrentFolder([]);
-                  setPathnames([]);
-                }}
-              >
-                Home
-              </div>
-            </li>
-            {pathnames.map((value, index) => {
-              return (
-                <li
-                  key={index}
-                  className="flex cursor-pointer"
-                  style={{ marginLeft: "3px" }}
+        <div className="pb-5">
+          <nav>
+            <ul style={{ display: "flex", listStyle: "none" }}>
+              <li>
+                <div
+                  className="cursor-pointer"
+                  onClick={() => {
+                    setCurrentPath([]);
+                    setCurrentFolder([]);
+                    setPathnames([]);
+                  }}
                 >
-                  {">"} <div>{value}</div>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-      </div>
-      <div className="grid grid-cols-10 gap-4">
-        {folders.map((folder) => (
-          <div
-            key={folder.id}
-            onClick={() => navigateToFolder(folder)}
-            className="flex justify-center items-center gap-3 rounded-lg cursor-pointer hover:bg-gray-200"
-          >
-            <div>
-              <AiFillFolder className="w-24 h-24 text-yellow-500" />
-
-              <p className="text-center font-medium truncate hover:text-clip w-full ">
-                {folder.name}
-              </p>
-            </div>
-          </div>
-        ))}
-
-        {files.map((file) => (
-          <div
-            key={file.id}
-            className="flex justify-center items-center gap-3 rounded-lg cursor-pointer hover:bg-gray-200 relative "
-          >
-            <div className="px-2 py-1 text-xs">
-              <div onClick={() => handleFileClick(file.fileUrl)}>
-                <AiOutlineFile className="w-24 h-24 text-blue-500" />
-              </div>
-              {editingItem === file.id ? (
-                <input
-                  type="text"
-                  value={newName || file.name}
-                  onChange={(e) => setNewName(e.target.value)}
-                  onBlur={() => renameFolderOrFile(file, newName || file.name)}
-                  autoFocus
-                  className="w-full text-center bg-transparent border-b-2 border-gray-400"
-                />
-              ) : (
-                <p className="text-center font-medium text-ellipsis overflow-hidden h-4">
-                  {file.name}
-                </p>
-              )}
-            </div>
-            <div className="absolute top-2 right-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setFiles(
-                    files.map((ele) => {
-                      if (ele.id == file.id) {
-                        ele.isOutlineDotsOpen = !ele.isOutlineDotsOpen;
-                      }
-                      return ele;
-                    })
-                  );
-                }}
-              >
-                <HiDotsVertical className="font-bold" />
-              </button>
-              {file.isOutlineDotsOpen && (
-                <div className="absolute bg-white  p-1 right-0 cursor-pointer border-2 rounded-lg text-xs">
-                  <div
-                    className="pe-2 py-1 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEditingItem(file.id);
-                      setNewName(file.name);
-                      setFiles(
-                        files.map((ele) => {
-                          ele.isOutlineDotsOpen = false;
-                          return ele;
-                        })
-                      );
-                    }}
-                  >
-                    <div>Edit</div>
-                  </div>
-                  <div
-                    className="py-1 pe-2 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (
-                        window.confirm(`Are you sure to delete "${file.name}"?`)
-                      ) {
-                        deleteFolderOrFile(file);
-                      }
-                      setFiles(
-                        files.map((ele) => {
-                          ele.isOutlineDotsOpen = false;
-                          return ele;
-                        })
-                      );
-                    }}
-                  >
-                    <div> Delete</div>
-                  </div>
+                  Home
                 </div>
-              )}
+              </li>
+              {pathnames.map((value, index) => {
+                return (
+                  <li
+                    key={index}
+                    className="flex cursor-pointer"
+                    style={{ marginLeft: "3px" }}
+                  >
+                    {">"} <div>{value}</div>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+        </div>
+        <div className="grid grid-cols-8 gap-4 ">
+          {folders.map((folder) => (
+            <div
+              key={folder.id}
+              onClick={() => navigateToFolder(folder)}
+              className="flex justify-center items-center gap-3 rounded-lg cursor-pointer hover:bg-gray-200"
+            >
+              <div>
+                <AiFillFolder className="w-24 h-24 text-yellow-500" />
+
+                <p className="text-center font-medium truncate hover:text-clip w-full ">
+                  {folder.name}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+
+          {files.map((file) => (
+            <div
+              key={file.id}
+              className="flex justify-center items-center gap-3 rounded-lg cursor-pointer hover:bg-gray-200 relative border p-5"
+            >
+              <div className="px-2 py-1 text-xs">
+                <div onClick={() => handleFileClick(file.fileUrl)}>
+                  <AiOutlineFile className="w-24 h-24 text-blue-500" />
+                </div>
+                {editingItem === file.id ? (
+                  <input
+                    type="text"
+                    value={newName || file.name}
+                    onChange={(e) => setNewName(e.target.value)}
+                    onBlur={() =>
+                      renameFolderOrFile(file, newName || file.name)
+                    }
+                    autoFocus
+                    className="w-full text-center bg-transparent border-b-2 border-gray-400"
+                  />
+                ) : (
+                  <p className="text-center font-medium text-ellipsis overflow-hidden h-4">
+                    {file.name}
+                  </p>
+                )}
+              </div>
+              <div className="absolute top-2 right-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setFiles(
+                      files.map((ele) => {
+                        if (ele.id == file.id) {
+                          ele.isOutlineDotsOpen = !ele.isOutlineDotsOpen;
+                        }
+                        return ele;
+                      })
+                    );
+                  }}
+                >
+                  <HiDotsVertical className="font-bold" />
+                </button>
+                {file.isOutlineDotsOpen && (
+                  <div className="absolute bg-white  p-1 right-0 cursor-pointer border-2 rounded-lg text-xs">
+                    <div
+                      className="pe-2 py-1 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingItem(file.id);
+                        setNewName(file.name);
+                        setFiles(
+                          files.map((ele) => {
+                            ele.isOutlineDotsOpen = false;
+                            return ele;
+                          })
+                        );
+                      }}
+                    >
+                      <div>Edit</div>
+                    </div>
+                    <div
+                      className="py-1 pe-2 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (
+                          window.confirm(
+                            `Are you sure to delete "${file.name}"?`
+                          )
+                        ) {
+                          deleteFolderOrFile(file);
+                        }
+                        setFiles(
+                          files.map((ele) => {
+                            ele.isOutlineDotsOpen = false;
+                            return ele;
+                          })
+                        );
+                      }}
+                    >
+                      <div> Delete</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

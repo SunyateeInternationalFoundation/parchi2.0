@@ -64,97 +64,98 @@ const ServicesList = () => {
     }
   }
   return (
-    <div className="p-4 overflow-y-auto" style={{ height: "92vh" }}>
-      <div className="flex justify-between mb-4">
-        <h1 className="text-2xl font-bold">Services List</h1>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          onClick={() => setIsSideBarOpen(true)}
-        >
-          + Create Service
-        </button>
-      </div>
-      <CreateServiceList
-        isOpen={isSideBarOpen}
-        onClose={() => {
-          setIsSideBarOpen(false);
-          setSelectedService(null);
-        }}
-        refresh={fetchServices}
-        service={selectedService}
-      />
-      {loading ? (
-        <p>Loading services...</p>
-      ) : services.length > 0 ? (
-        <div
-          className="overflow-y-auto bg-white shadow rounded-lg"
-          style={{ height: "70vh" }}
-        >
-          <table className="min-w-full border border-gray-200">
-            <thead className="sticky z-10 bg-white" style={{ top: "0" }}>
-              <tr className="bg-gray-100 border-b">
-                <th scope="col" className="py-3 px-6 text-left font-semibold">
-                  Service Name
-                </th>
-                <th scope="col" className="py-3 px-6 text-left font-semibold">
-                  Description
-                </th>
-                <th scope="col" className="py-3 px-6 text-left font-semibold">
-                  Price
-                </th>
-                <th scope="col" className="py-3 px-6 text-left font-semibold">
-                  Discount
-                </th>
-                <th scope="col" className="py-3 px-6 text-left font-semibold">
-                  Tax
-                </th>
-                <th className="py-3 px-6 text-center font-semibold ">Delete</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-gray-200">
-              {services.map((service) => (
-                <tr
-                  key={service.id}
-                  className="hover:bg-blue-100 border-b cursor-pointer"
-                  onClick={() => handleEditService(service)}
-                >
-                  <td className="px-6 py-4 font-semibold text-gray-600">
-                    {service.serviceName}
-                  </td>
-                  <td className="px-6 py-4 font-semibold text-gray-600">
-                    {service.description}
-                  </td>
-                  <td className="px-6 py-4 font-semibold text-gray-600">
-                    ₹{service.sellingPrice}
-                  </td>
-                  <td className="px-6 py-4 font-semibold text-gray-600">
-                    {service.discount}
-                    {service.discountType === "Percentage" ? "%" : "/-"}
-                  </td>
-                  <td className="px-6 py-4 font-semibold text-gray-600">
-                    {service.tax}%
-                  </td>
-                  <td
-                    className="py-3 px-6"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    <div
-                      className="text-red-500 flex items-center justify-center"
-                      onClick={() => onHandleDeleteService(service.id)}
-                    >
-                      <RiDeleteBin6Line />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div className="p-5 overflow-y-auto" style={{ height: "92vh" }}>
+      <div className="bg-white rounded-lg shadow-md">
+        <div className="flex justify-between items-center  px-5 py-3">
+          <h1 className="text-2xl font-bold">Services List</h1>
+          <button
+            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+            onClick={() => setIsSideBarOpen(true)}
+          >
+            + Create Service
+          </button>
         </div>
-      ) : (
-        <p>No services found.</p>
-      )}
+        <CreateServiceList
+          isOpen={isSideBarOpen}
+          onClose={() => {
+            setIsSideBarOpen(false);
+            setSelectedService(null);
+          }}
+          refresh={fetchServices}
+          service={selectedService}
+        />
+        {loading ? (
+          <p>Loading services...</p>
+        ) : services.length > 0 ? (
+          <div className="overflow-y-auto bg-white" style={{ height: "74vh" }}>
+            <table className="w-full ">
+              <thead className="sticky z-10 bg-white" style={{ top: "0" }}>
+                <tr className="border-b">
+                  <th scope="col" className="py-3 px-6 text-left font-semibold">
+                    Service Name
+                  </th>
+                  <th scope="col" className="py-3 px-6 text-left font-semibold">
+                    Description
+                  </th>
+                  <th scope="col" className="py-3 px-6 text-left font-semibold">
+                    Price
+                  </th>
+                  <th scope="col" className="py-3 px-6 text-left font-semibold">
+                    Discount
+                  </th>
+                  <th scope="col" className="py-3 px-6 text-left font-semibold">
+                    Tax
+                  </th>
+                  <th className="py-3 px-6 text-center font-semibold ">
+                    Delete
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-gray-200">
+                {services.map((service) => (
+                  <tr
+                    key={service.id}
+                    className="hover:bg-blue-100 border-b cursor-pointer"
+                    onClick={() => handleEditService(service)}
+                  >
+                    <td className="px-6 py-4 font-semibold text-gray-600">
+                      {service.serviceName}
+                    </td>
+                    <td className="px-6 py-4 font-semibold text-gray-600">
+                      {service.description}
+                    </td>
+                    <td className="px-6 py-4 font-semibold text-gray-600">
+                      ₹{service.sellingPrice}
+                    </td>
+                    <td className="px-6 py-4 font-semibold text-gray-600">
+                      {service.discount}
+                      {service.discountType === "Percentage" ? "%" : "/-"}
+                    </td>
+                    <td className="px-6 py-4 font-semibold text-gray-600">
+                      {service.tax}%
+                    </td>
+                    <td
+                      className="py-3 px-6"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <div
+                        className="text-red-500 flex items-center justify-center"
+                        onClick={() => onHandleDeleteService(service.id)}
+                      >
+                        <RiDeleteBin6Line />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p>No services found.</p>
+        )}
+      </div>
     </div>
   );
 };

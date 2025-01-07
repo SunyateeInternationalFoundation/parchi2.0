@@ -96,28 +96,21 @@ const Stock = () => {
   }
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Stock Status</h2>
-
-      {/* Choice Chips */}
-      <div className="flex space-x-4 mb-6">
+    <div className="m-5 bg-white rounded-lg shadow-md">
+      <div className="flex space-x-4 px-5 py-5 border-b">
         <button
           onClick={() => setSelectedFilter("lowStock")}
-          className={`${
-            selectedFilter === "lowStock"
-              ? "bg-yellow-600 text-white"
-              : "bg-gray-200 text-gray-700"
-          } px-4 py-2 rounded-lg transition-all`}
+          className={`px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white ${
+            selectedFilter === "lowStock" && "bg-black text-white"
+          } `}
         >
           Low Stock
         </button>
         <button
           onClick={() => setSelectedFilter("noStock")}
-          className={`${
-            selectedFilter === "noStock"
-              ? "bg-red-600 text-white"
-              : "bg-gray-200 text-gray-700"
-          } px-4 py-2 rounded-lg transition-all`}
+          className={`px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white ${
+            selectedFilter === "noStock" && "bg-black text-white"
+          } `}
         >
           No Stock
         </button>
@@ -126,11 +119,9 @@ const Stock = () => {
             setSelectedFilter("returns");
             fetchReturns();
           }}
-          className={`${
-            selectedFilter === "returns"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700"
-          } px-4 py-2 rounded-lg transition-all`}
+          className={`px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white ${
+            selectedFilter === "returns" && "bg-black text-white"
+          } `}
         >
           Returns
         </button>
@@ -138,7 +129,7 @@ const Stock = () => {
 
       {/* Conditional Rendering Based on Selected Filter */}
       {selectedFilter === "lowStock" && (
-        <div className="bg-white p-6 rounded-lg shadow-md">
+        <div className=" p-6 ">
           <h3 className="text-xl font-semibold text-yellow-600 mb-4">
             Low Stock Items
           </h3>
@@ -162,7 +153,7 @@ const Stock = () => {
         </div>
       )}
       {selectedFilter === "noStock" && (
-        <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+        <div className="bg-white p-6 rounded-lg shadow-md ">
           <h3 className="text-xl font-semibold text-red-600 mb-4">
             No Stock Items
           </h3>
@@ -185,7 +176,7 @@ const Stock = () => {
       )}
 
       {selectedFilter === "returns" && (
-        <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+        <div className="bg-white p-6 rounded-lg shadow-md ">
           <h3 className="text-xl font-semibold text-blue-600 mb-4">
             Returned Items
           </h3>

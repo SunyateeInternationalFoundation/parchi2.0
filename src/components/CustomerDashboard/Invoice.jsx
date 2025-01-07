@@ -37,6 +37,9 @@ function Invoice() {
             companyId: companyRef.id,
           };
         });
+
+        // for (const item of userDetails.userAsOtherCompanies.customer) {
+        // }
         setCompaniesId(getCompaniesId);
       } catch (error) {
         console.log("🚀 ~ fetchCustomerCompanies ~ error:", error);
