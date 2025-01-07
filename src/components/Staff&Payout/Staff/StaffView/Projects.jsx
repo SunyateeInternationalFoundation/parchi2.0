@@ -47,8 +47,8 @@ function Projects({ projectsData }) {
       className="w-full px-8 py-8 bg-gray-100 overflow-y-auto"
       style={{ height: "80vh" }}
     >
-      <div className="bg-white p-4  rounded-lg shadow ">
-        <nav className="flex space-x-4 mb-4 items-center rounded-lg ">
+      <div className="py-5 ">
+        <nav className="flex mb-4 bg-white rounded-lg shadow items-center py-3 px-5 ">
           <div className="space-x-4 w-full flex items-center">
             <div className="flex items-center space-x-4  border p-2 rounded-lg">
               <input
