@@ -1,20 +1,20 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDocs,
   query,
   Timestamp,
   updateDoc,
   where,
-  deleteDoc,
 } from "firebase/firestore";
 
 import {
+  deleteObject,
   getDownloadURL,
   ref,
   uploadBytesResumable,
-  deleteObject,
 } from "firebase/storage";
 import { useEffect, useState } from "react";
 import {
@@ -31,7 +31,9 @@ const Documents = () => {
   const [files, setFiles] = useState([]);
   const [currentPath, setCurrentPath] = useState([]);
   const [currentFolder, setCurrentFolder] = useState(null);
-  const [folderName, setFolderName] = useState("");
+  const [folderName, setFolderName] = useState("New Folder");
+  const [countOfNewFolder, setCountOfNewFolder] = useState(0);
+
   const [isLoading, setIsLoading] = useState(false);
   const [pathnames, setPathnames] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(null);
@@ -54,11 +56,24 @@ const Documents = () => {
         where("companyRef", "==", companyRef)
       );
       const foldersSnapshot = await getDocs(foldersQuery);
-      const fetchedFolders = foldersSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        type: "folder",
-      }));
+      let count = 0;
+      const fetchedFolders = foldersSnapshot.docs.map((doc) => {
+        const { name } = doc.data();
+        if (name.includes("New Folder")) {
+          count++;
+        }
+        return {
+          id: doc.id,
+          ...doc.data(),
+          type: "folder",
+          isOutlineDotsOpen: false,
+        };
+      });
+
+      if (count > 0) {
+        setFolderName("New Folder(" + count + ")");
+        setCountOfNewFolder(count);
+      }
 
       const filesQuery = query(
         collection(db, "files"),
@@ -73,6 +88,10 @@ const Documents = () => {
         isOutlineDotsOpen: false,
       }));
 
+      console.log(
+        "🚀 ~ fetchFoldersAndFiles ~ fetchedFolders:",
+        fetchedFolders
+      );
       setFolders(fetchedFolders);
       setFiles(fetchedFiles);
     } catch (error) {
@@ -82,14 +101,14 @@ const Documents = () => {
   };
 
   const addFolder = async () => {
-    if (!folderName) return;
     try {
       const folderRef = await addDoc(collection(db, "folders"), {
         name: folderName,
         parentId: currentFolder?.id || null,
         createdAt: Timestamp.now(),
+        companyRef,
       });
-
+      setEditingItem(folderRef.id);
       const newFolder = {
         id: folderRef.id,
         name: folderName,
@@ -100,7 +119,8 @@ const Documents = () => {
       };
 
       setFolders((prev) => [...prev, newFolder]);
-      setFolderName("");
+      setFolderName("New Folder(" + countOfNewFolder + ")");
+      setCountOfNewFolder((val) => val + 1);
     } catch (error) {
       console.error("Error creating folder:", error);
     }
@@ -180,12 +200,6 @@ const Documents = () => {
     }
   };
 
-  const formatDate = (timestamp) => {
-    if (!timestamp) return "";
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return date.toLocaleDateString();
-  };
-
   const renameFolderOrFile = async (item, newName) => {
     if (!newName) return;
     try {
@@ -254,38 +268,28 @@ const Documents = () => {
                 <AiOutlineArrowLeft className="w-5 h-5" />
               </button>
             )}
-            <h1 className="text-2xl font-bold">
-              Documents
-              {/* {currentPath.length === 0 ? 'Documents' : currentFolder.name} */}
-            </h1>
+            <h1 className="text-2xl font-bold">Documents</h1>
+            <input
+              type="text"
+              placeholder="Search..."
+              className="px-4 py-2 rounded-md border"
+            />
             {isLoading && <span className="text-gray-500">Loading...</span>}
           </div>
           <div className="flex gap-4">
-            <input
+            {/* <input
               type="text"
               value={folderName}
               onChange={(e) => setFolderName(e.target.value)}
               placeholder="Folder name"
               className="px-4 py-2 rounded bg-gray-200"
-            />
+            /> */}
             <button
               onClick={addFolder}
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
               📂 Create New Folder
             </button>
-            {/* <input
-            type="file"
-           
-            className="px-4 py-2 rounded bg-gray-200"
-          />
-          <button
-            onClick={addFile}
-            disabled={isLoading}
-            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-green-300"
-          >
-            Add File
-          </button> */}
             <div>
               {uploadProgress !== null ? (
                 <button
@@ -350,14 +354,84 @@ const Documents = () => {
             <div
               key={folder.id}
               onClick={() => navigateToFolder(folder)}
-              className="flex justify-center items-center gap-3 rounded-lg cursor-pointer hover:bg-gray-200"
+              className="flex justify-center items-center gap-3 rounded-lg cursor-pointer hover:bg-gray-200 relative border p-5"
             >
               <div>
                 <AiFillFolder className="w-24 h-24 text-yellow-500" />
-
-                <p className="text-center font-medium truncate hover:text-clip w-full ">
-                  {folder.name}
-                </p>
+                {editingItem === folder.id ? (
+                  <input
+                    type="text"
+                    value={newName ?? folder.name}
+                    onChange={(e) => setNewName(e.target.value)}
+                    onBlur={() =>
+                      renameFolderOrFile(folder, newName || folder.name)
+                    }
+                    autoFocus
+                    className="w-full text-center bg-transparent border-b-2 border-gray-400"
+                  />
+                ) : (
+                  <p className="text-center text-xs text-ellipsis  h-4">
+                    {folder.name}
+                  </p>
+                )}
+              </div>
+              <div className="absolute top-2 right-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setFolders(
+                      folders.map((ele) => {
+                        if (ele.id == folder.id) {
+                          ele.isOutlineDotsOpen = !ele.isOutlineDotsOpen;
+                        }
+                        return ele;
+                      })
+                    );
+                  }}
+                >
+                  <HiDotsVertical className="font-bold" />
+                </button>
+                {folder.isOutlineDotsOpen && (
+                  <div className="absolute bg-white  p-1 right-0 cursor-pointer border-2 rounded-lg text-xs">
+                    <div
+                      className="pe-2 py-1 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingItem(folder.id);
+                        setNewName(folder.name);
+                        setFolders(
+                          folders.map((ele) => {
+                            ele.isOutlineDotsOpen = false;
+                            return ele;
+                          })
+                        );
+                      }}
+                    >
+                      <div>Edit</div>
+                    </div>
+                    <div
+                      className="py-1 pe-2 ps-2 hover:bg-gray-300 rounded-lg space-x-1 flex items-center"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (
+                          window.confirm(
+                            `Are you sure to delete "${folder.name}"?`
+                          )
+                        ) {
+                          deleteFolderOrFile(folder);
+                        }
+                        setFiles(
+                          files.map((ele) => {
+                            ele.isOutlineDotsOpen = false;
+                            return ele;
+                          })
+                        );
+                      }}
+                    >
+                      <div> Delete</div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -374,7 +448,7 @@ const Documents = () => {
                 {editingItem === file.id ? (
                   <input
                     type="text"
-                    value={newName || file.name}
+                    value={newName ?? file.name}
                     onChange={(e) => setNewName(e.target.value)}
                     onBlur={() =>
                       renameFolderOrFile(file, newName || file.name)
@@ -383,7 +457,7 @@ const Documents = () => {
                     className="w-full text-center bg-transparent border-b-2 border-gray-400"
                   />
                 ) : (
-                  <p className="text-center font-medium text-ellipsis overflow-hidden h-4">
+                  <p className="text-center  text-ellipsis overflow-hidden h-4">
                     {file.name}
                   </p>
                 )}

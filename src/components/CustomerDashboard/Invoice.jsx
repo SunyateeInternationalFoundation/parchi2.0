@@ -1,4 +1,4 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
@@ -14,7 +14,7 @@ import { db } from "../../firebase";
 function Invoice() {
   const userDetails = useSelector((state) => state.users);
   const [loading, setLoading] = useState(false);
-  const [companiesId, setCompaniesId] = useState([]);
+  const asCustomerDetails = userDetails.userAsOtherCompanies.customer;
   const [invoices, setInvoices] = useState([]);
   const [filterStatus, setFilterStatus] = useState("All");
   const [currentPage, setCurrentPage] = useState(0);
@@ -23,49 +23,28 @@ function Invoice() {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    async function fetchCustomerCompanies() {
-      setLoading(true);
-      try {
-        const customerRef = collection(db, "customers");
-        const q = query(customerRef, where("phone", "==", userDetails.phone));
-        const getData = await getDocs(q);
-        const getCompaniesId = getData.docs.map((doc) => {
-          const { name, companyRef } = doc.data();
-          return {
-            id: doc.id,
-            name,
-            companyId: companyRef.id,
-          };
-        });
-
-        // for (const item of userDetails.userAsOtherCompanies.customer) {
-        // }
-        setCompaniesId(getCompaniesId);
-      } catch (error) {
-        console.log("🚀 ~ fetchCustomerCompanies ~ error:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchCustomerCompanies();
-  }, []);
-
-  useEffect(() => {
     setLoading(true);
     async function fetchInvoices() {
       try {
         const invoiceList = [];
-        for (const company of companiesId) {
+        for (const item of asCustomerDetails) {
           const invoiceRef = collection(
             db,
             "companies",
-            company.companyId,
+            item.companyId,
             "invoices"
           );
           const q = query(
             invoiceRef,
-            where("customerDetails.phone", "==", "1234567890")
+            where(
+              "customerDetails.customerRef",
+              "==",
+              doc(db, "customers", item.customerId)
+            )
           );
+
+          console.log("🚀 ~ fetchInvoices ~ item.customerId:", item.customerId);
+
           const getData = await getDocs(q);
           const getAllInvoices = getData.docs.map((doc) => {
             const data = doc.data();
@@ -75,6 +54,7 @@ function Invoice() {
             };
           });
 
+          console.log("🚀 ~ getAllInvoices ~ getAllInvoices:", getAllInvoices);
           invoiceList.push(...getAllInvoices);
         }
         setTotalPages(Math.ceil(invoiceList.length / 10));
@@ -87,7 +67,7 @@ function Invoice() {
       }
     }
     fetchInvoices();
-  }, [companiesId]);
+  }, [asCustomerDetails]);
   useEffect(() => {
     const filteredInvoices = invoices.filter((invoice) => {
       const { createdBy, invoiceNo, paymentStatus } = invoice;
