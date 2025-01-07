@@ -2,6 +2,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
 
 const Stock = () => {
@@ -35,7 +36,7 @@ const Stock = () => {
 
       // Filter products based on stock quantity
       const lowStock = products.filter(
-        (product) => product.stock >= 0 && product.stock < 5
+        (product) => product.stock > 0 && product.stock < 5
       );
       const noStock = products.filter((product) => product.stock === 0);
 
@@ -62,7 +63,8 @@ const Stock = () => {
       for (const invoiceDoc of invoicesSnapshot.docs) {
         const invoiceId = invoiceDoc.id;
         const invoiceData = invoiceDoc.data();
-        const invoiceNumber = invoiceData.invoiceNo || invoiceData.number;
+        const invoiceNo = invoiceData.invoiceNo;
+        const prefix = invoiceData.prefix;
         const returnsRef = collection(invoiceDoc.ref, "returns");
         const returnsSnapshot = await getDocs(returnsRef);
 
@@ -70,7 +72,8 @@ const Stock = () => {
           allReturns.push({
             id: doc.id,
             invoiceId,
-            invoiceNumber, // Ensure this is passed correctly
+            prefix,
+            invoiceNo, // Ensure this is passed correctly
             ...doc.data(),
           });
         });
@@ -129,94 +132,161 @@ const Stock = () => {
 
       {/* Conditional Rendering Based on Selected Filter */}
       {selectedFilter === "lowStock" && (
-        <div className=" p-6 ">
-          <h3 className="text-xl font-semibold text-yellow-600 mb-4">
+        <div className="">
+          <h3 className="text-xl font-semibold text-yellow-600 p-5 ">
             Low Stock Items
           </h3>
           {lowStockItems.length > 0 ? (
-            <ul className="space-y-3">
-              {lowStockItems.map((item) => (
-                <li
-                  key={item.id}
-                  className="flex justify-between items-center p-3 border border-gray-200 rounded-lg cursor-pointer"
-                >
-                  <span className="text-gray-700">{item.name}</span>
-                  <span className="text-red-600 font-semibold">
-                    Qty: {item.stock}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <div className="overflow-y-auto" style={{ height: "60vh" }}>
+              <table className="w-full border-collapse text-start ">
+                <thead>
+                  <tr className=" border-b">
+                    <th className="px-8 py-1 text-gray-400 font-semibold text-start">
+                      Date
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold text-start">
+                      Name
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold text-center">
+                      Quantity
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold text-center">
+                      purchasePrice
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {lowStockItems.map((item) => (
+                    <tr
+                      key={item.id}
+                      className="border-b border-gray-200 text-center cursor-pointer hover:bg-blue-50 "
+                      onClick={() => navigateToInvoice(item.invoiceId)}
+                    >
+                      <td className="px-8 py-3 text-start">
+                        <FormatTimestamp timestamp={item.createdAt} />
+                      </td>
+                      <td className="px-5 py-3 text-start">{item.name}</td>
+                      <td className="px-5 py-3 text-center">{item.stock}</td>
+                      <td className="px-5 py-3 text-center">
+                        {item.purchasePrice}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ) : (
-            <p className="text-gray-600">No low stock items.</p>
+            <p className="text-gray-600 p-5" style={{ height: "60vh" }}>
+              No low stock items.
+            </p>
           )}
         </div>
       )}
+
       {selectedFilter === "noStock" && (
-        <div className="bg-white p-6 rounded-lg shadow-md ">
-          <h3 className="text-xl font-semibold text-red-600 mb-4">
+        <div className="bg-white rounded-lg shadow-md ">
+          <h3 className="text-xl font-semibold text-red-600  p-5">
             No Stock Items
           </h3>
           {noStockItems.length > 0 ? (
-            <ul className="space-y-3">
-              {noStockItems.map((item) => (
-                <li
-                  key={item.id}
-                  className="flex justify-between items-center p-3 border border-gray-200 rounded-lg cursor-pointer"
-                >
-                  <span className="text-gray-700">{item.name}</span>
-                  <span className="text-gray-500">Out of Stock</span>
-                </li>
-              ))}
-            </ul>
+            <div className="overflow-y-auto" style={{ height: "60vh" }}>
+              <table className="w-full border-collapse text-start ">
+                <thead>
+                  <tr className=" border-b">
+                    <th className="px-8 py-1 text-gray-400 font-semibold text-start">
+                      Date
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold text-start">
+                      Name
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold text-center">
+                      purchase Price
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {noStockItems.map((item) => (
+                    <tr
+                      key={item.id}
+                      className="border-b border-gray-200 text-center cursor-pointer hover:bg-blue-50 "
+                      onClick={() => navigateToInvoice(item.invoiceId)}
+                    >
+                      <td className="px-8 py-3 text-start">
+                        <FormatTimestamp timestamp={item.createdAt} />
+                      </td>
+                      <td className="px-5 py-3 text-start">{item.name}</td>
+
+                      <td className="px-5 py-3 text-center">
+                        {item.purchasePrice}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ) : (
-            <p className="text-gray-600">All items are in stock.</p>
+            <p
+              className="text-gray-600 overflow-hidden  p-5"
+              style={{ height: "60vh" }}
+            >
+              All items are in stock.
+            </p>
           )}
         </div>
       )}
 
       {selectedFilter === "returns" && (
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-xl font-semibold text-blue-600 mb-4">
+        <div className="bg-white  rounded-lg shadow-md">
+          <h3 className="text-xl font-semibold text-blue-600 p-5 ">
             Returned Items
           </h3>
           {returns.length > 0 ? (
-            <table className="min-w-full table-auto border-collapse border border-gray-300">
-              <thead>
-                <tr className="bg-white-50">
-                  <th className="px-8 py-1 text-gray-400 font-semibold text-start">
-                    Name
-                  </th>
-                  <th className="px-5 py-1 text-gray-400 font-semibold text-start">
-                    Quantity
-                  </th>
-                  <th className="px-5 py-1 text-gray-400 font-semibold text-start">
-                    Invoice Number
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {returns.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="hover:bg-blue-50 transition-colors duration-200 cursor-pointer"
-                    onClick={() => navigateToInvoice(item.invoiceId)}
-                  >
-                    <td className="py-3 px-4 border text-center border-gray-300 text-gray-700">
-                      {item.name}
-                    </td>
-                    <td className="py-3 px-4 text-center border border-gray-300 text-gray-700">
-                      {item.quantity}
-                    </td>
-                    <td className="py-3 px-4 text-center border border-gray-300 text-gray-700">
-                      {item.invoiceNumber}
-                    </td>
+            <div className="overflow-y-auto" style={{ height: "60vh" }}>
+              <table className="w-full border-collapse text-start ">
+                <thead>
+                  <tr className=" border-b">
+                    <th className="px-8 py-1 text-gray-400 font-semibold text-start">
+                      Date
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold text-start">
+                      Name
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold text-center">
+                      Quantity
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold text-center">
+                      Invoice Number
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold text-center">
+                      Amount
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {returns.map((item) => (
+                    <tr
+                      key={item.id}
+                      className="border-b border-gray-200 text-center cursor-pointer hover:bg-blue-50 "
+                      onClick={() => navigateToInvoice(item.invoiceId)}
+                    >
+                      <td className="px-8 py-3 text-start">
+                        <FormatTimestamp timestamp={item.createdAt} />
+                      </td>
+                      <td className="px-5 py-3 text-start">{item.name}</td>
+                      <td className="px-5 py-3 text-center">{item.quantity}</td>
+                      <td className="px-5 py-3 text-center">
+                        {item.prefix}-{item.invoiceNo}
+                      </td>
+                      <td className="px-5 py-3 text-center">{item.amount}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ) : (
-            <p className="text-gray-600">No returned items found.</p>
+            <p className="text-gray-600 p-5" style={{ height: "60vh" }}>
+              No returned items found.
+            </p>
           )}
         </div>
       )}

@@ -1,12 +1,12 @@
 import {
-    addDoc,
-    collection,
-    doc,
-    getDocs,
-    query,
-    Timestamp,
-    updateDoc,
-    where,
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  Timestamp,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
@@ -18,8 +18,6 @@ function InventoryAddSideBar({ projectId, isOpen, onClose, isMaterialAdd }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
-  const [loadingItems, setLoadingItems] = useState(false);
-  const [showDropdownItem, setShowDropdownItem] = useState(false);
 
   const userDetails = useSelector((state) => state.users);
   const companyId =
@@ -27,7 +25,6 @@ function InventoryAddSideBar({ projectId, isOpen, onClose, isMaterialAdd }) {
 
   useEffect(() => {
     const fetchInventoryItems = async () => {
-      setLoadingItems(true);
       try {
         const companyRef = doc(db, "companies", companyId);
         const inventoryRef = collection(db, "companies", companyId, "products");
@@ -42,8 +39,6 @@ function InventoryAddSideBar({ projectId, isOpen, onClose, isMaterialAdd }) {
         setItemList(inventoryItems);
       } catch (error) {
         console.error("Error fetching inventory items:", error);
-      } finally {
-        setLoadingItems(false);
       }
     };
 
@@ -64,8 +59,6 @@ function InventoryAddSideBar({ projectId, isOpen, onClose, isMaterialAdd }) {
     }
 
     try {
-      setLoadingItems(true);
-
       const inventoryRef = doc(
         db,
         "companies",
@@ -85,7 +78,6 @@ function InventoryAddSideBar({ projectId, isOpen, onClose, isMaterialAdd }) {
 
       if (newStockQuantity < 0) {
         alert("Insufficient inventory stock!");
-        setLoadingItems(false);
         return;
       }
       const projectRef = doc(db, "projects", projectId);
@@ -101,7 +93,7 @@ function InventoryAddSideBar({ projectId, isOpen, onClose, isMaterialAdd }) {
       const materialRef = collection(projectRef, "materials");
       await addDoc(materialRef, payload);
       await updateDoc(inventoryRef, {
-        quantity: newStockQuantity,
+        stock: newStockQuantity,
       });
 
       alert("Material added successfully!");
@@ -113,8 +105,6 @@ function InventoryAddSideBar({ projectId, isOpen, onClose, isMaterialAdd }) {
     } catch (error) {
       console.error("Error adding material or updating inventory:", error);
       alert("Failed to add material. Please try again.");
-    } finally {
-      setLoadingItems(false);
     }
   };
   function onSelectItem(e) {
