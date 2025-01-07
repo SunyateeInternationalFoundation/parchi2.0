@@ -42,14 +42,11 @@ function VendorProject({ projectsData }) {
     return `${getDate}/${getMonth}/${getFullYear}`;
   }
   return (
-    <div
-      className="w-full px-8 py-8 bg-gray-100 overflow-y-auto"
-      style={{ height: "80vh" }}
-    >
-      <div className="bg-white p-4  rounded-lg shadow ">
-        <nav className="flex space-x-4 mb-4 items-center rounded-lg ">
+    <div className="w-full px-8 py-8 bg-gray-100 overflow-y-auto" style={{ height: "80vh" }}>
+      <div className=" py-5">
+        <nav className="flex mb-4 bg-white rounded-lg shadow items-center py-3 px-5">
           <div className="space-x-4 w-full flex items-center">
-            <div className="flex items-center space-x-4  border p-2 rounded-lg">
+            <div className="flex items-center space-x-4 border px-5 py-3 rounded-lg w-full">
               <input
                 type="text"
                 placeholder="Search by projects #..."
@@ -58,18 +55,18 @@ function VendorProject({ projectsData }) {
               />
               <IoSearch />
             </div>
-            <div className="flex items-center space-x-4 border p-2 rounded-lg ">
-              <select onChange={(e) => setFilterStatus(e.target.value)}>
-                <option value="All"> All</option>
+            <div className="flex items-center space-x-4 border px-5 py-3 rounded-lg">
+              <select onChange={(e) => setFilterStatus(e.target.value)} className="focus:outline-none">
+                <option value="All">All</option>
                 <option value="On-Going">On-Going</option>
                 <option value="Completed">Completed</option>
                 <option value="Delay">Delay</option>
               </select>
             </div>
           </div>
+          <div className="w-full text-end"></div>
         </nav>
-        <div className=" ">
-          <div className="">
+        <div>
             {modifiedProjectsList.length > 0 ? (
               <div className="grid grid-cols-3 gap-5">
                 {modifiedProjectsList.map((item) => (
@@ -101,14 +98,11 @@ function VendorProject({ projectsData }) {
                           <i>Project due time over kindly check it</i>
                         </div>
                       )}
-                      <div className="">
-                        Team:{" "}
-                        <span className="font-bold">
-                          {item.staffRef?.length || 0}
-                        </span>
-                      </div>
+                    <div>
+                      Team: <span className="font-bold">{item.staffRef?.length || 0}</span>
                     </div>
-                    <div className=" flex justify-between  border-t px-3 py-1">
+                  </div>
+                  <div className="flex justify-between border-t px-3 py-1">
                       <div>
                         <div className="text-gray-700 text-sm">
                           Assigned Date :{" "}
@@ -133,7 +127,6 @@ function VendorProject({ projectsData }) {
           </div>
         </div>
       </div>
-    </div>
   );
 }
 
