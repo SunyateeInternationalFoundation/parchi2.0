@@ -175,42 +175,51 @@ const Stock = () => {
         </div>
       )}
 
-{selectedFilter === "returns" && (
-  <div className="bg-white p-6 rounded-lg shadow-md">
-    <h3 className="text-xl font-semibold text-blue-600 mb-4">
-      Returned Items
-    </h3>
-    {returns.length > 0 ? (
-      <table className="min-w-full table-auto border-collapse border border-gray-300">
-        <thead>
-          <tr className="bg-white-50">
-            <th className="py-3 px-4 border border-gray-300 text-center text-gray-700 font-bold">Name</th>
-            <th className="py-3 px-4 border border-gray-300 text-center text-gray-700 font-bold">Quantity</th>
-            <th className="py-3 px-4 border border-gray-300 text-center text-gray-700 font-bold">Invoice Number</th>
-          </tr>
-        </thead>
-        <tbody>
-          {returns.map((item) => (
-            <tr
-              key={item.id}
-              className="hover:bg-blue-50 transition-colors duration-200 cursor-pointer"
-              onClick={() => navigateToInvoice(item.invoiceId)}
-            >
-              <td className="py-3 px-4 border text-center border-gray-300 text-gray-700">{item.name}</td>
-              <td className="py-3 px-4 text-center border border-gray-300 text-gray-700">{item.quantity}</td>
-              <td className="py-3 px-4 text-center border border-gray-300 text-gray-700">{item.invoiceNumber}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    ) : (
-      <p className="text-gray-600">No returned items found.</p>
-    )}
-  </div>
-)}
-
-
-
+      {selectedFilter === "returns" && (
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h3 className="text-xl font-semibold text-blue-600 mb-4">
+            Returned Items
+          </h3>
+          {returns.length > 0 ? (
+            <table className="min-w-full table-auto border-collapse border border-gray-300">
+              <thead>
+                <tr className="bg-white-50">
+                  <th className="px-8 py-1 text-gray-400 font-semibold text-start">
+                    Name
+                  </th>
+                  <th className="px-5 py-1 text-gray-400 font-semibold text-start">
+                    Quantity
+                  </th>
+                  <th className="px-5 py-1 text-gray-400 font-semibold text-start">
+                    Invoice Number
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {returns.map((item) => (
+                  <tr
+                    key={item.id}
+                    className="hover:bg-blue-50 transition-colors duration-200 cursor-pointer"
+                    onClick={() => navigateToInvoice(item.invoiceId)}
+                  >
+                    <td className="py-3 px-4 border text-center border-gray-300 text-gray-700">
+                      {item.name}
+                    </td>
+                    <td className="py-3 px-4 text-center border border-gray-300 text-gray-700">
+                      {item.quantity}
+                    </td>
+                    <td className="py-3 px-4 text-center border border-gray-300 text-gray-700">
+                      {item.invoiceNumber}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="text-gray-600">No returned items found.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };
