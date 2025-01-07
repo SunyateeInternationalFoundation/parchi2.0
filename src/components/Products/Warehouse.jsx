@@ -8,6 +8,7 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdClose, IoMdTrash } from "react-icons/io";
+import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
@@ -15,6 +16,7 @@ import { db } from "../../firebase";
 const Warehouse = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [warehouses, setWarehouses] = useState([]);
+  const [searchTerms, setSearchTerms] = useState("");
   const [warehousesCount, setWarehousesCount] = useState({
     total: 0,
   });
@@ -85,11 +87,30 @@ const Warehouse = () => {
       console.error("Error deleting warehouse:", error);
     }
   }
+
+  const filterWarehouses = warehouses.filter((warehouse) => {
+    if (!searchTerms) {
+      return true;
+    }
+    return warehouse.name.toLowerCase().includes(searchTerms.toLowerCase());
+  });
+
   return (
     <div className="p-5">
       <div className="bg-white py-5 rounded-lg  shadow-md">
         <div className="flex justify-between items-center px-5 ">
-          <h1 className="text-2xl font-semibold">Warehouses</h1>
+          <div
+            className="flex items-center space-x-4  border
+                         px-5  py-3 rounded-md w-1/2"
+          >
+            <input
+              type="text"
+              placeholder="Search..."
+              className=" w-full focus:outline-none"
+              onChange={(e) => setSearchTerms(e.target.value)}
+            />
+            <IoSearch />
+          </div>
 
           <button
             onClick={() => setIsModalOpen(true)}
@@ -123,8 +144,8 @@ const Warehouse = () => {
               </tr>
             </thead>
             <tbody>
-              {warehouses.length > 0 ? (
-                warehouses.map((warehouse) => (
+              {filterWarehouses.length > 0 ? (
+                filterWarehouses.map((warehouse) => (
                   <tr
                     key={warehouse.id}
                     className="border-b-2 border-gray-200 "

@@ -367,7 +367,7 @@ const Documents = () => {
                       renameFolderOrFile(folder, newName || folder.name)
                     }
                     autoFocus
-                    className="w-full text-center bg-transparent border-b-2 border-gray-400"
+                    className="w-full text-center text-xs bg-transparent border border-gray-400"
                   />
                 ) : (
                   <p className="text-center text-xs text-ellipsis  h-4">
@@ -454,7 +454,7 @@ const Documents = () => {
                       renameFolderOrFile(file, newName || file.name)
                     }
                     autoFocus
-                    className="w-full text-center bg-transparent border-b-2 border-gray-400"
+                    className="w-full text-center  bg-transparent border border-gray-400"
                   />
                 ) : (
                   <p className="text-center  text-ellipsis overflow-hidden h-4">

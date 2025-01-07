@@ -48,11 +48,8 @@ const Approval = () => {
   return (
     <div className="px-8 py-4">
       <div className="bg-white rounded-lg ">
-        <div className="flex space-x-3 p-5">
-          <h1 className="text-xl font-bold">Approvals</h1>
-        </div>
         {/* Filter Buttons */}
-        <div className="flex justify-between px-5">
+        <div className="flex justify-between p-5 ">
           <div className="flex space-x-2 mb-4">
             {["All", "Customer", "Vendor"].map((category) => (
               <button
@@ -132,9 +129,7 @@ const Approval = () => {
                     <td className="px-5 py-3 text-start">
                       {approval.phoneNumber}
                     </td>
-                    <td className="px-5 py-3 text-start">
-                      {approval.approvalBelongsTo}
-                    </td>
+                    <td className="px-5 py-3 text-start">{approval.status}</td>
                     <td className="px-5 py-3 text-start">
                       {approval.approvalBelongsTo}
                     </td>

@@ -1,5 +1,6 @@
 import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
@@ -10,6 +11,9 @@ const ProductList = () => {
   const [loading, setLoading] = useState(true);
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [searchTerms, setSearchTerms] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [categoryList, setCategoryList] = useState([]);
 
   const userDetails = useSelector((state) => state.users);
   const companyDetails =
@@ -80,15 +84,71 @@ const ProductList = () => {
     navigate(`/products/${productId}`);
   };
 
+  async function fetchCategory() {
+    try {
+      const categoriesRef = collection(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "categories"
+      );
+      const getDocsData = await getDocs(categoriesRef);
+      const categories = getDocsData.docs.map((doc) => doc.data().name);
+      setCategoryList(categories);
+    } catch (error) {
+      console.log("🚀 ~ fetchCategory ~ error:", error);
+    }
+  }
+
   useEffect(() => {
     fetchProducts();
+    fetchCategory();
   }, []);
+
+  const filterProduct = products.filter((product) => {
+    if (!searchTerms && !selectedCategory) {
+      return true;
+    }
+    const isSearch = product.name
+      .toLowerCase()
+      .includes(searchTerms.toLowerCase());
+    const isCategory = product.category.includes(selectedCategory);
+    return isSearch && isCategory;
+  });
 
   return (
     <div className="p-5 overflow-y-auto" style={{ height: "80vh" }}>
       <div className="bg-white py-5  rounded-lg  shadow-md">
         <div className="flex justify-between items-center px-5">
-          <h1 className="text-2xl font-semibold">Products</h1>
+          <div className="flex justify-between items-center space-x-5 w-1/2">
+            <div
+              className="flex items-center space-x-4  w-full border
+                px-5  py-3 rounded-md "
+            >
+              <input
+                type="text"
+                placeholder="Search..."
+                className=" w-full"
+                onChange={(e) => setSearchTerms(e.target.value)}
+              />
+              <IoSearch />
+            </div>
+            <select
+              className="border
+                px-5  py-3 rounded-md w-full"
+              value={selectedCategory}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value);
+              }}
+            >
+              <option value="">All</option>
+              {categoryList.map((ele) => (
+                <option key={ele} value={ele}>
+                  {ele}
+                </option>
+              ))}
+            </select>
+          </div>
           <button
             className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
             onClick={() => {
@@ -144,8 +204,8 @@ const ProductList = () => {
                 </tr>
               </thead>
               <tbody>
-                {products.length > 0 ? (
-                  products.map((product) => (
+                {filterProduct.length > 0 ? (
+                  filterProduct.map((product) => (
                     <tr
                       key={product.id}
                       className="hover:bg-gray-100 cursor-pointer text-gray-600"

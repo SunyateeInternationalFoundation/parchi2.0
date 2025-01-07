@@ -7,6 +7,7 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdTrash } from "react-icons/io";
+import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
@@ -17,6 +18,7 @@ const Categories = () => {
   const [categoriesCount, setCategoriesCount] = useState({
     total: 0,
   });
+  const [searchTerms, setSearchTerms] = useState("");
 
   const userDetails = useSelector((state) => state.users);
   const companyDetails =
@@ -76,12 +78,30 @@ const Categories = () => {
       console.error("Error deleting category:", error);
     }
   }
+
+  const filterCategories = categories.filter((category) => {
+    if (!searchTerms) {
+      return true;
+    }
+    return category.name.toLowerCase().includes(searchTerms.toLowerCase());
+  });
+
   return (
     <div className=" p-5">
       <div className="bg-white py-5 rounded-lg  shadow-md">
         <div className="flex justify-between items-center px-5">
-          <h1 className="text-2xl font-semibold">Categories</h1>
-
+          <div
+            className="flex items-center space-x-4  border
+                px-5  py-3 rounded-md w-1/2"
+          >
+            <input
+              type="text"
+              placeholder="Search..."
+              className=" w-full focus:outline-none"
+              onChange={(e) => setSearchTerms(e.target.value)}
+            />
+            <IoSearch />
+          </div>
           <button
             onClick={() => setIsModalOpen(true)}
             className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
@@ -102,14 +122,14 @@ const Categories = () => {
                 <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
                   Name
                 </td>
-                <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                <td className="px-8 py-1 text-gray-400 font-semibold text-end ">
                   Delete
                 </td>
               </tr>
             </thead>
             <tbody>
-              {categories.length > 0 ? (
-                categories.map((category) => (
+              {filterCategories.length > 0 ? (
+                filterCategories.map((category) => (
                   <tr key={category.id} className="border-b-2 border-gray-200 ">
                     <td className="px-8 py-3 text-start ">
                       <FormatTimestamp timestamp={category.createdAt} />
@@ -117,7 +137,7 @@ const Categories = () => {
                     <td className="px-5 py-3 text-start">{category.name}</td>
 
                     <td
-                      className="px-5 py-3 text-start text-red-700 text-2xl"
+                      className="px-10 py-3 text-end flex justify-end text-red-700 text-2xl"
                       onClick={(e) => {
                         e.preventDefault();
                         OnDeleteCategory(e, category.id);
@@ -138,17 +158,6 @@ const Categories = () => {
           </table>
         </div>
       </div>
-      {/* <div className="space-y-4 mt-6">
-        {categories.map((category) => (
-          <CategoryCard
-            key={category.id}
-            category={category}
-            setCategories={setCategories}
-            setCategoriesCount={setCategoriesCount}
-            companyId={companyDetails.companyId}
-          />
-        ))}
-      </div> */}
       {isModalOpen && (
         <AddCategoryModal
           onClose={() => setIsModalOpen(false)}
@@ -158,27 +167,6 @@ const Categories = () => {
     </div>
   );
 };
-
-// const CategoryCard = ({
-//   category,
-//   setCategories,
-//   setCategoriesCount,
-//   companyId,
-// }) => {
-//   return (
-//     <div className="bg-white p-4 rounded shadow">
-//       <div className="flex justify-between items-center">
-//         <h2 className="text-xl font-semibold">{category.name}</h2>
-//         <button
-//
-//           className="text-white bg-red-500 h-6 w-6 font-bold text-center rounded-full flex items-center justify-center"
-//         >
-//           <div className="w-3 h-1 bg-white"></div>
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
 
 const AddCategoryModal = ({ onClose, onAddCategory }) => {
   const [isLoading, setIsLoading] = useState(false);

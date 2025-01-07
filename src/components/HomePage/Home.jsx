@@ -178,6 +178,10 @@ const Home = () => {
               element={<CreateProject />}
             ></Route>
             <Route path="/projects/:id" element={<ProjectViewHome />} />
+            <Route
+              path="/projects/:id/edit-project"
+              element={<CreateProject />}
+            />
             {/* <Route path="/projects/:id/user" element={<Users />} />
             <Route path="/projects/:id/tasks" element={<Tasks />}></Route>
             <Route

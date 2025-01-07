@@ -2,16 +2,19 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   Timestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
 
 function CreateProject() {
+  const { id } = useParams();
   const userDetails = useSelector((state) => state.users);
   const companyDetails =
     userDetails.companies[userDetails.selectedCompanyIndex];
@@ -66,19 +69,24 @@ function CreateProject() {
 
     try {
       const companyRef = doc(db, "companies", companyDetails.companyId);
-      const payload = {
+      let payload = {
         ...projectForm,
-        companyRef,
         companyName: companyDetails.name,
+        companyRef,
         createdAt: Timestamp.fromDate(new Date()),
       };
-
-      await addDoc(collection(db, "projects"), payload);
-      alert("Successfully Created the Project");
-      navigate("/projects");
+      if (id) {
+        await updateDoc(doc(db, "projects", id), projectForm);
+      } else {
+        await addDoc(collection(db, "projects"), payload);
+      }
+      alert(`Successfully  ${id ? "Edited" : "Created"} the Project`);
+      navigate("./../");
     } catch (err) {
       console.error(err);
-      alert("Failed to create the project. Please try again.");
+      alert(
+        `Failed to  ${id ? "Edited" : "Created"} the project. Please try again.`
+      );
     }
   };
 
@@ -101,9 +109,40 @@ function CreateProject() {
     }
   }
 
+  function DateFormate(timestamp) {
+    if (!timestamp) {
+      return;
+    }
+    const milliseconds =
+      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
+    const date = new Date(milliseconds);
+    const getDate = String(date.getDate()).padStart(2, "0");
+    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
+    const getFullYear = date.getFullYear();
+
+    return `${getFullYear}-${getMonth}-${getDate}`;
+  }
   useEffect(() => {
     fetchBooks();
   }, [companyDetails.companyId]);
+
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+    async function fetchProject() {
+      try {
+        const getData = await getDoc(doc(db, "projects", id));
+        const data = getData.data();
+        console.log("🚀 ~ fetchProject ~ data:", data);
+
+        setProjectForm(data);
+      } catch (error) {
+        console.log("🚀 ~ fetchProject ~ error:", error);
+      }
+    }
+    fetchProject();
+  }, [id]);
 
   return (
     <div
@@ -115,7 +154,9 @@ function CreateProject() {
           <Link className="flex items-center " to={"./../"}>
             <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
           </Link>
-          <h1 className="text-2xl font-bold">Create Project</h1>
+          <h1 className="text-2xl font-bold">
+            {id ? "Edit" : "Create"} Project
+          </h1>
         </div>
       </header>
       <div className="">
@@ -127,7 +168,7 @@ function CreateProject() {
             <input
               type="text"
               placeholder="Enter Project Name"
-              className="text-base text-gray-900 font-semibold border p-3 rounded-lg w-full mt-1"
+              className="text-base text-gray-900  border p-3 rounded-lg w-full mt-1"
               value={projectForm.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
               required
@@ -141,7 +182,7 @@ function CreateProject() {
                 <input
                   type="date"
                   className="border p-3 rounded-lg w-full mt-1"
-                  defaultValue={projectForm.startDate || ""}
+                  defaultValue={DateFormate(projectForm.startDate) || ""}
                   onChange={(e) =>
                     handleDateChange("startDate", e.target.value)
                   }
@@ -152,7 +193,7 @@ function CreateProject() {
                 <input
                   type="date"
                   className="border p-3 rounded-lg w-full mt-1"
-                  defaultValue={projectForm.dueDate || ""}
+                  defaultValue={DateFormate(projectForm.dueDate) || ""}
                   onChange={(e) => handleDateChange("dueDate", e.target.value)}
                 />
               </div>
@@ -160,13 +201,14 @@ function CreateProject() {
                 <label className="text-gray-600">Priority</label>
                 <select
                   className="border p-3 rounded-lg w-full mt-1"
+                  value={projectForm.priority ?? "Low"}
                   onChange={(e) => {
                     handleInputChange("priority", e.target.value);
                   }}
                 >
-                  <option value={"Low"}>Low</option>
-                  <option value={"Medium"}>Medium</option>
-                  <option value={"High"}>High</option>
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
                 </select>
               </div>
             </div>
@@ -195,8 +237,8 @@ function CreateProject() {
               <label className="text-lg text-gray-600">Bank/Book Details</label>
               <select
                 onChange={onSelectBook}
-                defaultValue=""
-                className="text-base text-gray-900 font-semibold border p-3 rounded-lg w-full mt-1"
+                value={projectForm?.book?.id || ""}
+                className="text-base text-gray-900 border p-3 rounded-lg w-full mt-1"
               >
                 <option value="" disabled>
                   Select Bank/Book
@@ -214,7 +256,7 @@ function CreateProject() {
               <input
                 type="number"
                 placeholder="Enter budget"
-                className="text-base text-gray-900 font-semibold border p-3 rounded-lg w-full mt-1"
+                className="text-base text-gray-900  border p-3 rounded-lg w-full mt-1"
                 value={projectForm.budget || ""}
                 onChange={(e) => handleInputChange("budget", +e.target.value)}
               />
@@ -224,7 +266,7 @@ function CreateProject() {
               <input
                 type="text"
                 placeholder="Enter Location"
-                className="text-base text-gray-900 font-semibold border p-3 rounded-lg w-full mt-1"
+                className="text-base text-gray-900  border p-3 rounded-lg w-full mt-1"
                 value={projectForm.location}
                 onChange={(e) => handleInputChange("location", e.target.value)}
               />
@@ -234,7 +276,7 @@ function CreateProject() {
               <input
                 type="text"
                 placeholder="Enter Description"
-                className="text-base text-gray-900 font-semibold border p-3 rounded-lg w-full mt-1"
+                className="text-base text-gray-900  border p-3 rounded-lg w-full mt-1"
                 value={projectForm.description}
                 onChange={(e) =>
                   handleInputChange("description", e.target.value)
@@ -249,7 +291,8 @@ function CreateProject() {
               className="bg-blue-500 text-white py-1 px-4 rounded-lg flex items-center gap-1"
               onClick={handleSubmit}
             >
-              <span className="text-lg">+</span> Create Project
+              <span className="text-lg">+</span> {id ? "Edit" : "Create"}{" "}
+              Project
             </button>
           </div>
         </div>

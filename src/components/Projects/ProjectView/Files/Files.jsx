@@ -49,6 +49,7 @@ const Files = () => {
   useEffect(() => {
     fetchFiles();
   }, []);
+
   const fetchData = async (collectionName, setData) => {
     setLoading(true);
     try {
