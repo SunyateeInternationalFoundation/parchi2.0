@@ -35,7 +35,7 @@ const Stock = () => {
 
       // Filter products based on stock quantity
       const lowStock = products.filter(
-        (product) => product.stock > 0 && product.stock < 5
+        (product) => product.stock >= 0 && product.stock < 5
       );
       const noStock = products.filter((product) => product.stock === 0);
 
