@@ -30,6 +30,7 @@ function ServiceView() {
   const [service, setService] = useState({});
   const navigate = useNavigate();
   const userDetails = useSelector((state) => state.users);
+
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
     companyId =
@@ -39,9 +40,11 @@ function ServiceView() {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   }
+
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
-      ?.invoice;
+      ?.services;
+
   const [isServiceOpen, setIsServiceOpen] = useState(false);
   const [isSelectTemplateOpen, setIsSelectTemplateOpen] = useState(false);
   const [totalTax, setTotalTax] = useState(0);
@@ -150,7 +153,7 @@ function ServiceView() {
   }, [service]);
 
   const handleDownloadPdf = () => {
-    if (id) {
+    if (!id) {
       return;
     }
     const doc = new jsPDF("p", "pt", "a4");
@@ -164,7 +167,7 @@ function ServiceView() {
   };
 
   const handleWhatsAppShare = async () => {
-    if (id) {
+    if (!id) {
       console.error("Service ID is missing!");
       return;
     }

@@ -231,9 +231,9 @@ const SetDebitNote = () => {
           name: selectedVendorData.name,
         },
       };
-
+      let debitNoteRef;
       if (debitNoteId) {
-        await updateDoc(
+        debitNoteRef = await updateDoc(
           doc(
             db,
             "companies",
@@ -244,7 +244,7 @@ const SetDebitNote = () => {
           payload
         );
       } else {
-        await addDoc(
+        debitNoteRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "debitNote"),
           payload
         );
@@ -258,6 +258,18 @@ const SetDebitNote = () => {
         await updateDoc(item.productRef, {
           stock: item.quantity,
         });
+
+        let productPayloadLogs = {
+          date: Timestamp.fromDate(new Date()),
+          status: "add",
+          quantity: item.quantity,
+          from: "debit Note",
+          ref: debitNoteRef,
+        };
+        if (debitNoteId) {
+          productPayloadLogs.status = "update";
+        }
+        await addDoc(collection(item.productRef, "logs"), productPayloadLogs);
       }
 
       alert(

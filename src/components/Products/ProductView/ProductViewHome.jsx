@@ -1,11 +1,4 @@
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
@@ -36,66 +29,36 @@ function ProductViewHome() {
           productId
         );
         const productDoc = await getDoc(productRef);
+
         if (productDoc.exists()) {
           setProduct({ id: productDoc.id, ...productDoc.data() });
+          const logsDocs = await getDocs(collection(productRef, "logs"));
+          let returnsData = [];
+          const logsData = logsDocs.docs.map((doc) => {
+            const data = doc.data();
+            if (data.status == "return") {
+              returnsData.push({
+                id: doc.id,
+                ...data,
+              });
+            }
+            return {
+              id: doc.id,
+              ...data,
+            };
+          });
+          setLogs(logsData);
+          setReturns(returnsData);
+          console.log("🚀 ~ fetchProduct ~ logsData:", logsData);
         } else {
-          console.error("No such document!");
+          console.error("No Product Found!");
         }
       } catch (error) {
         console.error("Error fetching product:", error);
       }
     };
-    const fetchReturns = async () => {
-      try {
-        const invoicesRef = collection(
-          db,
-          "companies",
-          companyDetails.companyId,
-          "invoices"
-        );
 
-        const productRef = doc(
-          db,
-          "companies",
-          companyDetails.companyId,
-          "products",
-          productId
-        );
-
-        const q = query(
-          invoicesRef,
-          where("productRef", "array-contains", productRef)
-        );
-        const invoicesSnapshot = await getDocs(q);
-
-        let allReturns = [];
-
-        for (const invoiceDoc of invoicesSnapshot.docs) {
-          const invoiceId = invoiceDoc.id;
-          const invoiceData = invoiceDoc.data();
-          //   const invoiceNumber = invoiceData.invoiceNo || invoiceData.number;
-
-          //   const returnsRef = collection(invoiceDoc.ref, "returns");
-          //   const returnsSnapshot = await getDocs(returnsRef);
-
-          //   returnsSnapshot.forEach((doc) => {
-          //     allReturns.push({
-          //       id: doc.id,
-          //       invoiceId,
-          //       invoiceNumber, // Ensure this is passed correctly
-          //       ...doc.data(),
-          //     });
-          //   });
-        }
-
-        //console.log("All returns:", allReturns); // Final log to confirm structure
-        setReturns(allReturns);
-      } catch (error) {
-        console.error("Error fetching returns:", error);
-      }
-    };
     fetchProduct();
-    // fetchReturns();
   }, [productId, companyDetails.companyId]);
 
   return (
@@ -143,12 +106,12 @@ function ProductViewHome() {
         )}
         {activeTab === "Logs" && (
           <div>
-            <ProductLogs />
+            <ProductLogs logs={logs} />
           </div>
         )}
         {activeTab === "Returns" && (
           <div>
-            <ProductReturns />
+            <ProductReturns returns={returns} />
           </div>
         )}
       </div>

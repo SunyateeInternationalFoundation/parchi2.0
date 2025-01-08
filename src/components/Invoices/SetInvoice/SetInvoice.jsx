@@ -240,13 +240,14 @@ const SetInvoice = () => {
           name: selectedCustomerData.name,
         },
       };
+      let invoiceRef = "";
       if (invoiceId) {
-        await updateDoc(
+        invoiceRef = await updateDoc(
           doc(db, "companies", companyDetails.companyId, "invoices", invoiceId),
           payload
         );
       } else {
-        await addDoc(
+        invoiceRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "invoices"),
           payload
         );
@@ -269,6 +270,22 @@ const SetInvoice = () => {
         await updateDoc(item.productRef, {
           stock: currentQuantity - item.quantity,
         });
+
+        let productPayloadLogs = {
+          date: Timestamp.fromDate(new Date()),
+          status: "use",
+          quantity: item.quantity,
+          from: "invoice",
+          ref: invoiceRef,
+        };
+        if (invoiceId) {
+          productPayloadLogs.status = "update";
+        }
+        console.log(
+          "🚀 ~ onSetInvoice ~ productPayloadLogs:",
+          productPayloadLogs
+        );
+        await addDoc(collection(item.productRef, "logs"), productPayloadLogs);
       }
 
       alert(
