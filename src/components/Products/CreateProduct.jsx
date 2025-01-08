@@ -8,6 +8,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
@@ -42,38 +43,38 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
   const companyDetails =
     userDetails.companies[userDetails.selectedCompanyIndex];
 
+  const fetchWarehouses = async () => {
+    const warehousesRef = collection(
+      db,
+      "companies",
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId,
+      "warehouses"
+    );
+    const snapshot = await getDocs(warehousesRef);
+
+    const warehousesData = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setWarehouses(warehousesData);
+  };
+  const fetchCategories = async () => {
+    const categoriesRef = collection(
+      db,
+      "companies",
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId,
+      "categories"
+    );
+    const snapshot = await getDocs(categoriesRef);
+
+    const categoriesData = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    setCategories(categoriesData);
+  };
   useEffect(() => {
-    const fetchWarehouses = async () => {
-      const warehousesRef = collection(
-        db,
-        "companies",
-        userDetails.companies[userDetails.selectedCompanyIndex].companyId,
-        "warehouses"
-      );
-      const snapshot = await getDocs(warehousesRef);
-
-      const warehousesData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setWarehouses(warehousesData);
-    };
-    const fetchCategories = async () => {
-      const categoriesRef = collection(
-        db,
-        "companies",
-        userDetails.companies[userDetails.selectedCompanyIndex].companyId,
-        "categories"
-      );
-      const snapshot = await getDocs(categoriesRef);
-
-      const categoriesData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      setCategories(categoriesData);
-    };
     fetchCategories();
     fetchWarehouses();
     if (onProductUpdated) {
@@ -161,9 +162,16 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
           // userRef: doc(db, "users", userDetails.userId),
         };
         await updateDoc(productDocRef, payload); // Update product
+        const productPayloadLogs = {
+          date: new Date(),
+          status: "update",
+          quantity: formData.stock,
+          from: "inventory",
+          ref: productDocRef,
+        };
+        await addDoc(collection(productDocRef, "logs"), productPayloadLogs);
         alert("Product successfully updated.");
       } else {
-        let productDocRef;
         let productImageUrl = "";
         if (productImage) {
           productImageUrl = await handleFileChange(productImage);
@@ -182,25 +190,44 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
           companyRef,
           userRef,
         };
+        let productRef = "";
         if (formData.barcode) {
-          productDocRef = doc(
+          const productDocRef = doc(
             db,
             "companies",
             companyDetails.companyId,
             "products",
             formData.barcode
           );
-          await setDoc(productDocRef, payload);
+          productRef = await setDoc(productDocRef, payload);
         } else {
           // productDocRef = collection(db, "products");
-          productDocRef = collection(
+          const productDocRef = collection(
             db,
             "companies",
             companyDetails.companyId,
             "products"
           );
-          await addDoc(productDocRef, payload);
+          productRef = await addDoc(productDocRef, payload);
         }
+        const productPayloadLogs = {
+          date: payload.createdAt,
+          status: "add",
+          quantity: formData.stock,
+          from: "inventory",
+          ref: productRef,
+        };
+        await addDoc(
+          collection(
+            db,
+            "companies",
+            companyDetails.companyId,
+            "products",
+            productRef.id,
+            "logs"
+          ),
+          productPayloadLogs
+        );
         alert("Product successfully created.");
       }
       onProductAdded();
@@ -498,5 +525,11 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
     </div>
   );
 }
+CreateProduct.propTypes = {
+  isOpen: PropTypes.bool,
+  onClose: PropTypes.func,
+  onProductAdded: PropTypes.func,
+  onProductUpdated: PropTypes.object,
+};
 
 export default CreateProduct;

@@ -228,14 +228,12 @@ const SetPO = () => {
           name: selectedVendorData.name,
         },
       };
-
+      let poRef;
       if (poId) {
-        await updateDoc(
-          doc(db, "companies", companyDetails.companyId, "po", poId),
-          payload
-        );
+        poRef = doc(db, "companies", companyDetails.companyId, "po", poId);
+        await updateDoc(poRef, payload);
       } else {
-        await addDoc(
+        poRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "po"),
           payload
         );
@@ -248,6 +246,17 @@ const SetPO = () => {
         await updateDoc(item.productRef, {
           stock: item.quantity,
         });
+        let productPayloadLogs = {
+          date: Timestamp.fromDate(new Date()),
+          status: "add",
+          quantity: item.quantity,
+          from: "PO",
+          ref: poRef,
+        };
+        if (poId) {
+          productPayloadLogs.status = "update";
+        }
+        await addDoc(collection(item.productRef, "logs"), productPayloadLogs);
       }
 
       alert("Successfully " + (poId ? "Updated" : "Created") + " the PO");

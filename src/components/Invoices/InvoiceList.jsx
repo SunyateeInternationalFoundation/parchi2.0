@@ -139,26 +139,26 @@ const InvoiceList = () => {
             <div className="rounded-lg p-5 bg-white shadow  ">
               <div className="text-lg">Total Amount</div>
               <div className="text-3xl text-indigo-600 font-bold p-2">
-                ₹ {totalAmount}
+                ₹ {totalAmount.toFixed(2)}
               </div>
             </div>
             <div className="rounded-lg p-5 bg-white shadow ">
               <div className="text-lg"> Paid Amount</div>
               <div className="text-3xl text-emerald-600 font-bold p-2">
                 {" "}
-                ₹ {paidAmount}
+                ₹ {paidAmount.toFixed(2)}
               </div>
             </div>
             <div className="rounded-lg p-5 bg-white shadow ">
               <div className="text-lg"> Pending Amount</div>
               <div className="text-3xl text-orange-600 font-bold p-2">
-                ₹ {pendingAmount}
+                ₹ {pendingAmount.toFixed(2)}
               </div>
             </div>
             <div className="rounded-lg p-5 bg-white shadow">
               <div className="text-lg"> UnPaid Amount</div>
               <div className="text-3xl text-red-600 font-bold p-2">
-                ₹ {totalAmount - paidAmount}
+                ₹ {(totalAmount - paidAmount).toFixed(2)}
               </div>
             </div>
           </div>

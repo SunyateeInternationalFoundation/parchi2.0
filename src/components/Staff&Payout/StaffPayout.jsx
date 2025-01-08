@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { GrDocumentUser } from "react-icons/gr";
 import { HiOutlineClipboardList } from "react-icons/hi";
 import { IoMdTime } from "react-icons/io";
@@ -104,7 +105,11 @@ function StaffPayout() {
       // },
     },
   ];
-
+  useEffect(() => {
+    if (!tab) {
+      navigate("?tab=Staff");
+    }
+  }, []);
   return (
     <div className="w-full" style={{ width: "100%", height: "92vh" }}>
       <div className="bg-gray-100" style={{ width: "100%", height: "92vh" }}>

@@ -233,20 +233,18 @@ const SetCreditNote = () => {
           name: selectedCustomerData.name,
         },
       };
-
+      let creditNoteRef;
       if (creditNoteId) {
-        await updateDoc(
-          doc(
-            db,
-            "companies",
-            companyDetails.companyId,
-            "creditNote",
-            creditNoteId
-          ),
-          payload
+        creditNoteRef = doc(
+          db,
+          "companies",
+          companyDetails.companyId,
+          "creditNote",
+          creditNoteId
         );
+        await updateDoc(creditNoteRef, payload);
       } else {
-        await addDoc(
+        creditNoteRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "creditNote"),
           payload
         );
@@ -269,6 +267,18 @@ const SetCreditNote = () => {
         await updateDoc(item.productRef, {
           stock: currentQuantity - item.quantity,
         });
+
+        let productPayloadLogs = {
+          date: Timestamp.fromDate(new Date()),
+          status: "use",
+          quantity: item.quantity,
+          from: "credit Note",
+          ref: creditNoteRef,
+        };
+        if (creditNoteId) {
+          productPayloadLogs.status = "update";
+        }
+        await addDoc(collection(item.productRef, "logs"), productPayloadLogs);
       }
 
       alert(

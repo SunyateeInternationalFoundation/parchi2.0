@@ -8,6 +8,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
@@ -95,7 +96,24 @@ function InventoryAddSideBar({ projectId, isOpen, onClose, isMaterialAdd }) {
       await updateDoc(inventoryRef, {
         stock: newStockQuantity,
       });
-
+      const productPayloadLogs = {
+        date: payload.createdAt,
+        status: "use",
+        quantity: quantity,
+        from: "Project",
+        ref: doc(db, "projects", projectId),
+      };
+      await addDoc(
+        collection(
+          db,
+          "companies",
+          companyId,
+          "products",
+          selectedItem.id,
+          "logs"
+        ),
+        productPayloadLogs
+      );
       alert("Material added successfully!");
       isMaterialAdd();
       setSelectedItem(null);
@@ -255,5 +273,11 @@ function InventoryAddSideBar({ projectId, isOpen, onClose, isMaterialAdd }) {
     </div>
   );
 }
+InventoryAddSideBar.propTypes = {
+  projectId: PropTypes.string.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  isMaterialAdd: PropTypes.func.isRequired,
+};
 
 export default InventoryAddSideBar;

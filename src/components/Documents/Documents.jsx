@@ -51,16 +51,24 @@ const Documents = () => {
     setIsLoading(true);
     try {
       const foldersQuery = query(
-        collection(db, "folders"),
-        where("parentId", "==", currentFolder?.id || null),
-        where("companyRef", "==", companyRef)
+        collection(companyRef, "folders"),
+        where("parentId", "==", currentFolder?.id || null)
       );
       const foldersSnapshot = await getDocs(foldersQuery);
       let count = 0;
       const fetchedFolders = foldersSnapshot.docs.map((doc) => {
         const { name } = doc.data();
         if (name.includes("New Folder")) {
-          count++;
+          if (name.includes("New Folder(")) {
+            const n = name.split("New Folder(")[1].split(")");
+            if (count <= +n[0]) {
+              count = +n[0] + 1;
+            }
+          } else {
+            if (count == 0) {
+              count = 1;
+            }
+          }
         }
         return {
           id: doc.id,
@@ -71,14 +79,13 @@ const Documents = () => {
       });
 
       if (count > 0) {
-        setFolderName("New Folder(" + (+count + 1) + ")");
+        setFolderName("New Folder(" + count + ")");
         setCountOfNewFolder(count + 1);
       }
 
       const filesQuery = query(
-        collection(db, "files"),
-        where("folderId", "==", currentFolder?.id || null),
-        where("companyRef", "==", companyRef)
+        collection(companyRef, "files"),
+        where("folderId", "==", currentFolder?.id || null)
       );
       const filesSnapshot = await getDocs(filesQuery);
       const fetchedFiles = filesSnapshot.docs.map((doc) => ({
@@ -90,6 +97,10 @@ const Documents = () => {
 
       setFolders(fetchedFolders);
       setFiles(fetchedFiles);
+      if (currentFolder?.name) {
+        setCurrentPath((prev) => [...prev, currentFolder]);
+        setPathnames((val) => [...val, currentFolder?.name]);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -98,11 +109,10 @@ const Documents = () => {
 
   const addFolder = async () => {
     try {
-      const folderRef = await addDoc(collection(db, "folders"), {
+      const folderRef = await addDoc(collection(companyRef, "folders"), {
         name: folderName,
         parentId: currentFolder?.id || null,
         createdAt: Timestamp.now(),
-        companyRef,
       });
       setEditingItem(folderRef.id);
       const newFolder = {
@@ -111,11 +121,10 @@ const Documents = () => {
         parentId: currentFolder?.id || null,
         createdAt: Timestamp.now(),
         type: "folder",
-        companyRef,
       };
       setNewName(folderName);
       setFolders((prev) => [...prev, newFolder]);
-      setFolderName("New Folder(" + (+countOfNewFolder + 1) + ")");
+      setFolderName("New Folder(" + +countOfNewFolder + ")");
       setCountOfNewFolder(countOfNewFolder + 1);
     } catch (error) {
       console.error("Error creating folder:", error);
@@ -155,10 +164,12 @@ const Documents = () => {
               type: "file",
               size: file.size,
               contentType: file.type,
-              companyRef,
             };
 
-            const fileRef = await addDoc(collection(db, "files"), fileData);
+            const fileRef = await addDoc(
+              collection(companyRef, "files"),
+              fileData
+            );
             const newFile = { ...fileData, id: fileRef.id };
 
             setFiles((prev) => [...prev, newFile]);
@@ -179,8 +190,6 @@ const Documents = () => {
 
   const navigateToFolder = (folder) => {
     setCurrentFolder(folder);
-    setCurrentPath((prev) => [...prev, folder]);
-    setPathnames((val) => [...val, folder.name]);
   };
 
   const navigateBack = () => {
@@ -235,7 +244,7 @@ const Documents = () => {
       }
 
       const itemRef = doc(
-        db,
+        companyRef,
         item.type === "folder" ? "folders" : "files",
         item.id
       );

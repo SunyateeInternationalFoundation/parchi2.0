@@ -3,8 +3,8 @@ import {
   doc,
   getDoc,
   getDocs,
+  orderBy,
   query,
-  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
@@ -36,71 +36,45 @@ function ProductViewHome() {
           productId
         );
         const productDoc = await getDoc(productRef);
+
         if (productDoc.exists()) {
           setProduct({ id: productDoc.id, ...productDoc.data() });
+          const q = query(
+            collection(productRef, "logs"),
+            orderBy("date", "desc")
+          );
+          const logsDocs = await getDocs(q);
+          let returnsData = [];
+          const logsData = logsDocs.docs.map((doc) => {
+            const data = doc.data();
+            if (data.status == "return") {
+              returnsData.push({
+                id: doc.id,
+                ...data,
+              });
+            }
+            return {
+              id: doc.id,
+              ...data,
+            };
+          });
+          setLogs(logsData);
+          setReturns(returnsData);
+          console.log("🚀 ~ fetchProduct ~ logsData:", logsData);
         } else {
-          console.error("No such document!");
+          console.error("No Product Found!");
         }
       } catch (error) {
         console.error("Error fetching product:", error);
       }
     };
-    const fetchReturns = async () => {
-      try {
-        const invoicesRef = collection(
-          db,
-          "companies",
-          companyDetails.companyId,
-          "invoices"
-        );
 
-        const productRef = doc(
-          db,
-          "companies",
-          companyDetails.companyId,
-          "products",
-          productId
-        );
-
-        const q = query(
-          invoicesRef,
-          where("productRef", "array-contains", productRef)
-        );
-        const invoicesSnapshot = await getDocs(q);
-
-        let allReturns = [];
-
-        for (const invoiceDoc of invoicesSnapshot.docs) {
-          const invoiceId = invoiceDoc.id;
-          const invoiceData = invoiceDoc.data();
-          //   const invoiceNumber = invoiceData.invoiceNo || invoiceData.number;
-
-          //   const returnsRef = collection(invoiceDoc.ref, "returns");
-          //   const returnsSnapshot = await getDocs(returnsRef);
-
-          //   returnsSnapshot.forEach((doc) => {
-          //     allReturns.push({
-          //       id: doc.id,
-          //       invoiceId,
-          //       invoiceNumber, // Ensure this is passed correctly
-          //       ...doc.data(),
-          //     });
-          //   });
-        }
-
-        //console.log("All returns:", allReturns); // Final log to confirm structure
-        setReturns(allReturns);
-      } catch (error) {
-        console.error("Error fetching returns:", error);
-      }
-    };
     fetchProduct();
-    // fetchReturns();
   }, [productId, companyDetails.companyId]);
 
   return (
-    <div className=" bg-gray-100 pb-5" style={{ width: "100%" }}>
-      <header className="flex items-center space-x-3  px-5  border-b">
+    <div className="  pb-5" style={{ width: "100%" }}>
+      <header className="flex items-center space-x-3  px-5  border-b bg-white">
         <Link className="flex items-center " to={"./../"}>
           <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
         </Link>
@@ -135,7 +109,7 @@ function ProductViewHome() {
         </nav>
       </header>
 
-      <div className="w-full px-5 ">
+      <div className="w-full  ">
         {activeTab === "Product" && (
           <div>
             <ProductView productData={product} />
@@ -143,12 +117,12 @@ function ProductViewHome() {
         )}
         {activeTab === "Logs" && (
           <div>
-            <ProductLogs />
+            <ProductLogs logs={logs} />
           </div>
         )}
         {activeTab === "Returns" && (
           <div>
-            <ProductReturns />
+            <ProductReturns returns={returns} />
           </div>
         )}
       </div>

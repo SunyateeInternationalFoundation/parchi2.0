@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  doc,
   increment,
   Timestamp,
   updateDoc,
@@ -110,6 +111,20 @@ function Returns({ invoice }) {
         await updateDoc(product.productRef, {
           stock: increment(product.actionQty),
         });
+
+        let productPayloadLogs = {
+          date: payload.createdAt,
+          status: "return",
+          quantity: product.actionQty,
+          from: "invoice",
+          ref: doc(db, "companies", companyId, "invoices", id),
+        };
+
+        await addDoc(
+          collection(product.productRef, "logs"),
+          productPayloadLogs
+        );
+
         UpdateProduct.push({
           ...product,
           quantity: product.quantity - product.actionQty,

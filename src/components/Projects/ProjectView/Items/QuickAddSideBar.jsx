@@ -1,11 +1,12 @@
 import {
-    addDoc,
-    collection,
-    doc,
-    getDoc,
-    setDoc,
-    Timestamp,
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+  Timestamp,
 } from "firebase/firestore";
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
@@ -61,7 +62,7 @@ function QuickAddSideBar({ isOpen, onClose, isMaterialAdd }) {
       };
 
       const payloadMaterial = {
-        createdAt: Timestamp.fromDate(new Date()),
+        createdAt: payloadInventory.createdAt,
         description: formData.description,
         itemPricePerPiece: formData.itemPricePerPiece,
         itemName: formData.itemName,
@@ -70,27 +71,54 @@ function QuickAddSideBar({ isOpen, onClose, isMaterialAdd }) {
         remainingQuantity: formData.quantity,
         barcode: formData.barcode,
       };
+      let productRef = "";
+      if (formData.barcode) {
+        const productDocRef = doc(
+          db,
+          "companies",
+          companyId,
+          "products",
+          formData.barcode
+        );
+        const docSnapshot = await getDoc(productDocRef);
+        if (docSnapshot.exists()) {
+          alert(
+            "A product with this barcode already exists.Kindly use a unique barcode."
+          );
+          return;
+        }
+        productRef = await setDoc(productDocRef, payloadInventory);
+      } else {
+        const productDocRef = collection(
+          db,
+          "companies",
+          companyId,
+          "products"
+        );
+        productRef = await addDoc(productDocRef, payloadInventory);
+      }
 
       await addDoc(
         collection(db, "projects", projectId, "materials"),
         payloadMaterial
       );
-      const productDocRef = doc(
-        db,
-        "companies",
-        companyId,
-        "products",
-        formData.barcode
-      );
-      const docSnapshot = await getDoc(productDocRef);
-      if (docSnapshot.exists()) {
-        alert(
-          "A product with this barcode already exists.Kindly use a unique barcode."
-        );
-        return;
-      }
-      await setDoc(productDocRef, payloadInventory);
 
+      const productPayloadLogs = {
+        date: payloadInventory.createdAt,
+        status: "add",
+        quantity: formData.quantity,
+        from: "Project",
+        ref: doc(db, "projects", projectId),
+      };
+      await addDoc(
+        collection(db, "companies", companyId, "products", productRef, "logs"),
+        productPayloadLogs
+      );
+
+      await addDoc(
+        collection(db, "companies", companyId, "products", productRef, "logs"),
+        { ...productPayloadLogs, status: "use" }
+      );
       alert("Successfully added material and inventory!");
       isMaterialAdd();
       ResetFormData();
@@ -214,5 +242,10 @@ function QuickAddSideBar({ isOpen, onClose, isMaterialAdd }) {
     </div>
   );
 }
+QuickAddSideBar.propTypes = {
+  isOpen: PropTypes.bool,
+  onClose: PropTypes.func,
+  isMaterialAdd: PropTypes.func,
+};
 
 export default QuickAddSideBar;
