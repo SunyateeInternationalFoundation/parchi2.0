@@ -64,7 +64,7 @@ function Po({ Po, bankDetails, selectTemplate }) {
     const doc = new jsPDF("p", "pt", "a4");
     doc.html(poRef.current, {
       callback: function (doc) {
-        doc.save(`${Po.userToname}'s Po.pdf`);
+        doc.save(`${Po.userTo.name}'s Po.pdf`);
       },
       x: 0,
       y: 0,

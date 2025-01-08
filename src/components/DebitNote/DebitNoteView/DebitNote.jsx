@@ -65,7 +65,7 @@ function DebitNote({ debitNote, bankDetails, selectTemplate }) {
     const doc = new jsPDF("p", "pt", "a4");
     doc.html(debitNoteRef.current, {
       callback: function (doc) {
-        doc.save(`${debitNote.userToname}'s debitNote.pdf`);
+        doc.save(`${debitNote.userTo.name}'s debitNote.pdf`);
       },
       x: 0,
       y: 0,
