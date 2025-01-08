@@ -150,7 +150,7 @@ function ServiceView() {
   }, [service]);
 
   const handleDownloadPdf = () => {
-    if (id) {
+    if (!id) {
       return;
     }
     const doc = new jsPDF("p", "pt", "a4");
