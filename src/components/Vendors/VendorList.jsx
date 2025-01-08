@@ -155,7 +155,7 @@ const VendorList = () => {
                 className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
                 onClick={() => setIsModalOpen(true)}
               >
-                + New Customer
+                + New Vendor
               </button>
             )}
           </div>
