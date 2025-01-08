@@ -1,36 +1,44 @@
-
 import { GrDocumentUser } from "react-icons/gr";
 import { HiOutlineClipboardList } from "react-icons/hi";
 import { IoMdTime } from "react-icons/io";
 import {
-    RiShieldUserLine,
-    RiUserAddLine,
-    RiUserFollowLine,
+  RiShieldUserLine,
+  RiUserAddLine,
+  RiUserFollowLine,
 } from "react-icons/ri";
 import { TbGitBranch } from "react-icons/tb";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import Assets from "./Assets/Assets";
+import Attendance from "./Attendance/Attendance";
+import Branches from "./Branches/Branches";
+import Designation from "./Designation/Designation";
+import Roles from "./Roles/Roles";
+import Staff from "./Staff/Staff";
+import WeekOff from "./WeekOff/WeekOff";
 
 function StaffPayout() {
   const navigate = useNavigate();
-  const userDetails = useSelector((state) => state.users);
+  const [searchParams] = useSearchParams();
 
+  const tab = searchParams.get("tab");
   const ManageStaff = [
     {
       icon: <RiUserAddLine />,
       name: "Staff",
       totalLabelName: "Total Staff",
-      onClick: () => {
-        navigate("staff");
-      },
+      component: <Staff />,
+      // onClick: () => {
+      //   navigate("staff");
+      // },
     },
     {
       icon: <RiUserFollowLine />,
       name: "Attendance",
       totalLabelName: "Total Projects",
-      onClick: () => {
-        navigate("attendance");
-      },
+      component: <Attendance />,
+      // onClick: () => {
+      //   navigate("attendance");
+      // },
     },
     // {
     //   icon: <MdAddCard />,
@@ -42,33 +50,37 @@ function StaffPayout() {
       icon: <GrDocumentUser />,
       name: "Designations",
       totalLabelName: "Total Projects",
-      onClick: () => {
-        navigate("designations");
-      },
+      component: <Designation />,
+      // onClick: () => {
+      //   navigate("designations");
+      // },
     },
     {
       icon: <TbGitBranch />,
       name: "Branch",
       totalLabelName: "Total Staff",
-      onClick: () => {
-        navigate("branches");
-      },
+      component: <Branches />,
+      // onClick: () => {
+      //   navigate("branches");
+      // },
     },
     {
       icon: <IoMdTime />,
       name: "Week off",
       totalLabelName: "Total Projects",
-      onClick: () => {
-        navigate("weekOff");
-      },
+      component: <WeekOff />,
+      // onClick: () => {
+      //   navigate("weekOff");
+      // },
     },
     {
       icon: <RiShieldUserLine />,
       name: "Roles",
       totalLabelName: "Total Staff",
-      onClick: () => {
-        navigate("roles");
-      },
+      component: <Roles />,
+      // onClick: () => {
+      //   navigate("roles");
+      // },
     },
     // {
     //   icon: <FiCoffee />,
@@ -86,34 +98,37 @@ function StaffPayout() {
       icon: <HiOutlineClipboardList />,
       name: "Assets",
       totalLabelName: "Total Projects",
-      onClick: () => {
-        navigate("assets");
-      },
+      component: <Assets />,
+      // onClick: () => {
+      //   navigate("assets");
+      // },
     },
   ];
 
   return (
     <div className="w-full" style={{ width: "100%", height: "92vh" }}>
-      <div
-        className="px-8 pb-8 pt-5 bg-gray-100"
-        style={{ width: "100%", height: "92vh" }}
-      >
-        <h1 className="text-2xl font-bold mb-5">Manage Staff</h1>
-        <div className="grid grid-cols-5 gap-4 gap-y-8">
+      <div className="bg-gray-100" style={{ width: "100%", height: "92vh" }}>
+        <div className="flex px-8 gap-2 bg-white border-b">
           {ManageStaff.map((item) => (
-            <div
-              className="bg-white p-9 rounded-lg hover:shadow border-2"
-              key={item.name}
-            >
+            <div className="" key={item.name}>
               <div
-                className="flex flex-col items-center cursor-pointer"
-                onClick={item.onClick}
+                className={
+                  "flex items-center cursor-pointer p-4 font-semibold text-gray-500 " +
+                  (tab === item.name && " border-b-4 border-blue-500 ")
+                }
+                onClick={() => navigate("?tab=" + item.name)}
+                // onClick={item.onClick}
               >
-                <div className="text-6xl bg-gray-200 p-3 rounded-lg">
-                  {item.icon}
-                </div>
-                <p className="text-lg  text-center mt-1 ">{item.name}</p>
+                <div className="pe-2">{item.icon}</div>
+                <p className="text-lg ">{item.name}</p>
               </div>
+            </div>
+          ))}
+        </div>
+        <div>
+          {ManageStaff.map((item) => (
+            <div className="w-full" key={item.name}>
+              {tab === item.name && item.component}
             </div>
           ))}
         </div>

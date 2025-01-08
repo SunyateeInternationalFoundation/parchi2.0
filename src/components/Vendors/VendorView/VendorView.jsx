@@ -31,9 +31,12 @@ function VendorView() {
 
   const [activeTab, setActiveTab] = useState("Profile");
   const [vendorsPOData, setVendorsPOData] = useState([]);
-  const [vendorsProjectsData, setvendorsProjectsData] = useState([]);
+  const [vendorsProjectsData, setVendorsProjectsData] = useState([]);
   const [vendorData, setVendorData] = useState({});
-
+  const [expenseData, setExpenseData] = useState({
+    income: 0,
+    expense: 0,
+  });
   function DateFormate(timestamp) {
     const milliseconds =
       timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
@@ -60,64 +63,91 @@ function VendorView() {
     }
   };
 
-  useEffect(() => {
-    async function fetchPOList() {
-      const tabs = {
-        purchases: "purchaseNo",
-        po: "poNo",
-        debitNote: "debitNoteNo",
-      };
-      try {
-        let purchasesData = {};
-        for (let tab of Object.keys(tabs)) {
-          const invoiceRef = collection(db, `/companies/${companyId}/${tab}`);
-          const q = query(
-            invoiceRef,
-            where("vendorDetails.vendorRef", "==", vendorsRef)
-          );
-          const querySnapshot = await getDocs(q);
-
-          const vendorsInvoices = querySnapshot.docs.map((doc) => {
-            const data = doc.data();
-            return {
-              id: doc.id,
-              ...data,
-              no: data[tabs[tab]],
-            };
-          });
-          purchasesData[tab] = vendorsInvoices;
-        }
-        setVendorsPOData(purchasesData);
-      } catch (error) {
-        console.log("🚀 ~ fetchInvoiceList ~ error:", error);
-      }
-    }
-
-    async function fetchProjectList() {
-      try {
-        const ProjectRef = collection(db, `/projects`);
-
+  async function fetchPOList() {
+    const tabs = {
+      purchases: "purchaseNo",
+      po: "poNo",
+      debitNote: "debitNoteNo",
+    };
+    try {
+      let purchasesData = {};
+      let expenseAmount = expenseData;
+      for (let tab of Object.keys(tabs)) {
+        const invoiceRef = collection(db, `/companies/${companyId}/${tab}`);
         const q = query(
-          ProjectRef,
-          where("vendorRef", "array-contains", vendorsRef)
+          invoiceRef,
+          where("vendorDetails.vendorRef", "==", vendorsRef)
         );
         const querySnapshot = await getDocs(q);
-
-        const vendorsProjects = querySnapshot.docs.map((doc) => {
+        const vendorsInvoices = querySnapshot.docs.map((doc) => {
           const data = doc.data();
+
+          if (tab === "po") {
+            expenseAmount.income += +data.total;
+            console.log("🚀 ~ vendorsInvoices ~ data.total:", data.total);
+          }
+
           return {
             id: doc.id,
             ...data,
-            createdAt: DateFormate(data.createdAt),
+            no: data[tabs[tab]],
           };
         });
-
-        setvendorsProjectsData(vendorsProjects);
-      } catch (error) {
-        console.log("🚀 ~ fetchInvoiceList ~ error:", error);
+        purchasesData[tab] = vendorsInvoices;
       }
+      setExpenseData(expenseAmount);
+      setVendorsPOData(purchasesData);
+    } catch (error) {
+      console.log("🚀 ~ fetchInvoiceList ~ error:", error);
     }
+  }
 
+  async function fetchProjectList() {
+    try {
+      const ProjectRef = collection(db, `/projects`);
+
+      const q = query(
+        ProjectRef,
+        where("vendorRef", "array-contains", vendorsRef)
+      );
+      const querySnapshot = await getDocs(q);
+
+      const vendorsProjects = querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: DateFormate(data.createdAt),
+        };
+      });
+
+      setVendorsProjectsData(vendorsProjects);
+    } catch (error) {
+      console.log("🚀 ~ fetchInvoiceList ~ error:", error);
+    }
+  }
+
+  async function fetchExpenses() {
+    try {
+      const expenseRef = collection(db, "companies", companyId, "expenses");
+      const q = query(expenseRef, where("toWhom.userRef", "==", vendorsRef));
+      const getExpenseDocs = await getDocs(q);
+
+      let expenseAmount = expenseData;
+
+      getExpenseDocs.docs.forEach((doc) => {
+        const data = doc.data();
+        expenseAmount[data.transactionType] += data.amount;
+      });
+
+      setExpenseData(expenseAmount);
+    } catch (error) {
+      console.log("🚀 ~ fetchExpenses ~ error:", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchExpenses();
     fetchVendorData();
     fetchPOList();
     fetchProjectList();
@@ -164,7 +194,11 @@ function VendorView() {
       <div className="w-full">
         {activeTab === "Profile" && (
           <div>
-            <VendorProfile vendorData={vendorData} refresh={fetchVendorData} />
+            <VendorProfile
+              vendorData={vendorData}
+              refresh={fetchVendorData}
+              expenseData={expenseData}
+            />
           </div>
         )}
         {activeTab === "Projects" && (

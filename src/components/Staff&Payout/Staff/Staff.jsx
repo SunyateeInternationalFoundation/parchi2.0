@@ -76,6 +76,7 @@ function Staff() {
   const navigate = useNavigate();
   function onViewStaff(staffId) {
     navigate(staffId);
+    navigate("staff/" + staffId);
   }
 
   const handleDeleteStaff = async (staffId) => {
@@ -90,7 +91,7 @@ function Staff() {
   return (
     <div
       className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
-      style={{ height: "92vh" }}
+      style={{ height: "82vh" }}
     >
       <div className="bg-white pb-8 pt-6 rounded-lg shadow my-6">
         <nav className="flex mb-4 px-5">

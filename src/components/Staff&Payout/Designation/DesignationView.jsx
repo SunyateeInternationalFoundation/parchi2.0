@@ -48,7 +48,7 @@ const DesignationView = () => {
   return (
     <div className="px-5 pb-5 bg-gray-100" style={{ width: "100%" }}>
       <header className="flex items-center space-x-3 my-2">
-        <Link className="flex items-center " to={"./../"}>
+        <Link className="flex items-center " to={"./../../?tab=Designations"}>
           <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
         </Link>
         <h1 className="text-2xl font-bold">Designation's Staff</h1>

@@ -33,6 +33,10 @@ function CustomerView() {
   const [customersServicesData, setCustomersServicesData] = useState([]);
   const [customersProjectsData, setCustomersProjectsData] = useState([]);
   const [customerData, setCustomerData] = useState([]);
+  const [expenseData, setExpenseData] = useState({
+    income: 0,
+    expense: 0,
+  });
 
   function DateFormate(timestamp) {
     const milliseconds =
@@ -60,96 +64,122 @@ function CustomerView() {
     }
   };
 
-  useEffect(() => {
-    async function fetchInvoiceList() {
-      try {
-        const sales = [
-          "invoices",
-          "quotations",
-          "proFormaInvoice",
-          "creditNote",
-          "deliveryChallan",
-        ];
-        const saleNo = {
-          invoices: "invoiceNo",
-          quotations: "quotationNo",
-          proFormaInvoice: "proFormaInvoiceNo",
-          creditNote: "creditNoteNo",
-          deliveryChallan: "deliveryChallanNo",
-        };
-        let salesData = {};
-        for (let sale of sales) {
-          const invoiceRef = collection(db, `/companies/${companyId}/${sale}`);
-          const q = query(
-            invoiceRef,
-            where("customerDetails.customerRef", "==", customersRef)
-          );
-          const querySnapshot = await getDocs(q);
-
-          const data = querySnapshot.docs.map((doc) => {
-            const data = doc.data();
-
-            return {
-              id: doc.id,
-              ...data,
-              no: data[saleNo[sale]],
-            };
-          });
-          salesData[sale] = data;
-        }
-        setCustomersInvoicesData(salesData);
-      } catch (error) {
-        console.log("🚀 ~ fetchInvoiceList ~ error:", error);
-      }
-    }
-    async function fetchServicesList() {
-      try {
-        const invoiceRef = collection(db, `/companies/${companyId}/services`);
+  async function fetchInvoiceList() {
+    try {
+      const sales = [
+        "invoices",
+        "quotations",
+        "proFormaInvoice",
+        "creditNote",
+        "deliveryChallan",
+        "pos",
+      ];
+      const saleNo = {
+        invoices: "invoiceNo",
+        quotations: "quotationNo",
+        proFormaInvoice: "proFormaInvoiceNo",
+        creditNote: "creditNoteNo",
+        deliveryChallan: "deliveryChallanNo",
+        pos: "posNo",
+      };
+      let salesData = {};
+      let expenseAmount = expenseData;
+      for (let sale of sales) {
+        const invoiceRef = collection(db, `/companies/${companyId}/${sale}`);
         const q = query(
           invoiceRef,
           where("customerDetails.customerRef", "==", customersRef)
         );
         const querySnapshot = await getDocs(q);
-
-        const customersInvoices = querySnapshot.docs.map((doc) => {
+        const data = querySnapshot.docs.map((doc) => {
           const data = doc.data();
+          if (sale == "invoices" || sale == "pos") {
+            expenseAmount.income += +data.total;
+          }
           return {
             id: doc.id,
             ...data,
+            no: data[saleNo[sale]],
           };
         });
-
-        setCustomersServicesData(customersInvoices);
-      } catch (error) {
-        console.log("🚀 ~ fetchInvoiceList ~ error:", error);
+        salesData[sale] = data;
       }
+      setExpenseData(expenseAmount);
+
+      setCustomersInvoicesData(salesData);
+    } catch (error) {
+      console.log("🚀 ~ fetchInvoiceList ~ error:", error);
     }
+  }
 
-    async function fetchProjectList() {
-      try {
-        const ProjectRef = collection(db, `/projects`);
+  async function fetchServicesList() {
+    try {
+      const invoiceRef = collection(db, `/companies/${companyId}/services`);
+      const q = query(
+        invoiceRef,
+        where("customerDetails.customerRef", "==", customersRef)
+      );
+      const querySnapshot = await getDocs(q);
 
-        const q = query(
-          ProjectRef,
-          where("customerRef", "array-contains", customersRef)
-        );
-        const querySnapshot = await getDocs(q);
+      const customersInvoices = querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+        };
+      });
 
-        const customersProjects = querySnapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            ...data,
-            createdAt: DateFormate(data.createdAt),
-          };
-        });
-
-        setCustomersProjectsData(customersProjects);
-      } catch (error) {
-        console.log("🚀 ~ fetchInvoiceList ~ error:", error);
-      }
+      setCustomersServicesData(customersInvoices);
+    } catch (error) {
+      console.log("🚀 ~ fetchInvoiceList ~ error:", error);
     }
+  }
 
+  async function fetchProjectList() {
+    try {
+      const ProjectRef = collection(db, `/projects`);
+
+      const q = query(
+        ProjectRef,
+        where("customerRef", "array-contains", customersRef)
+      );
+      const querySnapshot = await getDocs(q);
+
+      const customersProjects = querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: DateFormate(data.createdAt),
+        };
+      });
+
+      setCustomersProjectsData(customersProjects);
+    } catch (error) {
+      console.log("🚀 ~ fetchInvoiceList ~ error:", error);
+    }
+  }
+
+  async function fetchExpenses() {
+    try {
+      const expenseRef = collection(db, "companies", companyId, "expenses");
+      const q = query(expenseRef, where("toWhom.userRef", "==", customersRef));
+      const getExpenseDocs = await getDocs(q);
+
+      let expenseAmount = expenseData;
+
+      getExpenseDocs.docs.forEach((doc) => {
+        const data = doc.data();
+        expenseAmount[data.transactionType] += data.amount;
+      });
+
+      setExpenseData(expenseAmount);
+    } catch (error) {
+      console.log("🚀 ~ fetchExpenses ~ error:", error);
+    }
+  }
+  useEffect(() => {
+    fetchExpenses();
     fetchServicesList();
     fetchCustomerData();
     fetchInvoiceList();
@@ -208,7 +238,11 @@ function CustomerView() {
       <div className="w-full">
         {activeTab === "Profile" && (
           <div>
-            <Profile customerData={customerData} refresh={fetchCustomerData} />
+            <Profile
+              customerData={customerData}
+              refresh={fetchCustomerData}
+              expenseData={expenseData}
+            />
           </div>
         )}
         {activeTab === "Projects" && (

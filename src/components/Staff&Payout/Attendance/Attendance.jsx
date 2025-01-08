@@ -7,9 +7,8 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import FormatTimestamp from "../../../constants/FormatTimestamp";
 import { db } from "../../../firebase";
 import AddAttendanceSidebar from "./AddAttendanceSidebar";
 
@@ -198,77 +197,96 @@ function Attendance() {
   });
 
   return (
-    <div
-      className="px-5 pb-5 bg-gray-100 overflow-y-auto"
-      style={{ height: "92vh" }}
-    >
-      <header className="flex justify-between items-center space-x-3  my-2">
-        <div className="flex space-x-3">
-          <Link className="flex items-center " to={"./../"}>
-            <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
-          </Link>
-          <h1 className="text-2xl font-bold">Attendance</h1>
-        </div>
-        <button
-          className="bg-blue-500 text-white py-1 px-2 rounded"
-          onClick={() => setIsSidebarOpen(true)}
-        >
-          + Add Attendance
-        </button>
-      </header>
-      <div className="bg-white flex justify-between p-3 rounded-lg">
-        <div>
-          <div>Total Staff</div>
-          <div>{staffData.length}</div>
-        </div>
-        <div>
-          <div>Overall Salary</div>
-          <div>₹ {overallSalary.toFixed(2)}</div>
+    <div className="main-container" style={{ height: "82vh" }}>
+      <div className=" mt-4 py-3">
+        <h1 className="text-2xl font-bold pb-3 ">Attendance Overview</h1>
+        <div className="grid grid-cols-2 gap-8  ">
+          <div className="rounded-lg p-5 bg-white shadow  ">
+            <div className="text-lg">Total Staff</div>
+            <div className="text-3xl text-indigo-600 font-bold p-2">
+              {staffData.length}
+            </div>
+          </div>
+          <div className="rounded-lg p-5 bg-white shadow ">
+            <div className="text-lg">Total Salary</div>
+            <div className="text-3xl text-emerald-600 font-bold p-2">
+              ₹ {overallSalary.toFixed(2)}
+            </div>
+          </div>
         </div>
       </div>
-      <div className="py-3 text-right">
-        <label htmlFor="monthFilter">Filter by Month:</label>
-        <input
-          id="monthFilter"
-          type="month"
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(e.target.value)}
-          className="ml-2 p-1 border rounded-lg"
-        />
-      </div>
-      <div>
-        {loading ? (
-          <div className="text-center">Loading...</div>
-        ) : filteredAttendance.length > 0 ? (
-          <div className="overflow-y-auto" style={{ height: "60vh" }}>
-            {filteredAttendance.map((ele) => (
-              <div
-                className=" bg-white p-3 rounded-lg mb-3 cursor-pointer border hover:shadow"
-                key={ele.id}
-                onClick={() => {
-                  setOnUpdateAttendance(ele);
-                  setIsSidebarOpen(true);
-                }}
-              >
-                <div>{DateFormate(ele.date)}</div>
-                <div className="flex justify-between items-center">
-                  <div>
-                    Total Presents{" "}
-                    <span className="text-green-500">{ele.present}</span>
-                  </div>
-                  <div>
-                    Total Absent{" "}
-                    <span className="text-red-500">{ele.absent}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+      <div className="container">
+        <header className="flex justify-between items-center space-x-3 p-5">
+          <div className="flex space-x-3 item-center">
+            <h1 className="text-2xl font-bold">Attendance</h1>
+            <div className="">
+              <label htmlFor="monthFilter">Filter by Month:</label>
+              <input
+                id="monthFilter"
+                type="month"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className=" p-1 border rounded-lg"
+              />
+            </div>
           </div>
-        ) : (
-          <div className="text-center">
-            No Attendance Found for the Selected Month
-          </div>
-        )}
+          <button className="btn-add " onClick={() => setIsSidebarOpen(true)}>
+            + Add Attendance
+          </button>
+        </header>
+        <div>
+          {loading ? (
+            <div className="text-center">Loading...</div>
+          ) : filteredAttendance.length > 0 ? (
+            <div className="overflow-y-auto" style={{ height: "60vh" }}>
+              <table className="w-full border-collapse text-start">
+                <thead className="bg-white">
+                  <tr className="border-b">
+                    <td className="px-8 py-1 text-gray-400 font-semibold text-start">
+                      Date
+                    </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold text-center">
+                      Presents
+                    </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold text-center">
+                      Absent
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredAttendance.length > 0 ? (
+                    filteredAttendance.map((item) => (
+                      <tr
+                        key={item.id}
+                        className="border-b border-gray-200 text-center cursor-pointer"
+                        onClick={() => {
+                          setOnUpdateAttendance(item);
+                          setIsSidebarOpen(true);
+                        }}
+                      >
+                        <td className="px-8 py-3 text-start">
+                          <FormatTimestamp timestamp={item.date} />
+                        </td>
+                        <td className="px-5 py-3">{item.present}</td>
+                        <td className="px-5 py-3">{item.absent}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="h-24 text-center py-4">
+                        No Attendance Found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center">
+              No Attendance Found for the Selected Month
+            </div>
+          )}
+        </div>
       </div>
       {isSidebarOpen && (
         <AddAttendanceSidebar

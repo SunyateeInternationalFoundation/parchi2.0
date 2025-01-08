@@ -71,8 +71,8 @@ const Documents = () => {
       });
 
       if (count > 0) {
-        setFolderName("New Folder(" + count + ")");
-        setCountOfNewFolder(count);
+        setFolderName("New Folder(" + (+count + 1) + ")");
+        setCountOfNewFolder(count + 1);
       }
 
       const filesQuery = query(
@@ -88,10 +88,6 @@ const Documents = () => {
         isOutlineDotsOpen: false,
       }));
 
-      console.log(
-        "🚀 ~ fetchFoldersAndFiles ~ fetchedFolders:",
-        fetchedFolders
-      );
       setFolders(fetchedFolders);
       setFiles(fetchedFiles);
     } catch (error) {
@@ -117,10 +113,10 @@ const Documents = () => {
         type: "folder",
         companyRef,
       };
-
+      setNewName(folderName);
       setFolders((prev) => [...prev, newFolder]);
-      setFolderName("New Folder(" + countOfNewFolder + ")");
-      setCountOfNewFolder((val) => val + 1);
+      setFolderName("New Folder(" + (+countOfNewFolder + 1) + ")");
+      setCountOfNewFolder(countOfNewFolder + 1);
     } catch (error) {
       console.error("Error creating folder:", error);
     }
