@@ -261,6 +261,9 @@ function Expense() {
                     <td className="px-5 py-1 text-gray-400 font-semibold text-start">
                       Category
                     </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                      IsProject
+                    </td>
                     <td className="px-5 py-1 text-gray-400 font-semibold text-center">
                       Delete
                     </td>
@@ -308,6 +311,9 @@ function Expense() {
                         </td>
                         <td className="px-5 py-3  text-start">
                           {expense.category}
+                        </td>
+                        <td className="px-5 py-3  text-start">
+                          {expense?.projectRef?.id ? "Yes" : "No"}
                         </td>
                         <td
                           className="px-5 py-3   text-center"

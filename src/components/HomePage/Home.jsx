@@ -197,7 +197,7 @@ const Home = () => {
             <Route path="/projects/:id/items" element={<Items />}></Route>
             <Route path="/projects/:id/chats" element={<Chats />}></Route> */}
             <Route path="/staff-payout" element={<StaffPayout />}></Route>
-            <Route path="/staff-payout/staff" element={<Staff />}></Route>
+            {/* <Route path="/staff-payout/staff" element={<Staff />}></Route> */}
             <Route
               path="/staff-payout/staff/:id"
               element={<StaffView />}
@@ -211,13 +211,13 @@ const Home = () => {
               path="/staff-payout/designations/:id"
               element={<DesignationView />}
             ></Route>
-            <Route path="/staff-payout/roles" element={<Roles />}></Route>
+            {/* <Route path="/staff-payout/roles" element={<Roles />}></Route>
             <Route path="/staff-payout/assets" element={<Assets />}></Route>
             <Route path="/staff-payout/weekOff" element={<WeekOff />}></Route>
             <Route
               path="/staff-payout/attendance"
               element={<Attendance />}
-            ></Route>
+            ></Route> */}
 
             <Route path="/services" element={<Services />}></Route>
             <Route

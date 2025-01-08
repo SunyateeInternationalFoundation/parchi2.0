@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { db, storage } from "../../../firebase";
 import { updateCustomerDetails } from "../../../store/CustomerSlice";
 
-const Profile = ({ customerData, refresh }) => {
+const Profile = ({ customerData, refresh, expenseData }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [UpdatedData, setUpdatedData] = useState(customerData);
   const [progress, setProgress] = useState(0);
@@ -169,7 +169,9 @@ const Profile = ({ customerData, refresh }) => {
                   </div>
                   <div>
                     <div className="text-lg">Income</div>
-                    <div className="text-3xl text-green-600 font-bold">0</div>
+                    <div className="text-3xl text-green-600 font-bold">
+                      {expenseData.income}
+                    </div>
                   </div>
                 </div>
                 <div className="bg-red-50 rounded-lg p-5 w-full flex items-center space-x-3 text-xl">
@@ -178,7 +180,10 @@ const Profile = ({ customerData, refresh }) => {
                   </div>
                   <div>
                     <div className="text-lg">Expenses</div>
-                    <div className="text-3xl text-red-600 font-bold">0</div>
+                    <div className="text-3xl text-red-600 font-bold">
+                      {" "}
+                      {expenseData.expense}
+                    </div>
                   </div>
                 </div>
               </div>

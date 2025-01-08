@@ -9,10 +9,11 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { IoMdArrowRoundBack, IoMdClose } from "react-icons/io";
+import { IoMdClose } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import FormatTimestamp from "../../../constants/FormatTimestamp";
 import { db } from "../../../firebase";
 
 const Branches = () => {
@@ -94,22 +95,25 @@ const Branches = () => {
     }
   }
   return (
-    <div className="w-full" style={{ width: "100%", height: "92vh" }}>
-      <div
-        className="px-8 pb-8 pt-5 bg-gray-100"
-        style={{ width: "100%", height: "92vh" }}
-      >
-        <header className="flex items-center justify-between mb-3">
-          <div className="flex space-x-3">
-            <Link className="flex items-center " to={"./../"}>
-              <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
-            </Link>
-
+    <div className="main-container " style={{ height: "82vh" }}>
+      <div className="container ">
+        <header className="flex items-center justify-between p-5">
+          <div className="flex space-x-3  items-center">
             <h1 className="text-2xl font-bold">Branches</h1>
+            <div className="input-div-icon">
+              <input
+                type="text"
+                placeholder="Search by Branch Name..."
+                className=" w-full"
+                onChange={(e) => setSearchInput(e.target.value)}
+                value={searchInput}
+              />
+              <IoSearch />
+            </div>
           </div>
 
           <button
-            className="bg-blue-500 text-white py-1 px-2 rounded "
+            className="btn-add "
             onClick={() => {
               setIsModalOpen(true);
             }}
@@ -117,50 +121,78 @@ const Branches = () => {
             + Create Branch
           </button>
         </header>
-        <div className="flex items-center bg-white space-x-4 mb-4 border p-2 rounded">
-          <input
-            type="text"
-            placeholder="Search by Branch Name..."
-            className=" w-full focus:outline-none"
-            onChange={(e) => setSearchInput(e.target.value)}
-            value={searchInput}
-          />
-          <IoSearch />
-        </div>
-        <div>
+
+        {/* <div>
           <div className="text-4xl text-blue-700 font-bold">
             {branchesCount.total}
           </div>
           <div>Total Branches</div>
-        </div>
+        </div> */}
         <div>
           {loading ? (
-            <div className="text-center py-6">Loading Branches...</div>
-          ) : filteredBranches.length > 0 ? (
-            filteredBranches.map((branch) => (
-              <div className="mt-4" key={branch.id}>
-                <div className="bg-white p-4 rounded shadow">
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-xl font-semibold">
-                      {branch.branchName}
-                    </h2>
-                    <button
-                      onClick={(e) => OnDeleteBranch(e, branch.id)}
-                      className="text-white bg-red-500 h-6 w-6 font-bold text-center rounded-full flex items-center justify-center"
-                    >
-                      <div className="w-3 h-1 bg-white"></div>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))
+            <div className="text-center">Loading...</div>
           ) : (
-            <div className="text-center border-2 shadow cursor-pointer rounded-lg p-3 mt-3">
-              No Branches
+            <div className="overflow-y-auto" style={{ height: "76vh" }}>
+              <table className="w-full border-collapse text-start">
+                <thead className="bg-white">
+                  <tr className="border-b">
+                    <td className="px-8 py-1 text-gray-400 font-semibold text-start">
+                      Date
+                    </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                      Name
+                    </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                      Address
+                    </td>
+                    <td className="px-8 py-1 text-gray-400 font-semibold text-end">
+                      Delete
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredBranches.length > 0 ? (
+                    filteredBranches.map((branch) => (
+                      <tr
+                        key={branch.id}
+                        className="border-b border-gray-200 text-center cursor-pointer"
+                      >
+                        <td className="px-8 py-3 text-start">
+                          <FormatTimestamp timestamp={branch.createdAt} />
+                        </td>
+                        <td className="px-5 py-3 text-start">
+                          {branch.branchName}
+                        </td>
+                        <td className="px-5 py-3 text-start">
+                          {branch?.address?.address}
+                        </td>
+                        <td
+                          className="px-12 py-3"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
+                          <div
+                            className="text-red-500 flex items-center justify-end"
+                            onClick={() => OnDeleteBranch(branch.id)}
+                          >
+                            <RiDeleteBin6Line />
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="h-24 text-center py-4">
+                        No Designation Found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
-
         {isModalOpen && (
           <AddBranchModal
             isOpen={isModalOpen}

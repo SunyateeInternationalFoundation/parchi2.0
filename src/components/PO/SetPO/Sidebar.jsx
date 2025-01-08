@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
@@ -110,5 +111,12 @@ function Sidebar({
     </div>
   );
 }
+Sidebar.propTypes = {
+  onClose: PropTypes.func,
+  productList: PropTypes.array,
+  isOpen: PropTypes.bool,
+  handleActionQty: PropTypes.func,
+  totalAmount: PropTypes.number,
+};
 
 export default Sidebar;

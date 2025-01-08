@@ -10,10 +10,11 @@ import {
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
-import { IoMdArrowRoundBack, IoMdClose } from "react-icons/io";
+import { IoMdClose } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import FormatTimestamp from "../../../constants/FormatTimestamp";
 import { db, storage } from "../../../firebase";
 
 const Assets = () => {
@@ -61,88 +62,14 @@ const Assets = () => {
     fetchAsset();
   }, [companyDetails.companyId]);
 
-  const handleAddasset = (newAsset) => {
+  const handleAddAsset = (newAsset) => {
     setAssets((prev) => [...prev, newAsset]);
     setAssetCount((prev) => ({
       total: prev.total + 1,
     }));
   };
-  return (
-    <div className="w-full" style={{ width: "100%", height: "92vh" }}>
-      <div
-        className="px-8 pb-8 pt-5 bg-gray-100"
-        style={{ width: "100%", height: "92vh" }}
-      >
-        <header className="flex items-center justify-between mb-3">
-          <div className="flex space-x-3">
-            <Link className="flex items-center " to={"./../"}>
-              <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
-              Back
-            </Link>
 
-            <h1 className="text-2xl font-bold">Assets</h1>
-          </div>
-
-          <button
-            className="bg-blue-500 text-white py-1 px-2 rounded "
-            onClick={() => {
-              setIsModalOpen(true);
-            }}
-          >
-            + Create Asset
-          </button>
-        </header>
-        <div className="flex items-center bg-white space-x-4 mb-4 border p-2 rounded">
-          <input
-            type="text"
-            placeholder="Search by asset..."
-            className=" w-full focus:outline-none"
-            onChange={(e) => setSearchInput(e.target.value)}
-          />
-          <IoSearch />
-        </div>
-        <div>
-          <div className="text-4xl text-blue-700 font-bold">
-            {assetCount.total}
-          </div>
-          <div>Total Assets</div>
-        </div>
-        <div>
-          {loading ? (
-            <div className="text-center py-6">Loading Assets...</div>
-          ) : assets.length > 0 ? (
-            assets.map((asset) => (
-              <AssetCard
-                key={asset.id}
-                asset={asset}
-                setAsset={setAssets}
-                setAssetCount={setAssetCount}
-                companyId={companyDetails.companyId}
-              />
-            ))
-          ) : (
-            <div className="text-center border-2 shadow cursor-pointer rounded-lg p-3 mt-3">
-              No Asset
-            </div>
-          )}
-        </div>
-
-        {isModalOpen && (
-          <AddAssetModal
-            onClose={() => setIsModalOpen(false)}
-            isOpen={isModalOpen}
-            onAddasset={handleAddasset}
-            companyId={companyDetails.companyId}
-          />
-        )}
-      </div>
-    </div>
-  );
-};
-
-const AssetCard = ({ asset, setAsset, setAssetCount, companyId }) => {
-  async function OnDeleteAsset(e, assetId) {
-    e.stopPropagation();
+  async function OnDeleteAsset(assetId) {
     try {
       const confirm = window.confirm(
         "Are you sure you want to delete this asset?"
@@ -162,30 +89,174 @@ const AssetCard = ({ asset, setAsset, setAssetCount, companyId }) => {
       console.error("Error deleting asset:", error);
     }
   }
+
   return (
-    <div className="bg-white p-4 rounded shadow">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">{asset.asset_name}</h2>
-        <button
-          onClick={(e) => OnDeleteAsset(e, asset.id)}
-          className="text-white bg-red-500 h-6 w-6 font-bold text-center rounded-full flex items-center justify-center"
-        >
-          <div className="w-3 h-1 bg-white"></div>
-        </button>
+    <div className="main-container" style={{ width: "100%", height: "82vh" }}>
+      <div className="container">
+        <header className="flex items-center justify-between p-5">
+          <div className="flex items-center space-x-3">
+            <h1 className="text-2xl font-bold">Assets</h1>
+            <div className="input-div-icon">
+              <input
+                type="text"
+                placeholder="Search by asset..."
+                className=" w-full "
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+              <IoSearch />
+            </div>
+          </div>
+
+          <button
+            className="btn-add"
+            onClick={() => {
+              setIsModalOpen(true);
+            }}
+          >
+            + Create Asset
+          </button>
+        </header>
+
+        {/* <div>
+          <div className="text-4xl text-blue-700 font-bold">
+            {assetCount.total}
+          </div>
+          <div>Total Assets</div>
+        </div> */}
+
+        <div>
+          {loading ? (
+            <div className="text-center">Loading...</div>
+          ) : (
+            <div className="overflow-y-auto" style={{ height: "76vh" }}>
+              <table className="w-full border-collapse text-start">
+                <thead className="bg-white">
+                  <tr className="border-b">
+                    <td className="px-8 py-1 text-gray-400 font-semibold text-start">
+                      Date
+                    </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                      Id
+                    </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                      Name
+                    </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                      value
+                    </td>
+                    <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                      Assign Staff
+                    </td>
+                    <td className="px-8 py-1 text-gray-400 font-semibold text-end">
+                      Delete
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {assets.length > 0 ? (
+                    assets.map((asset) => (
+                      <tr
+                        key={asset.id}
+                        className="border-b border-gray-200 text-center cursor-pointer"
+                      >
+                        <td className="px-8 py-3 text-start">
+                          <FormatTimestamp timestamp={asset.createdAt} />
+                        </td>
+                        <td className="px-5 py-3 text-start">
+                          {asset.assetId}
+                        </td>
+                        <td className="px-5 py-3 text-start">
+                          {asset.assetName}
+                        </td>
+                        <td className="px-5 py-3 text-start">{asset.value}</td>
+                        <td className="px-5 py-3 text-start">
+                          {asset.assignedTo}
+                        </td>
+                        <td
+                          className="px-12 py-3"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
+                          <div
+                            className="text-red-500 flex items-center justify-end"
+                            onClick={() => OnDeleteAsset(asset.id)}
+                          >
+                            <RiDeleteBin6Line />
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="h-24 text-center py-4">
+                        No Asset Found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+        {/* <div>
+          {loading ? (
+            <div className="text-center py-6">Loading Assets...</div>
+          ) : assets.length > 0 ? (
+            assets.map((asset) => (
+              <AssetCard
+                key={asset.id}
+                asset={asset}
+                setAsset={setAssets}
+                setAssetCount={setAssetCount}
+                companyId={companyDetails.companyId}
+              />
+            ))
+          ) : (
+            <div className="text-center border-2 shadow cursor-pointer rounded-lg p-3 mt-3">
+              No Asset
+            </div>
+          )}
+        </div> */}
+
+        {isModalOpen && (
+          <AddAssetModal
+            onClose={() => setIsModalOpen(false)}
+            isOpen={isModalOpen}
+            onAddAsset={handleAddAsset}
+            companyId={companyDetails.companyId}
+          />
+        )}
       </div>
     </div>
   );
 };
 
-const AddAssetModal = ({ onClose, onAddasset, isOpen, companyId }) => {
+// const AssetCard = ({ asset, setAsset, setAssetCount, companyId }) => {
+//   return (
+//     <div className="bg-white p-4 rounded shadow">
+//       <div className="flex justify-between items-center">
+//         <h2 className="text-xl font-semibold"></h2>
+//         <button
+//           onClick={(e) => }
+//           className="text-white bg-red-500 h-6 w-6 font-bold text-center rounded-full flex items-center justify-center"
+//         >
+//           <div className="w-3 h-1 bg-white"></div>
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
+
+const AddAssetModal = ({ onClose, onAddAsset, isOpen, companyId }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [staffData, setStaffData] = useState([]);
   const [formData, setFormData] = useState({
-    asset_name: "",
-    asset_id: "",
+    assetName: "",
+    assetId: "",
     assignedTo: "",
-    photograph_of_asset: null,
-    value_of_asset: "",
+    image: null,
+    value: "",
   });
   const userDetails = useSelector((state) => state.users);
   const companyDetails =
@@ -214,15 +285,9 @@ const AddAssetModal = ({ onClose, onAddasset, isOpen, companyId }) => {
   const handleAddAsset = async (e) => {
     e.preventDefault();
 
-    const {
-      asset_name,
-      asset_id,
-      assignedTo,
-      value_of_asset,
-      photograph_of_asset,
-    } = formData;
+    const { assetName, assetId, assignedTo, value, image } = formData;
 
-    if (!asset_name.trim()) {
+    if (!assetName.trim()) {
       alert("Asset name is required");
       return;
     }
@@ -231,21 +296,18 @@ const AddAssetModal = ({ onClose, onAddasset, isOpen, companyId }) => {
 
     try {
       let fileUrl = "";
-      if (photograph_of_asset) {
-        const storageRef = ref(
-          storage,
-          `assets/${Date.now()}_${photograph_of_asset.name}`
-        );
-        await uploadBytes(storageRef, photograph_of_asset);
+      if (image) {
+        const storageRef = ref(storage, `assets/${Date.now()}_${image.name}`);
+        await uploadBytes(storageRef, image);
         fileUrl = await getDownloadURL(storageRef);
       }
 
       const newAsset = {
-        asset_name,
-        asset_id,
+        assetName,
+        assetId,
         assignedTo,
-        photograph_of_asset: fileUrl,
-        value_of_asset,
+        image: fileUrl,
+        value,
       };
 
       const companyRef = doc(db, "companies", companyDetails.companyId);
@@ -258,7 +320,7 @@ const AddAssetModal = ({ onClose, onAddasset, isOpen, companyId }) => {
 
       const docRef = await addDoc(collection(db, "assets"), payload);
 
-      onAddasset({ id: docRef.id, ...payload });
+      onAddAsset({ id: docRef.id, ...payload });
       onClose();
     } catch (error) {
       console.error("Error adding asset:", error);
@@ -271,7 +333,7 @@ const AddAssetModal = ({ onClose, onAddasset, isOpen, companyId }) => {
     if (e.target.files[0]) {
       setFormData((prev) => ({
         ...prev,
-        photograph_of_asset: e.target.files[0],
+        image: e.target.files[0],
       }));
     }
   };
@@ -321,8 +383,8 @@ const AddAssetModal = ({ onClose, onAddasset, isOpen, companyId }) => {
             <label className="text-sm block font-semibold">Asset Name</label>
             <input
               type="text"
-              name="asset_name"
-              value={formData.asset_name}
+              name="assetName"
+              value={formData.assetName}
               onChange={handleInputChange}
               className="w-full border border-gray-300 p-2 rounded-md"
               placeholder="Asset Name"
@@ -332,8 +394,8 @@ const AddAssetModal = ({ onClose, onAddasset, isOpen, companyId }) => {
             <label className="text-sm block font-semibold">Asset Id</label>
             <input
               type="text"
-              name="asset_id"
-              value={formData.asset_id}
+              name="assetId"
+              value={formData.assetId}
               onChange={handleInputChange}
               className="w-full border border-gray-300 p-2 rounded-md"
               placeholder="Asset Id"
@@ -345,8 +407,8 @@ const AddAssetModal = ({ onClose, onAddasset, isOpen, companyId }) => {
             </label>
             <input
               type="text"
-              name="value_of_asset"
-              value={formData.value_of_asset}
+              name="value"
+              value={formData.value}
               onChange={handleInputChange}
               className="w-full border border-gray-300 p-2 rounded-md"
               placeholder="Value of Asset"

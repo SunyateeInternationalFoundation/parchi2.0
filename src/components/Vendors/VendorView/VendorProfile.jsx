@@ -1,12 +1,11 @@
 import { doc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { FaArrowDown, FaArrowUp, FaUserEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { db, storage } from "../../../firebase";
 
-const VendorProfile = ({ vendorData, refresh }) => {
+const VendorProfile = ({ vendorData, refresh, expenseData }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [UpdatedData, setUpdatedData] = useState(vendorData);
   const [progress, setProgress] = useState(0);
@@ -156,7 +155,9 @@ const VendorProfile = ({ vendorData, refresh }) => {
                     </div>
                     <div>
                       <div className="text-lg">Income</div>
-                      <div className="text-3xl text-green-600 font-bold">0</div>
+                      <div className="text-3xl text-green-600 font-bold">
+                        {expenseData.income}
+                      </div>
                     </div>
                   </div>
                   <div className="bg-red-50 rounded-lg p-5 w-full flex items-center space-x-3 text-xl">
@@ -165,7 +166,9 @@ const VendorProfile = ({ vendorData, refresh }) => {
                     </div>
                     <div>
                       <div className="text-lg">Expenses</div>
-                      <div className="text-3xl text-red-600 font-bold">0</div>
+                      <div className="text-3xl text-red-600 font-bold">
+                        {expenseData.expense}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -299,10 +302,6 @@ const VendorProfile = ({ vendorData, refresh }) => {
       )}
     </>
   );
-};
-VendorProfile.propTypes = {
-  vendorData: PropTypes.object.isRequired,
-  refresh: PropTypes.func.isRequired,
 };
 
 export default VendorProfile;

@@ -25,7 +25,7 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
   const [formData, setFormData] = useState({
     amount: 0,
     bookRef: "",
-    category: "project",
+    category: "",
     companyRef: "",
     date: Timestamp.fromDate(new Date()),
     paymentMode: "",
@@ -43,7 +43,28 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
     },
     transactionType: isModalOpen.type,
   });
-
+  const categories = [
+    "Food",
+    "Advertising",
+    "Travel",
+    "Education",
+    "Health",
+    "Insurance",
+    "Telephone",
+    "Bank fees",
+    "Maintenance",
+    "Legal & Professional",
+    "Utilities",
+    "Stationary",
+    "Rent",
+    "Printing",
+    "Raw Material",
+    "Licenses",
+    "Petty Cash",
+    "Furniture",
+    "Fixed Assets",
+    "Others",
+  ];
   function DateFormate(timestamp) {
     const milliseconds =
       timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
@@ -310,7 +331,28 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
               </select>
             </div>
           </div>
-
+          <div>
+            <div>Category</div>
+            <div>
+              <select
+                className="w-full p-2 border-2 rounded-lg focus:outline-none"
+                defaultValue=""
+                onChange={(e) =>
+                  setFormData((val) => ({
+                    ...val,
+                    category: e.target.value,
+                  }))
+                }
+              >
+                <option disabled value={""}>
+                  select Category
+                </option>
+                {categories.map((ele, index) => (
+                  <option key={index}>{ele}</option>
+                ))}
+              </select>
+            </div>
+          </div>
           <div>
             <div>Remarks</div>
             <div>

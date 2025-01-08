@@ -1,3 +1,30 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    .main-container {
+        @apply px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto;
+    }
+
+    .container {
+        @apply bg-white rounded-lg shadow;
+    }
+
+    .input-div-icon {
+        @apply flex items-center space-x-4 border px-5 py-3 rounded-md w-full;
+    }
+
+    .input-tag {
+        @apply border px-5 py-3 rounded-md;
+    }
+
+    .btn-add {
+        @apply bg-[#442799] text-white text-center px-5 py-3 font-semibold rounded-md;
+    }
+
+    .btn-outline-black {
+        @apply px-4 py-1 rounded-md border hover:bg-black hover:text-white;
+    }
+
+}
