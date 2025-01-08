@@ -124,7 +124,7 @@ const Documents = () => {
       };
       setNewName(folderName);
       setFolders((prev) => [...prev, newFolder]);
-      setFolderName("New Folder(" + +countOfNewFolder + ")");
+      setFolderName("New Folder(" + (+countOfNewFolder + 1) + ")");
       setCountOfNewFolder(countOfNewFolder + 1);
     } catch (error) {
       console.error("Error creating folder:", error);
@@ -209,7 +209,7 @@ const Documents = () => {
     if (!newName) return;
     try {
       const itemRef = doc(
-        db,
+        companyRef,
         item.type === "folder" ? "folders" : "files",
         item.id
       );

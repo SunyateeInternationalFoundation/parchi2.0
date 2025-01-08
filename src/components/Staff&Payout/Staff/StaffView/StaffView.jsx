@@ -50,12 +50,12 @@ function StaffView({ staffCompanyId }) {
     return `${getDate}/${getMonth}/${getFullYear}`;
   }
 
-  const StaffRef = doc(db, "staff", id);
+  const staffRef = doc(db, "staff", id);
 
   const fetchStaffData = async () => {
     if (id) {
       try {
-        const staffDoc = await getDoc(StaffRef);
+        const staffDoc = await getDoc(staffRef);
         const staffAttendanceGetDocs = await getDocs(
           collection(db, "companies", companyId, "staffAttendance")
         );
@@ -86,7 +86,7 @@ function StaffView({ staffCompanyId }) {
 
         const q = query(
           ProjectRef,
-          where("staffRef", "array-contains", StaffRef)
+          where("staffRef", "array-contains", staffRef)
         );
         const querySnapshot = await getDocs(q);
 
