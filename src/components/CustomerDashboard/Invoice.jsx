@@ -97,37 +97,6 @@ function Invoice() {
   return (
     <div className="w-full">
       <div className="main-container" style={{ height: "92vh" }}>
-        {/* <div className="bg-white rounded-lg shadow mt-4 py-5">
-          <h1 className="text-2xl font-bold pb-3 px-10 ">Invoice Overview</h1>
-          <div className="grid grid-cols-4 gap-12  px-10 ">
-            <div className="rounded-lg p-5 bg-[hsl(240,100%,98%)] ">
-              <div className="text-lg">Total Amount</div>
-              <div className="text-3xl text-indigo-600 font-bold">
-                ₹ {totalAmount}
-              </div>
-            </div>
-            <div className="rounded-lg p-5 bg-green-50 ">
-              <div className="text-lg"> Paid Amount</div>
-              <div className="text-3xl text-emerald-600 font-bold">
-                {" "}
-                ₹ {paidAmount}
-              </div>
-            </div>
-            <div className="rounded-lg p-5 bg-orange-50 ">
-              <div className="text-lg"> Pending Amount</div>
-              <div className="text-3xl text-orange-600 font-bold">
-                ₹ {pendingAmount}
-              </div>
-            </div>
-            <div className="rounded-lg p-5 bg-red-50 ">
-              <div className="text-lg"> UnPaid Amount</div>
-              <div className="text-3xl text-red-600 font-bold">
-                ₹ {totalAmount - paidAmount}
-              </div>
-            </div>
-          </div>
-        </div> */}
-
         <div className="bg-white pb-8 pt-6 rounded-lg shadow my-6">
           <nav className="flex mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">

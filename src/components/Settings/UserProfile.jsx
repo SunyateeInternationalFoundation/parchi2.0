@@ -149,9 +149,7 @@ const Prefix = () => {
 
           <div className="space-y-4 mt-3">
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                Name
-              </label>
+              <label className=" text-sm space-y-1 text-gray-600">Name</label>
 
               <div>
                 <input
@@ -165,7 +163,7 @@ const Prefix = () => {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600">
+              <label className=" text-sm space-y-1 text-gray-600">
                 Phone Number
               </label>
               <div>
@@ -180,9 +178,7 @@ const Prefix = () => {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600">
-                Email
-              </label>
+              <label className=" text-sm space-y-1 text-gray-600">Email</label>
               <div>
                 <input
                   type="email"

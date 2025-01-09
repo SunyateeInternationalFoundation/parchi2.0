@@ -275,299 +275,299 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
             <IoMdClose />
           </button>
         </div>
-        <form className="space-y-2 p-5" onSubmit={onCreateProduct}>
-          <div className="space-y-1">
-            <div className="grid w-full mb-2 items-center gap-1.5">
-              <label className="text-gray-600">Product Image</label>
+        <form onSubmit={onCreateProduct}>
+          <div className="space-y-2 p-5">
+            <div className="space-y-1">
+              <div className="grid w-full mb-2 items-center gap-1.5">
+                <label className="text-gray-600">Product Image</label>
 
-              <label
-                htmlFor="file"
-                className="cursor-pointer p-3 rounded-md border-2 border-dashed border shadow-[0_0_200px_-50px_rgba(0,0,0,0.72)]"
-              >
-                <div className="flex  items-center justify-center gap-1">
-                  {productImage?.name ? (
-                    <span className="py-1 px-4">{productImage?.name}</span>
-                  ) : (
-                    <>
-                      <svg viewBox="0 0 640 512" className="h-8 fill-gray-600">
-                        <path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z" />
-                      </svg>
-                      <span className="py-1 px-4">Upload Image</span>
-                    </>
-                  )}
-                </div>
-                <input
-                  id="file"
-                  type="file"
-                  className="hidden"
-                  onChange={(e) => setProductImage(e.target.files[0])}
-                />
+                <label
+                  htmlFor="file"
+                  className="cursor-pointer p-3 rounded-md border-2 border-dashed border shadow-[0_0_200px_-50px_rgba(0,0,0,0.72)]"
+                >
+                  <div className="flex  items-center justify-center gap-1">
+                    {productImage?.name ? (
+                      <span className="py-1 px-4">{productImage?.name}</span>
+                    ) : (
+                      <>
+                        <svg
+                          viewBox="0 0 640 512"
+                          className="h-8 fill-gray-600"
+                        >
+                          <path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z" />
+                        </svg>
+                        <span className="py-1 px-4">Upload Image</span>
+                      </>
+                    )}
+                  </div>
+                  <input
+                    id="file"
+                    type="file"
+                    className="hidden"
+                    onChange={(e) => setProductImage(e.target.files[0])}
+                  />
+                </label>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className=" text-sm text-gray-600 mt-2">
+                Item Name<span className="text-red-500">*</span>
               </label>
-            </div>
-          </div>
-          <div className="space-y-1">
-            <label className=" text-sm text-gray-600 mt-2">
-              Item Name<span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="name"
-              className="input-tag w-full"
-              placeholder="name"
-              value={formData.name || ""}
-              required
-              onChange={(e) =>
-                setFormData((val) => ({ ...val, name: e.target.value }))
-              }
-            />
-          </div>
-          <div className="space-y-1">
-            <label className=" text-sm text-gray-600">
-              Selling Price<span className="text-red-500">*</span>
-            </label>
-
-            <div className="flex items-center justify-center">
               <input
-                type="number"
-                name="pricing.sellingPrice.amount"
-                className="w-full border px-5 py-3 rounded-l-md"
-                placeholder="Selling Price"
+                type="text"
+                name="name"
+                className="input-tag w-full"
+                placeholder="name"
+                value={formData.name || ""}
                 required
-                value={formData.sellingPrice || ""}
                 onChange={(e) =>
-                  setFormData((val) => ({
-                    ...val,
-                    sellingPrice: +e.target.value,
-                  }))
+                  setFormData((val) => ({ ...val, name: e.target.value }))
                 }
               />
+            </div>
+            <div className="space-y-1">
+              <label className=" text-sm text-gray-600">
+                Selling Price<span className="text-red-500">*</span>
+              </label>
+
+              <div className="flex items-center justify-center">
+                <input
+                  type="number"
+                  name="pricing.sellingPrice.amount"
+                  className="w-full border px-5 py-3 rounded-l-md"
+                  placeholder="Selling Price"
+                  required
+                  value={formData.sellingPrice || ""}
+                  onChange={(e) =>
+                    setFormData((val) => ({
+                      ...val,
+                      sellingPrice: +e.target.value,
+                    }))
+                  }
+                />
+                <select
+                  className="w-full  border px-5 py-3 rounded-r-md text-gray-600"
+                  name="pricing.sellingPrice.includingTax"
+                  value={formData.sellingPriceTaxType}
+                  onChange={(e) =>
+                    setFormData((val) => ({
+                      ...val,
+                      sellingPriceTaxType:
+                        e.target.value === "true" ? true : false,
+                    }))
+                  }
+                >
+                  <option value="true">Incl Tax</option>
+                  <option value="false">Excl Tax</option>
+                </select>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className=" text-sm text-gray-600">Purchase Price</label>
+
+              <div className="flex items-center justify-center">
+                <input
+                  type="number"
+                  name="purchasePricing"
+                  className="w-full border px-5 py-3 rounded-l-md"
+                  placeholder="Purchase Pricing"
+                  value={formData.purchasePrice || ""}
+                  onChange={(e) =>
+                    setFormData((val) => ({
+                      ...val,
+                      purchasePrice: +e.target.value,
+                    }))
+                  }
+                />
+                <select
+                  className="w-full  border px-5 py-3 rounded-r-md text-gray-600"
+                  value={formData.purchasePriceTaxType}
+                  onChange={(e) =>
+                    setFormData((val) => ({
+                      ...val,
+                      purchasePriceTaxType:
+                        e.target.value === "true" ? true : false,
+                    }))
+                  }
+                >
+                  <option value="true">Incl Tax</option>
+                  <option value="false">Excl Tax</option>
+                </select>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className=" text-sm text-gray-600">Discount</label>
+
+              <div className="flex items-center justify-center ">
+                <input
+                  type="number"
+                  name="discount"
+                  className="w-full border px-5 py-3 rounded-l-md"
+                  placeholder="Discount"
+                  value={formData.discount || ""}
+                  onChange={(e) =>
+                    setFormData((val) => ({
+                      ...val,
+                      discount: +e.target.value || 0,
+                    }))
+                  }
+                />
+                <select
+                  className="w-full border px-5 py-3 rounded-r-md text-gray-600"
+                  value={formData.discountType}
+                  onChange={(e) =>
+                    setFormData((val) => ({
+                      ...val,
+                      discountType: e.target.value === "true" ? true : false,
+                    }))
+                  }
+                >
+                  <option value="true">%</option>
+                  <option value="false">Fixed</option>
+                </select>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className=" text-sm text-gray-600">GST Tax</label>
               <select
-                className="w-full  border px-5 py-3 rounded-r-md text-gray-600"
-                name="pricing.sellingPrice.includingTax"
-                value={formData.sellingPriceTaxType}
+                className="w-full input-tag text-gray-600"
+                value={formData.tax}
                 onChange={(e) =>
                   setFormData((val) => ({
                     ...val,
-                    sellingPriceTaxType:
-                      e.target.value === "true" ? true : false,
+                    tax: +e.target.value,
                   }))
                 }
               >
-                <option value="true">Incl Tax</option>
-                <option value="false">Excl Tax</option>
+                <option value={0}>0 %</option>
+                <option value={5}>5 %</option>
+                <option value={12}>12 %</option>
+                <option value={18}>18 %</option>
+                <option value={28}>28 %</option>
               </select>
             </div>
-          </div>
-          <div className="space-y-1">
-            <label className=" text-sm text-gray-600">Purchase Price</label>
-
-            <div className="flex items-center justify-center">
+            <div className="space-y-1">
+              <label className=" text-sm text-gray-600">
+                Stock<span className="text-red-500">*</span>
+              </label>
               <input
-                type="number"
-                name="purchasePricing"
-                className="w-full border px-5 py-3 rounded-l-md"
-                placeholder="Purchase Pricing"
-                value={formData.purchasePrice || ""}
+                type="text"
+                name="stock"
+                className="w-full input-tag"
+                placeholder="Stock/Quantity"
+                value={formData.stock || ""}
                 onChange={(e) =>
                   setFormData((val) => ({
                     ...val,
-                    purchasePrice: +e.target.value,
+                    stock: +e.target.value,
                   }))
                 }
+                required
               />
-              <select
-                className="w-full  border px-5 py-3 rounded-r-md text-gray-600"
-                value={formData.purchasePriceTaxType}
-                onChange={(e) =>
-                  setFormData((val) => ({
-                    ...val,
-                    purchasePriceTaxType:
-                      e.target.value === "true" ? true : false,
-                  }))
-                }
-              >
-                <option value="true">Incl Tax</option>
-                <option value="false">Excl Tax</option>
-              </select>
             </div>
-          </div>
-          <div className="space-y-1">
-            <label className=" text-sm text-gray-600">Discount</label>
-
-            <div className="flex items-center justify-center ">
+            <div className="space-y-1">
+              <label className=" text-sm text-gray-600 ">Barcode</label>
               <input
-                type="number"
-                name="discount"
-                className="w-full border px-5 py-3 rounded-l-md"
-                placeholder="Discount"
-                value={formData.discount || ""}
+                type="text"
+                value={formData.barcode}
+                readOnly={onProductUpdated?.barcode}
+                className="w-full input-tag"
                 onChange={(e) =>
                   setFormData((val) => ({
                     ...val,
-                    discount: +e.target.value || 0,
+                    barcode: e.target.value,
                   }))
                 }
               />
+            </div>
+            <div className="space-y-1">
+              <label className=" text-sm text-gray-600">
+                Category<span className="text-red-500">*</span>
+              </label>
               <select
-                className="w-full border px-5 py-3 rounded-r-md text-gray-600"
-                value={formData.discountType}
+                className="w-full input-tag text-gray-600 "
+                value={formData.category || ""}
+                onChange={(e) =>
+                  setFormData((val) => ({ ...val, category: e.target.value }))
+                }
+                required
+              >
+                <option value="" disabled>
+                  Select Category
+                </option>
+                {categories.map((ele) => (
+                  <option value={ele.name} key={ele.id}>
+                    {ele.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className=" text-sm text-gray-600">Warehouse</label>
+              <Select
+                value={formData.warehouse ?? ""}
+                onValueChange={(val) => {
+                  console.log(val);
+                  setFormData((pre) => ({
+                    ...pre,
+                    warehouse: val,
+                  }));
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a Warehouse" />
+                </SelectTrigger>
+                <SelectContent>
+                  {warehouses.map((ele) => (
+                    <SelectItem value={ele.name} key={ele.id}>
+                      {ele.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <label className=" text-sm text-gray-600">Description </label>
+
+              <input
+                type="text"
+                name="description"
+                className="w-full input-tag"
+                placeholder="Description"
+                value={formData.description || ""}
                 onChange={(e) =>
                   setFormData((val) => ({
                     ...val,
-                    discountType: e.target.value === "true" ? true : false,
+                    description: e.target.value,
                   }))
                 }
-              >
-                <option value="true">%</option>
-                <option value="false">Fixed</option>
-              </select>
+              />
+            </div>
+            <div className="space-y-1">
+              <label className=" text-sm text-gray-600">Units</label>
+              <input
+                type="text"
+                name="units"
+                className="w-full input-tag"
+                placeholder="Units (Ex: CM, BOX)"
+                value={formData.units || ""}
+                onChange={(e) =>
+                  setFormData((val) => ({
+                    ...val,
+                    units: e.target.value,
+                  }))
+                }
+              />
             </div>
           </div>
-
-          <div className="space-y-1">
-            <label className=" text-sm text-gray-600">GST Tax</label>
-            <select
-              className="w-full input-tag text-gray-600"
-              value={formData.tax}
-              onChange={(e) =>
-                setFormData((val) => ({
-                  ...val,
-                  tax: +e.target.value,
-                }))
-              }
+          <div className="w-full border-t bg-white sticky bottom-0 px-5 py-3">
+            <button
+              type="submit"
+              className="w-full bg-purple-500 text-white px-5 py-3 text-sm text-gray-600 rounded-md"
             >
-              <option value={0}>0 %</option>
-              <option value={5}>5 %</option>
-              <option value={12}>12 %</option>
-              <option value={18}>18 %</option>
-              <option value={28}>28 %</option>
-            </select>
+              {onProductUpdated ? "Update " : "Create "}Product
+            </button>
           </div>
-          <div className="space-y-1">
-            <label className=" text-sm text-gray-600">
-              Stock<span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="stock"
-              className="w-full input-tag"
-              placeholder="Stock/Quantity"
-              value={formData.stock || ""}
-              onChange={(e) =>
-                setFormData((val) => ({
-                  ...val,
-                  stock: +e.target.value,
-                }))
-              }
-              required
-            />
-          </div>
-          <div className="space-y-1">
-            <label className=" text-sm text-gray-600 ">Barcode</label>
-            <input
-              type="text"
-              value={formData.barcode}
-              readOnly={onProductUpdated?.barcode}
-              className="w-full input-tag"
-              onChange={(e) =>
-                setFormData((val) => ({
-                  ...val,
-                  barcode: e.target.value,
-                }))
-              }
-            />
-          </div>
-          <div className="space-y-1">
-            <label className=" text-sm text-gray-600">
-              Category<span className="text-red-500">*</span>
-            </label>
-            <select
-              className="w-full input-tag text-gray-600"
-              value={formData.category || ""}
-              onChange={(e) =>
-                setFormData((val) => ({ ...val, category: e.target.value }))
-              }
-              required
-            >
-              <option value="" disabled>
-                Select Category
-              </option>
-              {categories.map((ele) => (
-                <option value={ele.name} key={ele.id}>
-                  {ele.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="space-y-1">
-            <label className=" text-sm text-gray-600"> Warehouse</label>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a subject" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="english">English</SelectItem>
-                <SelectItem value="mathmatics">Mathmatics</SelectItem>
-                <SelectItem value="physics">Physics</SelectItem>
-                <SelectItem value="chemistry">Chemistry</SelectItem>
-                <SelectItem value="biology">Biology</SelectItem>
-              </SelectContent>
-            </Select>
-            <select
-              className="w-full input-tag text-gray-600"
-              value={formData.warehouse || ""}
-              onChange={(e) =>
-                setFormData((val) => ({ ...val, warehouse: e.target.value }))
-              }
-            >
-              <option value="" disabled>
-                Select Warehouse
-              </option>
-              {warehouses.map((ele) => (
-                <option value={ele.name} key={ele.id}>
-                  {ele.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="space-y-1">
-            <label className=" text-sm text-gray-600">Description </label>
-
-            <input
-              type="text"
-              name="description"
-              className="w-full input-tag"
-              placeholder="Description"
-              value={formData.description || ""}
-              onChange={(e) =>
-                setFormData((val) => ({ ...val, description: e.target.value }))
-              }
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className=" text-sm text-gray-600">Units</label>
-            <input
-              type="text"
-              name="units"
-              className="w-full input-tag"
-              placeholder="Units (Ex: CM, BOX)"
-              value={formData.units || ""}
-              onChange={(e) =>
-                setFormData((val) => ({
-                  ...val,
-                  units: e.target.value,
-                }))
-              }
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-purple-500 text-white px-5 py-3 text-sm text-gray-600 rounded-md mt-4"
-          >
-            {onProductUpdated ? "Update " : "Create "}Product
-          </button>
         </form>
       </div>
     </div>

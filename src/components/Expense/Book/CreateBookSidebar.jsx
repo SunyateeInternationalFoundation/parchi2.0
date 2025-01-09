@@ -57,143 +57,155 @@ function CreateBookSidebar({ onClose, isOpen, refresh }) {
       onClick={onClose}
     >
       <div
-        className={`bg-white w-96 p-3 pt-2 transform transition-transform overflow-y-auto ${
+        className={`bg-white  pt-2 transform transition-transform overflow-y-auto ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ maxHeight: "100vh" }}
+        style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between">
-          <h2 className="font-bold text-xl mb-4"> Create Account/Book </h2>
-          <button className="text-2xl mb-4" onClick={onClose}>
-            <IoMdClose size={24} />
+        <div className="flex justify-between items-center border-b px-5 py-3">
+          <h2 className="text-sm text-gray-600 "> Create Account/Book </h2>
+          <button
+            className=" text-2xl text-gray-800 hover:text-gray-900 cursor-pointer"
+            onClick={onClose}
+          >
+            <IoMdClose />
           </button>
         </div>
-        <div>
-          <div>
-            <label className="block font-semibold">Book Name *</label>
-            <input
-              type="text"
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="Book Name"
-              required
-              onChange={(e) =>
-                setFormData((val) => ({ ...val, name: e.target.value }))
-              }
-            />
+        <form onSubmit={onCreateAccount}>
+          <div className="space-y-3 p-5">
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">
+                Book Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                className="input-tag w-full"
+                placeholder="Book Name"
+                required
+                onChange={(e) =>
+                  setFormData((val) => ({ ...val, name: e.target.value }))
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">
+                Opening Balance <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                className="input-tag w-full"
+                placeholder="Opening Balance"
+                required
+                onChange={(e) =>
+                  setFormData((val) => ({
+                    ...val,
+                    openingBalance: +e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">
+                Bank Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                className="input-tag w-full"
+                placeholder="Bank Name"
+                required
+                onChange={(e) =>
+                  setFormData((val) => ({
+                    ...val,
+                    bankName: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">Bank Account</label>
+              <input
+                type="text"
+                className="input-tag w-full"
+                placeholder="Bank Account"
+                onChange={(e) =>
+                  setFormData((val) => ({
+                    ...val,
+                    accountNo: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">
+                Confirm Bank Account{" "}
+                {confirmAccount !== formData.accountNo && (
+                  <span className="text-red-500 text-xs">
+                    (AccountNo. Not Match)
+                  </span>
+                )}
+              </label>
+              <input
+                type="text"
+                className="input-tag w-full"
+                placeholder="Confirm Bank Account"
+                onChange={(e) => setConfirmAccount(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">Bank IFSC Code</label>
+              <input
+                type="text"
+                className="input-tag w-full"
+                placeholder="Bank IFSC Code"
+                onChange={(e) =>
+                  setFormData((val) => ({
+                    ...val,
+                    ifscCode: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">Branch Name</label>
+              <input
+                type="text"
+                className="input-tag w-full"
+                placeholder="Branch Name"
+                onChange={(e) =>
+                  setFormData((val) => ({
+                    ...val,
+                    branch: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">
+                UPI Details (Optional)
+              </label>
+              <input
+                type="text"
+                className="input-tag w-full"
+                placeholder="UPI"
+                onChange={(e) =>
+                  setFormData((val) => ({
+                    ...val,
+                    upi: e.target.value,
+                  }))
+                }
+              />
+            </div>
           </div>
-          <div>
-            <label className="block font-semibold">Opening Balance *</label>
-            <input
-              type="text"
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="Opening Balance"
-              required
-              onChange={(e) =>
-                setFormData((val) => ({
-                  ...val,
-                  openingBalance: +e.target.value,
-                }))
-              }
-            />
+          <div className="w-full border-t bg-white sticky bottom-0 px-5 py-3">
+            <button
+              type="submit"
+              className="w-full bg-purple-500 text-white px-5 py-3 text-sm text-gray-600 rounded-md"
+            >
+              Add Account
+            </button>
           </div>
-          <div>
-            <label className="block font-semibold">Bank Name *</label>
-            <input
-              type="text"
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="Bank Name"
-              required
-              onChange={(e) =>
-                setFormData((val) => ({
-                  ...val,
-                  bankName: e.target.value,
-                }))
-              }
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Bank Account</label>
-            <input
-              type="text"
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="Bank Account"
-              onChange={(e) =>
-                setFormData((val) => ({
-                  ...val,
-                  accountNo: e.target.value,
-                }))
-              }
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">
-              Confirm Bank Account{" "}
-              {confirmAccount !== formData.accountNo && (
-                <span className="text-red-500 text-xs">
-                  (AccountNo. Not Match)
-                </span>
-              )}
-            </label>
-            <input
-              type="text"
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="Confirm Bank Account"
-              onChange={(e) => setConfirmAccount(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Bank IFSC Code</label>
-            <input
-              type="text"
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="Bank IFSC Code"
-              onChange={(e) =>
-                setFormData((val) => ({
-                  ...val,
-                  ifscCode: e.target.value,
-                }))
-              }
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">Branch Name</label>
-            <input
-              type="text"
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="Branch Name"
-              onChange={(e) =>
-                setFormData((val) => ({
-                  ...val,
-                  branch: e.target.value,
-                }))
-              }
-            />
-          </div>
-          <div>
-            <label className="block font-semibold">
-              UPI Details (Optional)
-            </label>
-            <input
-              type="text"
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="UPI"
-              onChange={(e) =>
-                setFormData((val) => ({
-                  ...val,
-                  upi: e.target.value,
-                }))
-              }
-            />
-          </div>
-        </div>
-
-        <button
-          className="mt-4 bg-green-500 text-white py-2 px-4 rounded w-full"
-          onClick={onCreateAccount}
-        >
-          Add Account
-        </button>
+        </form>
       </div>
     </div>
   );

@@ -182,17 +182,18 @@ function ExpenseSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
       }}
     >
       <div
-        className={`bg-white w-[370px] p-4 transform transition-transform overflow-y-auto max-h-screen ${
+        className={`bg-white  pt-2 transform transition-transform overflow-y-auto ${
           isModalOpen.isOpen ? "translate-x-0" : "translate-x-full"
         }`}
+        style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between">
-          <h2 className="text-xl font-semibold mb-4">
+        <div className="flex justify-between items-center border-b px-5 py-3">
+          <h2 className="text-sm text-gray-600 ">
             {isModalOpen.type.toUpperCase()}
           </h2>
           <button
-            className="text-2xl mb-4"
+            className=" text-2xl text-gray-800 hover:text-gray-900 cursor-pointer"
             onClick={() => {
               onClose();
               ResetForm();
@@ -201,202 +202,214 @@ function ExpenseSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
             <IoMdClose size={24} />
           </button>
         </div>
-        <div className="space-y-2">
-          <div>
-            <div>Date *</div>
-            <div>
-              <input
-                type="date"
-                placeholder="Date"
-                className="w-full p-2 border-2 rounded-lg focus:outline-none"
-                value={DateFormate(formData.date)}
-                required
-                onChange={(e) => {
-                  setFormData((val) => ({
-                    ...val,
-                    date: Timestamp.fromDate(new Date(e.target.value)),
-                  }));
-                }}
-              />
+        <form onSubmit={onSubmit}>
+          <div className="space-y-2 px-5">
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">
+                Date <span className="text-red-500">*</span>
+              </label>
+              <div>
+                <input
+                  type="date"
+                  placeholder="Date"
+                  className="input-tag w-full"
+                  value={DateFormate(formData.date)}
+                  required
+                  onChange={(e) => {
+                    setFormData((val) => ({
+                      ...val,
+                      date: Timestamp.fromDate(new Date(e.target.value)),
+                    }));
+                  }}
+                />
+              </div>
             </div>
-          </div>
-          <div>
-            <div>Amount *</div>
-            <div>
-              <input
-                type="Number"
-                placeholder="Amount"
-                className="w-full p-2 border-2 rounded-lg focus:outline-none"
-                required
-                value={formData.amount || ""}
-                onChange={(e) => {
-                  setFormData((val) => ({
-                    ...val,
-                    amount: +e.target.value,
-                  }));
-                }}
-              />
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">
+                Amount <span className="text-red-500">*</span>
+              </label>
+              <div>
+                <input
+                  type="Number"
+                  placeholder="Amount"
+                  className="input-tag w-full"
+                  required
+                  value={formData.amount || ""}
+                  onChange={(e) => {
+                    setFormData((val) => ({
+                      ...val,
+                      amount: +e.target.value,
+                    }));
+                  }}
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex justify-between items-center">
-            <div>Whom? </div>
-            <div>
-              <button
-                className={
-                  "px-4 py-1" +
-                  (filterUser === "Customer" ? " bg-blue-300 rounded-full" : "")
-                }
-                onClick={() => {
-                  setFilterUser("Customer");
-                  setFormData((val) => ({
-                    ...val,
-                    toWhom: { ...formData.toWhom, userType: "Customer" },
-                  }));
-                }}
-              >
-                Customer
-              </button>
-              <button
-                className={
-                  "px-4 py-1" +
-                  (filterUser === "Vendor" ? " bg-blue-300 rounded-full" : "")
-                }
-                onClick={() => {
-                  setFilterUser("Vendor");
-                  setFormData((val) => ({
-                    ...val,
-                    toWhom: { ...formData.toWhom, userType: "Vendor" },
-                  }));
-                }}
-              >
-                Vendor
-              </button>
-              <button
-                className={
-                  "px-4 py-1" +
-                  (filterUser === "Staff" ? " bg-blue-300 rounded-full" : "")
-                }
-                onClick={() => {
-                  setFilterUser("Staff");
-                  setFormData((val) => ({
-                    ...val,
-                    toWhom: { ...formData.toWhom, userType: "Staff" },
-                  }));
-                }}
-              >
-                Staff
-              </button>
+            <div className="flex justify-between items-center">
+              <div>Whom? </div>
+              <div>
+                <button
+                  className={
+                    "px-4 py-1" +
+                    (filterUser === "Customer"
+                      ? " bg-blue-300 rounded-full"
+                      : "")
+                  }
+                  onClick={() => {
+                    setFilterUser("Customer");
+                    setFormData((val) => ({
+                      ...val,
+                      toWhom: { ...formData.toWhom, userType: "Customer" },
+                    }));
+                  }}
+                >
+                  Customer
+                </button>
+                <button
+                  className={
+                    "px-4 py-1" +
+                    (filterUser === "Vendor" ? " bg-blue-300 rounded-full" : "")
+                  }
+                  onClick={() => {
+                    setFilterUser("Vendor");
+                    setFormData((val) => ({
+                      ...val,
+                      toWhom: { ...formData.toWhom, userType: "Vendor" },
+                    }));
+                  }}
+                >
+                  Vendor
+                </button>
+                <button
+                  className={
+                    "px-4 py-1" +
+                    (filterUser === "Staff" ? " bg-blue-300 rounded-full" : "")
+                  }
+                  onClick={() => {
+                    setFilterUser("Staff");
+                    setFormData((val) => ({
+                      ...val,
+                      toWhom: { ...formData.toWhom, userType: "Staff" },
+                    }));
+                  }}
+                >
+                  Staff
+                </button>
+              </div>
             </div>
-          </div>
-          <div>
-            <div>{formData.toWhom.userType}</div>
-            <div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">
+                {formData.toWhom.userType}
+              </label>
+              <div>
+                <select
+                  className="input-tag w-full"
+                  value={formData.toWhom.userRef.id || ""}
+                  required
+                  onChange={onHandleSelectUser}
+                >
+                  <option disabled value="">
+                    select {formData.toWhom.userType}
+                  </option>
+                  {formData.toWhom.userType === "Customer" &&
+                    userDataSet.customers.map((ele) => (
+                      <option value={ele.id} key={ele.id}>
+                        {ele.name + " - " + ele.phone}
+                      </option>
+                    ))}
+                  {formData.toWhom.userType === "Vendor" &&
+                    userDataSet.vendors.map((ele) => (
+                      <option value={ele.id} key={ele.id}>
+                        {ele.name + " - " + ele.phone}
+                      </option>
+                    ))}
+                  {formData.toWhom.userType === "Staff" &&
+                    userDataSet.staff.map((ele) => (
+                      <option value={ele.id} key={ele.id}>
+                        {ele.name + " - " + ele.phone}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">Category</label>
+              <div>
+                <select
+                  className="input-tag w-full"
+                  defaultValue=""
+                  onChange={(e) =>
+                    setFormData((val) => ({
+                      ...val,
+                      category: e.target.value,
+                    }))
+                  }
+                >
+                  <option disabled value={""}>
+                    select Category
+                  </option>
+                  {categories.map((ele, index) => (
+                    <option key={index}>{ele}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">Remarks</label>
+              <div>
+                <input
+                  type="text"
+                  placeholder="Remarks"
+                  className="input-tag w-full"
+                  onChange={(e) =>
+                    setFormData((val) => ({
+                      ...val,
+                      remarks: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">Receipt</label>
+              <div>
+                <input
+                  type="file"
+                  className="flex  h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-400 file:border-0 file:bg-transparent file:text-gray-600 file:text-sm file:font-medium"
+                />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">Mode</label>
               <select
-                className="w-full p-2 border-2 rounded-lg focus:outline-none"
-                value={formData.toWhom.userRef.id || ""}
-                required
-                onChange={onHandleSelectUser}
-              >
-                <option disabled value="">
-                  select {formData.toWhom.userType}
-                </option>
-                {formData.toWhom.userType === "Customer" &&
-                  userDataSet.customers.map((ele) => (
-                    <option value={ele.id} key={ele.id}>
-                      {ele.name + " - " + ele.phone}
-                    </option>
-                  ))}
-                {formData.toWhom.userType === "Vendor" &&
-                  userDataSet.vendors.map((ele) => (
-                    <option value={ele.id} key={ele.id}>
-                      {ele.name + " - " + ele.phone}
-                    </option>
-                  ))}
-                {formData.toWhom.userType === "Staff" &&
-                  userDataSet.staff.map((ele) => (
-                    <option value={ele.id} key={ele.id}>
-                      {ele.name + " - " + ele.phone}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          </div>
-          <div>
-            <div>Category</div>
-            <div>
-              <select
-                className="w-full p-2 border-2 rounded-lg focus:outline-none"
-                defaultValue=""
+                className="border p-2 rounded w-full"
+                value={formData.paymentMode || ""}
                 onChange={(e) =>
                   setFormData((val) => ({
                     ...val,
-                    category: e.target.value,
+                    paymentMode: e.target.value,
                   }))
                 }
               >
-                <option disabled value={""}>
-                  select Category
+                <option value="" disabled>
+                  Select Payment Mode
                 </option>
-                {categories.map((ele, index) => (
-                  <option key={index}>{ele}</option>
-                ))}
+                <option value="Cash">Cash</option>
+                <option value="Emi">Emi</option>
+                <option value="Cheque">Cheque</option>
+                <option value="Net Banking">Net Banking</option>
+                <option value="Credit/Debit Card">Credit/Debit Card</option>
               </select>
             </div>
           </div>
-          <div>
-            <div>Remarks</div>
-            <div>
-              <input
-                type="text"
-                placeholder="Remarks"
-                className="w-full p-2 border-2 rounded-lg focus:outline-none"
-                onChange={(e) =>
-                  setFormData((val) => ({
-                    ...val,
-                    remarks: e.target.value,
-                  }))
-                }
-              />
-            </div>
-          </div>
-          <div>
-            <div>Receipt</div>
-            <div>
-              <input
-                type="file"
-                className="flex  h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-400 file:border-0 file:bg-transparent file:text-gray-600 file:text-sm file:font-medium"
-              />
-            </div>
-          </div>
-          <div>
-            <div>Mode</div>
-            <select
-              className="border p-2 rounded w-full"
-              value={formData.paymentMode || ""}
-              onChange={(e) =>
-                setFormData((val) => ({
-                  ...val,
-                  paymentMode: e.target.value,
-                }))
-              }
+          <div className="w-full border-t bg-white sticky bottom-0 px-5 py-3">
+            <button
+              type="submit"
+              className="w-full bg-purple-500 text-white px-5 py-3 text-sm text-gray-600 rounded-md"
             >
-              <option value="" disabled>
-                Select Payment Mode
-              </option>
-              <option value="Cash">Cash</option>
-              <option value="Emi">Emi</option>
-              <option value="Cheque">Cheque</option>
-              <option value="Net Banking">Net Banking</option>
-              <option value="Credit/Debit Card">Credit/Debit Card</option>
-            </select>
+              Create {isModalOpen.type}
+            </button>
           </div>
-        </div>
-        <button
-          className="mt-4 bg-green-500 text-white py-2 px-4 rounded w-full"
-          onClick={onSubmit}
-        >
-          Create {isModalOpen.type}
-        </button>
+        </form>
       </div>
     </div>
   );

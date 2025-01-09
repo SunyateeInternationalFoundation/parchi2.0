@@ -106,7 +106,7 @@ const selectVariants = cva(
     ],
     defaultVariants: {
       color: "default",
-      size: "lg",
+      size: "xl",
       variant: "bordered",
       radius: "md",
     },
@@ -137,7 +137,8 @@ const SelectTrigger = React.forwardRef(
       ref={ref}
       className={cn(
         selectVariants({ color, size, radius, variant }),
-        className
+        className,
+        " input-tag text-gray-600 rounded-md"
       )}
       {...props}
     >
@@ -166,7 +167,7 @@ const SelectContent = React.forwardRef(
           className={cn(
             "p-1",
             position === "popper" &&
-              "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
+              "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] bg-white"
           )}
         >
           {children}
@@ -181,7 +182,7 @@ const SelectLabel = React.forwardRef(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
     className={cn(
-      "py-1.5 ltr:pl-8 rtl:pr-8 ltr:pr-2 rtl:pl-2 text-sm font-semibold",
+      "py-1.5 ltr:pl-8 rtl:pr-8 ltr:pr-2 rtl:pl-2 text-sm font-semibold ",
       className
     )}
     {...props}
@@ -194,7 +195,7 @@ const SelectItem = React.forwardRef(
     <SelectPrimitive.Item
       ref={ref}
       className={cn(
-        "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 px-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 hover:bg-gray-300 rounded",
+        "relative flex w-full cursor-default select-none items-center py-3 px-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 hover:bg-gray-300 rounded-md",
         className
       )}
       {...props}
