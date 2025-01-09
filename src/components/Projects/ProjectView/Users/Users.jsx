@@ -97,11 +97,8 @@ function Users() {
   }, [activeNav, projectDetails, searchTerm]);
 
   return (
-    <div
-      className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
-      style={{ height: "82vh" }}
-    >
-      <div className="bg-white  pb-8 pt-6 rounded-lg shadow my-6">
+    <div className="main-container" style={{ height: "82vh" }}>
+      <div className="container">
         <nav className="flex mb-4 px-5">
           <div className="flex items-center space-x-4 w-full">
             <div className="w-full space-x-4">
@@ -161,8 +158,8 @@ function Users() {
         {loading ? (
           <div className="text-center py-6">Loading...</div>
         ) : (
-          <div className="" style={{ height: "96vh" }}>
-            <div className="" style={{ height: "92vh" }}>
+          <div style={{ height: "96vh" }}>
+            <div style={{ height: "92vh" }}>
               <table className="w-full border-collapse text-start">
                 <thead className=" bg-white">
                   <tr className="border-b">

@@ -116,15 +116,6 @@ function Projects() {
     setSearchInput(e.target.value);
   }
 
-  // function onDateChange(e) {
-  //   const { name, value } = e.target;
-  //   setFilterDate((prev) => ({ ...prev, [name]: value }));
-  // }
-
-  // function resetDateFilter() {
-  //   setFilterDate({ from: "", to: "" });
-  // }
-
   useEffect(() => {
     function onFilterFun() {
       const filterData = projectsList.filter((ele) => {
@@ -133,13 +124,6 @@ function Projects() {
           .toLowerCase()
           .includes(searchInput.toLowerCase());
         const matchesStatus = filterStatus === "All" || status === filterStatus;
-        // const projectStartDate = new Date(startDate.seconds * 1000);
-        // const projectDueDate = new Date(dueDate.seconds * 1000);
-
-        // const matchesDateRange =
-        //   (filterDate.from === "" ||
-        //     projectStartDate >= new Date(filterDate.from)) &&
-        //   (filterDate.to === "" || projectDueDate <= new Date(filterDate.to));
         return matchesSearch && matchesStatus;
       });
       setModifiedProjectsList(filterData);
@@ -153,139 +137,134 @@ function Projects() {
   }
 
   return (
-    <div className="w-full">
-      <div
-        className="px-8 pb-8 pt-2  bg-gray-100 overflow-y-auto"
-        style={{ height: "92vh" }}
-      >
-        <div className=" mt-4 py-3">
-          <h1 className="text-2xl font-bold pb-3">Projects Overview</h1>
-          <div className="grid grid-cols-4 gap-12 ">
-            <div className="rounded-lg p-5 bg-white shadow ">
-              <div className="text-lg">Total Projects</div>
-              <div className="text-3xl text-indigo-600 font-bold p-2">
-                {projectCount.total}
-              </div>
+    <div className="main-container" style={{ height: "92vh" }}>
+      <div className=" mt-4 py-3">
+        <h1 className="text-2xl font-bold pb-3">Projects Overview</h1>
+        <div className="grid grid-cols-4 gap-12 ">
+          <div className="rounded-lg p-5 bg-white shadow ">
+            <div className="text-lg">Total Projects</div>
+            <div className="text-3xl text-indigo-600 font-bold p-2">
+              {projectCount.total}
             </div>
-            <div className="rounded-lg p-5 bg-white shadow ">
-              <div className="text-lg"> On-Going Projects</div>
-              <div className="text-3xl text-emerald-600 font-bold p-2">
-                {projectCount.onGoing}
-              </div>
+          </div>
+          <div className="rounded-lg p-5 bg-white shadow ">
+            <div className="text-lg"> On-Going Projects</div>
+            <div className="text-3xl text-emerald-600 font-bold p-2">
+              {projectCount.onGoing}
             </div>
-            <div className="rounded-lg p-5 bg-white shadow">
-              <div className="text-lg"> Delay Projects</div>
-              <div className="text-3xl text-orange-600 font-bold p-2">
-                {projectCount.delay}
-              </div>
+          </div>
+          <div className="rounded-lg p-5 bg-white shadow">
+            <div className="text-lg"> Delay Projects</div>
+            <div className="text-3xl text-orange-600 font-bold p-2">
+              {projectCount.delay}
             </div>
-            <div className="rounded-lg p-5 bg-white shadow ">
-              <div className="text-lg"> Completed Projects</div>
-              <div className="text-3xl text-red-600 font-bold p-2">
-                {projectCount.completed}
-              </div>
+          </div>
+          <div className="rounded-lg p-5 bg-white shadow ">
+            <div className="text-lg"> Completed Projects</div>
+            <div className="text-3xl text-red-600 font-bold p-2">
+              {projectCount.completed}
             </div>
           </div>
         </div>
-        <div className="py-5 ">
-          <nav className="flex mb-4 bg-white rounded-lg shadow items-center py-3 px-5">
-            <div className="space-x-4 w-full flex items-center">
-              <div className="flex items-center space-x-4  border  px-5  py-3  rounded-lg w-full">
-                <input
-                  type="text"
-                  placeholder="Search by Project #..."
-                  className=" w-full focus:outline-none"
-                  onChange={onSearchFilter}
-                />
-                <IoSearch />
-              </div>
-              <div className="flex items-center space-x-4 border  px-5  py-3  rounded-lg ">
-                <select onChange={(e) => setFilterStatus(e.target.value)}>
-                  <option value="All"> All</option>
-                  <option value="On-Going">On-Going</option>
-                  <option value="Completed">Completed</option>
-                  <option value="Delay">Delay</option>
-                </select>
-              </div>
+      </div>
+      <div className="py-5 ">
+        <nav className="flex mb-4 bg-white rounded-lg shadow items-center py-3 px-5">
+          <div className="space-x-4 w-full flex items-center">
+            <div className="flex items-center space-x-4  border  px-5  py-3  rounded-lg w-full">
+              <input
+                type="text"
+                placeholder="Search by Project #..."
+                className=" w-full focus:outline-none"
+                onChange={onSearchFilter}
+              />
+              <IoSearch />
             </div>
-            <div className="w-full text-end ">
-              {(userDetails.selectedDashboard === "" || role?.create) && (
-                <Link
-                  className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-                  to="create-project"
-                >
-                  + Create Project
-                </Link>
-              )}
+            <div className="flex items-center space-x-4 border  px-5  py-3  rounded-lg ">
+              <select onChange={(e) => setFilterStatus(e.target.value)}>
+                <option value="All"> All</option>
+                <option value="On-Going">On-Going</option>
+                <option value="Completed">Completed</option>
+                <option value="Delay">Delay</option>
+              </select>
             </div>
-          </nav>
-          <div className="py-5 ">
-            {loading ? (
-              <div className="text-center py-6">Loading Projects...</div>
-            ) : (
-              <div className="">
-                {modifiedProjectsList.length > 0 ? (
-                  <div className="grid grid-cols-3 gap-5 ">
-                    {modifiedProjectsList.map((item) => (
-                      <div
-                        className={` bg-white border cursor-pointer rounded-lg h-56 hover:shadow-lg shadow`}
-                        onClick={() => onViewProject(item)}
-                        key={item.projectId}
-                      >
-                        <div className="p-3 h-40">
-                          <div
-                            className={
-                              "rounded-lg  w-fit p-2 text-xs " +
-                              (item.status === "Delay"
-                                ? " bg-rose-100"
-                                : item.status === "Completed"
-                                ? " bg-green-100"
-                                : " bg-[hsl(250deg_92%_70%_/10%)]")
-                            }
-                          >
-                            {item.status}
-                          </div>
-                          <div className="py-3 space-y-1">
-                            <div className="font-bold">{item.name}</div>
-                            <div className="text-xs line-clamp-3">
-                              {item.description}
-                            </div>
-                          </div>
-                          {isDueDateEnd(item.dueDate) && (
-                            <div className="text-xs">
-                              <i>Project due time over kindly check it</i>
-                            </div>
-                          )}
-                          <div className="">
-                            Team:{" "}
-                            <span className="font-bold">
-                              {item.staffRef?.length || 0}
-                            </span>
-                          </div>
-                        </div>
-                        <div className=" flex justify-between  border-t px-3 py-1">
-                          <div>
-                            <div className="text-gray-700 text-sm">
-                              Assigned Date :{" "}
-                            </div>
-                            <div className="font-bold">{item.startDate}</div>
-                          </div>
-                          <div>
-                            <div className="text-gray-700 text-sm">
-                              Due Date :{" "}
-                            </div>
-                            <div className="font-bold">{item.dueDate}</div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center">No Project Found</div>
-                )}
-              </div>
+          </div>
+          <div className="w-full text-end ">
+            {(userDetails.selectedDashboard === "" || role?.create) && (
+              <Link
+                className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                to="create-project"
+              >
+                + Create Project
+              </Link>
             )}
           </div>
+        </nav>
+        <div className="py-5 ">
+          {loading ? (
+            <div className="text-center py-6">Loading Projects...</div>
+          ) : (
+            <div>
+              {modifiedProjectsList.length > 0 ? (
+                <div className="grid grid-cols-3 gap-5 ">
+                  {modifiedProjectsList.map((item) => (
+                    <div
+                      className={` bg-white border cursor-pointer rounded-lg h-56 hover:shadow-lg shadow`}
+                      onClick={() => onViewProject(item)}
+                      key={item.projectId}
+                    >
+                      <div className="p-3 h-40">
+                        <div
+                          className={
+                            "rounded-lg  w-fit p-2 text-xs " +
+                            (item.status === "Delay"
+                              ? " bg-rose-100"
+                              : item.status === "Completed"
+                              ? " bg-green-100"
+                              : " bg-[hsl(250deg_92%_70%_/10%)]")
+                          }
+                        >
+                          {item.status}
+                        </div>
+                        <div className="py-3 space-y-1">
+                          <div className="font-bold">{item.name}</div>
+                          <div className="text-xs line-clamp-3">
+                            {item.description}
+                          </div>
+                        </div>
+                        {isDueDateEnd(item.dueDate) && (
+                          <div className="text-xs">
+                            <i>Project due time over kindly check it</i>
+                          </div>
+                        )}
+                        <div>
+                          Team:{" "}
+                          <span className="font-bold">
+                            {item.staffRef?.length || 0}
+                          </span>
+                        </div>
+                      </div>
+                      <div className=" flex justify-between  border-t px-3 py-1">
+                        <div>
+                          <div className="text-gray-700 text-sm">
+                            Assigned Date :{" "}
+                          </div>
+                          <div className="font-bold">{item.startDate}</div>
+                        </div>
+                        <div>
+                          <div className="text-gray-700 text-sm">
+                            Due Date :{" "}
+                          </div>
+                          <div className="font-bold">{item.dueDate}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center">No Project Found</div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 
 const Template2 = forwardRef(function Template2(props, ref) {
   const { dataSet, bankDetails } = props;
-  if (Object.keys(dataSet).length===0) {
+  if (Object.keys(dataSet).length === 0) {
     return;
   }
   function DateFormate(timestamp) {
@@ -23,7 +23,7 @@ const Template2 = forwardRef(function Template2(props, ref) {
     >
       <div ref={ref} style={{ width: "595px", padding: "20px" }}>
         <div className="flex justify-between items-center border-b pb-4 mb-6">
-          <div className="">
+          <div>
             <span className="text-3xl font-bold text-primary-600">
               {dataSet?.createdBy?.name}
             </span>
@@ -120,8 +120,8 @@ const Template2 = forwardRef(function Template2(props, ref) {
           </div>
 
           {/* Total and Summary */}
-          <div className="">
-            <table className="">
+          <div>
+            <table>
               <tbody>
                 <tr>
                   <td className="border px-2 py-1"> Subtotal</td>
@@ -168,39 +168,43 @@ const Template2 = forwardRef(function Template2(props, ref) {
           </div>
         </div>
         <div className="flex justify-between pb-4">
-          <div className="">
-            <div className="">Note:</div>
-            <div className="">{dataSet?.notes || "No Notes"}</div>
+          <div>
+            <div>Note:</div>
+            <div>{dataSet?.notes || "No Notes"}</div>
           </div>
-          <div className="">Authorized Person</div>
+          <div>Authorized Person</div>
         </div>
 
         {/* Footer */}
-        {bankDetails && <div className="border-t pt-4 flex justify-between">
-          <div className=" text-gray-600">
-            <p>Terms & Conditions</p>
-            <p>{dataSet?.terms || "No Terms & Conditions"}</p>
+        {bankDetails && (
+          <div className="border-t pt-4 flex justify-between">
+            <div className=" text-gray-600">
+              <p>Terms & Conditions</p>
+              <p>{dataSet?.terms || "No Terms & Conditions"}</p>
+            </div>
+            <div className="pe-3">
+              <div>
+                <strong>Bank Details</strong>
+              </div>
+              <div>
+                Bank :{" "}
+                <span className="font-bold">{bankDetails?.bankName}</span>{" "}
+              </div>
+              <div>
+                Account # :{" "}
+                <span className="font-bold">{bankDetails?.accountNo}</span>
+              </div>
+              <div>
+                IFSC Code :{" "}
+                <span className="font-bold">{bankDetails?.ifscCode}</span>
+              </div>
+              <div>
+                Branch :{" "}
+                <span className="font-bold">{bankDetails?.branch}</span>
+              </div>
+            </div>
           </div>
-          <div className="pe-3">
-            <div>
-              <strong>Bank Details</strong>
-            </div>
-            <div>
-              Bank : <span className="font-bold">{bankDetails?.bankName}</span>{" "}
-            </div>
-            <div>
-              Account # :{" "}
-              <span className="font-bold">{bankDetails?.accountNo}</span>
-            </div>
-            <div>
-              IFSC Code :{" "}
-              <span className="font-bold">{bankDetails?.ifscCode}</span>
-            </div>
-            <div>
-              Branch : <span className="font-bold">{bankDetails?.branch}</span>
-            </div>
-          </div>
-        </div>}
+        )}
       </div>
     </div>
   );

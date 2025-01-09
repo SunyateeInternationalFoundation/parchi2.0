@@ -1,13 +1,22 @@
-import { addDoc, collection, doc, Timestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  Timestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { db, storage } from "../../firebase";
-import { setCustomerDetails } from "../../store/CustomerSlice";
+import {
+  setCustomerDetails,
+  updateCustomerDetails,
+} from "../../store/CustomerSlice";
 
-const CreateCustomer = ({ isOpen, onClose }) => {
+const CreateCustomer = ({ isOpen, onClose, customerData }) => {
   const userDetails = useSelector((state) => state.users);
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
@@ -22,19 +31,6 @@ const CreateCustomer = ({ isOpen, onClose }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [fileName, setFileName] = useState("No file chosen");
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [isOpen]);
-
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -46,6 +42,19 @@ const CreateCustomer = ({ isOpen, onClose }) => {
     city: "",
     zipCode: "",
   });
+  useEffect(() => {
+    if (customerData?.id) {
+      setFormData(customerData);
+    }
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isOpen]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -84,17 +93,31 @@ const CreateCustomer = ({ isOpen, onClose }) => {
     e.preventDefault();
     try {
       const companyRef = doc(db, "companies", companyId);
-      const newCustomer = await addDoc(collection(db, "customers"), {
-        ...formData,
-        companyRef: companyRef,
-        createdAt: Timestamp.fromDate(new Date()),
-      });
-      const payload = {
-        id: newCustomer.id,
-        ...formData,
-        createdAt: JSON.stringify(Timestamp.fromDate(new Date())),
-      };
-      dispatch(setCustomerDetails(payload));
+      if (customerData?.id) {
+        const customersRef = doc(db, "customers", customerData.id);
+        const { id, createdAt, companyRef, ...rest } = formData;
+        await updateDoc(customersRef, rest);
+        dispatch(
+          updateCustomerDetails({
+            id,
+            createdAt: JSON.stringify(createdAt),
+            companyRef: JSON.stringify(companyRef),
+            ...rest,
+          })
+        );
+      } else {
+        const newCustomer = await addDoc(collection(db, "customers"), {
+          ...formData,
+          companyRef: companyRef,
+          createdAt: Timestamp.fromDate(new Date()),
+        });
+        const payload = {
+          id: newCustomer.id,
+          ...formData,
+          createdAt: JSON.stringify(Timestamp.fromDate(new Date())),
+        };
+        dispatch(setCustomerDetails(payload));
+      }
       setFileName("No file chosen");
       onClose();
     } catch (error) {
@@ -116,7 +139,10 @@ const CreateCustomer = ({ isOpen, onClose }) => {
         style={{ maxHeight: "100vh" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-xl font-semibold mb-4">New Customer</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          {customerData?.id ? "Edit " : "Create "}
+          Customer
+        </h2>
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
@@ -249,7 +275,8 @@ const CreateCustomer = ({ isOpen, onClose }) => {
             type="submit"
             className="w-full bg-purple-500 text-white p-2 rounded-md mt-4"
           >
-            Add Customer
+            {customerData?.id ? "Edit " : "Create "}
+            Customer
           </button>
         </form>
       </div>

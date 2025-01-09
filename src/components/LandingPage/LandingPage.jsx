@@ -213,7 +213,7 @@ const LandingPage = () => {
   return (
     <div className="h-screen">
       <nav className="text-white py-3 w-full ">
-        <div className="container mx-auto flex justify-between  items-center px-4">
+        <div className="  flex justify-between  items-center px-4">
           <div className="text-2xl font-bold text-blue-600">Sunya</div>
           <div className="space-x-4">
             <button
@@ -255,9 +255,9 @@ const LandingPage = () => {
             Welcome to Sunya
           </div> */}
 
-              <div className=" ">
+              <div>
                 <div className="h-96 overflow-y-auto">
-                  <div className="">
+                  <div>
                     <div className="w-full">
                       <h2 className="text-1xl text-grey-500 mb-2">
                         Enter phone number

@@ -116,26 +116,24 @@ function Reminder() {
 
   return (
     <div className="main-container " style={{ height: "92vh" }}>
-      <h1 className="text-2xl font-bold pb-3 ">Reminder</h1>
+      <h1 className="text-2xl font-bold  mt-4 py-3">Reminder</h1>
       <div className="container">
-        <div className=" p-5 ">
-          <nav className="flex space-x-4">
-            {["Reminder", "Completed"].map((tab) => (
-              <button
-                key={tab}
-                className={`btn-outline-black ${
-                  activeTab === tab && " bg-black text-white "
-                }`}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab}
-              </button>
-            ))}
-          </nav>
-        </div>
+        <nav className="flex space-x-4  px-5">
+          {["Reminder", "Completed"].map((tab) => (
+            <button
+              key={tab}
+              className={`btn-outline-black ${
+                activeTab === tab && " bg-black text-white "
+              }`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </nav>
         {activeTab === "Reminder" && (
           <div>
-            <div className="flex space-x-4 items-center bg-white p-4 rounded-lg">
+            <div className="flex space-x-4 items-center bg-white p-5 rounded-lg">
               <input
                 type="text"
                 placeholder="Reminder Name"
@@ -173,8 +171,8 @@ function Reminder() {
         {loading ? (
           <div className="text-center py-6">Loading...</div>
         ) : (
-          <div className="" style={{ height: "82vh" }}>
-            <table className="w-full border-collapse text-start">
+          <div className="py-3" style={{ height: "82vh" }}>
+            <table className="w-full border-collapse text-start ">
               <thead className=" bg-white">
                 <tr className="border-b">
                   <td className="px-8 py-1 text-gray-400 font-semibold text-start ">

@@ -81,8 +81,8 @@ function Attendance({ attendanceData }) {
   }, [attendanceData, currentMonth, currentYear]);
 
   return (
-    <div className="p-8">
-      <div className="p-8 bg-white rounded-lg ">
+    <div className="main-container">
+      <div className="container p-5  ">
         <div className="flex justify-center items-center gap-4 mb-4">
           <button
             className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"

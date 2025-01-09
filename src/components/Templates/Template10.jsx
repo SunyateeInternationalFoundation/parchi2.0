@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 
 const Template10 = forwardRef((props, ref) => {
   const { dataSet } = props;
-  if (!Object.keys(dataSet).length===0) {
+  if (!Object.keys(dataSet).length === 0) {
     return;
   }
   function DateFormate(timestamp) {
@@ -63,7 +63,7 @@ const Template10 = forwardRef((props, ref) => {
               {DateFormate(dataSet?.date)}
             </p>
           </div>
-          <div className="">
+          <div>
             <h3 className="font-bold">Bill To:</h3>
             <p> {dataSet?.createdBy?.name}</p>
             <p>
@@ -74,7 +74,7 @@ const Template10 = forwardRef((props, ref) => {
             <p>{dataSet?.createdBy.email}</p>
             <p>{dataSet?.createdBy.phoneNo}</p>
           </div>
-          <div className="">
+          <div>
             <h3 className="font-bold">Ship To:</h3>
             <p> {dataSet?.userTo?.name}</p>
             <p>

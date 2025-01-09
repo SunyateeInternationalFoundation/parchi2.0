@@ -145,10 +145,7 @@ function Expense() {
   }
   return (
     <div className="w-full">
-      <div
-        className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
-        style={{ height: "92vh" }}
-      >
+      <div className="main-container" style={{ height: "92vh" }}>
         <div className=" mt-4 py-3">
           <div className="flex items-center pb-3">
             <Link className="flex items-center" to={"./../"}>
@@ -185,7 +182,7 @@ function Expense() {
           </div>
         </div>
 
-        <div className="bg-white  pb-8 pt-6 rounded-lg shadow my-6">
+        <div className="container">
           <nav className="flex items-center  mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">
               <div className="flex items-center space-x-4  border px-5  py-3 rounded-md w-full">

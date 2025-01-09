@@ -61,7 +61,7 @@ function Sidebar({
                 (product.quantity === 0 ? "bg-gray-100" : "")
               }
             >
-              <div className="">
+              <div>
                 <div className="font-bold">
                   {product.name} - Quantity: {product.quantity || "0"}
                 </div>

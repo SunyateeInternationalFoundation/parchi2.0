@@ -5,22 +5,16 @@ import { FaArrowDown, FaArrowUp, FaUserEdit } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { db, storage } from "../../../firebase";
 import { updateCustomerDetails } from "../../../store/CustomerSlice";
+import CreateCustomer from "../CreateCustomer";
 
 const Profile = ({ customerData, refresh, expenseData }) => {
   const [isEdit, setIsEdit] = useState(false);
+
   const [UpdatedData, setUpdatedData] = useState(customerData);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [progress, setProgress] = useState(0);
   const dispatch = useDispatch();
   const userDetails = useSelector((state) => state.users);
-  let companyId;
-  if (userDetails.selectedDashboard === "staff") {
-    companyId =
-      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
-        .companyDetails.companyId;
-  } else {
-    companyId =
-      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  }
 
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
@@ -147,7 +141,8 @@ const Profile = ({ customerData, refresh, expenseData }) => {
                   ) : (
                     <button
                       className="flex items-center space-x-2 text-purple-600 hover:text-purple-800 mt-2"
-                      onClick={() => setIsEdit(true)}
+                      // onClick={() => setIsEdit(true)}
+                      onClick={() => setIsModalOpen(true)}
                     >
                       <FaUserEdit />
                       <span>Edit Profile</span>
@@ -308,6 +303,14 @@ const Profile = ({ customerData, refresh, expenseData }) => {
           </div>
         </div>
       )}
+
+      <CreateCustomer
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+        }}
+        customerData={customerData}
+      />
     </div>
   );
 };

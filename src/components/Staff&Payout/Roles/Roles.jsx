@@ -108,17 +108,17 @@ const Roles = () => {
   return (
     <div className="main-container" style={{ height: "82vh" }}>
       <div className="container">
-        <header className="flex items-center p-5">
-          <h1 className="text-2xl font-bold ml-3">Roles</h1>
+        <header className="flex items-center px-5">
+          <h1 className="text-2xl font-bold">Roles</h1>
         </header>
 
         {loading ? (
           <div className="text-center py-6">Loading Roles...</div>
         ) : staffData.length > 0 ? (
           staffData.map((staff) => (
-            <div key={staff.id} className="mb-6 border-t p-5 pb-3 pt-5">
+            <div key={staff.id} className="mb-6 border-t  pb-3 pt-5">
               <div
-                className="flex justify-between items-center mb-4 cursor-pointer"
+                className="flex justify-between items-center mb-4 px-5 cursor-pointer"
                 onClick={() =>
                   setStaffData((prevData) =>
                     prevData.map((pre) => {
@@ -142,7 +142,7 @@ const Roles = () => {
                 )}
               </div>
               {staff.isExpand && (
-                <div className="border-t pt-3">
+                <div className="border-t py-5 px-5">
                   <table className="min-w-full table-auto border-collapse border border-gray-200">
                     <thead>
                       <tr className="bg-gray-50">

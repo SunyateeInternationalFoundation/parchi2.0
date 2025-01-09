@@ -4,21 +4,15 @@ import { useEffect, useState } from "react";
 import { FaArrowDown, FaArrowUp, FaUserEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { db, storage } from "../../../firebase";
+import CreateVendor from "../CreateVendor";
 
 const VendorProfile = ({ vendorData, refresh, expenseData }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [UpdatedData, setUpdatedData] = useState(vendorData);
   const [progress, setProgress] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const userDetails = useSelector((state) => state.users);
-  let companyId;
-  if (userDetails.selectedDashboard === "staff") {
-    companyId =
-      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
-        .companyDetails.companyId;
-  } else {
-    companyId =
-      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  }
+
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.vendors;
@@ -134,7 +128,8 @@ const VendorProfile = ({ vendorData, refresh, expenseData }) => {
                     (userDetails.selectedDashboard === "" || role?.edit) && (
                       <button
                         className="flex items-center space-x-2 text-purple-600 hover:text-purple-800 mt-2"
-                        onClick={() => setIsEdit(true)}
+                        // onClick={() => setIsEdit(true)}
+                        onClick={() => setIsModalOpen(true)}
                       >
                         <FaUserEdit />
                         <span>Edit Profile</span>
@@ -300,6 +295,14 @@ const VendorProfile = ({ vendorData, refresh, expenseData }) => {
           <div className="text-gray-500">Loading vendor...</div>
         </div>
       )}
+      <CreateVendor
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+        }}
+        onVendorAdded={refresh}
+        vendorData={vendorData}
+      />
     </>
   );
 };

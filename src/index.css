@@ -8,7 +8,7 @@
     }
 
     .container {
-        @apply bg-white rounded-lg shadow;
+        @apply bg-white pt-6 rounded-lg shadow my-5;
     }
 
     .input-div-icon {

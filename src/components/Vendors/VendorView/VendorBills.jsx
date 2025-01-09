@@ -92,8 +92,8 @@ function VendorBills({ purchasesData }) {
           </div>
         </nav>
 
-        <div className="" style={{ height: "96vh" }}>
-          <div className="" style={{ height: "88vh" }}>
+        <div style={{ height: "96vh" }}>
+          <div style={{ height: "88vh" }}>
             <table className="w-full border-collapse text-start">
               <thead className=" bg-white">
                 <tr className="border-b">
@@ -208,7 +208,7 @@ function VendorBills({ purchasesData }) {
                   disabled={currentPage + 1 >= totalPages}
                 >
                   <div className="flex justify-center">
-                    <LuChevronsRight className="" />
+                    <LuChevronsRight />
                   </div>
                 </button>
               </div>

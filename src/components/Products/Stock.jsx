@@ -132,7 +132,7 @@ const Stock = () => {
 
       {/* Conditional Rendering Based on Selected Filter */}
       {selectedFilter === "lowStock" && (
-        <div className="">
+        <div>
           <h3 className="text-xl font-semibold text-yellow-600 p-5 ">
             Low Stock Items
           </h3>

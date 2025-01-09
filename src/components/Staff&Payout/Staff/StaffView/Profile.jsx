@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { FaArrowDown, FaArrowUp, FaUserEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { db, storage } from "../../../../firebase";
+import CreateStaff from "../CreateStaff";
 
 const Profile = ({ staffData, refresh }) => {
   const [isEdit, setIsEdit] = useState(false);
@@ -11,6 +12,8 @@ const Profile = ({ staffData, refresh }) => {
   const [progress, setProgress] = useState(0);
   const userDetails = useSelector((state) => state.users);
   const selectedDashboardUser = userDetails.selectedDashboard;
+  const [isSideBarOpen, setIsSideBarOpen] = useState(false);
+
   useEffect(() => {
     setUpdatedData(staffData);
   }, [staffData]);
@@ -66,11 +69,11 @@ const Profile = ({ staffData, refresh }) => {
   }
 
   return (
-    <div className="p-8">
+    <div className="main-container">
       {!UpdatedData.id ? (
         <div className="text-gray-500 text-center">Loading staff...</div>
       ) : (
-        <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div className="container p-5">
           {progress > 0 && (
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
@@ -79,7 +82,7 @@ const Profile = ({ staffData, refresh }) => {
               ></div>
             </div>
           )}
-          <div className="p-6">
+          <div className="">
             {/* Profile Section */}
             <div className="flex items-center space-x-6 mb-6">
               <div className="w-1/5">
@@ -116,7 +119,8 @@ const Profile = ({ staffData, refresh }) => {
                 {!isEdit && selectedDashboardUser != "staff" && (
                   <button
                     className="flex items-center space-x-2 text-purple-600 hover:text-purple-800 mt-2"
-                    onClick={() => setIsEdit(true)}
+                    // onClick={() => setIsEdit(true)}
+                    onClick={() => setIsSideBarOpen(true)}
                   >
                     <FaUserEdit />
                     <span>Edit Profile</span>
@@ -208,10 +212,7 @@ const Profile = ({ staffData, refresh }) => {
                       onChange={(e) =>
                         setUpdatedData((val) => ({
                           ...val,
-                          // address: {
-                          //   ...UpdatedData.address,
                           address: e.target.value,
-                          // },
                         }))
                       }
                       readOnly={!isEdit}
@@ -228,10 +229,7 @@ const Profile = ({ staffData, refresh }) => {
                       onChange={(e) =>
                         setUpdatedData((val) => ({
                           ...val,
-                          // address: {
-                          //   ...UpdatedData.address,
                           city: e.target.value,
-                          // },
                         }))
                       }
                       readOnly={!isEdit}
@@ -241,17 +239,14 @@ const Profile = ({ staffData, refresh }) => {
                     <label className="text-sm text-gray-500">Pincode</label>
                     <input
                       type="text"
-                      value={UpdatedData.zip_code || (isEdit ? "" : "N/A")}
+                      value={UpdatedData.zipCode || (isEdit ? "" : "N/A")}
                       className={`block w-full border-gray-300 p-2 rounded-md focus:ring focus:ring-purple-200 ${
                         isEdit ? "border" : "bg-gray-100"
                       }`}
                       onChange={(e) =>
                         setUpdatedData((val) => ({
                           ...val,
-                          // address: {
-                          //   ...UpdatedData.address,
-                          zip_code: e.target.value,
-                          // },
+                          zipCode: e.target.value,
                         }))
                       }
                       readOnly={!isEdit}
@@ -279,6 +274,16 @@ const Profile = ({ staffData, refresh }) => {
             )}
           </div>
         </div>
+      )}
+      {isSideBarOpen && (
+        <CreateStaff
+          isOpen={isSideBarOpen}
+          onClose={() => {
+            setIsSideBarOpen(false);
+          }}
+          staffAdded={refresh}
+          staffData={staffData}
+        />
       )}
     </div>
   );

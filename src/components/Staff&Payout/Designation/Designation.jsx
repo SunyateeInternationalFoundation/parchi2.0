@@ -101,7 +101,7 @@ const Designation = () => {
   return (
     <div className="main-container" style={{ height: "82vh" }}>
       <div className="container">
-        <header className="flex items-center justify-between p-5">
+        <header className="flex items-center justify-between px-5">
           <div className="flex space-x-3 items-center ">
             <div className="flex space-x-3 ">
               <h1 className="text-2xl font-bold">Designations</h1>
@@ -137,7 +137,7 @@ const Designation = () => {
           {loading ? (
             <div className="text-center">Loading...</div>
           ) : (
-            <div className="overflow-y-auto" style={{ height: "76vh" }}>
+            <div className="overflow-y-auto py-3" style={{ height: "76vh" }}>
               <table className="w-full border-collapse text-start">
                 <thead className="bg-white">
                   <tr className="border-b">
