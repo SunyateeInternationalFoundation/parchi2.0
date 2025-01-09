@@ -238,7 +238,7 @@ function Reminder() {
                 ) : (
                   <tr>
                     <td colSpan="6" className="h-24 text-center py-4">
-                      No Remainder found
+                      No Reminder found
                     </td>
                   </tr>
                 )}

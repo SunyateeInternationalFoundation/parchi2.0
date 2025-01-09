@@ -184,7 +184,7 @@ const Branches = () => {
                   ) : (
                     <tr>
                       <td colSpan="4" className="h-24 text-center py-4">
-                        No Designation Found
+                        No Branch Found
                       </td>
                     </tr>
                   )}
