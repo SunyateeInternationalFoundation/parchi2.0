@@ -66,10 +66,10 @@ const Template8 = forwardRef((props, ref) => {
             </div>
           </div>
           {/* Items Table */}
-          <div className="">
+          <div>
             <table className="w-full border-collapse border-b border-black text-gray-800">
               <thead>
-                <tr className="">
+                <tr>
                   <th className="border-b border-r border-black pl-1 text-left">
                     #
                   </th>
@@ -126,7 +126,7 @@ const Template8 = forwardRef((props, ref) => {
                     </td>
                   </tr>
                 ))}
-                <tr className="">
+                <tr>
                   <td className="text-left border-r border-black  pl-1"></td>
                   <td className="text-end border-r border-black  pl-1">
                     <p>SGST 2.5%</p>
@@ -189,7 +189,7 @@ const Template8 = forwardRef((props, ref) => {
               </div>
               <div className="text-sm text-gray-600 w-3/4 px-2">
                 <div className="font-bold text-gray-800">Note:</div>
-                <div className="">{dataSet.notes || "No Notes"}</div>
+                <div>{dataSet.notes || "No Notes"}</div>
                 <div className="font-bold text-gray-800">
                   Terms and Conditions:
                 </div>

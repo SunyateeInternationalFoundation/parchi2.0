@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 
 function Projects({ projectsData }) {
@@ -43,10 +43,7 @@ function Projects({ projectsData }) {
   }
 
   return (
-    <div
-      className="w-full px-8 py-8 bg-gray-100 overflow-y-auto"
-      style={{ height: "80vh" }}
-    >
+    <div className="main-container" style={{ height: "80vh" }}>
       <div className="py-5 ">
         <nav className="flex mb-4 bg-white rounded-lg shadow items-center py-3 px-5 ">
           <div className="space-x-4 w-full flex items-center">
@@ -69,8 +66,8 @@ function Projects({ projectsData }) {
             </div>
           </div>
         </nav>
-        <div className=" ">
-          <div className="">
+        <div>
+          <div>
             {modifiedProjectsList.length > 0 ? (
               <div className="grid grid-cols-3 gap-5">
                 {modifiedProjectsList.map((item) => (
@@ -102,7 +99,7 @@ function Projects({ projectsData }) {
                           <i>Project due time over kindly check it</i>
                         </div>
                       )}
-                      <div className="">
+                      <div>
                         Team:{" "}
                         <span className="font-bold">
                           {item.staffRef?.length || 0}

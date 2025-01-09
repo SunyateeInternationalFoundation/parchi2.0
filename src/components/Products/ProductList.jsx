@@ -117,9 +117,9 @@ const ProductList = () => {
   });
 
   return (
-    <div className="p-5 overflow-y-auto" style={{ height: "80vh" }}>
-      <div className="bg-white py-5  rounded-lg  shadow-md">
-        <div className="flex justify-between items-center px-5">
+    <div className="main-container" style={{ height: "82vh" }}>
+      <div className="container">
+        <div className="flex justify-between items-center px-5 ">
           <div className="flex justify-between items-center space-x-5 w-1/2">
             <div
               className="flex items-center space-x-4  w-full border
@@ -164,10 +164,7 @@ const ProductList = () => {
             <p className="text-gray-500">Loading products...</p>
           </div>
         ) : (
-          <div
-            className=" border-b overflow-y-auto py-5"
-            style={{ height: "62vh" }}
-          >
+          <div className=" overflow-y-auto py-3" style={{ height: "60vh" }}>
             <table className="w-full border-collapse ">
               <thead className="bg-white">
                 <tr className="border-b">

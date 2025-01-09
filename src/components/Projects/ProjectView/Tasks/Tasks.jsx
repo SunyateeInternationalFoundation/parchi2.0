@@ -455,7 +455,7 @@ function Tasks() {
                 className="flex  flex-col-reverse  overflow-y-auto"
                 style={{ height: "44vh" }}
               >
-                <div className="">
+                <div>
                   <div className="space-y-3">
                     {taskMessagesData[selectedTask.id]?.length > 0 ? (
                       taskMessagesData[selectedTask.id].map((item, index) => (
@@ -478,7 +478,7 @@ function Tasks() {
                         </div>
                       ))
                     ) : (
-                      <div className="">No Messages</div>
+                      <div>No Messages</div>
                     )}
                   </div>
                 </div>

@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
@@ -79,14 +79,17 @@ function SideBarAddServices({
                 }
                 onClick={() => onSelectService(service.id)}
               >
-                <div className="">
+                <div>
                   <div className="font-bold">{service.serviceName}</div>
                 </div>
                 <div className="text-end">
                   <div className="font-bold">
                     ₹ {service.sellingPrice?.toFixed(1)}
                   </div>
-                  <div className="text-sm">Discount : {service.discount}  {service.discountType ?"%":"/-"}</div>
+                  <div className="text-sm">
+                    Discount : {service.discount}{" "}
+                    {service.discountType ? "%" : "/-"}
+                  </div>
                   <div className="text-sm"> Tax ₹ {service.tax}</div>
                 </div>
               </div>

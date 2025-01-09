@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 
 const Template9 = forwardRef((props, ref) => {
   const { dataSet } = props;
-  if (!Object.keys(dataSet).length===0) {
+  if (!Object.keys(dataSet).length === 0) {
     return;
   }
   function DateFormate(timestamp) {
@@ -51,7 +51,7 @@ const Template9 = forwardRef((props, ref) => {
             <p>{dataSet?.userTo.phone}</p>
             <p>{dataSet?.userTo.email}</p>
           </div>
-          <div className="">
+          <div>
             <h3 className="font-bold">Author:</h3>
             <p> {dataSet?.createdBy?.name}</p>
             <p>
@@ -115,7 +115,7 @@ const Template9 = forwardRef((props, ref) => {
   );
 });
 Template9.propTypes = {
-  dataSet: PropTypes.object.isRequired
+  dataSet: PropTypes.object.isRequired,
 };
 
 Template9.displayName = "Template9";

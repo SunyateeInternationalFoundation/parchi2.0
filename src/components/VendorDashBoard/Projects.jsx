@@ -105,10 +105,7 @@ function Projects() {
   }, [filterStatus, searchInput, projectsList]);
   return (
     <div className="w-full">
-      <div
-        className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
-        style={{ height: "92vh" }}
-      >
+      <div className="main-container" style={{ height: "92vh" }}>
         <div className="bg-white p-4 mt-5 rounded-lg ">
           <nav className="flex space-x-4 mb-4 items-center rounded-lg ">
             <div className="space-x-4 w-full flex items-center">
@@ -131,11 +128,11 @@ function Projects() {
               </div>
             </div>
           </nav>
-          <div className=" ">
+          <div>
             {loading ? (
               <div className="text-center py-6">Loading Projects...</div>
             ) : (
-              <div className="">
+              <div>
                 {modifiedProjectsList.length > 0 ? (
                   <div className="grid grid-cols-3 gap-5">
                     {modifiedProjectsList.map((item) => (
@@ -168,7 +165,7 @@ function Projects() {
                               <i>Project due time over kindly check it</i>
                             </div>
                           )}
-                          <div className="">
+                          <div>
                             Team:{" "}
                             <span className="font-bold">
                               {item.staffRef?.length || 0}

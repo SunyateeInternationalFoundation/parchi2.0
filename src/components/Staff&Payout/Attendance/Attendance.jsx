@@ -25,71 +25,70 @@ function Attendance() {
   const companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
 
-  useEffect(() => {
-    async function fetchStaffData() {
-      setLoading(true);
-      try {
-        const companyRef = doc(db, "companies", companyId);
-        const staffRef = collection(db, "staff");
-        const q = query(staffRef, where("companyRef", "==", companyRef));
-        const getStaffData = await getDocs(q);
-        const staff = getStaffData.docs.map((doc) => {
-          return {
-            id: doc.id,
-            ...doc.data(),
-          };
-        });
+  async function fetchStaffData() {
+    setLoading(true);
+    try {
+      const companyRef = doc(db, "companies", companyId);
+      const staffRef = collection(db, "staff");
+      const q = query(staffRef, where("companyRef", "==", companyRef));
+      const getStaffData = await getDocs(q);
+      const staff = getStaffData.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data(),
+        };
+      });
 
-        setStaffData(staff);
-      } catch (error) {
-        console.log("🚀 ~ fetchStaffData ~ error:", error);
-      } finally {
-        setLoading(false);
-      }
+      setStaffData(staff);
+    } catch (error) {
+      console.log("🚀 ~ fetchStaffData ~ error:", error);
+    } finally {
+      setLoading(false);
     }
+  }
 
-    async function fetchStaffAttendance() {
-      setLoading(true);
+  async function fetchStaffAttendance() {
+    setLoading(true);
 
-      try {
-        const staffAttendanceRef = collection(
-          db,
-          "companies",
-          companyId,
-          "staffAttendance"
-        );
-        const q = query(staffAttendanceRef, orderBy("date", "desc"));
-        const staffAttendanceData = await getDocs(q);
+    try {
+      const staffAttendanceRef = collection(
+        db,
+        "companies",
+        companyId,
+        "staffAttendance"
+      );
+      const q = query(staffAttendanceRef, orderBy("date", "desc"));
+      const staffAttendanceData = await getDocs(q);
 
-        const staffAttendance = staffAttendanceData.docs.map((doc) => {
-          const data = doc.data();
-          let present = 0;
-          let absent = 0;
+      const staffAttendance = staffAttendanceData.docs.map((doc) => {
+        const data = doc.data();
+        let present = 0;
+        let absent = 0;
 
-          for (let att of data.staffs) {
-            if (att.status === "present") {
-              ++present;
-            } else if (att.status === "absent") {
-              ++absent;
-            }
+        for (let att of data.staffs) {
+          if (att.status === "present") {
+            ++present;
+          } else if (att.status === "absent") {
+            ++absent;
           }
+        }
 
-          return {
-            id: doc.id,
-            ...data,
-            present,
-            absent,
-          };
-        });
+        return {
+          id: doc.id,
+          ...data,
+          present,
+          absent,
+        };
+      });
 
-        setStaffAttendance(staffAttendance);
-      } catch (error) {
-        console.log("🚀 ~ fetchStaffData ~ error:", error);
-      } finally {
-        setLoading(false);
-      }
+      setStaffAttendance(staffAttendance);
+    } catch (error) {
+      console.log("🚀 ~ fetchStaffData ~ error:", error);
+    } finally {
+      setLoading(false);
     }
-
+  }
+  useEffect(() => {
     fetchStaffData();
     fetchStaffAttendance();
   }, [companyId]);
@@ -157,19 +156,6 @@ function Attendance() {
     }
   }, [staffData, staffAttendance]);
 
-  function DateFormate(timestamp) {
-    if (!timestamp) {
-      return;
-    }
-    const milliseconds =
-      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
-    const date = new Date(milliseconds);
-    const getDate = String(date.getDate()).padStart(2, "0");
-    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
-    const getFullYear = date.getFullYear();
-    return `${getDate}/${getMonth}/${getFullYear}`;
-  }
-
   function markedAttendance(AttendanceId, data) {
     const removedAlreadyAddAttendance = staffAttendance.filter((ele) => {
       if (ele.id === AttendanceId) {
@@ -216,10 +202,10 @@ function Attendance() {
         </div>
       </div>
       <div className="container">
-        <header className="flex justify-between items-center space-x-3 p-5">
+        <header className="flex justify-between items-center space-x-3 px-5">
           <div className="flex space-x-3 item-center">
             <h1 className="text-2xl font-bold">Attendance</h1>
-            <div className="">
+            <div>
               <label htmlFor="monthFilter">Filter by Month:</label>
               <input
                 id="monthFilter"
@@ -238,7 +224,7 @@ function Attendance() {
           {loading ? (
             <div className="text-center">Loading...</div>
           ) : filteredAttendance.length > 0 ? (
-            <div className="overflow-y-auto" style={{ height: "60vh" }}>
+            <div className="overflow-y-auto py-3" style={{ height: "70vh" }}>
               <table className="w-full border-collapse text-start">
                 <thead className="bg-white">
                   <tr className="border-b">

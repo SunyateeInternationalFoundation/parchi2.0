@@ -64,9 +64,9 @@ const ServicesList = () => {
     }
   }
   return (
-    <div className="p-5 overflow-y-auto" style={{ height: "92vh" }}>
-      <div className="bg-white rounded-lg shadow-md">
-        <div className="flex justify-between items-center  px-5 py-3">
+    <div className="main-container" style={{ height: "92vh" }}>
+      <div className="container">
+        <div className="flex justify-between items-center px-5">
           <h1 className="text-2xl font-bold">Services List</h1>
           <button
             className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
@@ -75,77 +75,62 @@ const ServicesList = () => {
             + Create Service
           </button>
         </div>
-        <CreateServiceList
-          isOpen={isSideBarOpen}
-          onClose={() => {
-            setIsSideBarOpen(false);
-            setSelectedService(null);
-          }}
-          refresh={fetchServices}
-          service={selectedService}
-        />
         {loading ? (
           <p>Loading services...</p>
         ) : services.length > 0 ? (
-          <div className="overflow-y-auto bg-white" style={{ height: "74vh" }}>
+          <div className="overflow-y-auto" style={{ height: "72vh" }}>
             <table className="w-full ">
-              <thead className="sticky z-10 bg-white" style={{ top: "0" }}>
+              <thead className="sticky z-10" style={{ top: "0" }}>
                 <tr className="border-b">
-                  <th scope="col" className="py-3 px-6 text-left font-semibold">
+                  <th className="px-8 py-1 text-gray-400  text-left font-semibold">
                     Service Name
                   </th>
-                  <th scope="col" className="py-3 px-6 text-left font-semibold">
+                  <th className="px-5 py-1 text-gray-400  text-left font-semibold">
                     Description
                   </th>
-                  <th scope="col" className="py-3 px-6 text-left font-semibold">
+                  <th className="px-5 py-1 text-gray-400  text-center font-semibold">
                     Price
                   </th>
-                  <th scope="col" className="py-3 px-6 text-left font-semibold">
+                  <th className="px-5 py-1 text-gray-400  text-center font-semibold">
                     Discount
                   </th>
-                  <th scope="col" className="py-3 px-6 text-left font-semibold">
+                  <th className="px-5 py-1 text-gray-400  text-center font-semibold">
                     Tax
                   </th>
-                  <th className="py-3 px-6 text-center font-semibold ">
+                  <th className="px-8 py-1 text-gray-400  text-end font-semibold ">
                     Delete
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-gray-200">
+              <tbody className="">
                 {services.map((service) => (
                   <tr
                     key={service.id}
                     className="hover:bg-blue-100 border-b cursor-pointer"
                     onClick={() => handleEditService(service)}
                   >
-                    <td className="px-6 py-4 font-semibold text-gray-600">
-                      {service.serviceName}
-                    </td>
-                    <td className="px-6 py-4 font-semibold text-gray-600">
-                      {service.description}
-                    </td>
-                    <td className="px-6 py-4 font-semibold text-gray-600">
+                    <td className="px-8 py-3">{service.serviceName}</td>
+                    <td className="px-5 py-3">{service.description}</td>
+                    <td className="px-5 py-3 text-center">
                       ₹{service.sellingPrice}
                     </td>
-                    <td className="px-6 py-4 font-semibold text-gray-600">
+                    <td className="px-5 py-3 text-center">
                       {service.discount}
                       {service.discountType === "Percentage" ? "%" : "/-"}
                     </td>
-                    <td className="px-6 py-4 font-semibold text-gray-600">
-                      {service.tax}%
-                    </td>
+                    <td className="px-5 py-3 text-center">{service.tax}%</td>
                     <td
-                      className="py-3 px-6"
+                      className="py-3 px-12 text-end"
                       onClick={(e) => {
                         e.stopPropagation();
                       }}
                     >
-                      <div
-                        className="text-red-500 flex items-center justify-center"
+                      <button
+                        className="text-red-500"
                         onClick={() => onHandleDeleteService(service.id)}
                       >
                         <RiDeleteBin6Line />
-                      </div>
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -156,6 +141,15 @@ const ServicesList = () => {
           <p>No services found.</p>
         )}
       </div>
+      <CreateServiceList
+        isOpen={isSideBarOpen}
+        onClose={() => {
+          setIsSideBarOpen(false);
+          setSelectedService(null);
+        }}
+        refresh={fetchServices}
+        service={selectedService}
+      />
     </div>
   );
 };

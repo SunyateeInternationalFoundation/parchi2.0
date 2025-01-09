@@ -90,10 +90,7 @@ const VendorPurchase = () => {
   }, [currentPage, purchaseList, searchTerm, filterStatus]);
   return (
     <div className="w-full">
-      <div
-        className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
-        style={{ height: "92vh" }}
-      >
+      <div className="main-container" style={{ height: "92vh" }}>
         <div className="bg-white pb-8 pt-6 rounded-lg shadow my-6">
           <nav className="flex mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">
@@ -126,8 +123,8 @@ const VendorPurchase = () => {
           {loading ? (
             <div className="text-center py-6">Loading purchase...</div>
           ) : (
-            <div className="" style={{ height: "96vh" }}>
-              <div className="" style={{ height: "92vh" }}>
+            <div style={{ height: "96vh" }}>
+              <div style={{ height: "92vh" }}>
                 <table className="w-full border-collapse text-start">
                   <thead className=" bg-white">
                     <tr className="border-b">
@@ -260,7 +257,7 @@ const VendorPurchase = () => {
                       disabled={currentPage + 1 >= totalPages}
                     >
                       <div className="flex justify-center">
-                        <LuChevronsRight className="" />
+                        <LuChevronsRight />
                       </div>
                     </button>
                   </div>

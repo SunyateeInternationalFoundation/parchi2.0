@@ -5,6 +5,7 @@ import {
   getDocs,
   query,
   Timestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -12,7 +13,7 @@ import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { db } from "../../../firebase";
 
-function CreateStaff({ isOpen, onClose, staffAdded }) {
+function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
   const userDetails = useSelector((state) => state.users);
   const companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
@@ -88,18 +89,44 @@ function CreateStaff({ isOpen, onClose, staffAdded }) {
     }
   };
 
+  function DateFormate(timestamp) {
+    if (!timestamp) {
+      return;
+    }
+    const milliseconds =
+      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
+    const date = new Date(milliseconds);
+    const getDate = String(date.getDate()).padStart(2, "0");
+    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
+    const getFullYear = date.getFullYear();
+
+    return `${getFullYear}-${getMonth}-${getDate}`;
+  }
   useEffect(() => {
     fetchDesignation();
   }, [companyId]);
+
+  useEffect(() => {
+    if (staffData?.id) {
+      setFormData(staffData);
+    }
+  }, [staffData]);
 
   async function onSubmit(e) {
     e.preventDefault();
 
     try {
-      const companyRef = doc(db, "companies", companyId);
-      const payload = { ...formData, companyRef };
-      await addDoc(collection(db, "staff"), payload);
-      alert("Successfully Created Staff");
+      if (staffData?.id) {
+        const staffsRef = doc(db, "staff", staffData.id);
+        const { id, ...rest } = formData;
+        await updateDoc(staffsRef, rest);
+      } else {
+        const companyRef = doc(db, "companies", companyId);
+        const payload = { ...formData, companyRef };
+        await addDoc(collection(db, "staff"), payload);
+        alert("Successfully Created Staff");
+      }
+
       staffAdded();
       onClose();
     } catch (error) {
@@ -121,7 +148,10 @@ function CreateStaff({ isOpen, onClose, staffAdded }) {
         style={{ maxHeight: "100vh" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-xl font-semibold ">Create Staff</h2>
+        <h2 className="text-xl font-semibold ">
+          {staffData?.id ? "Edit" : "Create"}
+          Staff
+        </h2>
         <button
           onClick={onClose}
           className="absolute text-3xl top-4 right-4 text-gray-600 hover:text-gray-900 cursor-pointer"
@@ -137,6 +167,7 @@ function CreateStaff({ isOpen, onClose, staffAdded }) {
               className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
               placeholder="Name"
               required
+              value={formData.name}
               onChange={(e) =>
                 setFormData((val) => ({ ...val, name: e.target.value }))
               }
@@ -178,6 +209,7 @@ function CreateStaff({ isOpen, onClose, staffAdded }) {
             <input
               type="text"
               name="idNo"
+              value={formData.idNo}
               className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
               placeholder="ID No."
               onChange={handleIdNumberChange}
@@ -190,6 +222,7 @@ function CreateStaff({ isOpen, onClose, staffAdded }) {
               name="joiningDate"
               className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
               placeholder="Joining Date"
+              value={DateFormate(formData.dateOfJoining)}
               onChange={(e) =>
                 setFormData((val) => ({
                   ...val,
@@ -205,6 +238,7 @@ function CreateStaff({ isOpen, onClose, staffAdded }) {
               name="Email"
               className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
               placeholder="Email"
+              value={formData.emailId}
               onChange={(e) =>
                 setFormData((val) => ({ ...val, emailId: e.target.value }))
               }
@@ -217,20 +251,31 @@ function CreateStaff({ isOpen, onClose, staffAdded }) {
               name="Address"
               className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
               placeholder="Address"
+              value={formData.address}
               onChange={(e) =>
                 setFormData((val) => ({ ...val, address: e.target.value }))
               }
             />
           </div>
-          <div>
-            <label className="text-sm block font-semibold ">City</label>
+          <div className="flex gap-3">
             <input
               type="text"
               name="City"
               className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
               placeholder="City"
+              value={formData.city}
               onChange={(e) =>
                 setFormData((val) => ({ ...val, city: e.target.value }))
+              }
+            />
+            <input
+              type="text"
+              name="PinCode"
+              className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
+              placeholder="PinCode"
+              value={formData.zipCode}
+              onChange={(e) =>
+                setFormData((val) => ({ ...val, zipCode: e.target.value }))
               }
             />
           </div>
@@ -238,7 +283,7 @@ function CreateStaff({ isOpen, onClose, staffAdded }) {
             <label className="text-sm block font-semibold ">Designation</label>
             <select
               className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
-              defaultValue={""}
+              value={formData.designation}
               onChange={(e) =>
                 setFormData((val) => ({ ...val, designation: e.target.value }))
               }
@@ -269,6 +314,7 @@ function CreateStaff({ isOpen, onClose, staffAdded }) {
             <input
               type="text"
               name="PAN"
+              value={formData.panNumber}
               className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
               placeholder="PAN"
               onChange={(e) =>
@@ -283,6 +329,7 @@ function CreateStaff({ isOpen, onClose, staffAdded }) {
                 <input
                   type="checkbox"
                   className="sr-only peer"
+                  checked={formData.isDailyWages}
                   onChange={(e) =>
                     setFormData((val) => ({
                       ...val,
@@ -304,6 +351,7 @@ function CreateStaff({ isOpen, onClose, staffAdded }) {
               name="paymentDetails"
               className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
               placeholder="paymentDetails"
+              value={formData.paymentDetails}
               onChange={(e) =>
                 setFormData((val) => ({
                   ...val,
@@ -313,12 +361,12 @@ function CreateStaff({ isOpen, onClose, staffAdded }) {
             />
           </div>
 
-          <div className="">
+          <div>
             <button
               type="submit"
               className="w-full bg-purple-500 text-white p-2 rounded-md mt-4"
             >
-              Create
+              {staffData?.id ? "Edit" : "Create"}
             </button>
           </div>
         </form>

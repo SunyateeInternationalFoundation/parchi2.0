@@ -181,7 +181,7 @@ function Services({ servicesList }) {
                   disabled={currentPage + 1 >= totalPages}
                 >
                   <div className="flex justify-center">
-                    <LuChevronsRight className="" />
+                    <LuChevronsRight />
                   </div>
                 </button>
               </div>

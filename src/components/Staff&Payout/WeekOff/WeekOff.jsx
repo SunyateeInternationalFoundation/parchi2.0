@@ -156,7 +156,7 @@ const WeekOff = () => {
         </button>
       </div>
       <div className="container p-5">
-        <div className="flex gap-4 my-3">
+        <div className="flex gap-4 mb-3">
           {["Staff Level", "Business Level"].map((level) => (
             <button
               key={level}

@@ -96,10 +96,7 @@ function Invoice() {
 
   return (
     <div className="w-full">
-      <div
-        className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
-        style={{ height: "92vh" }}
-      >
+      <div className="main-container" style={{ height: "92vh" }}>
         {/* <div className="bg-white rounded-lg shadow mt-4 py-5">
           <h1 className="text-2xl font-bold pb-3 px-10 ">Invoice Overview</h1>
           <div className="grid grid-cols-4 gap-12  px-10 ">
@@ -164,8 +161,8 @@ function Invoice() {
           {loading ? (
             <div className="text-center py-6">Loading invoices...</div>
           ) : (
-            <div className="" style={{ height: "96vh" }}>
-              <div className="" style={{ height: "92vh" }}>
+            <div style={{ height: "96vh" }}>
+              <div style={{ height: "92vh" }}>
                 <table className="w-full border-collapse text-start">
                   <thead className=" bg-white">
                     <tr className="border-b">
@@ -301,7 +298,7 @@ function Invoice() {
                       disabled={currentPage + 1 >= totalPages}
                     >
                       <div className="flex justify-center">
-                        <LuChevronsRight className="" />
+                        <LuChevronsRight />
                       </div>
                     </button>
                   </div>

@@ -261,8 +261,9 @@ const Documents = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="bg-white rounded-lg shadow-md p-5">
+    <div className="main-container">
+      <h1 className="text-2xl font-bold mt-4 py-3">Documents</h1>
+      <div className="container p-5">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             {currentPath.length > 0 && (
@@ -273,7 +274,6 @@ const Documents = () => {
                 <AiOutlineArrowLeft className="w-5 h-5" />
               </button>
             )}
-            <h1 className="text-2xl font-bold">Documents</h1>
             <input
               type="text"
               placeholder="Search..."

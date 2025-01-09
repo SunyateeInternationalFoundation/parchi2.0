@@ -1,9 +1,9 @@
 import {
-    collection,
-    doc,
-    getDocs,
-    Timestamp,
-    writeBatch,
+  collection,
+  doc,
+  getDocs,
+  Timestamp,
+  writeBatch,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
@@ -159,7 +159,7 @@ function ItemView({ isOpen, onClose, ItemData, onRefresh }) {
               required
             />
           </div>
-          <div className="">
+          <div>
             <button
               className="w-full bg-blue-700 text-white p-2 rounded-md mt-4"
               onClick={onAddUsedItem}

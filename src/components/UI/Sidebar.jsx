@@ -203,7 +203,6 @@ function SideBar() {
     >
       <div className="flex justify-end cursor-pointer">
         <div
-          className=""
           onClick={() => {
             setIsSideBarExpend(!isSideBarExpend);
             setSideBarDetails({

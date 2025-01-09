@@ -128,234 +128,220 @@ const Purchase = () => {
   }, [currentPage, purchases, searchTerm, filterStatus]);
 
   return (
-    <div className="w-full">
-      <div
-        className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
-        style={{ height: "92vh" }}
-      >
-        <div className="mt-4 py-3">
-          <h1 className="text-2xl font-bold pb-3  ">Purchase Overview</h1>
-          <div className="grid grid-cols-4 gap-8">
-            <div className="rounded-lg p-5  bg-white shadow  ">
-              <div className="text-lg">Total Amount</div>
-              <div className="text-3xl text-[hsl(240,92.20%,70.00%)] font-bold p-2">
-                ₹ {totalAmount}
-              </div>
+    <div className="main-container" style={{ height: "92vh" }}>
+      <div className="mt-4 py-3">
+        <h1 className="text-2xl font-bold pb-3  ">Purchase Overview</h1>
+        <div className="grid grid-cols-4 gap-8">
+          <div className="rounded-lg p-5  bg-white shadow  ">
+            <div className="text-lg">Total Amount</div>
+            <div className="text-3xl text-[hsl(240,92.20%,70.00%)] font-bold p-2">
+              ₹ {totalAmount}
             </div>
-            <div className="rounded-lg p-5 bg-white shadow ">
-              <div className="text-lg"> Received Amount</div>
-              <div className="text-3xl text-emerald-600 font-bold p-2">
-                {" "}
-                ₹ {receivedAmount}
-              </div>
+          </div>
+          <div className="rounded-lg p-5 bg-white shadow ">
+            <div className="text-lg"> Received Amount</div>
+            <div className="text-3xl text-emerald-600 font-bold p-2">
+              {" "}
+              ₹ {receivedAmount}
             </div>
-            <div className="rounded-lg p-5 bg-white shadow ">
-              <div className="text-lg">Pending Amount</div>
-              <div className="text-3xl text-orange-600 font-bold p-2">
-                ₹ {pendingAmount}
-              </div>
+          </div>
+          <div className="rounded-lg p-5 bg-white shadow ">
+            <div className="text-lg">Pending Amount</div>
+            <div className="text-3xl text-orange-600 font-bold p-2">
+              ₹ {pendingAmount}
             </div>
-            <div className="rounded-lg p-5 bg-white shadow">
-              <div className="text-lg">Total Amount</div>
-              <div className="text-3xl text-red-600 font-bold p-2">
-                ₹ {totalAmount}
-              </div>
+          </div>
+          <div className="rounded-lg p-5 bg-white shadow">
+            <div className="text-lg">Total Amount</div>
+            <div className="text-3xl text-red-600 font-bold p-2">
+              ₹ {totalAmount}
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="bg-white pb-8 pt-6  rounded-lg shadow my-6">
-          <nav className="flex mb-4 px-5">
-            <div className="space-x-4 w-full flex items-center">
-              <div
-                className="flex items-center space-x-4  border
+      <div className="container">
+        <nav className="flex items-center mb-4 px-5">
+          <div className="space-x-4 w-full flex items-center">
+            <div
+              className="flex items-center space-x-4  border
       px-5  py-3 rounded-md w-full"
-              >
-                <input
-                  type="text"
-                  placeholder="Search by purchase #..."
-                  className=" w-full focus:outline-none"
-                  value={searchTerm}
-                  onChange={handleSearch}
-                />
-                <IoSearch />
-              </div>
-              <div
-                className="flex items-center space-x-4  border
+            >
+              <input
+                type="text"
+                placeholder="Search by purchase #..."
+                className=" w-full focus:outline-none"
+                value={searchTerm}
+                onChange={handleSearch}
+              />
+              <IoSearch />
+            </div>
+            <div
+              className="flex items-center space-x-4  border
       px-5 py-3 rounded-md  "
+            >
+              <select onChange={(e) => setFilterStatus(e.target.value)}>
+                <option value="All"> All Transactions</option>
+                <option value="Pending">Pending</option>
+                <option value="Received">Received</option>
+              </select>
+            </div>
+          </div>
+          <div className="w-full text-end ">
+            {(userDetails.selectedDashboard === "" || role?.create) && (
+              <Link
+                className="bg-[#442799] text-white text-center px-5 py-3 font-semibold rounded-md"
+                to="create-purchase"
               >
-                <select onChange={(e) => setFilterStatus(e.target.value)}>
-                  <option value="All"> All Transactions</option>
-                  <option value="Pending">Pending</option>
-                  <option value="Received">Received</option>
-                </select>
-              </div>
-            </div>
-            <div className="w-full text-end ">
-              {(userDetails.selectedDashboard === "" || role?.create) && (
-                <Link
-                  className="bg-[#442799] text-white text-center px-5 py-3 font-semibold rounded-md"
-                  to="create-purchase"
-                >
-                  + Create Purchase
-                </Link>
-              )}
-            </div>
-          </nav>
+                + Create Purchase
+              </Link>
+            )}
+          </div>
+        </nav>
 
-          {loading ? (
-            <div className="text-center py-6">Loading purchases...</div>
-          ) : (
-            <div className="" style={{ height: "96vh" }}>
-              <div className="" style={{ height: "92vh" }}>
-                <table className="w-full border-collapse text-start">
-                  <thead className=" bg-white">
-                    <tr className="border-b">
-                      <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
-                        Date
+        {loading ? (
+          <div className="text-center py-6">Loading purchases...</div>
+        ) : (
+          <div style={{ height: "92vh" }}>
+            <table className="w-full border-collapse text-start">
+              <thead className=" bg-white">
+                <tr className="border-b">
+                  <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
+                    Date
+                  </td>
+                  <td className="px-5 py-3 text-gray-400 font-semibold text-center">
+                    Purchase No
+                  </td>
+                  <td className="px-5 py-3 text-gray-400 font-semibold text-start">
+                    Vendor
+                  </td>
+                  <td className="px-5 py-3 text-center text-gray-400 font-semibold  ">
+                    Amount
+                  </td>
+                  <td className="px-5 py-3 text-gray-400 font-semibold text-center ">
+                    Status
+                  </td>
+                  <td className="px-5 py-3 text-gray-400 font-semibold text-start ">
+                    Mode
+                  </td>
+                  <td className="px-5 py-3 text-gray-400 font-semibold text-start ">
+                    Created By
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                {paginationData.length > 0 ? (
+                  paginationData.map((purchase) => (
+                    <tr
+                      key={purchase.id}
+                      className="border-b text-center cursor-pointer text-start"
+                      onClick={() => {
+                        navigate(purchase.id);
+                      }}
+                    >
+                      <td className="px-8 py-3 text-start">
+                        <FormatTimestamp timestamp={purchase.date} />
                       </td>
-                      <td className="px-5 py-3 text-gray-400 font-semibold text-center">
-                        Purchase No
+                      <td className="px-5 py-3 font-bold text-center">
+                        {purchase.prefix || ""}-{purchase.purchaseNo}
                       </td>
-                      <td className="px-5 py-3 text-gray-400 font-semibold text-start">
-                        Vendor
+
+                      <td className="px-5 py-3 text-start">
+                        {purchase.vendorDetails?.name} <br />
+                        <span className="text-gray-500 text-sm">
+                          Ph.No {purchase.vendorDetails.phone}
+                        </span>
                       </td>
-                      <td className="px-5 py-3 text-center text-gray-400 font-semibold  ">
-                        Amount
-                      </td>
-                      <td className="px-5 py-3 text-gray-400 font-semibold text-center ">
-                        Status
-                      </td>
-                      <td className="px-5 py-3 text-gray-400 font-semibold text-start ">
-                        Mode
-                      </td>
-                      <td className="px-5 py-3 text-gray-400 font-semibold text-start ">
-                        Created By
-                      </td>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {paginationData.length > 0 ? (
-                      paginationData.map((purchase) => (
-                        <tr
-                          key={purchase.id}
-                          className="border-b text-center cursor-pointer text-start"
-                          onClick={() => {
-                            navigate(purchase.id);
-                          }}
+                      <td className="px-5 py-3 font-bold text-center">{`₹ ${purchase.total.toFixed(
+                        2
+                      )}`}</td>
+                      <td
+                        className="px-5 py-1"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div
+                          className={`px-1 text-center py-2 rounded-lg text-xs  ${
+                            purchase.orderStatus !== "Pending"
+                              ? "bg-green-200 "
+                              : "bg-red-200 "
+                          }`}
                         >
-                          <td className="px-8 py-3 text-start">
-                            <FormatTimestamp timestamp={purchase.date} />
-                          </td>
-                          <td className="px-5 py-3 font-bold text-center">
-                            {purchase.prefix || ""}-{purchase.purchaseNo}
-                          </td>
-
-                          <td className="px-5 py-3 text-start">
-                            {purchase.vendorDetails?.name} <br />
-                            <span className="text-gray-500 text-sm">
-                              Ph.No {purchase.vendorDetails.phone}
-                            </span>
-                          </td>
-                          <td className="px-5 py-3 font-bold text-center">{`₹ ${purchase.total.toFixed(
-                            2
-                          )}`}</td>
-                          <td
-                            className="px-5 py-1"
-                            onClick={(e) => e.stopPropagation()}
+                          <select
+                            value={purchase.orderStatus}
+                            onChange={(e) => {
+                              handleStatusChange(purchase.id, e.target.value);
+                            }}
+                            className={` ${
+                              purchase.orderStatus !== "Pending"
+                                ? "bg-green-200 "
+                                : "bg-red-200 "
+                            }`}
                           >
-                            <div
-                              className={`px-1 text-center py-2 rounded-lg text-xs  ${
-                                purchase.orderStatus !== "Pending"
-                                  ? "bg-green-200 "
-                                  : "bg-red-200 "
-                              }`}
-                            >
-                              <select
-                                value={purchase.orderStatus}
-                                onChange={(e) => {
-                                  handleStatusChange(
-                                    purchase.id,
-                                    e.target.value
-                                  );
-                                }}
-                                className={` ${
-                                  purchase.orderStatus !== "Pending"
-                                    ? "bg-green-200 "
-                                    : "bg-red-200 "
-                                }`}
-                              >
-                                <option value="Pending">Pending</option>
-                                <option value="Received">Received</option>
-                              </select>
-                            </div>
-                          </td>
-                          <td className="px-5 py-3">
-                            {purchase.mode || "Online"}
-                          </td>
+                            <option value="Pending">Pending</option>
+                            <option value="Received">Received</option>
+                          </select>
+                        </div>
+                      </td>
+                      <td className="px-5 py-3">{purchase.mode || "Online"}</td>
 
-                          <td className="px-5 py-3">
-                            {purchase?.createdBy?.who}
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="6" className="h-24 text-center py-4">
-                          No purchases found
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-              <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
-                <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
-                  {currentPage + 1} of {totalPages || 1} row(s) selected.
+                      <td className="px-5 py-3">{purchase?.createdBy?.who}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="h-24 text-center py-4">
+                      No purchases found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+        <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
+          <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+            {currentPage + 1} of {totalPages || 1} row(s) selected.
+          </div>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2">
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(0)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsLeft className="text-sm" />
                 </div>
-                <div className="flex flex-wrap items-center gap-6">
-                  <div className="flex items-center gap-2">
-                    <button
-                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                      onClick={() => setCurrentPage(0)}
-                      disabled={currentPage <= 0}
-                    >
-                      <div className="flex justify-center">
-                        <LuChevronsLeft className="text-sm" />
-                      </div>
-                    </button>
-                    <button
-                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                      onClick={() => setCurrentPage((val) => val - 1)}
-                      disabled={currentPage <= 0}
-                    >
-                      <div className="flex justify-center">
-                        <LuChevronLeft className="text-sm" />
-                      </div>
-                    </button>
-                    <button
-                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                      onClick={() => setCurrentPage((val) => val + 1)}
-                      disabled={currentPage + 1 >= totalPages}
-                    >
-                      <div className="flex justify-center">
-                        <LuChevronRight className="text-sm" />
-                      </div>
-                    </button>
-                    <button
-                      className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                      onClick={() => setCurrentPage(totalPages - 1)}
-                      disabled={currentPage + 1 >= totalPages}
-                    >
-                      <div className="flex justify-center">
-                        <LuChevronsRight className="" />
-                      </div>
-                    </button>
-                  </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val - 1)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronLeft className="text-sm" />
                 </div>
-              </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val + 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronRight className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(totalPages - 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsRight />
+                </div>
+              </button>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

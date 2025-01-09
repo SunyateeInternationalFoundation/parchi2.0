@@ -115,7 +115,7 @@ function StaffPayout() {
       <div className="bg-gray-100" style={{ width: "100%", height: "92vh" }}>
         <div className="flex px-8 gap-2 bg-white border-b">
           {ManageStaff.map((item) => (
-            <div className="" key={item.name}>
+            <div key={item.name}>
               <div
                 className={
                   "flex items-center cursor-pointer p-4 font-semibold text-gray-500 " +

@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 
 const Template6 = forwardRef((props, ref) => {
   const { dataSet } = props;
-  if (!Object.keys(dataSet).length===0) {
+  if (!Object.keys(dataSet).length === 0) {
     return;
   }
   function DateFormate(timestamp) {
@@ -56,7 +56,7 @@ const Template6 = forwardRef((props, ref) => {
               {dataSet?.userTo.zipCode}
             </p>
           </div>
-          <div className="">
+          <div>
             <p>
               <span className="font-bold">Order Date: </span>
               {DateFormate(dataSet?.dueDate)}
@@ -133,8 +133,8 @@ const Template6 = forwardRef((props, ref) => {
           <div className="text-right">₹{+dataSet?.total?.toFixed(2)}</div>
         </div>
         <div className="text-end border-x font-bold border-black border-b">
-          <div className="">For {dataSet?.createdBy.name}:</div>
-          <div className="">Authorized Signatory</div>
+          <div>For {dataSet?.createdBy.name}:</div>
+          <div>Authorized Signatory</div>
         </div>
 
         {/* Footer */}
@@ -143,7 +143,7 @@ const Template6 = forwardRef((props, ref) => {
             <span className="font-bold">NOTE:</span>{" "}
             {dataSet?.notes || "No notes"}
           </div>
-          <div className="">
+          <div>
             <p>
               <span className="font-bold">Terms & Conditions: </span>
               {dataSet?.terms || "No Terms & Conditions"}

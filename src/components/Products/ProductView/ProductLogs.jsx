@@ -5,7 +5,7 @@ function ProductLogs({ logs }) {
   return (
     <div className="main-container" style={{ height: "82vh" }}>
       <div className="container">
-        <div className="">
+        <div>
           <div
             className=" border-b overflow-y-auto py-5"
             style={{ height: "74vh" }}
@@ -30,7 +30,7 @@ function ProductLogs({ logs }) {
               <tbody>
                 {logs.length > 0 ? (
                   logs.map((log) => (
-                    <tr key={log.id} className="">
+                    <tr key={log.id}>
                       <td className="px-8 py-3 text-start">
                         <FormatTimestamp timestamp={log.date} />
                       </td>

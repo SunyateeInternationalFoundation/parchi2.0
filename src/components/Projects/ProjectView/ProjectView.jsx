@@ -190,7 +190,6 @@ function ProjectView({ projectDetails, refreshProject }) {
 
               <div className="relative ">
                 <div
-                  className=""
                   onClick={() => {
                     setIsOutlineDotsOpen(!isOutlineDotsOpen);
                   }}

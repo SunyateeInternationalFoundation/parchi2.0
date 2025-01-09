@@ -159,9 +159,9 @@ function CreateProject() {
           </h1>
         </div>
       </header>
-      <div className="">
+      <div>
         <div className="bg-white p-4 rounded-lg">
-          <div className="">
+          <div>
             <label className="text-lg text-gray-600">
               Project Name <span className="text-red-500">*</span>
             </label>
@@ -233,7 +233,7 @@ function CreateProject() {
         </div>
         {isMoreChecked && (
           <div className="grid grid-cols-2 gap-4 bg-white p-4 rounded-lg">
-            <div className="">
+            <div>
               <label className="text-lg text-gray-600">Bank/Book Details</label>
               <select
                 onChange={onSelectBook}
@@ -251,7 +251,7 @@ function CreateProject() {
                   ))}
               </select>
             </div>
-            <div className="">
+            <div>
               <label className="text-lg text-gray-600">Budget</label>
               <input
                 type="number"
@@ -261,7 +261,7 @@ function CreateProject() {
                 onChange={(e) => handleInputChange("budget", +e.target.value)}
               />
             </div>
-            <div className="">
+            <div>
               <label className="text-lg text-gray-600">Location</label>
               <input
                 type="text"
@@ -271,7 +271,7 @@ function CreateProject() {
                 onChange={(e) => handleInputChange("location", e.target.value)}
               />
             </div>
-            <div className="">
+            <div>
               <label className="text-lg text-gray-600">Description</label>
               <input
                 type="text"

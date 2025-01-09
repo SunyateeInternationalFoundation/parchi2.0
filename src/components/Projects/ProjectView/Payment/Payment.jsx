@@ -139,10 +139,7 @@ const Payment = ({ projectDetails }) => {
     }
   }
   return (
-    <div
-      className="px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto"
-      style={{ height: "82vh" }}
-    >
+    <div className="main-container" style={{ height: "82vh" }}>
       <div className=" mt-4 py-3">
         <div className="grid grid-cols-4 gap-8 ">
           <div className="rounded-lg p-5 bg-white shadow  ">
@@ -173,7 +170,7 @@ const Payment = ({ projectDetails }) => {
         </div>
       </div>
 
-      <div className="bg-white  pb-8 pt-6 rounded-lg shadow my-6">
+      <div className="container">
         <nav className="flex items-center  mb-4 px-5">
           <div className="space-x-4 w-full flex items-center">
             <div className="flex items-center space-x-4  border px-5  py-3 rounded-md w-full">

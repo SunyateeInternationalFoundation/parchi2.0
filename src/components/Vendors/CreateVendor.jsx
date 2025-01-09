@@ -1,4 +1,10 @@
-import { addDoc, collection, doc, serverTimestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
@@ -6,7 +12,7 @@ import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { db, storage } from "../../firebase";
 
-const CreateVendor = ({ isOpen, onClose, onVendorAdded }) => {
+const CreateVendor = ({ isOpen, onClose, onVendorAdded, vendorData }) => {
   const userDetails = useSelector((state) => state.users);
 
   let companyId;
@@ -23,17 +29,6 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded }) => {
 
   const [fileName, setFileName] = useState("No file chosen");
 
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [isOpen]);
-
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -45,6 +40,20 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded }) => {
     gstNumber: "",
     panNumber: "",
   });
+
+  useEffect(() => {
+    if (vendorData?.id) {
+      setFormData(vendorData);
+    }
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isOpen]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -81,11 +90,18 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await addDoc(collection(db, "vendors"), {
-        ...formData,
-        companyRef: doc(db, "companies", companyId),
-        createdAt: serverTimestamp(),
-      });
+      if (vendorData?.id) {
+        const { id, ...rest } = formData;
+        const vendorRef = doc(db, "vendors", vendorData.id);
+        await updateDoc(vendorRef, rest);
+      } else {
+        await addDoc(collection(db, "vendors"), {
+          ...formData,
+          companyRef: doc(db, "companies", companyId),
+          createdAt: serverTimestamp(),
+        });
+      }
+
       setFileName("No file chosen");
       onClose();
       onVendorAdded();
@@ -108,7 +124,11 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded }) => {
         style={{ maxHeight: "100vh" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-xl font-semibold mb-4">New Vendor</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          {" "}
+          {vendorData?.id ? "Edit " : "Create "}
+          Vendor
+        </h2>
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
@@ -223,7 +243,8 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded }) => {
             type="submit"
             className="w-full bg-purple-500 text-white p-2 rounded-md mt-4"
           >
-            Add Vendor
+            {vendorData?.id ? "Edit " : "Create "}
+            Vendor
           </button>
         </form>
       </div>
