@@ -1,17 +1,18 @@
 import {
-    Timestamp,
-    addDoc,
-    collection,
-    deleteDoc,
-    doc,
-    getDocs,
-    query,
-    updateDoc,
-    where,
+  Timestamp,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
+import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
 
 function Reminder() {
@@ -21,31 +22,29 @@ function Reminder() {
     reminderName: "",
     reminderTime: "",
     priority: "Low",
+    isComplete: false,
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [deleting, setDeleting] = useState([]);
-  const [sortOption, setSortOption] = useState("time"); // Sorting by time or name
 
   const userDetails = useSelector((state) => state.users);
-  const userRef = doc(db, "users", userDetails.userId);
+  const companyDetails =
+    userDetails.companies[userDetails.selectedCompanyIndex];
+  const companyRef = doc(db, "companies", companyDetails.companyId);
 
   // Fetch reminders from Firestore
   const fetchReminders = async () => {
     setLoading(true);
     try {
       const reminderRef = collection(db, "reminder");
-      const q = query(reminderRef, where("userRef", "==", userRef));
+      const q = query(reminderRef, where("companyRef", "==", companyRef));
       const getReminders = await getDocs(q);
       const remindersData = getReminders.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
       setReminders(remindersData);
-      setError("");
     } catch (err) {
       console.error("Error fetching reminders:", err);
-      setError("Failed to fetch reminders. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -58,7 +57,7 @@ function Reminder() {
   // Add new reminder
   const onAddReminder = async () => {
     if (!formData.reminderName || !formData.reminderTime) {
-      setError("Please fill in all fields.");
+      alert("Please fill in all fields.");
       return;
     }
     try {
@@ -66,200 +65,190 @@ function Reminder() {
         ...formData,
         reminderTime: Timestamp.fromDate(new Date(formData.reminderTime)),
         createdAt: Timestamp.fromDate(new Date()),
-        userRef: userRef.path,
-        incomplete: true,
+        companyRef: companyRef,
+        companyName: companyDetails.name,
+        username: userDetails.name,
+        phone: companyDetails.phone || userDetails.phone,
+        email: companyDetails.email || userDetails.email,
       };
       const docRef = await addDoc(collection(db, "reminder"), payload);
       setReminders((prevReminders) => [
         ...prevReminders,
         { id: docRef.id, ...payload },
       ]);
-      setFormData({ reminderName: "", reminderTime: "", priority: "Low" });
-      setError("");
+      setFormData({
+        reminderName: "",
+        reminderTime: "",
+        priority: "Low",
+        isComplete: false,
+      });
+      alert("successfully added Remainder");
     } catch (err) {
       console.error("Error adding reminder:", err);
-      setError("Failed to add reminder. Please try again.");
     }
   };
 
   // Update reminder completion status
-  const onUpdateReminder = async (id, incomplete) => {
+  const onUpdateReminder = async (id, isComplete) => {
     try {
-      await updateDoc(doc(db, "reminder", id), { incomplete });
+      await updateDoc(doc(db, "reminder", id), { isComplete });
       setReminders((prevReminders) =>
         prevReminders.map((reminder) =>
-          reminder.id === id ? { ...reminder, incomplete } : reminder
+          reminder.id === id ? { ...reminder, isComplete } : reminder
         )
       );
-      setError("");
     } catch (err) {
       console.error("Error updating reminder:", err);
-      setError("Failed to update reminder. Please try again.");
     }
   };
 
   // Delete reminder with fade-out animation
-  const onDeleteReminder = (id) => {
-    setDeleting((prev) => [...prev, id]);
-    setTimeout(async () => {
-      try {
-        await deleteDoc(doc(db, "reminder", id));
-        setReminders((prevReminders) =>
-          prevReminders.filter((reminder) => reminder.id !== id)
-        );
-        setDeleting((prev) => prev.filter((itemId) => itemId !== id));
-      } catch (err) {
-        console.error("Error deleting reminder:", err);
-        setError("Failed to delete reminder. Please try again.");
-      }
-    }, 300);
+  const onDeleteReminder = async (id) => {
+    try {
+      await deleteDoc(doc(db, "reminder", id));
+      setReminders((prevReminders) =>
+        prevReminders.filter((reminder) => reminder.id !== id)
+      );
+    } catch (err) {
+      console.error("Error deleting reminder:", err);
+    }
   };
 
-  // Sort reminders
-  const sortedReminders = reminders.sort((a, b) => {
-    if (sortOption === "time") {
-      return a.reminderTime - b.reminderTime;
-    }
-    return a.reminderName.localeCompare(b.reminderName);
-  });
-
-  // Calculate progress
-  const completedCount = reminders.filter((item) => !item.incomplete).length;
-  const totalCount = reminders.length;
-  const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
-
   return (
-    <div className="w-full p-4">
-      <style>
-        {`
-          .reminder-item {
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            opacity: 1;
-            transform: translateY(0);
-          }
-
-          .reminder-item.deleting {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-        `}
-      </style>
-
-      <nav className="flex space-x-4 mt-3 mb-3">
-        {["Reminder", "Completed"].map((tab) => (
-          <button
-            key={tab}
-            className={`px-4 py-1 ${
-              activeTab === tab ? "bg-blue-700 text-white rounded-full" : ""
-            }`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab}
-          </button>
-        ))}
-      </nav>
-
-      <div className="flex justify-between items-center mb-4">
-        <select
-          value={sortOption}
-          onChange={(e) => setSortOption(e.target.value)}
-          className="border rounded px-2 py-1"
-        >
-          <option value="time">Sort by Time</option>
-          <option value="name">Sort by Name</option>
-        </select>
-      </div>
-
-      {activeTab === "Reminder" && (
-        <div>
-          <h1 className="text-2xl font-bold mb-5">Add Reminder</h1>
-          <div className="flex space-x-4 items-center bg-white p-4 rounded-lg">
-            <input
-              type="text"
-              placeholder="Reminder Name"
-              className="w-full border-2 p-2 rounded-lg"
-              value={formData.reminderName}
-              onChange={(e) =>
-                setFormData({ ...formData, reminderName: e.target.value })
-              }
-            />
-            <input
-              type="datetime-local"
-              className="w-full border-2 p-2 rounded-lg"
-              value={formData.reminderTime}
-              onChange={(e) =>
-                setFormData({ ...formData, reminderTime: e.target.value })
-              }
-            />
-            <select
-              className="w-full border-2 p-2 rounded-lg"
-              value={formData.priority}
-              onChange={(e) =>
-                setFormData({ ...formData, priority: e.target.value })
-              }
-            >
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
-            </select>
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              onClick={onAddReminder}
-            >
-              Add
-            </button>
+    <div className="main-container " style={{ height: "92vh" }}>
+      <h1 className="text-2xl font-bold pb-3 ">Reminder</h1>
+      <div className="container">
+        <div className=" p-5 ">
+          <nav className="flex space-x-4">
+            {["Reminder", "Completed"].map((tab) => (
+              <button
+                key={tab}
+                className={`btn-outline-black ${
+                  activeTab === tab && " bg-black text-white "
+                }`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </nav>
+        </div>
+        {activeTab === "Reminder" && (
+          <div>
+            <div className="flex space-x-4 items-center bg-white p-4 rounded-lg">
+              <input
+                type="text"
+                placeholder="Reminder Name"
+                className="w-full input-tag"
+                value={formData.reminderName}
+                onChange={(e) =>
+                  setFormData({ ...formData, reminderName: e.target.value })
+                }
+              />
+              <input
+                type="datetime-local"
+                className="w-full input-tag"
+                value={formData.reminderTime}
+                onChange={(e) =>
+                  setFormData({ ...formData, reminderTime: e.target.value })
+                }
+              />
+              <select
+                className="w-full input-tag"
+                value={formData.priority}
+                onChange={(e) =>
+                  setFormData({ ...formData, priority: e.target.value })
+                }
+              >
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+              <button className="btn-add" onClick={onAddReminder}>
+                Add
+              </button>
+            </div>
           </div>
-        </div>
-      )}
-
-      {loading ? (
-        <p>Loading reminders...</p>
-      ) : (
-        <div className="mt-4">
-          <ul className="mt-2">
-            {sortedReminders
-              .filter((item) =>
-                activeTab === "Reminder" ? item.incomplete : !item.incomplete
-              )
-              .map((item) => (
-                <li
-                  key={item.id}
-                  className={`reminder-item flex justify-between items-center p-2 bg-white rounded-lg mt-2 ${
-                    deleting.includes(item.id) ? "deleting" : ""
-                  }`}
-                >
-                  <div className="flex items-center space-x-4">
-                    <input
-                      type="checkbox"
-                      checked={!item.incomplete}
-                      onChange={() =>
-                        onUpdateReminder(item.id, !item.incomplete)
-                      }
-                    />
-                    <div>
-                      <p
-                        className={`${
-                          item.incomplete ? "" : "line-through"
-                        } font-bold`}
+        )}
+        {loading ? (
+          <div className="text-center py-6">Loading...</div>
+        ) : (
+          <div className="" style={{ height: "82vh" }}>
+            <table className="w-full border-collapse text-start">
+              <thead className=" bg-white">
+                <tr className="border-b">
+                  <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
+                    #
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                    Date
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                    Name
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                    priority
+                  </td>
+                  <td className="px-8 py-1 text-gray-400 font-semibold text-end">
+                    Delete
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                {reminders.length > 0 ? (
+                  reminders
+                    .filter((item) =>
+                      activeTab === "Reminder"
+                        ? !item.isComplete
+                        : item.isComplete
+                    )
+                    .map((item) => (
+                      <tr
+                        key={item.id}
+                        className="border-b border-gray-200 text-start "
                       >
-                        {item.reminderName}{" "}
-                        <span className="text-sm italic text-gray-500">
-                          ({item.priority})
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    className="text-red-500 hover:text-red-700"
-                    onClick={() => onDeleteReminder(item.id)}
-                  >
-                    <RiDeleteBin6Line />
-                  </button>
-                </li>
-              ))}
-          </ul>
-        </div>
-      )}
+                        <td className="px-8 py-3 ">
+                          <input
+                            type="checkbox"
+                            checked={item.isComplete}
+                            className="w-5 h-5"
+                            onChange={() =>
+                              onUpdateReminder(item.id, !item.isComplete)
+                            }
+                          />
+                        </td>
+                        <td className="px-5 py-3   text-start">
+                          <FormatTimestamp timestamp={item.reminderTime} />
+                        </td>
+                        <td className="px-5 py-3   text-start">
+                          {item.reminderName}
+                        </td>
+                        <td className="px-5 py-3   text-start">
+                          {item.priority}
+                        </td>
+
+                        <td className="px-12 py-3 text-end">
+                          <button
+                            className="text-red-500 hover:text-red-700"
+                            onClick={() => onDeleteReminder(item.id)}
+                          >
+                            <RiDeleteBin6Line />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="h-24 text-center py-4">
+                      No Remainder found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
