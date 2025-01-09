@@ -3,7 +3,7 @@ import Invoice from "../CustomerDashboard/Invoice";
 import Projects from "../CustomerDashboard/Projects";
 import ProjectViewHome from "../CustomerDashboard/ProjectViewHome";
 import Quotations from "../CustomerDashboard/Quotations";
-import Settings from "../Settings/Settings";
+import SettingsView from "../Settings/SettingView";
 import Navbar from "../UI/Navbar";
 import SideBar from "../UI/Sidebar";
 
@@ -28,7 +28,7 @@ function CustomerHome() {
               path="/projects/:id/approvals"
               element={<Approval />}
             ></Route> */}
-            <Route path="/user" element={<Settings />}></Route>
+            <Route path="/settings" element={<SettingsView />}></Route>
           </Routes>
           <Outlet />
         </div>

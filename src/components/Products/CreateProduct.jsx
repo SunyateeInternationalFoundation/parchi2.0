@@ -13,6 +13,13 @@ import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { db, storage } from "../../firebase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../UI/select";
 
 function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
   const userDetails = useSelector((state) => state.users);
@@ -248,47 +255,64 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
       }}
     >
       <div
-        className={`bg-white w-96 p-3 pt-2 transform transition-transform overflow-y-auto ${
+        className={`bg-white  pt-2 transform transition-transform overflow-y-auto ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ maxHeight: "100vh" }}
+        style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-xl font-semibold ">
-          {onProductUpdated ? "Edit Product" : "New Product"}
-        </h2>
-        <button
-          onClick={() => {
-            onClose();
-            ResetForm();
-          }}
-          className="absolute text-3xl top-4 right-4 text-gray-600 hover:text-gray-900 cursor-pointer"
-        >
-          <IoMdClose />
-        </button>
-
-        <form className="space-y-1.5" onSubmit={onCreateProduct}>
-          <div>
+        <div className="flex justify-between items-center border-b px-5 py-3">
+          <h2 className=" text-sm text-gray-600 ">
+            {onProductUpdated ? "Edit Product" : "New Product"}
+          </h2>
+          <button
+            onClick={() => {
+              onClose();
+              ResetForm();
+            }}
+            className=" text-2xl text-gray-800 hover:text-gray-900 cursor-pointer"
+          >
+            <IoMdClose />
+          </button>
+        </div>
+        <form className="space-y-2 p-5" onSubmit={onCreateProduct}>
+          <div className="space-y-1">
             <div className="grid w-full mb-2 items-center gap-1.5">
-              <label className="text-sm block font-semibold ">
-                Product Image
+              <label className="text-gray-600">Product Image</label>
+
+              <label
+                htmlFor="file"
+                className="cursor-pointer p-3 rounded-md border-2 border-dashed border shadow-[0_0_200px_-50px_rgba(0,0,0,0.72)]"
+              >
+                <div className="flex  items-center justify-center gap-1">
+                  {productImage?.name ? (
+                    <span className="py-1 px-4">{productImage?.name}</span>
+                  ) : (
+                    <>
+                      <svg viewBox="0 0 640 512" className="h-8 fill-gray-600">
+                        <path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z" />
+                      </svg>
+                      <span className="py-1 px-4">Upload Image</span>
+                    </>
+                  )}
+                </div>
+                <input
+                  id="file"
+                  type="file"
+                  className="hidden"
+                  onChange={(e) => setProductImage(e.target.files[0])}
+                />
               </label>
-              <input
-                id="picture"
-                type="file"
-                className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-400 file:border-0 file:bg-transparent file:text-gray-600 file:text-sm file:font-medium"
-                onChange={(e) => setProductImage(e.target.files[0])}
-              />
             </div>
           </div>
-          <div>
-            <label className="text-sm block font-semibold mt-2">
-              Item Name
+          <div className="space-y-1">
+            <label className=" text-sm text-gray-600 mt-2">
+              Item Name<span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               name="name"
-              className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
+              className="input-tag w-full"
               placeholder="name"
               value={formData.name || ""}
               required
@@ -297,14 +321,16 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
               }
             />
           </div>
-          <div>
-            <label className="text-sm block font-semibold">Selling Price</label>
+          <div className="space-y-1">
+            <label className=" text-sm text-gray-600">
+              Selling Price<span className="text-red-500">*</span>
+            </label>
 
             <div className="flex items-center justify-center">
               <input
                 type="number"
                 name="pricing.sellingPrice.amount"
-                className="w-full border border-gray-300 p-2 rounded-l-lg"
+                className="w-full border px-5 py-3 rounded-l-md"
                 placeholder="Selling Price"
                 required
                 value={formData.sellingPrice || ""}
@@ -316,7 +342,7 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
                 }
               />
               <select
-                className="w-full  border border-gray-300 p-2 rounded-r-lg"
+                className="w-full  border px-5 py-3 rounded-r-md text-gray-600"
                 name="pricing.sellingPrice.includingTax"
                 value={formData.sellingPriceTaxType}
                 onChange={(e) =>
@@ -331,15 +357,15 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
                 <option value="false">Excl Tax</option>
               </select>
             </div>
-            <label className="text-sm block font-semibold">
-              Purchase Price
-            </label>
+          </div>
+          <div className="space-y-1">
+            <label className=" text-sm text-gray-600">Purchase Price</label>
 
             <div className="flex items-center justify-center">
               <input
                 type="number"
                 name="purchasePricing"
-                className="w-full border border-gray-300 p-2 rounded-l-lg"
+                className="w-full border px-5 py-3 rounded-l-md"
                 placeholder="Purchase Pricing"
                 value={formData.purchasePrice || ""}
                 onChange={(e) =>
@@ -350,7 +376,7 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
                 }
               />
               <select
-                className="w-full  border border-gray-300 p-2 rounded-r-lg"
+                className="w-full  border px-5 py-3 rounded-r-md text-gray-600"
                 value={formData.purchasePriceTaxType}
                 onChange={(e) =>
                   setFormData((val) => ({
@@ -364,13 +390,15 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
                 <option value="false">Excl Tax</option>
               </select>
             </div>
-            <label className="text-sm block font-semibold">Discount</label>
+          </div>
+          <div className="space-y-1">
+            <label className=" text-sm text-gray-600">Discount</label>
 
             <div className="flex items-center justify-center ">
               <input
                 type="number"
                 name="discount"
-                className="w-full border border-gray-300 p-2 rounded-l-lg"
+                className="w-full border px-5 py-3 rounded-l-md"
                 placeholder="Discount"
                 value={formData.discount || ""}
                 onChange={(e) =>
@@ -381,7 +409,7 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
                 }
               />
               <select
-                className="w-full border border-gray-300 p-2 rounded-r-lg"
+                className="w-full border px-5 py-3 rounded-r-md text-gray-600"
                 value={formData.discountType}
                 onChange={(e) =>
                   setFormData((val) => ({
@@ -396,10 +424,10 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
             </div>
           </div>
 
-          <div>
-            <label className="text-sm block font-semibold">GST Tax</label>
+          <div className="space-y-1">
+            <label className=" text-sm text-gray-600">GST Tax</label>
             <select
-              className="w-full border border-gray-300 p-2 rounded-lg"
+              className="w-full input-tag text-gray-600"
               value={formData.tax}
               onChange={(e) =>
                 setFormData((val) => ({
@@ -415,12 +443,14 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
               <option value={28}>28 %</option>
             </select>
           </div>
-          <div>
-            <label className="text-sm block font-semibold">Stock</label>
+          <div className="space-y-1">
+            <label className=" text-sm text-gray-600">
+              Stock<span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               name="stock"
-              className="w-full border border-gray-300 p-2 rounded-md"
+              className="w-full input-tag"
               placeholder="Stock/Quantity"
               value={formData.stock || ""}
               onChange={(e) =>
@@ -429,36 +459,35 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
                   stock: +e.target.value,
                 }))
               }
+              required
             />
           </div>
-          <div>
-            <div className="grid w-full mb-2 items-center gap-1.5">
-              <label className="text-sm block font-semibold ">Barcode</label>
-              <input
-                type="text"
-                value={formData.barcode}
-                readOnly={onProductUpdated?.barcode}
-                className="w-full border border-gray-300 p-2 rounded-md"
-                onChange={(e) =>
-                  setFormData((val) => ({
-                    ...val,
-                    barcode: e.target.value,
-                  }))
-                }
-              />
-            </div>
+          <div className="space-y-1">
+            <label className=" text-sm text-gray-600 ">Barcode</label>
+            <input
+              type="text"
+              value={formData.barcode}
+              readOnly={onProductUpdated?.barcode}
+              className="w-full input-tag"
+              onChange={(e) =>
+                setFormData((val) => ({
+                  ...val,
+                  barcode: e.target.value,
+                }))
+              }
+            />
           </div>
-          <hr></hr>
-          <div>
-            <label className="text-sm block font-semibold">
-              Category & Warehouse
+          <div className="space-y-1">
+            <label className=" text-sm text-gray-600">
+              Category<span className="text-red-500">*</span>
             </label>
             <select
-              className="w-full border border-gray-300 p-2 rounded-md"
+              className="w-full input-tag text-gray-600"
               value={formData.category || ""}
               onChange={(e) =>
                 setFormData((val) => ({ ...val, category: e.target.value }))
               }
+              required
             >
               <option value="" disabled>
                 Select Category
@@ -469,8 +498,23 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
                 </option>
               ))}
             </select>
+          </div>
+          <div className="space-y-1">
+            <label className=" text-sm text-gray-600"> Warehouse</label>
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a subject" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="english">English</SelectItem>
+                <SelectItem value="mathmatics">Mathmatics</SelectItem>
+                <SelectItem value="physics">Physics</SelectItem>
+                <SelectItem value="chemistry">Chemistry</SelectItem>
+                <SelectItem value="biology">Biology</SelectItem>
+              </SelectContent>
+            </Select>
             <select
-              className="w-full border border-gray-300 p-2 my-1 rounded-md"
+              className="w-full input-tag text-gray-600"
               value={formData.warehouse || ""}
               onChange={(e) =>
                 setFormData((val) => ({ ...val, warehouse: e.target.value }))
@@ -485,10 +529,14 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
                 </option>
               ))}
             </select>
+          </div>
+          <div className="space-y-1">
+            <label className=" text-sm text-gray-600">Description </label>
+
             <input
               type="text"
               name="description"
-              className="w-full border border-gray-300 p-2 rounded-md"
+              className="w-full input-tag"
               placeholder="Description"
               value={formData.description || ""}
               onChange={(e) =>
@@ -497,12 +545,12 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
             />
           </div>
 
-          <div>
-            <label className="text-sm block font-semibold">Units</label>
+          <div className="space-y-1">
+            <label className=" text-sm text-gray-600">Units</label>
             <input
               type="text"
               name="units"
-              className="w-full border border-gray-300 p-2 rounded-md"
+              className="w-full input-tag"
               placeholder="Units (Ex: CM, BOX)"
               value={formData.units || ""}
               onChange={(e) =>
@@ -516,9 +564,9 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
 
           <button
             type="submit"
-            className="w-full bg-purple-500 text-white p-2 rounded-md mt-4"
+            className="w-full bg-purple-500 text-white px-5 py-3 text-sm text-gray-600 rounded-md mt-4"
           >
-            {onProductUpdated ? "Update Product" : "Create Product"}
+            {onProductUpdated ? "Update " : "Create "}Product
           </button>
         </form>
       </div>

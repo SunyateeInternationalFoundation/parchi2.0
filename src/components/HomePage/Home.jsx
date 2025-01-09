@@ -23,8 +23,6 @@ import QuotationViewHome from "../Quotation/QuotationView/QuotationViewHome";
 import Services from "../Services/Services";
 import ServicesList from "../ServicesList/ServicesList";
 import Branches from "../Staff&Payout/Branches/Branches";
-import Roles from "../Staff&Payout/Roles/Roles";
-import Staff from "../Staff&Payout/Staff/Staff";
 import StaffView from "../Staff&Payout/Staff/StaffView/StaffView";
 import StaffPayout from "../Staff&Payout/StaffPayout";
 import Navbar from "../UI/Navbar";
@@ -58,16 +56,16 @@ import SetQuotation from "../Quotation/SetQuotation/SetQuotation";
 import Reminder from "../Reminder/Reminder";
 import SetService from "../Services/CreateService/SetService";
 import ServiceView from "../Services/ServicesView/ServiceView";
+import CompanyProfile from "../Settings/CompanyProfile";
 import Prefix from "../Settings/Prefix";
-import Settings from "../Settings/Settings";
-import SettingView from "../Settings/SettingView";
+import {
+  default as SettingsView,
+  default as SettingView,
+} from "../Settings/SettingView";
 import SubscriptionPlan from "../Settings/SubscriptionPlan";
 import UserProfile from "../Settings/UserProfile";
-import Assets from "../Staff&Payout/Assets/Assets";
-import Attendance from "../Staff&Payout/Attendance/Attendance";
 import Designation from "../Staff&Payout/Designation/Designation";
 import DesignationView from "../Staff&Payout/Designation/DesignationView";
-import WeekOff from "../Staff&Payout/WeekOff/WeekOff";
 import VendorPO from "../VendorDashBoard/VendorPO";
 
 const Home = () => {
@@ -83,11 +81,11 @@ const Home = () => {
     "/services/create-service",
   ];
   const match = [
-    "user",
-    "/user/user-profile",
-    "/user/company-profile",
-    "/user/prefix",
-    "/user/subscription-plan",
+    "settings",
+    "/settings/user-profile",
+    "/settings/company-profile",
+    "/settings/prefix",
+    "/settings/subscription-plan",
   ];
 
   const noSideBarPagesList = match.find((path) =>
@@ -275,14 +273,20 @@ const Home = () => {
               element={<SetDebitNote />}
             ></Route>
             <Route path="/vendor/po" element={<VendorPO />}></Route>
-            <Route path="/user/user-profile" element={<UserProfile />}></Route>
-            <Route path="/user/company-profile" element={<Settings />}></Route>
-            <Route path="/user" element={<Settings />}></Route>
             <Route
-              path="/user/subscription-plan"
+              path="/settings/user-profile"
+              element={<UserProfile />}
+            ></Route>
+            <Route
+              path="/settings/company-profile"
+              element={<CompanyProfile />}
+            ></Route>
+            <Route path="/settings" element={<SettingsView />}></Route>
+            <Route
+              path="/settings/subscription-plan"
               element={<SubscriptionPlan />}
             ></Route>
-            <Route path="/user/prefix" element={<Prefix />}></Route>
+            <Route path="/settings/prefix" element={<Prefix />}></Route>
             <Route path="/business-card" element={<BusinessCard />}></Route>
           </Routes>
           <Outlet />

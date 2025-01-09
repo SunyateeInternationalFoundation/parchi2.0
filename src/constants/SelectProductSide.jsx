@@ -72,7 +72,7 @@ function SelectProductSide({
             <div
               key={product.id}
               className={
-                "border-2 shadow rounded-lg px-4 py-2 flex justify-between my-2  cursor-pointer " +
+                "border  rounded-lg px-4 py-2 flex justify-between my-2  cursor-pointer " +
                 (product.quantity === 0 ? "bg-gray-100" : "")
               }
             >

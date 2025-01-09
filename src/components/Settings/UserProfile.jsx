@@ -153,17 +153,14 @@ const Prefix = () => {
                 Name
               </label>
 
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 ">
-                  <FaUser />
-                </span>
+              <div>
                 <input
                   type="text"
                   name="displayName"
                   placeholder="Name"
                   value={formData.displayName}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded pl-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500  hover:border-blue-500 hover:shadow-md hover:shadow-blue-300"
+                  className="input-tag w-full"
                 />
               </div>
             </div>
@@ -171,17 +168,14 @@ const Prefix = () => {
               <label className="block text-sm font-medium text-gray-600">
                 Phone Number
               </label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 ">
-                  <MdOutlineLocalPhone />
-                </span>
+              <div>
                 <input
                   type="text"
                   name="phone"
                   placeholder="Phone Number"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded pl-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-500 hover:shadow-md hover:shadow-blue-300"
+                  className="input-tag w-full"
                 />
               </div>
             </div>
@@ -189,17 +183,14 @@ const Prefix = () => {
               <label className="block text-sm font-medium text-gray-600">
                 Email
               </label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 ">
-                  <MdEmail />
-                </span>
+              <div>
                 <input
                   type="email"
                   name="email"
                   placeholder="Email Address"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded pl-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500  hover:border-blue-500 hover:shadow-md hover:shadow-blue-300"
+                  className="input-tag w-full"
                 />
               </div>
             </div>
@@ -208,7 +199,7 @@ const Prefix = () => {
           <div className="text-right mt-5">
             <button
               type="submit"
-              className="bg-blue-600 text-white px-6 py-2 rounded"
+              className="bg-blue-600 text-white px-5 py-3 font-semibold rounded-md"
               onClick={handleSave}
             >
               Save & Update

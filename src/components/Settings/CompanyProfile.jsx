@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { db, storage } from "../../firebase";
 import { updateCompanyDetails } from "../../store/UserSlice";
 
-const Settings = () => {
+const CompanyProfile = () => {
   const userDetails = useSelector((state) => state.users);
   const dispatch = useDispatch();
 
@@ -405,4 +405,4 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default CompanyProfile;

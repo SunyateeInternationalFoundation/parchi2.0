@@ -21,49 +21,49 @@ const SettingsView = () => {
             <ul className="pl-4 mt-5">
               <li
                 className={`mt-3 font-medium ${
-                  location.pathname === "/user/user-profile"
+                  location.pathname === "/settings/user-profile"
                     ? "text-blue-600"
                     : "text-gray-500"
                 }`}
                 onClick={() => {
-                  navigate("/user/user-profile");
+                  navigate("/settings/user-profile");
                 }}
               >
                 User Profile
               </li>
               <li
                 className={`mt-3 font-medium ${
-                  location.pathname === "/user/company-profile" ||
+                  location.pathname === "/settings/company-profile" ||
                   location.pathname === "/user"
                     ? "text-blue-600"
                     : "text-gray-500"
                 }`}
                 onClick={() => {
-                  navigate("/user/company-profile");
+                  navigate("/settings/company-profile");
                 }}
               >
                 Company Profile
               </li>
               <li
                 className={`mt-3 font-medium ${
-                  location.pathname === "/user/prefix"
+                  location.pathname === "/settings/prefix"
                     ? "text-blue-600"
                     : "text-gray-500"
                 }`}
                 onClick={() => {
-                  navigate("/user/prefix");
+                  navigate("/settings/prefix");
                 }}
               >
                 Prefix
               </li>
               <li
                 className={`mt-3 font-medium ${
-                  location.pathname === "/user/subscription-plan"
+                  location.pathname === "/settings/subscription-plan"
                     ? "text-blue-600"
                     : "text-gray-500"
                 }`}
                 onClick={() => {
-                  navigate("/user/subscription-plan");
+                  navigate("/settings/subscription-plan");
                 }}
               >
                 Subscription Plan

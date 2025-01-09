@@ -108,15 +108,14 @@ const Roles = () => {
   return (
     <div className="main-container" style={{ height: "82vh" }}>
       <div className="container">
-        <header className="flex items-center px-5">
+        <header className="flex items-center px-5 py-3">
           <h1 className="text-2xl font-bold">Roles</h1>
         </header>
-
         {loading ? (
           <div className="text-center py-6">Loading Roles...</div>
         ) : staffData.length > 0 ? (
           staffData.map((staff) => (
-            <div key={staff.id} className="mb-6 border-t  pb-3 pt-5">
+            <div key={staff.id} className="border-t py-3">
               <div
                 className="flex justify-between items-center mb-4 px-5 cursor-pointer"
                 onClick={() =>
@@ -130,7 +129,7 @@ const Roles = () => {
                   )
                 }
               >
-                <h2 className="text-xl font-bold">{staff.name}</h2>
+                <h2 className="text-xl">{staff.name}</h2>
                 {staff.isExpand && (
                   <button
                     onClick={() => handleUpdateRoles(staff)}

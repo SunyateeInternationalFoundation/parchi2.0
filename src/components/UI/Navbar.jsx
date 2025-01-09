@@ -368,7 +368,7 @@ const Navbar = () => {
                 <button
                   className="flex items-center space-x-2 text-gray-600 hover:text-black my-2"
                   onClick={() => {
-                    navigate("/user");
+                    navigate("/settings");
                     setIsProfileOpen(false);
                   }}
                 >
