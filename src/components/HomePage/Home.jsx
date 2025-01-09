@@ -58,10 +58,7 @@ import SetService from "../Services/CreateService/SetService";
 import ServiceView from "../Services/ServicesView/ServiceView";
 import CompanyProfile from "../Settings/CompanyProfile";
 import Prefix from "../Settings/Prefix";
-import {
-  default as SettingsView,
-  default as SettingView,
-} from "../Settings/SettingView";
+import { default as SettingView } from "../Settings/SettingView";
 import SubscriptionPlan from "../Settings/SubscriptionPlan";
 import UserProfile from "../Settings/UserProfile";
 import Designation from "../Staff&Payout/Designation/Designation";
@@ -281,7 +278,7 @@ const Home = () => {
               path="/settings/company-profile"
               element={<CompanyProfile />}
             ></Route>
-            <Route path="/settings" element={<SettingsView />}></Route>
+            {/* <Route path="/settings" element={<SettingsView />}></Route> */}
             <Route
               path="/settings/subscription-plan"
               element={<SubscriptionPlan />}
