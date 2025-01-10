@@ -49,16 +49,16 @@ function Projects({ projectsData }) {
       <div className="py-5">
         <nav className="flex mb-4 bg-white rounded-lg shadow items-center py-3 px-5">
           <div className="space-x-4 w-full flex items-center">
-            <div className="flex items-center space-x-4 border px-5 py-3 rounded-lg w-full">
+            <div className="flex items-center space-x-4 border px-5 py-2 rounded-lg w-full">
               <input
                 type="text"
-                placeholder="Search by Project #..."
+                placeholder="Search ..."
                 className="w-full focus:outline-none"
                 onChange={(e) => setSearchInput(e.target.value)}
               />
               <IoSearch />
             </div>
-            <div className="flex items-center space-x-4 border px-5 py-3 rounded-lg">
+            <div className="flex items-center space-x-4 border px-5 py-2 rounded-lg">
               <select onChange={(e) => setFilterStatus(e.target.value)}>
                 <option value="All"> All</option>
                 <option value="On-Going">On-Going</option>
