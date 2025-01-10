@@ -23,6 +23,7 @@ import {
   setAllCustomersDetails,
 } from "../../store/CustomerSlice";
 import CreateCustomer from "./CreateCustomer";
+import addItem from "../../assets/addItem.png";
 
 const CustomerList = () => {
   const [loading, setLoading] = useState(false);
@@ -271,8 +272,23 @@ const CustomerList = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="h-24 text-center py-4">
-                      No customers found
+                    <td colSpan="5" className="h-96 text-center py-4">
+                      <div className="w-full flex justify-center">
+                        <img
+                          src={addItem}
+                          alt="add Item"
+                          className="w-24 h-24"
+                        />
+                      </div>
+                      <div className="mb-6">No customers Found</div>
+                      <div className="">
+                        <button
+                          className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                          onClick={() => setIsModalOpen(true)}
+                        >
+                          + Create customers
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 )}

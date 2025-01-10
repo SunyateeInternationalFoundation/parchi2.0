@@ -17,6 +17,7 @@ import {
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import addItem from "../../assets/addItem.png";
 import { db } from "../../firebase";
 import CreateVendor from "./CreateVendor";
 
@@ -240,8 +241,23 @@ const VendorList = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="h-24 text-center py-4">
-                      No vendors found
+                    <td colSpan="5" className="h-96 text-center py-4">
+                      <div className="w-full flex justify-center">
+                        <img
+                          src={addItem}
+                          alt="add Item"
+                          className="w-24 h-24"
+                        />
+                      </div>
+                      <div className="mb-6">No vendors Found</div>
+                      <div className="">
+                        <button
+                          className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                          onClick={() => setIsModalOpen(true)}
+                        >
+                          + Create vendors
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 )}

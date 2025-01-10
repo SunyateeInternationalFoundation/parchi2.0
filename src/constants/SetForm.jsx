@@ -945,7 +945,7 @@ function SetForm(props) {
                     ) : (
                       <tr>
                         <td
-                          colSpan="7"
+                          colSpan="8"
                           className="py-10 text-center space-y-3  w-full"
                         >
                           <div className="w-full flex justify-center">

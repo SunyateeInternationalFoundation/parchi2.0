@@ -4,6 +4,13 @@ import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { db } from "../../firebase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../UI/select";
 
 const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
   const userDetails = useSelector((state) => state.users);
@@ -13,7 +20,7 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
     sellingPrice: 0,
     sellingPriceTaxType: true,
     discount: 0,
-    discountType: "Percentage",
+    discountType: true,
     description: "",
     tax: 0,
     monthDuration: "1", // New field for month duration
@@ -26,7 +33,7 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
       sellingPrice: 0,
       sellingPriceTaxType: true,
       discount: 0,
-      discountType: "Percentage",
+      discountType: true,
       description: "",
       tax: 0,
       monthDuration: "1", // Reset month duration
@@ -79,182 +86,212 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
       onClick={onClose}
     >
       <div
-        className={`bg-white w-96 p-3 pt-2 transform transition-transform overflow-y-auto ${
+        className={`bg-white  pt-2 transform transition-transform  ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ maxHeight: "100vh" }}
+        style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-xl font-semibold ">
-          {service ? "Edit" : "New"} Service
-        </h2>
-        <button
-          onClick={onClose}
-          className="absolute text-3xl top-4 right-4 text-gray-600 hover:text-gray-900 cursor-pointer"
+        <div
+          className="flex justify-between items-center border-b px-5 py-3"
+          style={{ height: "6vh" }}
         >
-          <IoMdClose />
-        </button>
-
-        <form className="space-y-1.5" onSubmit={onCreateService}>
-          <div>
-            <label className="text-sm block font-semibold mt-2">
-              Service Details
-            </label>
-            <input
-              type="text"
-              name="serviceName"
-              className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
-              placeholder="Service Name"
-              value={formData.serviceName}
-              required
-              onChange={(e) =>
-                setFormData((val) => ({ ...val, serviceName: e.target.value }))
-              }
-            />
-          </div>
-          <div>
-            <input
-              type="text"
-              name="description"
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="Description"
-              value={formData.description}
-              onChange={(e) =>
-                setFormData((val) => ({ ...val, description: e.target.value }))
-              }
-            />
-          </div>
-
-          <div>
-            <label className="text-sm block font-semibold">Service Price</label>
-
-            <div className="flex items-center justify-center">
+          <h2 className="text-xl font-semibold ">
+            {service ? "Edit" : "New"} Service
+          </h2>
+          <button
+            onClick={onClose}
+            className="absolute text-3xl top-4 right-4 text-gray-600 hover:text-gray-900 cursor-pointer"
+          >
+            <IoMdClose />
+          </button>
+        </div>
+        <form className="space-y-2" onSubmit={onCreateService}>
+          <div
+            className="space-y-2 px-5 overflow-y-auto"
+            style={{ height: "84vh" }}
+          >
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600">Service Details</label>
               <input
-                type="number"
-                value={+formData.sellingPrice || ""}
-                name="pricing.sellingPrice"
-                className="w-full border border-gray-300 p-2 rounded-l-lg"
-                placeholder="Service Price"
+                type="text"
+                name="serviceName"
+                className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
+                placeholder="Service Name"
+                value={formData.serviceName}
                 required
                 onChange={(e) =>
                   setFormData((val) => ({
                     ...val,
-                    sellingPrice: +e.target.value,
+                    serviceName: e.target.value,
                   }))
                 }
               />
-              <select
-                className="w-full  border border-gray-300 p-2 rounded-r-lg"
-                name="pricing.sellingPrice"
-                value={formData.sellingPriceTaxType}
-                onChange={(e) =>
-                  setFormData((val) => ({
-                    ...val,
-                    sellingPriceTaxType:
-                      e.target.value === "true" ? true : false,
-                  }))
-                }
-              >
-                <option value="true">Incl Tax</option>
-                <option value="false">Excl Tax</option>
-              </select>
             </div>
-            <label className="text-sm block font-semibold">Discount</label>
-
-            <div className="flex items-center justify-center ">
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600">Description</label>
               <input
-                type="number"
-                name="discount"
-                className="w-full border border-gray-300 p-2 rounded-l-lg"
-                placeholder="Discount"
-                value={formData.discount || ""}
-                onChange={(e) =>
-                  setFormData((val) => ({
-                    ...val,
-                    discount: +e.target.value || 0,
-                  }))
-                }
-              />
-              <select
-                className="w-full border border-gray-300 p-2 rounded-r-lg"
-                defaultValue={formData.discountType}
-                onChange={(e) =>
-                  setFormData((val) => ({
-                    ...val,
-                    discountType: e.target.value,
-                  }))
-                }
-              >
-                <option value="Percentage">%</option>
-                <option value="Fixed">Fixed</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="text-sm block font-semibold">GST Tax</label>
-            <select
-              className="w-full border border-gray-300 p-2 rounded-lg"
-              value={formData.tax}
-              onChange={(e) =>
-                setFormData((val) => ({
-                  ...val,
-                  tax: +e.target.value,
-                }))
-              }
-            >
-              <option value={0}>0 %</option>
-              <option value={5}>5 %</option>
-              <option value={12}>12 %</option>
-              <option value={18}>18 %</option>
-              <option value={28}>28 %</option>
-            </select>
-          </div>
-          <div>
-            <label className="text-sm block font-semibold">
-              Month Duration
-            </label>
-            <select
-              className="w-full border border-gray-300 p-2 rounded-lg"
-              value={formData.monthDuration}
-              onChange={(e) =>
-                setFormData((val) => ({
-                  ...val,
-                  monthDuration: +e.target.value,
-                }))
-              }
-            >
-              <option value="1">1 Month</option>
-              <option value="3">3 Months</option>
-              <option value="6">6 Months</option>
-              <option value="12">12 Months</option>
-            </select>
-          </div>
-          <div>
-            <div className="grid w-full mb-2 items-center gap-1.5">
-              <label className="text-sm block font-semibold ">Barcode</label>
-              <input
-                className="w-full border border-gray-300 p-2 rounded-l-lg"
                 type="text"
-                placeholder="Barcode"
-                value={formData.barcode}
+                name="description"
+                className="w-full border border-gray-300 p-2 rounded-md"
+                placeholder="Description"
+                value={formData.description}
                 onChange={(e) =>
                   setFormData((val) => ({
                     ...val,
-                    barcode: e.target.value,
+                    description: e.target.value,
                   }))
                 }
               />
             </div>
-          </div>
-          <hr></hr>
 
-          <button
-            type="submit"
-            className="w-full bg-purple-500 text-white p-2 rounded-md mt-4"
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600">Service Price</label>
+              <div className="flex items-center justify-center">
+                <input
+                  type="number"
+                  value={+formData.sellingPrice || ""}
+                  name="pricing.sellingPrice"
+                  className="w-full border border-gray-300 p-2 rounded-l-lg"
+                  placeholder="Service Price"
+                  required
+                  onChange={(e) =>
+                    setFormData((val) => ({
+                      ...val,
+                      sellingPrice: +e.target.value,
+                    }))
+                  }
+                />
+                <Select
+                  defaultValue={formData.sellingPriceTaxType ? "true" : "false"}
+                  onValueChange={(val) => {
+                    setFormData((pre) => ({
+                      ...pre,
+                      sellingPriceTaxType: val == "true" ? true : false,
+                    }));
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder=" Select SellingPriceTaxType" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Incl Tax</SelectItem>
+                    <SelectItem value="false">Excl Tax</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <label className="text-sm text-gray-600">Discount</label>
+
+              <div className="flex items-center justify-center ">
+                <input
+                  type="number"
+                  name="discount"
+                  className="w-full border border-gray-300 p-2 rounded-l-lg"
+                  placeholder="Discount"
+                  value={formData.discount || ""}
+                  onChange={(e) =>
+                    setFormData((val) => ({
+                      ...val,
+                      discount: +e.target.value || 0,
+                    }))
+                  }
+                />
+
+                <Select
+                  defaultValue={formData.discountType ? "true" : "false"}
+                  onValueChange={(val) => {
+                    setFormData((pre) => ({
+                      ...pre,
+                      discountType: val == "true" ? true : false,
+                    }));
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder=" Select DiscountType" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">%</SelectItem>
+                    <SelectItem value="false">Fixed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600">GST Tax</label>
+              <Select
+                defaultValue={formData.tax}
+                onValueChange={(val) => {
+                  setFormData((pre) => ({
+                    ...pre,
+                    tax: val,
+                  }));
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder=" Select SellingPriceTaxType" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={0}>0 %</SelectItem>
+                  <SelectItem value={5}>5 %</SelectItem>
+                  <SelectItem value={12}>12 %</SelectItem>
+                  <SelectItem value={18}>18 %</SelectItem>
+                  <SelectItem value={28}>28 %</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600">Month Duration</label>
+
+              <Select
+                defaultValue={formData.monthDuration}
+                onValueChange={(val) => {
+                  setFormData((pre) => ({
+                    ...pre,
+                    monthDuration: +val,
+                  }));
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder=" Select SellingPriceTaxType" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1 Month</SelectItem>
+                  <SelectItem value="3">3 Months</SelectItem>
+                  <SelectItem value="6">6 Months</SelectItem>
+                  <SelectItem value="12">12 Months</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <div className="grid w-full mb-2 items-center gap-1.5">
+                <label className="text-sm text-gray-600 ">Barcode</label>
+                <input
+                  className="w-full border border-gray-300 p-2 rounded-l-lg"
+                  type="text"
+                  placeholder="Barcode"
+                  value={formData.barcode}
+                  onChange={(e) =>
+                    setFormData((val) => ({
+                      ...val,
+                      barcode: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
+            style={{ height: "6vh" }}
           >
-            {service ? "Update" : "Add New"} Service
-          </button>
+            <button
+              type="submit"
+              className="w-full bg-purple-500 text-white px-5 py-3 text-sm text-gray-600 rounded-md"
+            >
+              {service ? "Update" : "Add New"} Service
+            </button>
+          </div>
         </form>
       </div>
     </div>

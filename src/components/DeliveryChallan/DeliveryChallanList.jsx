@@ -16,6 +16,7 @@ import {
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import addItem from "../../assets/addItem.png";
 import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
 
@@ -29,6 +30,7 @@ const DeliveryChallanList = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
+
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
     companyId =
@@ -202,7 +204,7 @@ const DeliveryChallanList = () => {
             {(userDetails.selectedDashboard === "" || role?.create) && (
               <Link
                 className="bg-[#442799] text-white text-center px-5 py-3 font-semibold rounded-md"
-                to="create-deliveryChallan"
+                to="create-deliverychallan"
               >
                 + Create Delivery Challan
               </Link>
@@ -211,7 +213,9 @@ const DeliveryChallanList = () => {
         </nav>
 
         {loading ? (
-          <div className="text-center py-6">Loading Delivery Challan...</div>
+          <div className="text-center py-6" style={{ height: "92vh" }}>
+            Loading Delivery Challan...
+          </div>
         ) : (
           <div style={{ height: "92vh" }}>
             <table className="w-full border-collapse text-start">
@@ -306,8 +310,26 @@ const DeliveryChallanList = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="h-24 text-center py-4">
-                      No Delivery Challan found
+                    <td colSpan="7" className="h-96 text-center py-4">
+                      <div className="w-full flex justify-center">
+                        <img
+                          src={addItem}
+                          alt="add Item"
+                          className="w-24 h-24"
+                        />
+                      </div>
+                      <div className="mb-6">No Delivery Challan Created</div>
+                      <div className="">
+                        {(userDetails.selectedDashboard === "" ||
+                          role?.create) && (
+                          <Link
+                            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                            to="create-deliverychallan"
+                          >
+                            + Create Delivery Challan
+                          </Link>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 )}

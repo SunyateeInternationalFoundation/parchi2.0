@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import addItem from "../../assets/addItem.png";
 import { db } from "../../firebase";
+
 function Projects() {
   const userDetails = useSelector((state) => state.users);
   const [filterStatus, setFilterStatus] = useState("All");
@@ -261,7 +263,22 @@ function Projects() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center">No Project Found</div>
+                <div className="text-center">
+                  <div className="w-full flex justify-center">
+                    <img src={addItem} alt="add Item" className="w-24 h-24" />
+                  </div>
+                  <div className="mb-6">No Project Found</div>
+                  <div className="">
+                    {(userDetails.selectedDashboard === "" || role?.create) && (
+                      <Link
+                        className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                        to="create-project"
+                      >
+                        + Create Project
+                      </Link>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
           )}

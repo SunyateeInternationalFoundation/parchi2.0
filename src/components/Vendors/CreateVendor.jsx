@@ -27,7 +27,7 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded, vendorData }) => {
 
   const [isUploading, setIsUploading] = useState(false);
 
-  const [fileName, setFileName] = useState("No file chosen");
+  const [fileName, setFileName] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -102,7 +102,7 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded, vendorData }) => {
         });
       }
 
-      setFileName("No file chosen");
+      setFileName("");
       onClose();
       onVendorAdded();
     } catch (error) {
@@ -118,134 +118,170 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded, vendorData }) => {
       onClick={onClose}
     >
       <div
-        className={`bg-white w-[370px] p-6 transform transition-transform overflow-y-auto ${
+        className={`bg-white  pt-2 transform transition-transform  ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ maxHeight: "100vh" }}
+        style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-xl font-semibold mb-4">
-          {" "}
-          {vendorData?.id ? "Edit " : "Create "}
-          Vendor
-        </h2>
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
+        <div
+          className="flex justify-between items-center border-b px-5 py-3"
+          style={{ height: "6vh" }}
         >
-          <IoMdClose size={24} />
-        </button>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className=" font-semibold">Image</label>
-            <input
-              type="file"
-              name="name"
-              className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-400 file:border-0 file:bg-transparent file:text-gray-600 file:text-sm file:font-medium"
-            />
-          </div>
-          <div>
-            <label className=" font-semibold">*Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="Name"
-              required
-            />
-          </div>
-          <div>
-            <label className=" font-semibold">*Phone</label>
-            <div className="flex items-center">
-              <span className="px-2 py-2 border border-gray-300 rounded-l-md">
-                +91
-              </span>
+          <h2 className="text-xl font-semibold mb-4">
+            {vendorData?.id ? "Edit " : "Create "}
+            Vendor
+          </h2>
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
+          >
+            <IoMdClose size={24} />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <div
+            className="space-y-2 px-5 overflow-y-auto"
+            style={{ height: "84vh" }}
+          >
+            <div className="space-y-1">
+              <div className="grid w-full mb-2 items-center gap-1.5">
+                <div className=" font-semibold">Image</div>
+                <label
+                  htmlFor="file"
+                  className="cursor-pointer p-3 rounded-md border-2 border-dashed border shadow-[0_0_200px_-50px_rgba(0,0,0,0.72)]"
+                >
+                  <div className="flex  items-center justify-center gap-1">
+                    {fileName ? (
+                      <span className="py-1 px-4">{fileName}</span>
+                    ) : (
+                      <>
+                        <svg
+                          viewBox="0 0 640 512"
+                          className="h-8 fill-gray-600"
+                        >
+                          <path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z" />
+                        </svg>
+                        <span className="py-1 px-4">Upload Image</span>
+                      </>
+                    )}
+                  </div>
+                  <input
+                    id="file"
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                </label>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className=" font-semibold">*Name</label>
               <input
                 type="text"
-                maxLength="10"
-                name="phone"
-                value={formData.phone}
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-r-md"
-                placeholder="Phone"
+                className="w-full border border-gray-300 p-2 rounded-md"
+                placeholder="Name"
                 required
               />
             </div>
-          </div>
-          <div>
-            <label className=" font-semibold">Email ID</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="Email ID"
-            />
-          </div>
+            <div className="space-y-1">
+              <label className=" font-semibold">*Phone</label>
+              <div className="flex items-center">
+                <span className="px-2 py-2 border border-gray-300 rounded-l-md">
+                  +91
+                </span>
+                <input
+                  type="text"
+                  maxLength="10"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 p-2 rounded-r-md"
+                  placeholder="Phone"
+                  required
+                />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className=" font-semibold">Email ID</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full border border-gray-300 p-2 rounded-md"
+                placeholder="Email ID"
+              />
+            </div>
 
-          <div>
-            <label className=" font-semibold">Address</label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="Street Address"
-            />
-          </div>
-          <div className="flex space-x-2">
-            <input
-              type="text"
-              name="zipCode"
-              value={formData.zipCode}
-              onChange={handleChange}
-              placeholder="Pin Code"
-              className="w-1/2 border border-gray-300 p-2 rounded-md"
-            />
-            <input
-              type="text"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              placeholder="City"
-              className="w-1/2 border border-gray-300 p-2 rounded-md"
-            />
-          </div>
+            <div className="space-y-1">
+              <label className=" font-semibold">Address</label>
+              <input
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                className="w-full border border-gray-300 p-2 rounded-md"
+                placeholder="Street Address"
+              />
+            </div>
+            <div className="flex space-x-2">
+              <input
+                type="text"
+                name="zipCode"
+                value={formData.zipCode}
+                onChange={handleChange}
+                placeholder="Pin Code"
+                className="w-1/2 border border-gray-300 p-2 rounded-md"
+              />
+              <input
+                type="text"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                placeholder="City"
+                className="w-1/2 border border-gray-300 p-2 rounded-md"
+              />
+            </div>
 
-          <div>
-            <label className=" font-semibold">GST Number</label>
-            <input
-              type="text"
-              name="gstNumber"
-              value={formData.gstNumber}
-              onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="GST Number"
-            />
+            <div className="space-y-1">
+              <label className=" font-semibold">GST Number</label>
+              <input
+                type="text"
+                name="gstNumber"
+                value={formData.gstNumber}
+                onChange={handleChange}
+                className="w-full border border-gray-300 p-2 rounded-md"
+                placeholder="GST Number"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className=" font-semibold">PAN Number</label>
+              <input
+                type="text"
+                name="panNumber"
+                value={formData.panNumber}
+                onChange={handleChange}
+                className="w-full border border-gray-300 p-2 rounded-md"
+                placeholder="PAN Number"
+              />
+            </div>
           </div>
-          <div>
-            <label className=" font-semibold">PAN Number</label>
-            <input
-              type="text"
-              name="panNumber"
-              value={formData.panNumber}
-              onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="PAN Number"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-purple-500 text-white p-2 rounded-md mt-4"
+          <div
+            className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
+            style={{ height: "6vh" }}
           >
-            {vendorData?.id ? "Edit " : "Create "}
-            Vendor
-          </button>
+            <button
+              type="submit"
+              className="w-full bg-purple-500 text-white px-5 py-3 text-sm text-gray-600 rounded-md"
+            >
+              {vendorData?.id ? "Edit " : "Create "}
+              Vendor
+            </button>
+          </div>
         </form>
       </div>
     </div>

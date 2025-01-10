@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import addItem from "../../assets/addItem.png";
 import { db } from "../../firebase";
 import CreateProduct from "./CreateProduct";
 
@@ -267,8 +268,26 @@ const ProductList = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="10" className="py-10 text-center">
-                      <p>No products available.</p>
+                    <td colSpan="10" className="h-96 text-center py-4">
+                      <div className="w-full flex justify-center">
+                        <img
+                          src={addItem}
+                          alt="add Item"
+                          className="w-24 h-24"
+                        />
+                      </div>
+                      <div className="mb-6">No Product Created</div>
+                      <div className="">
+                        <button
+                          className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                          onClick={() => {
+                            setIsSideBarOpen(true);
+                            setEditingProduct(null);
+                          }}
+                        >
+                          + Create Product
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 )}

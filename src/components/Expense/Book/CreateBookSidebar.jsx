@@ -57,13 +57,16 @@ function CreateBookSidebar({ onClose, isOpen, refresh }) {
       onClick={onClose}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform overflow-y-auto ${
+        className={`bg-white  pt-2 transform transition-transform  ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ maxHeight: "100vh", width: "500px" }}
+        style={{ width: "500px", height: "100vh" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center border-b px-5 py-3">
+        <div
+          className="flex justify-between items-center border-b px-5 py-3"
+          style={{ height: "6vh" }}
+        >
           <h2 className="text-sm text-gray-600 "> Create Account/Book </h2>
           <button
             className=" text-2xl text-gray-800 hover:text-gray-900 cursor-pointer"
@@ -73,7 +76,10 @@ function CreateBookSidebar({ onClose, isOpen, refresh }) {
           </button>
         </div>
         <form onSubmit={onCreateAccount}>
-          <div className="space-y-3 p-5">
+          <div
+            className="space-y-3 p-5  overflow-y-auto"
+            style={{ height: "84vh" }}
+          >
             <div className="space-y-1">
               <label className="text-sm text-gray-600 ">
                 Book Name <span className="text-red-500">*</span>
@@ -89,14 +95,11 @@ function CreateBookSidebar({ onClose, isOpen, refresh }) {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-sm text-gray-600 ">
-                Opening Balance <span className="text-red-500">*</span>
-              </label>
+              <label className="text-sm text-gray-600 ">Opening Balance</label>
               <input
                 type="text"
                 className="input-tag w-full"
                 placeholder="Opening Balance"
-                required
                 onChange={(e) =>
                   setFormData((val) => ({
                     ...val,
@@ -123,11 +126,14 @@ function CreateBookSidebar({ onClose, isOpen, refresh }) {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-sm text-gray-600 ">Bank Account</label>
+              <label className="text-sm text-gray-600 ">
+                Bank Account <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 className="input-tag w-full"
                 placeholder="Bank Account"
+                required
                 onChange={(e) =>
                   setFormData((val) => ({
                     ...val,
@@ -197,7 +203,10 @@ function CreateBookSidebar({ onClose, isOpen, refresh }) {
               />
             </div>
           </div>
-          <div className="w-full border-t bg-white sticky bottom-0 px-5 py-3">
+          <div
+            className="w-full border-t bg-white sticky bottom-0 px-5 py-4"
+            style={{ height: "6vh" }}
+          >
             <button
               type="submit"
               className="w-full bg-purple-500 text-white px-5 py-3 text-sm text-gray-600 rounded-md"

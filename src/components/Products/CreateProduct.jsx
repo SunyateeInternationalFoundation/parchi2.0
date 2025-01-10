@@ -132,19 +132,6 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
   async function onCreateProduct(e) {
     e.preventDefault();
     try {
-      // let fieldValue = formData.discount;
-
-      // if (formData.discountType) {
-      //   fieldValue = (formData.sellingPrice / 100) * formData.discount;
-      // }
-      // const amount = formData.sellingPrice - fieldValue;
-
-      // const sellingPriceTaxAmount = amount * (formData.tax / 100);
-      // if (!formData.barcode) {
-      //   alert("Please provide a valid barcode.");
-      //   return;
-      // }
-
       if (onProductUpdated?.id) {
         const productDocRef = doc(
           db,
@@ -161,12 +148,6 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
         const payload = {
           ...rest,
           imageUrl: productImageUrl,
-          // companyRef: doc(
-          //   db,
-          //   "companies",
-          //   userDetails.companies[userDetails.selectedCompanyIndex].companyId
-          // ),
-          // userRef: doc(db, "users", userDetails.userId),
         };
         await updateDoc(productDocRef, payload); // Update product
         const productPayloadLogs = {
@@ -484,30 +465,32 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
               <label className=" text-sm text-gray-600">
                 Category<span className="text-red-500">*</span>
               </label>
-              <select
-                className="w-full input-tag text-gray-600 "
-                value={formData.category || ""}
-                onChange={(e) =>
-                  setFormData((val) => ({ ...val, category: e.target.value }))
-                }
-                required
+              <Select
+                value={formData.category ?? ""}
+                onValueChange={(val) => {
+                  setFormData((pre) => ({
+                    ...pre,
+                    category: val,
+                  }));
+                }}
               >
-                <option value="" disabled>
-                  Select Category
-                </option>
-                {categories.map((ele) => (
-                  <option value={ele.name} key={ele.id}>
-                    {ele.name}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger>
+                  <SelectValue placeholder=" Select Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((ele) => (
+                    <SelectItem value={ele.name} key={ele.id}>
+                      {ele.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1">
               <label className=" text-sm text-gray-600">Warehouse</label>
               <Select
                 value={formData.warehouse ?? ""}
                 onValueChange={(val) => {
-                  console.log(val);
                   setFormData((pre) => ({
                     ...pre,
                     warehouse: val,

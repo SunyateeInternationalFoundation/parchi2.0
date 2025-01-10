@@ -9,6 +9,7 @@ import {
 import { useEffect, useState } from "react";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
+import addItem from "../../assets/addItem.png";
 import { db } from "../../firebase";
 import CreateServiceList from "./CreateServiceList";
 
@@ -76,8 +77,10 @@ const ServicesList = () => {
           </button>
         </div>
         {loading ? (
-          <p>Loading services...</p>
-        ) : services.length > 0 ? (
+          <div className="text-center" style={{ height: "92hv" }}>
+            Loading services...
+          </div>
+        ) : (
           <div className="overflow-y-auto" style={{ height: "72vh" }}>
             <table className="w-full ">
               <thead className="sticky z-10" style={{ top: "0" }}>
@@ -103,42 +106,63 @@ const ServicesList = () => {
                 </tr>
               </thead>
               <tbody className="">
-                {services.map((service) => (
-                  <tr
-                    key={service.id}
-                    className="hover:bg-blue-100 border-b cursor-pointer"
-                    onClick={() => handleEditService(service)}
-                  >
-                    <td className="px-8 py-3">{service.serviceName}</td>
-                    <td className="px-5 py-3">{service.description}</td>
-                    <td className="px-5 py-3 text-center">
-                      ₹{service.sellingPrice}
-                    </td>
-                    <td className="px-5 py-3 text-center">
-                      {service.discount}
-                      {service.discountType === "Percentage" ? "%" : "/-"}
-                    </td>
-                    <td className="px-5 py-3 text-center">{service.tax}%</td>
-                    <td
-                      className="py-3 px-12 text-end"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
+                {services.length > 0 ? (
+                  services.map((service) => (
+                    <tr
+                      key={service.id}
+                      className="hover:bg-blue-100 border-b cursor-pointer"
+                      onClick={() => handleEditService(service)}
                     >
-                      <button
-                        className="text-red-500"
-                        onClick={() => onHandleDeleteService(service.id)}
+                      <td className="px-8 py-3">{service.serviceName}</td>
+                      <td className="px-5 py-3">{service.description}</td>
+                      <td className="px-5 py-3 text-center">
+                        ₹{service.sellingPrice}
+                      </td>
+                      <td className="px-5 py-3 text-center">
+                        {service.discount}
+                        {service.discountType === "Percentage" ? "%" : "/-"}
+                      </td>
+                      <td className="px-5 py-3 text-center">{service.tax}%</td>
+                      <td
+                        className="py-3 px-12 text-end"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
                       >
-                        <RiDeleteBin6Line />
-                      </button>
+                        <button
+                          className="text-red-500"
+                          onClick={() => onHandleDeleteService(service.id)}
+                        >
+                          <RiDeleteBin6Line />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="h-96 text-center py-4">
+                      <div className="w-full flex justify-center">
+                        <img
+                          src={addItem}
+                          alt="add Item"
+                          className="w-24 h-24"
+                        />
+                      </div>
+                      <div className="mb-6">No Service Found</div>
+                      <div className="">
+                        <button
+                          className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                          onClick={() => setIsSideBarOpen(true)}
+                        >
+                          + Create Service
+                        </button>
+                      </div>
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
-        ) : (
-          <p>No services found.</p>
         )}
       </div>
       <CreateServiceList

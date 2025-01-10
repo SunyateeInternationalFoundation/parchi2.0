@@ -16,6 +16,7 @@ import {
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import addItem from "../../assets/addItem.png";
 import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
 
@@ -207,7 +208,9 @@ const ProFormaProForma = () => {
         </nav>
 
         {loading ? (
-          <div className="text-center py-6">Loading proForma...</div>
+          <div className="text-center py-6" style={{ height: "92vh" }}>
+            Loading proForma...
+          </div>
         ) : (
           <div style={{ height: "92vh" }}>
             <table className="w-full border-collapse text-start">
@@ -303,8 +306,26 @@ const ProFormaProForma = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="h-24 text-center py-4">
-                      No proForma found
+                    <td colSpan="7" className="h-96 text-center py-4">
+                      <div className="w-full flex justify-center">
+                        <img
+                          src={addItem}
+                          alt="add Item"
+                          className="w-24 h-24"
+                        />
+                      </div>
+                      <div className="mb-6">No invoices Created</div>
+                      <div className="">
+                        {(userDetails.selectedDashboard === "" ||
+                          role?.create) && (
+                          <Link
+                            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                            to="create-proForma"
+                          >
+                            + Create proForma
+                          </Link>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 )}

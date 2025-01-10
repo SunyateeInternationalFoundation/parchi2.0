@@ -18,6 +18,7 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
+import addItem from "../../assets/addItem.png";
 
 const Purchase = () => {
   const [purchases, setPurchases] = useState([]);
@@ -200,7 +201,9 @@ const Purchase = () => {
         </nav>
 
         {loading ? (
-          <div className="text-center py-6">Loading purchases...</div>
+          <div className="text-center py-6" style={{ height: "92vh" }}>
+            Loading purchases...
+          </div>
         ) : (
           <div style={{ height: "92vh" }}>
             <table className="w-full border-collapse text-start">
@@ -290,7 +293,28 @@ const Purchase = () => {
                 ) : (
                   <tr>
                     <td colSpan="6" className="h-24 text-center py-4">
-                      No purchases found
+                      No found
+                    </td>
+                    <td colSpan="7" className="h-96 text-center py-4">
+                      <div className="w-full flex justify-center">
+                        <img
+                          src={addItem}
+                          alt="add Item"
+                          className="w-24 h-24"
+                        />
+                      </div>
+                      <div className="mb-6">No purchases Created</div>
+                      <div className="">
+                        {(userDetails.selectedDashboard === "" ||
+                          role?.create) && (
+                          <Link
+                            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                            to="create-purchase"
+                          >
+                            + Create purchases
+                          </Link>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 )}

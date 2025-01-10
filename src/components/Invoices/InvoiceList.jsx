@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import addItem from "../../assets/addItem.png";
 import { db } from "../../firebase";
 
 import {
@@ -197,110 +198,132 @@ const InvoiceList = () => {
         </nav>
 
         {loading ? (
-          <div className="text-center py-6">Loading invoices...</div>
+          <div className="text-center py-6" style={{ height: "92vh" }}>
+            Loading invoices...
+          </div>
         ) : (
-          <table className="w-full border-collapse text-start">
-            <thead className=" bg-white">
-              <tr className="border-b">
-                <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
-                  Date
-                </td>
-                <td className="px-5 py-1 text-gray-400 font-semibold text-center">
-                  Invoice No
-                </td>
-                <td className="px-5 py-1 text-gray-400 font-semibold text-start">
-                  Customer
-                </td>
-                <td className="px-5 py-1 text-gray-400 font-semibold  text-center">
-                  Amount
-                </td>
-                <td className="px-5 py-1 text-gray-400 font-semibold text-center ">
-                  Status
-                </td>
-                <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
-                  Mode
-                </td>
-                <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
-                  Created By
-                </td>
-              </tr>
-            </thead>
-            <tbody>
-              {invoicePaginationData.length > 0 ? (
-                invoicePaginationData.map((invoice) => (
-                  <tr
-                    key={invoice.id}
-                    className="border-b border-gray-200 text-center cursor-pointer"
-                    onClick={(e) => {
-                      navigate(invoice.id);
-                    }}
-                  >
-                    <td className="px-8 py-3 text-start">
-                      <FormatTimestamp timestamp={invoice.date} />
-                    </td>
-                    <td className="px-5 py-3 font-bold">
-                      {invoice.prefix || ""}-{invoice.invoiceNo}
-                    </td>
-                    <td className="px-5 py-3 text-start">
-                      {invoice.customerDetails?.name} <br />
-                      <span className="text-gray-500 text-sm">
-                        Ph.No {invoice.customerDetails.phone}
-                      </span>
-                    </td>
-
-                    <td className="px-5 py-3 font-bold  text-center">{`₹ ${invoice.total.toFixed(
-                      2
-                    )}`}</td>
-                    <td
-                      className="px-5 py-3"
-                      onClick={(e) => e.stopPropagation()}
+          <div style={{ height: "92vh" }}>
+            <table className="w-full border-collapse text-start">
+              <thead className=" bg-white">
+                <tr className="border-b">
+                  <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
+                    Date
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-center">
+                    Invoice No
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                    Customer
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold  text-center">
+                    Amount
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-center ">
+                    Status
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                    Mode
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                    Created By
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                {invoicePaginationData.length > 0 ? (
+                  invoicePaginationData.map((invoice) => (
+                    <tr
+                      key={invoice.id}
+                      className="border-b border-gray-200 text-center cursor-pointer"
+                      onClick={(e) => {
+                        navigate(invoice.id);
+                      }}
                     >
-                      <div
-                        className={`px-1 text-center py-2 rounded-lg text-xs  ${
-                          invoice.paymentStatus === "Paid"
-                            ? "bg-green-100 "
-                            : invoice.paymentStatus === "Pending"
-                            ? "bg-yellow-100 "
-                            : "bg-red-100"
-                        }`}
+                      <td className="px-8 py-3 text-start">
+                        <FormatTimestamp timestamp={invoice.date} />
+                      </td>
+                      <td className="px-5 py-3 font-bold">
+                        {invoice.prefix || ""}-{invoice.invoiceNo}
+                      </td>
+                      <td className="px-5 py-3 text-start">
+                        {invoice.customerDetails?.name} <br />
+                        <span className="text-gray-500 text-sm">
+                          Ph.No {invoice.customerDetails.phone}
+                        </span>
+                      </td>
+
+                      <td className="px-5 py-3 font-bold  text-center">{`₹ ${invoice.total.toFixed(
+                        2
+                      )}`}</td>
+                      <td
+                        className="px-5 py-3"
+                        onClick={(e) => e.stopPropagation()}
                       >
-                        <select
-                          value={invoice.paymentStatus}
-                          className={
+                        <div
+                          className={`px-1 text-center py-2 rounded-lg text-xs  ${
                             invoice.paymentStatus === "Paid"
                               ? "bg-green-100 "
                               : invoice.paymentStatus === "Pending"
                               ? "bg-yellow-100 "
                               : "bg-red-100"
-                          }
-                          onChange={(e) => {
-                            handleStatusChange(invoice.id, e.target.value);
-                          }}
+                          }`}
                         >
-                          <option value="Pending">Pending</option>
-                          <option value="Paid">Paid</option>
-                          <option value="UnPaid">UnPaid</option>
-                        </select>
+                          <select
+                            value={invoice.paymentStatus}
+                            className={
+                              invoice.paymentStatus === "Paid"
+                                ? "bg-green-100 "
+                                : invoice.paymentStatus === "Pending"
+                                ? "bg-yellow-100 "
+                                : "bg-red-100"
+                            }
+                            onChange={(e) => {
+                              handleStatusChange(invoice.id, e.target.value);
+                            }}
+                          >
+                            <option value="Pending">Pending</option>
+                            <option value="Paid">Paid</option>
+                            <option value="UnPaid">UnPaid</option>
+                          </select>
+                        </div>
+                      </td>
+                      <td className="px-5 py-3 text-start">
+                        {invoice.mode || "Online"}
+                      </td>
+
+                      <td className="px-5 py-3 text-start">
+                        {invoice?.createdBy?.who}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="7" className="h-96 text-center py-4">
+                      <div className="w-full flex justify-center">
+                        <img
+                          src={addItem}
+                          alt="add Item"
+                          className="w-24 h-24"
+                        />
+                      </div>
+                      <div className="mb-6">No invoices Created</div>
+                      <div className="">
+                        {(userDetails.selectedDashboard === "" ||
+                          role?.create) && (
+                          <Link
+                            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                            to="create-invoice"
+                          >
+                            Create Invoice
+                          </Link>
+                        )}
                       </div>
                     </td>
-                    <td className="px-5 py-3 text-start">
-                      {invoice.mode || "Online"}
-                    </td>
-
-                    <td className="px-5 py-3 text-start">
-                      {invoice?.createdBy?.who}
-                    </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="h-24 text-center py-4">
-                    No invoices found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          </div>
         )}
         <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
           <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
