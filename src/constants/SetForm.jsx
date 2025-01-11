@@ -13,6 +13,13 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import addItem from "../assets/addItem.png";
 import CreateCustomer from "../components/Customers/CreateCustomer";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/UI/select";
 import CreateVendor from "../components/Vendors/CreateVendor";
 import { db } from "../firebase";
 import SelectProductSide from "./SelectProductSide";
@@ -45,7 +52,7 @@ function SetForm(props) {
 
   const purchaseList = ["Purchase", "PO", "DebitNote"];
   const [products, setProducts] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [categories, setCategories] = useState([]);
   const [isProductSelected, setIsProductSelected] = useState(false);
   const [books, setBooks] = useState([]);
@@ -99,8 +106,7 @@ function SetForm(props) {
     }
   };
 
-  function onSelectWarehouse(e) {
-    const { value } = e.target;
+  function onSelectWarehouse(value) {
     const data = warehouses.find((ele) => ele.id === value);
     const warehouseRef = doc(
       db,
@@ -165,7 +171,7 @@ function SetForm(props) {
   }, [formData.products]);
 
   useEffect(() => {
-    if (selectedCategory === "" && productSearch === "") {
+    if (selectedCategory === "all" && productSearch === "") {
       setProductSuggestions(products);
       return;
     }
@@ -303,8 +309,7 @@ function SetForm(props) {
     });
   }
 
-  function onSelectBook(e) {
-    const { value } = e.target;
+  function onSelectBook(value) {
     const data = books.find((ele) => ele.id === value);
     const bookRef = doc(
       db,
@@ -689,17 +694,27 @@ function SetForm(props) {
             <h2 className="font-semibold mb-2">Products Details</h2>
             <div className="flex justify-between items-center mb-4 space-x-3">
               <div className="flex  items-center w-full">
-                <select
-                  className="w-1/4 rounded-s-md py-3  px-3 border"
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                >
-                  <option value={""}>All Categories</option>
-                  {categories.map((ele) => (
-                    <option key={ele} value={ele}>
-                      {ele}
-                    </option>
-                  ))}
-                </select>
+                <div className=" w-1/4">
+                  <Select
+                    value={selectedCategory ?? "all"}
+                    onValueChange={(val) => {
+                      setSelectedCategory(val);
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder=" Select Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={"all"}>All</SelectItem>
+                      {categories.map((ele) => (
+                        <SelectItem value={ele} key={ele}>
+                          {ele}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="relative w-full">
                   <input
                     type="text"
@@ -961,58 +976,65 @@ function SetForm(props) {
               <div className="w-full grid grid-cols-3 gap-4">
                 <div className="w-full text-gray-500 space-y-2">
                   <div>Shipping From</div>
-                  <select
+                  <Select
                     value={formData?.warehouse?.warehouseRef?.id || ""}
-                    onChange={onSelectWarehouse}
-                    className="border p-2 rounded-md w-full"
+                    onValueChange={(val) => {
+                      onSelectWarehouse(val);
+                    }}
                   >
-                    <option value="" disabled>
-                      Select WareHouse
-                    </option>
-                    {warehouses.length > 0 &&
-                      warehouses.map((warehouse, index) => (
-                        <option value={warehouse.id} key={index}>
+                    <SelectTrigger>
+                      <SelectValue placeholder=" Select WareHouse" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {warehouses.map((warehouse) => (
+                        <SelectItem value={warehouse.id} key={warehouse.id}>
                           {warehouse.name}
-                        </option>
+                        </SelectItem>
                       ))}
-                  </select>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="w-full text-gray-500 space-y-2">
                   <div>Bank/Book</div>
-                  <select
+                  <Select
                     value={formData?.book?.bookRef?.id || ""}
-                    onChange={onSelectBook}
-                    className="border p-2 rounded w-full"
+                    onValueChange={(val) => {
+                      onSelectBook(val);
+                    }}
                   >
-                    <option value="" disabled>
-                      Select Bank/Book
-                    </option>
-                    {books.length > 0 &&
-                      books.map((book, index) => (
-                        <option value={book.id} key={index}>
+                    <SelectTrigger>
+                      <SelectValue placeholder=" Select book" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {books.map((book) => (
+                        <SelectItem value={book.id} key={book.id}>
                           {`${book.name} - ${book.bankName} - ${book.branch}`}
-                        </option>
+                        </SelectItem>
                       ))}
-                  </select>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="w-full text-gray-500 space-y-2">
                   <div>Sign</div>
-                  <select
-                    value=""
-                    onChange={() => {}}
-                    className="border p-2 rounded-md w-full"
-                  >
-                    <option value="" disabled>
-                      Select Sign
-                    </option>
-                  </select>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder=" Select book" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {/* {books.map((book) => (
+                        <SelectItem value={book.id} key={book.id}>
+                          {`${book.name} - ${book.bankName} - ${book.branch}`}
+                        </SelectItem>
+                      ))} */}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="w-full text-gray-500 space-y-2 ">
                   <div>Attach Files</div>
                   <input
                     type="file"
-                    className="flex h-10 w-full rounded-md border border-input
-                bg-white px-3 py-2 text-sm text-gray-400 file:border-0
+                    className="flex h-12  w-full rounded-md border border-input
+                bg-white px-3 py-3 text-sm text-gray-400 file:border-0
                 file:bg-transparent file:text-gray-600 file:text-sm
                 file:font-medium"
                   />
@@ -1023,7 +1045,7 @@ function SetForm(props) {
                     type="number"
                     value={formData.shippingCharges || ""}
                     placeholder="Shipping Charges"
-                    className="border p-2 rounded-md w-full"
+                    className="input-tag w-full"
                     min={0}
                     onChange={(e) => {
                       setFormData((val) => ({
@@ -1039,7 +1061,7 @@ function SetForm(props) {
                     type="number"
                     value={formData.packagingCharges || ""}
                     placeholder="Packaging Charges"
-                    className="border p-2 rounded-md w-full"
+                    className="input-tag w-full"
                     min={0}
                     onChange={(e) => {
                       setFormData((val) => ({
@@ -1088,21 +1110,29 @@ function SetForm(props) {
                     </label>
                   </div>
                   <div className="w-full">
-                    <select
-                      className="border p-2 rounded w-full"
-                      value={formData.mode}
-                      onChange={(e) =>
-                        setFormData((val) => ({ ...val, mode: e.target.value }))
-                      }
+                    <Select
+                      value={formData?.mode || ""}
+                      onValueChange={(value) => {
+                        setFormData((val) => ({ ...val, mode: value }));
+                      }}
                     >
-                      <option value="Cash">Cash</option>
-                      <option value="Emi">Emi</option>
-                      <option value="Cheque">Cheque</option>
-                      <option value="Net Banking">Net Banking</option>
-                      <option value="Credit/Debit Card">
-                        Credit/Debit Card
-                      </option>
-                    </select>
+                      <SelectTrigger>
+                        <SelectValue placeholder=" Select Mode" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[
+                          "Cash",
+                          "Emi",
+                          "Cheque",
+                          "Net Banking",
+                          "Credit/Debit Card",
+                        ].map((ele) => (
+                          <SelectItem value={ele} key={ele}>
+                            {ele}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
@@ -1158,7 +1188,7 @@ function SetForm(props) {
                     type="text"
                     value={formData.notes}
                     placeholder="Notes"
-                    className="border p-2 rounded-md w-full max-h-24 min-h-24 resize-none"
+                    className="input-tag w-full max-h-24 min-h-24 resize-none"
                     onChange={(e) => {
                       setFormData((val) => ({
                         ...val,
@@ -1172,7 +1202,7 @@ function SetForm(props) {
                   <textarea
                     type="text"
                     value={formData.terms}
-                    className="border p-2 rounded-md w-full max-h-24 min-h-24 resize-none "
+                    className="input-tag w-full max-h-24 min-h-24 resize-none "
                     onChange={(e) => {
                       setFormData((val) => ({
                         ...val,

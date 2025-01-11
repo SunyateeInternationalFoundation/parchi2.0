@@ -8,6 +8,13 @@ import {
   LuChevronsRight,
 } from "react-icons/lu";
 import FormatTimestamp from "../../../constants/FormatTimestamp";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../UI/select";
 
 function VendorBills({ purchasesData }) {
   console.log("🚀 ~ VendorBills ~ purchasesData:", purchasesData);
@@ -79,15 +86,20 @@ function VendorBills({ purchasesData }) {
               />
               <IoSearch />
             </div>
-            <div
-              className="flex items-center space-x-4  border
-      px-5  py-3 rounded-md "
-            >
-              <select onChange={(e) => setFilterStatus(e.target.value)}>
-                <option value="All"> All Transactions</option>
-                <option value="Pending">Pending</option>
-                <option value="Received">Received</option>
-              </select>
+            <div className="w-56">
+              <Select
+                value={filterStatus || "All"}
+                onValueChange={(value) => setFilterStatus(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={"Select Filter"} />
+                </SelectTrigger>
+                <SelectContent className=" h-26">
+                  <SelectItem value="All"> All </SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Received">Received</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </nav>

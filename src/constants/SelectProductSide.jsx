@@ -1,6 +1,13 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/UI/select";
 import CreateProduct from "./CreateProduct";
 
 function SelectProductSide({
@@ -16,13 +23,13 @@ function SelectProductSide({
 }) {
   const [Products, setProducts] = useState(productList);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
   const filteredProducts = Products.filter(
     (ele) =>
       ele.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (ele.category === selectedCategory || selectedCategory === "")
+      (ele.category === selectedCategory || selectedCategory === "all")
   );
 
   useEffect(() => {
@@ -52,17 +59,26 @@ function SelectProductSide({
           </button>
         </div>
         <div className="flex w-100 m-2 px-3">
-          <select
-            className="w-1/4 rounded-s-md p-2 border"
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            <option value={""}>All</option>
-            {categories.map((ele) => (
-              <option key={ele} value={ele}>
-                {ele}
-              </option>
-            ))}
-          </select>
+          <div className="w-36">
+            <Select
+              value={selectedCategory || "all"}
+              onValueChange={(val) => {
+                setSelectedCategory(val);
+              }}
+            >
+              <SelectTrigger className="full">
+                <SelectValue placeholder="all" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={"all"}>All</SelectItem>
+                {categories.map((ele) => (
+                  <SelectItem key={ele} value={ele}>
+                    {ele}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="border p-2 w-3/4">
             <input
               type="text"

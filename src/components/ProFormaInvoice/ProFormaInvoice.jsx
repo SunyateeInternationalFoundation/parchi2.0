@@ -19,6 +19,13 @@ import { Link, useNavigate } from "react-router-dom";
 import addItem from "../../assets/addItem.png";
 import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../UI/select";
 
 const ProFormaProForma = () => {
   const [proForma, setProForma] = useState([]);
@@ -183,16 +190,21 @@ const ProFormaProForma = () => {
               />
               <IoSearch />
             </div>
-            <div
-              className="flex items-center space-x-4  border
-      px-5 py-3 rounded-md  "
-            >
-              <select onChange={(e) => setFilterStatus(e.target.value)}>
-                <option value="All"> All Transactions</option>
-                <option value="Pending">Pending</option>
-                <option value="Paid">Paid</option>
-                <option value="UnPaid">UnPaid</option>
-              </select>
+            <div className="w-1/2">
+              <Select
+                value={filterStatus || "All"}
+                onValueChange={(value) => setFilterStatus(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={"Select Filter"} />
+                </SelectTrigger>
+                <SelectContent className=" h-26">
+                  <SelectItem value="All"> All </SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Paid">Paid</SelectItem>
+                  <SelectItem value="UnPaid">UnPaid</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="w-full text-end ">
@@ -267,36 +279,39 @@ const ProFormaProForma = () => {
                         2
                       )}`}</td>
                       <td
-                        className="px-5 py-1"
+                        className="px-5 py-3 w-32"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        {" "}
                         <div
-                          className={`px-1 text-center py-2 rounded-lg text-xs ${
+                          className={` text-center flex justify-center items-center h-8 overflow-hidden border rounded-lg text-xs  ${
                             proForma.paymentStatus === "Paid"
                               ? "bg-green-100 "
                               : proForma.paymentStatus === "Pending"
                               ? "bg-yellow-100 "
-                              : "bg-red-100 "
+                              : "bg-red-100"
                           }`}
                         >
-                          <select
+                          <Select
                             value={proForma.paymentStatus}
-                            onChange={(e) => {
-                              handleStatusChange(proForma.id, e.target.value);
-                            }}
-                            className={` ${
-                              proForma.paymentStatus === "Paid"
-                                ? "bg-green-100 "
-                                : proForma.paymentStatus === "Pending"
-                                ? "bg-yellow-100 "
-                                : "bg-red-100 "
-                            }`}
+                            onValueChange={(value) =>
+                              handleStatusChange(proForma.id, value)
+                            }
                           >
-                            <option value="Pending">Pending</option>
-                            <option value="Paid">Paid</option>
-                            <option value="UnPaid">UnPaid</option>
-                          </select>
+                            <SelectTrigger>
+                              <SelectValue placeholder={"Select Status"} />
+                            </SelectTrigger>
+                            <SelectContent className="w-10 h-26">
+                              <SelectItem value="Pending" className="h-8">
+                                Pending
+                              </SelectItem>
+                              <SelectItem value="Paid" className="h-8">
+                                Paid
+                              </SelectItem>
+                              <SelectItem value="UnPaid" className="h-8">
+                                UnPaid
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                       </td>
                       <td className="px-5 py-3">{proForma.mode || "Online"}</td>

@@ -20,6 +20,13 @@ import {
   LuChevronsRight,
 } from "react-icons/lu";
 import FormatTimestamp from "../../constants/FormatTimestamp";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../UI/select";
 
 const InvoiceList = () => {
   const [invoices, setInvoices] = useState([]);
@@ -173,16 +180,21 @@ const InvoiceList = () => {
               />
               <IoSearch />
             </div>
-            <div
-              className="flex items-center space-x-4  border
-      px-5  py-3 rounded-md "
-            >
-              <select onChange={(e) => setFilterStatus(e.target.value)}>
-                <option value="All"> All Transactions</option>
-                <option value="Pending">Pending</option>
-                <option value="Paid">Paid</option>
-                <option value="UnPaid">UnPaid</option>
-              </select>
+            <div className="w-1/2">
+              <Select
+                value={filterStatus || "All"}
+                onValueChange={(value) => setFilterStatus(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={"Select Filter"} />
+                </SelectTrigger>
+                <SelectContent className=" h-26">
+                  <SelectItem value="All"> All </SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Paid">Paid</SelectItem>
+                  <SelectItem value="UnPaid">UnPaid</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="w-full text-end ">
@@ -256,11 +268,11 @@ const InvoiceList = () => {
                         2
                       )}`}</td>
                       <td
-                        className="px-5 py-3"
+                        className="px-5 py-3 w-32"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <div
-                          className={`px-1 text-center py-2 rounded-lg text-xs  ${
+                          className={` text-center flex justify-center items-center h-8 overflow-hidden border rounded-lg text-xs  ${
                             invoice.paymentStatus === "Paid"
                               ? "bg-green-100 "
                               : invoice.paymentStatus === "Pending"
@@ -268,23 +280,27 @@ const InvoiceList = () => {
                               : "bg-red-100"
                           }`}
                         >
-                          <select
+                          <Select
                             value={invoice.paymentStatus}
-                            className={
-                              invoice.paymentStatus === "Paid"
-                                ? "bg-green-100 "
-                                : invoice.paymentStatus === "Pending"
-                                ? "bg-yellow-100 "
-                                : "bg-red-100"
+                            onValueChange={(value) =>
+                              handleStatusChange(invoice.id, value)
                             }
-                            onChange={(e) => {
-                              handleStatusChange(invoice.id, e.target.value);
-                            }}
                           >
-                            <option value="Pending">Pending</option>
-                            <option value="Paid">Paid</option>
-                            <option value="UnPaid">UnPaid</option>
-                          </select>
+                            <SelectTrigger>
+                              <SelectValue placeholder={"Select Status"} />
+                            </SelectTrigger>
+                            <SelectContent className="w-10 h-26">
+                              <SelectItem value="Pending" className="h-8">
+                                Pending
+                              </SelectItem>
+                              <SelectItem value="Paid" className="h-8">
+                                Paid
+                              </SelectItem>
+                              <SelectItem value="UnPaid" className="h-8">
+                                UnPaid
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                       </td>
                       <td className="px-5 py-3 text-start">

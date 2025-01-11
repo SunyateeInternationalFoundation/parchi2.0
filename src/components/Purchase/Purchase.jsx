@@ -16,9 +16,16 @@ import {
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import addItem from "../../assets/addItem.png";
 import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
-import addItem from "../../assets/addItem.png";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../UI/select";
 
 const Purchase = () => {
   const [purchases, setPurchases] = useState([]);
@@ -177,15 +184,21 @@ const Purchase = () => {
               />
               <IoSearch />
             </div>
-            <div
-              className="flex items-center space-x-4  border
-      px-5 py-3 rounded-md  "
-            >
-              <select onChange={(e) => setFilterStatus(e.target.value)}>
-                <option value="All"> All Transactions</option>
-                <option value="Pending">Pending</option>
-                <option value="Received">Received</option>
-              </select>
+
+            <div className="w-1/2">
+              <Select
+                value={filterStatus || "All"}
+                onValueChange={(value) => setFilterStatus(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={"Select Filter"} />
+                </SelectTrigger>
+                <SelectContent className=" h-26">
+                  <SelectItem value="All"> All </SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Received">Received</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="w-full text-end ">
@@ -258,31 +271,36 @@ const Purchase = () => {
                       <td className="px-5 py-3 font-bold text-center">{`₹ ${purchase.total.toFixed(
                         2
                       )}`}</td>
+
                       <td
-                        className="px-5 py-1"
+                        className="px-5 py-3 w-32"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <div
-                          className={`px-1 text-center py-2 rounded-lg text-xs  ${
+                          className={` text-center flex justify-center items-center h-8 overflow-hidden border rounded-lg text-xs  ${
                             purchase.orderStatus !== "Pending"
                               ? "bg-green-200 "
                               : "bg-red-200 "
                           }`}
                         >
-                          <select
+                          <Select
                             value={purchase.orderStatus}
-                            onChange={(e) => {
-                              handleStatusChange(purchase.id, e.target.value);
-                            }}
-                            className={` ${
-                              purchase.orderStatus !== "Pending"
-                                ? "bg-green-200 "
-                                : "bg-red-200 "
-                            }`}
+                            onValueChange={(value) =>
+                              handleStatusChange(purchase.id, value)
+                            }
                           >
-                            <option value="Pending">Pending</option>
-                            <option value="Received">Received</option>
-                          </select>
+                            <SelectTrigger>
+                              <SelectValue placeholder={"Select Status"} />
+                            </SelectTrigger>
+                            <SelectContent className="w-10 h-18">
+                              <SelectItem value="Pending" className="h-8">
+                                Pending
+                              </SelectItem>
+                              <SelectItem value="Received" className="h-8">
+                                Received
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                       </td>
                       <td className="px-5 py-3">{purchase.mode || "Online"}</td>

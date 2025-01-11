@@ -12,6 +12,13 @@ import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../UI/select";
 
 function CreateProject() {
   const { id } = useParams();
@@ -34,8 +41,7 @@ function CreateProject() {
   const [isMoreChecked, setIsMoreChecked] = useState(false);
   const [books, setBooks] = useState([]);
 
-  const onSelectBook = (e) => {
-    const { value } = e.target;
+  const onSelectBook = (value) => {
     const bookRef = doc(
       db,
       "companies",
@@ -197,19 +203,23 @@ function CreateProject() {
                   onChange={(e) => handleDateChange("dueDate", e.target.value)}
                 />
               </div>
-              <div>
+              <div className="space-y-1">
                 <label className="text-gray-600">Priority</label>
-                <select
-                  className="border p-3 rounded-lg w-full mt-1"
+                <Select
                   value={projectForm.priority ?? "Low"}
-                  onChange={(e) => {
-                    handleInputChange("priority", e.target.value);
-                  }}
+                  onValueChange={(value) =>
+                    handleInputChange("priority", value)
+                  }
                 >
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder={"Select Filter"} />
+                  </SelectTrigger>
+                  <SelectContent className=" h-26">
+                    <SelectItem value="Low"> Low</SelectItem>
+                    <SelectItem value="Medium">Medium</SelectItem>
+                    <SelectItem value="High">High</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
@@ -233,23 +243,26 @@ function CreateProject() {
         </div>
         {isMoreChecked && (
           <div className="grid grid-cols-2 gap-4 bg-white p-4 rounded-lg">
-            <div>
+            <div className="space-y-1">
               <label className="text-lg text-gray-600">Bank/Book Details</label>
-              <select
-                onChange={onSelectBook}
-                value={projectForm?.book?.id || ""}
-                className="text-base text-gray-900 border p-3 rounded-lg w-full mt-1"
-              >
-                <option value="" disabled>
-                  Select Bank/Book
-                </option>
-                {books.length > 0 &&
-                  books.map((book, index) => (
-                    <option value={book.id} key={index}>
-                      {`${book.name} - ${book.bankName} - ${book.branch}`}
-                    </option>
-                  ))}
-              </select>
+              <div>
+                <Select
+                  value={projectForm?.book?.id || ""}
+                  onValueChange={(value) => onSelectBook(value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={"Select Filter"} />
+                  </SelectTrigger>
+                  <SelectContent className=" h-26">
+                    {books.length > 0 &&
+                      books.map((book, index) => (
+                        <SelectItem value={book.id} key={index}>
+                          {`${book.name} - ${book.bankName} - ${book.branch}`}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div>
               <label className="text-lg text-gray-600">Budget</label>

@@ -1,6 +1,13 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../UI/select";
 
 function Projects({ projectsData }) {
   const [modifiedProjectsList, setModifiedProjectsList] =
@@ -47,7 +54,7 @@ function Projects({ projectsData }) {
       <div className="py-5 ">
         <nav className="flex mb-4 bg-white rounded-lg shadow items-center py-3 px-5 ">
           <div className="space-x-4 w-full flex items-center">
-            <div className="flex items-center space-x-4  border p-2 rounded-lg">
+            <div className="flex items-center space-x-4  input-tag">
               <input
                 type="text"
                 placeholder="Search by projects #..."
@@ -56,13 +63,21 @@ function Projects({ projectsData }) {
               />
               <IoSearch />
             </div>
-            <div className="flex items-center space-x-4 border p-2 rounded-lg ">
-              <select onChange={(e) => setFilterStatus(e.target.value)}>
-                <option value="All"> All</option>
-                <option value="On-Going">On-Going</option>
-                <option value="Completed">Completed</option>
-                <option value="Delay">Delay</option>
-              </select>
+            <div className="w-56">
+              <Select
+                value={filterStatus || "All"}
+                onValueChange={(value) => setFilterStatus(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={"Select Filter"} />
+                </SelectTrigger>
+                <SelectContent className=" h-26">
+                  <SelectItem value="All"> All</SelectItem>
+                  <SelectItem value="On-Going">On-Going</SelectItem>
+                  <SelectItem value="Completed">Completed</SelectItem>
+                  <SelectItem value="Delay">Delay</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </nav>

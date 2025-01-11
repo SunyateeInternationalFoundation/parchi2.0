@@ -11,6 +11,13 @@ import { useSelector } from "react-redux";
 import addItem from "../../assets/addItem.png";
 import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../UI/select";
 
 const VendorPurchase = () => {
   const userDetails = useSelector((state) => state.users);
@@ -107,15 +114,20 @@ const VendorPurchase = () => {
               />
               <IoSearch />
             </div>
-            <div
-              className="flex items-center space-x-4  border
-      px-5 py-3 rounded-md  "
-            >
-              <select onChange={(e) => setFilterStatus(e.target.value)}>
-                <option value="All"> All Transactions</option>
-                <option value="Received">Received</option>
-                <option value="Pending">Pending</option>
-              </select>
+            <div className="w-56">
+              <Select
+                value={filterStatus || "All"}
+                onValueChange={(value) => setFilterStatus(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={"Select Filter"} />
+                </SelectTrigger>
+                <SelectContent className=" h-26">
+                  <SelectItem value="All"> All </SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Received">Received</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </nav>

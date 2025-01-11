@@ -32,7 +32,7 @@ function CustomerView() {
   const [customersInvoicesData, setCustomersInvoicesData] = useState([]);
   const [customersServicesData, setCustomersServicesData] = useState([]);
   const [customersProjectsData, setCustomersProjectsData] = useState([]);
-  const [customerData, setCustomerData] = useState([]);
+  const [customerData, setCustomerData] = useState({});
   const [expenseData, setExpenseData] = useState({
     income: 0,
     expense: 0,

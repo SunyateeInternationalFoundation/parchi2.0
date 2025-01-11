@@ -19,6 +19,13 @@ import { Link, useNavigate } from "react-router-dom";
 import addItem from "../../assets/addItem.png";
 import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../UI/select";
 
 function Services() {
   const [filterStatus, setFilterStatus] = useState("All");
@@ -163,15 +170,21 @@ function Services() {
               />
               <IoSearch />
             </div>
-            <div
-              className="flex items-center space-x-4  border
-      px-5 py-3 rounded-md  "
-            >
-              <select onChange={(e) => setFilterStatus(e.target.value)}>
-                <option value="All"> All</option>
-                <option value="Active">Active</option>
-                <option value="InActive">InActive</option>
-              </select>
+
+            <div className="w-1/2">
+              <Select
+                value={filterStatus || "All"}
+                onValueChange={(value) => setFilterStatus(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={"Select Filter"} />
+                </SelectTrigger>
+                <SelectContent className=" h-26">
+                  <SelectItem value="All"> All </SelectItem>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="InActive">InActive</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="w-full text-end ">
@@ -248,31 +261,36 @@ function Services() {
                       <td className="px-5 py-3 font-bold  text-center">{`₹ ${service.total.toFixed(
                         2
                       )}`}</td>
+
                       <td
-                        className="px-5 py-3"
+                        className="px-5 py-3 w-32"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <div
-                          className={`px-1 text-center py-2 rounded-lg text-xs ${
+                          className={` text-center flex justify-center items-center h-8 overflow-hidden border rounded-lg text-xs  ${
                             service.status === "Active"
                               ? "bg-green-100 "
                               : "bg-red-100"
                           }`}
                         >
-                          <select
+                          <Select
                             value={service.status}
-                            className={
-                              service.status === "Active"
-                                ? "bg-green-100 "
-                                : "bg-red-100"
+                            onValueChange={(value) =>
+                              onUpdateStatus(service.id, value)
                             }
-                            onChange={(e) => {
-                              onUpdateStatus(service.id, e.target.value);
-                            }}
                           >
-                            <option value="Active">Active</option>
-                            <option value="InActive">InActive</option>
-                          </select>
+                            <SelectTrigger>
+                              <SelectValue placeholder={"Select status"} />
+                            </SelectTrigger>
+                            <SelectContent className="w-10 h-18">
+                              <SelectItem value="Active" className="h-8">
+                                Active
+                              </SelectItem>
+                              <SelectItem value="InActive" className="h-8">
+                                InActive
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                       </td>
                       <td className="px-5 py-3">{service.mode || "Online"}</td>
