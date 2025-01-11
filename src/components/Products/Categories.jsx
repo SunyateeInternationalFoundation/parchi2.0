@@ -88,8 +88,8 @@ const Categories = () => {
   });
 
   return (
-    <div className=" p-5">
-      <div className="bg-white py-5 rounded-lg  shadow-md">
+    <div className="main-container">
+      <div className="container">
         <div className="flex justify-between items-center px-5">
           <div
             className="flex items-center space-x-4  border
@@ -112,7 +112,7 @@ const Categories = () => {
         </div>
         <div
           className=" rounded-lg py-3 overflow-y-auto"
-          style={{ height: "65vh" }}
+          style={{ height: "62vh" }}
         >
           <table className="w-full border-collapse text-start  ">
             <thead className=" bg-white">

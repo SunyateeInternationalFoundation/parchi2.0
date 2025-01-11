@@ -42,7 +42,7 @@ function VendorProject({ projectsData }) {
     return `${getDate}/${getMonth}/${getFullYear}`;
   }
   return (
-    <div className="w-full px-8 py-8 bg-gray-100 overflow-y-auto" style={{ height: "80vh" }}>
+    <div className="main-container" style={{ height: "80vh" }}>
       <div className=" py-5">
         <nav className="flex mb-4 bg-white rounded-lg shadow items-center py-3 px-5">
           <div className="space-x-4 w-full flex items-center">
@@ -56,7 +56,10 @@ function VendorProject({ projectsData }) {
               <IoSearch />
             </div>
             <div className="flex items-center space-x-4 border px-5 py-3 rounded-lg">
-              <select onChange={(e) => setFilterStatus(e.target.value)} className="focus:outline-none">
+              <select
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="focus:outline-none"
+              >
                 <option value="All">All</option>
                 <option value="On-Going">On-Going</option>
                 <option value="Completed">Completed</option>
@@ -67,66 +70,69 @@ function VendorProject({ projectsData }) {
           <div className="w-full text-end"></div>
         </nav>
         <div>
-            {modifiedProjectsList.length > 0 ? (
-              <div className="grid grid-cols-3 gap-5">
-                {modifiedProjectsList.map((item) => (
-                  <div
-                    className={` bg-white border cursor-pointer rounded-lg h-56 hover:shadow-lg `}
-                    key={item.id}
-                  >
-                    <div className="p-3 h-40">
-                      <div
-                        className={
-                          "rounded-lg  w-fit px-2 text-xs font-bold " +
-                          (item.status === "Delay"
-                            ? " bg-rose-100"
-                            : item.status === "Completed"
-                            ? " bg-green-100"
-                            : " bg-[hsl(250deg_92%_70%_/10%)]")
-                        }
-                      >
-                        {item.status}
+          {modifiedProjectsList.length > 0 ? (
+            <div className="grid grid-cols-3 gap-5">
+              {modifiedProjectsList.map((item) => (
+                <div
+                  className={` bg-white border cursor-pointer rounded-lg shadow h-56 hover:shadow-md `}
+                  key={item.id}
+                >
+                  <div className="p-3 h-40">
+                    <div
+                      className={
+                        "rounded-lg  w-fit px-2 text-xs font-bold " +
+                        (item.status === "Delay"
+                          ? " bg-rose-100"
+                          : item.status === "Completed"
+                          ? " bg-green-100"
+                          : " bg-[hsl(250deg_92%_70%_/10%)]")
+                      }
+                    >
+                      {item.status}
+                    </div>
+                    <div className="py-3 space-y-1">
+                      <div className="font-bold">{item.name}</div>
+                      <div className="text-xs line-clamp-3">
+                        {item.description}
                       </div>
-                      <div className="py-3 space-y-1">
-                        <div className="font-bold">{item.name}</div>
-                        <div className="text-xs line-clamp-3">
-                          {item.description}
-                        </div>
+                    </div>
+                    {isDueDateEnd(item.dueDate) && (
+                      <div className="text-xs">
+                        <i>Project due time over kindly check it</i>
                       </div>
-                      {isDueDateEnd(item.dueDate) && (
-                        <div className="text-xs">
-                          <i>Project due time over kindly check it</i>
-                        </div>
-                      )}
+                    )}
                     <div>
-                      Team: <span className="font-bold">{item.staffRef?.length || 0}</span>
+                      Team:{" "}
+                      <span className="font-bold">
+                        {item.staffRef?.length || 0}
+                      </span>
                     </div>
                   </div>
                   <div className="flex justify-between border-t px-3 py-1">
-                      <div>
-                        <div className="text-gray-700 text-sm">
-                          Assigned Date :{" "}
-                        </div>
-                        <div className="font-bold">
-                          {DateFormate(item.startDate)}
-                        </div>
+                    <div>
+                      <div className="text-gray-700 text-sm">
+                        Assigned Date :{" "}
                       </div>
-                      <div>
-                        <div className="text-gray-700 text-sm">Due Date : </div>
-                        <div className="font-bold">
-                          {DateFormate(item.dueDate)}
-                        </div>
+                      <div className="font-bold">
+                        {DateFormate(item.startDate)}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-gray-700 text-sm">Due Date : </div>
+                      <div className="font-bold">
+                        {DateFormate(item.dueDate)}
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center">No Project Found</div>
-            )}
-          </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center">No Project Found</div>
+          )}
         </div>
       </div>
+    </div>
   );
 }
 

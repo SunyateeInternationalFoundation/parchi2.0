@@ -81,8 +81,8 @@ const VendorProfile = ({ vendorData, refresh, expenseData }) => {
   return (
     <>
       {UpdatedData.id ? (
-        <div className="p-8  mx-auto">
-          <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div className="main-container">
+          <div className="container overflow-hidden">
             {progress > 0 && (
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
@@ -91,7 +91,7 @@ const VendorProfile = ({ vendorData, refresh, expenseData }) => {
                 ></div>
               </div>
             )}
-            <div className="p-6">
+            <div className="px-5 pb-5">
               <div className="flex items-center space-x-6 mb-6">
                 <div className="w-1/5">
                   {UpdatedData.profileImage ? (
