@@ -116,7 +116,7 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
               <input
                 type="text"
                 name="serviceName"
-                className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
+                className="w-full input-tag"
                 placeholder="Service Name"
                 value={formData.serviceName}
                 required
@@ -133,7 +133,7 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
               <input
                 type="text"
                 name="description"
-                className="w-full border border-gray-300 p-2 rounded-md"
+                className="w-full  input-tag"
                 placeholder="Description"
                 value={formData.description}
                 onChange={(e) =>
@@ -152,7 +152,7 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
                   type="number"
                   value={+formData.sellingPrice || ""}
                   name="pricing.sellingPrice"
-                  className="w-full border border-gray-300 p-2 rounded-l-lg"
+                  className="w-full input-tag"
                   placeholder="Service Price"
                   required
                   onChange={(e) =>
@@ -182,11 +182,11 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
               </div>
               <label className="text-sm text-gray-600">Discount</label>
 
-              <div className="flex items-center justify-center ">
+              <div className="flex items-center justify-center">
                 <input
                   type="number"
                   name="discount"
-                  className="w-full border border-gray-300 p-2 rounded-l-lg"
+                  className="w-full input-tag"
                   placeholder="Discount"
                   value={formData.discount || ""}
                   onChange={(e) =>
@@ -267,7 +267,7 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
               <div className="grid w-full mb-2 items-center gap-1.5">
                 <label className="text-sm text-gray-600 ">Barcode</label>
                 <input
-                  className="w-full border border-gray-300 p-2 rounded-l-lg"
+                  className="w-full input-tag"
                   type="text"
                   placeholder="Barcode"
                   value={formData.barcode}
@@ -283,12 +283,9 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
           </div>
           <div
             className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
-            style={{ height: "6vh" }}
+            style={{ height: "8vh" }}
           >
-            <button
-              type="submit"
-              className="w-full bg-purple-500 text-white px-5 py-3 text-sm text-gray-600 rounded-md"
-            >
+            <button type="submit" className="w-full btn-add">
               {service ? "Update" : "Add New"} Service
             </button>
           </div>

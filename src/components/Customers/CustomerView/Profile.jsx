@@ -81,11 +81,11 @@ const Profile = ({ customerData, refresh, expenseData }) => {
   }
 
   return (
-    <div className=" px-8 py-8">
+    <div className="main-container">
       {!UpdatedData.id ? (
         <div className="text-gray-500 text-center">Loading customer...</div>
       ) : (
-        <div className="bg-white shadow rounded-lg overflow-hidden">
+        <div className="container overflow-hidden">
           {progress > 0 && (
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
@@ -94,7 +94,7 @@ const Profile = ({ customerData, refresh, expenseData }) => {
               ></div>
             </div>
           )}
-          <div className="p-6">
+          <div className="px-5 pb-5">
             <div className="flex items-center space-x-6 mb-6">
               <div className="w-1/5">
                 {UpdatedData.profileImage ? (

@@ -344,7 +344,7 @@ function Expense() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="6" className="h-24 text-center py-4">
+                      <td colSpan="8" className="h-96 text-center py-4">
                         <div className="w-full flex justify-center">
                           <img
                             src={addItem}

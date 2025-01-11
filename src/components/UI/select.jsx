@@ -138,7 +138,7 @@ const SelectTrigger = React.forwardRef(
       className={cn(
         selectVariants({ color, size, radius, variant }),
         className,
-        " input-tag text-gray-600 rounded-md "
+        " input-tag text-gray-600 "
       )}
       {...props}
     >

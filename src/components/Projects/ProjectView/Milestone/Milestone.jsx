@@ -26,34 +26,32 @@ const Milestone = () => {
     const fetchMilestones = async () => {
       const milestonesRef = collection(db, `projects/${projectId}/milestone`);
       const snapshot = await getDocs(milestonesRef);
+      const tasksRef = collection(db, `projects/${projectId}/tasks`);
 
-      const milestonesData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const milestonesData = await Promise.all(
+        snapshot.docs.map(async (mileDoc) => {
+          const tasksQuery = query(
+            tasksRef,
+            where(
+              "milestoneRef",
+              "array-contains",
+              doc(db, `projects/${projectId}/milestone/${mileDoc.id}`)
+            )
+          );
 
-      setMilestones(milestonesData);
-      const tasksQueryPromises = milestonesData.map((milestone) => {
-        const milestoneDocRef = doc(
-          db,
-          `projects/${projectId}/milestone/${milestone.id}`
-        );
-        const tasksRef = collection(db, `projects/${projectId}/tasks`);
-        const tasksQuery = query(
-          tasksRef,
-          where("milestoneRef", "array-contains", milestoneDocRef)
-        );
-        return getDocs(tasksQuery);
-      });
-
-      const tasksSnapshots = await Promise.all(tasksQueryPromises);
-      const tasksData = tasksSnapshots.flatMap((snapshot) =>
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
+          const tasksGetDocs = await getDocs(tasksQuery);
+          const tasksData = tasksGetDocs.docs.map(
+            (taskDoc) => taskDoc.data().name
+          );
+          return {
+            id: mileDoc.id,
+            ...mileDoc.data(),
+            tasks: tasksData,
+          };
+        })
       );
-      setTasks(tasksData);
+      console.log("🚀 ~ fetchMilestones ~ milestonesData:", milestonesData);
+      setMilestones(milestonesData);
     };
     fetchMilestones();
   }, [projectId]);
@@ -112,7 +110,7 @@ const MilestoneCard = ({ milestone }) => {
         <div className="mt-2 space-y-2">
           {milestone.tasks && milestone.tasks.length > 0 ? (
             milestone.tasks.map((task, index) => (
-              <div key={index} className="bg-gray-100 p-2 rounded">
+              <div key={index} className=" bg-gray-100 p-2 rounded">
                 {task}
               </div>
             ))

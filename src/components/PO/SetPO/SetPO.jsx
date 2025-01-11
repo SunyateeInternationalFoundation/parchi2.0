@@ -4,6 +4,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  increment,
   query,
   Timestamp,
   updateDoc,
@@ -78,7 +79,7 @@ const SetPO = () => {
         setPrePoList(noList);
         setFormData((val) => ({
           ...val,
-          poNo: String(noList.length + 1).padStart(4, 0),
+          no: String(noList.length + 1).padStart(4, 0),
         }));
       }
     } catch (error) {
@@ -244,7 +245,7 @@ const SetPO = () => {
           continue;
         }
         await updateDoc(item.productRef, {
-          stock: item.quantity,
+          stock: increment(item.quantity),
         });
         let productPayloadLogs = {
           date: Timestamp.fromDate(new Date()),

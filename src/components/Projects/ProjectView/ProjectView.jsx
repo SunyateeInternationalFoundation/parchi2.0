@@ -152,7 +152,7 @@ function ProjectView({ projectDetails, refreshProject }) {
             {project?.name?.slice(0, 2)}
           </div>
           <div className="ps-3 w-full">
-            <div className="flex ">
+            <div className="flex items-center">
               <div className="text-xl font-semibold w-full">
                 <div className="w-full px-2 py-1 rounded">{project?.name}</div>
               </div>

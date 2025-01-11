@@ -9,6 +9,7 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { IoMdClose } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
@@ -247,33 +248,49 @@ const AddDesignationModal = ({ onClose, onAddDesignation }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-end">
-      <div className="bg-white w-full max-w-sm p-6 shadow-lg">
-        <h2 className="text-xl font-bold mb-4">Add Designation</h2>
-        <div className="mb-4">
-          <label htmlFor="designationName" className="block text-gray-700 mb-2">
+    <div
+      className="fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 opacity-100 transition-opacity"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white  pt-2 transform transition-transform translate-x-0"
+        style={{ maxHeight: "100vh", width: "500px" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div
+          className="flex justify-between items-center border-b px-5 py-3"
+          style={{ height: "6vh" }}
+        >
+          <h2 className="text-sm text-gray-600 ">Add Designation</h2>
+          <button
+            className=" text-2xl text-gray-800 hover:text-gray-900 cursor-pointer"
+            onClick={() => {
+              onClose();
+            }}
+          >
+            <IoMdClose size={24} />
+          </button>
+        </div>
+
+        <div className="p-5 space-y-1" style={{ height: "84vh" }}>
+          <label htmlFor="designationName" className="text-sm text-gray-600">
             Designation Name
           </label>
           <input
             id="designationName"
             type="text"
-            className="w-full p-2 border rounded"
+            className="w-full input-tag"
             value={designationName}
             onChange={(e) => setDesignationName(e.target.value)}
           />
         </div>
-        <div className="flex justify-between">
-          <button
-            onClick={onClose}
-            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
-          >
-            Cancel
-          </button>
+        <div
+          className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
+          style={{ height: "6vh" }}
+        >
           <button
             onClick={handleAddDesignation}
-            className={`${
-              isLoading ? "bg-blue-300" : "bg-blue-500"
-            } text-white px-4 py-2 rounded hover:bg-blue-600 transition`}
+            className="btn-add w-full"
             disabled={isLoading}
           >
             {isLoading ? "Adding..." : "Add Designation"}

@@ -1,10 +1,14 @@
 import { deleteDoc, doc, setDoc, Timestamp } from "firebase/firestore";
+import { CalendarIcon } from "lucide-react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { FaChevronRight } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { db } from "../../../firebase";
+import { cn, formatDate } from "../../../lib/utils";
+import { Calendar } from "../../UI/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../../UI/popover";
 import PaymentsDeductions from "./PaymentsDeductions";
 
 function AddAttendanceSidebar({
@@ -157,109 +161,163 @@ function AddAttendanceSidebar({
       onClick={onClose}
     >
       <div
-        className={`bg-white  p-3 pt-2 transform transition-transform min-h-screen ${
+        className={`bg-white  pt-2 transform transition-transform  ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ width: "28vw" }}
+        style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between">
+        <div
+          className="flex justify-between items-center border-b px-5 py-3"
+          style={{ height: "6vh" }}
+        >
           <h2 className="font-bold text-xl mb-4"> Mark Attendance</h2>
           <button className="text-2xl mb-4" onClick={onClose}>
             <IoMdClose size={24} />
           </button>
         </div>
-        <div>
-          <div>
-            <label className="text-sm block font-semibold mt-2">Date</label>
-            <input
-              type="date"
-              className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
-              required
-              value={DateFormate(attendanceForm.date)}
-              max={today}
-              onChange={(e) =>
-                setAttendanceForm((val) => ({
-                  ...val,
-                  date: Timestamp.fromDate(new Date(e.target.value)),
-                }))
-              }
-              onKeyDown={(e) => e.preventDefault()}
-            />
-          </div>
-          <div className="overflow-y-auto" style={{ height: "70vh" }}>
-            {staffData.length > 0 ? (
-              staffData.map((staff) => (
-                <div key={staff.id} className="border-b-2 py-2">
-                  <div
-                    className="text-sm block font-semibold mt-2 p-2 flex justify-between items-center cursor-pointer"
-                    onClick={() => {
-                      const staffAttendanceData = getAttendanceStaffData(
-                        staff.id
-                      );
-                      if (staffAttendanceData?.status !== "present") {
-                        alert("select Attendance");
-                        return;
-                      }
-                      setActivePaymentDeductionsStaff({
-                        name: staff.name,
-                        isDailyWages: staff.isDailyWages,
-                        ...staffAttendanceData,
-                      });
-                    }}
-                  >
-                    {staff.name} <FaChevronRight />
-                  </div>
-                  <div className="flex">
-                    {["present", "absent", "leave", "holiday"].map(
-                      (attendance) => (
-                        <div key={attendance} className="flex-grow text-center">
-                          <input
-                            type="radio"
-                            name={staff.id}
-                            id={attendance + staff.id}
-                            value={attendance}
-                            onChange={(e) =>
-                              onUpdatedStaffAttendance(e.target.value, staff)
-                            }
-                            className="hidden"
-                          />
-                          <label
-                            htmlFor={attendance + staff.id}
-                            className={`inline-block px-5 py-2 cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow-md ${
-                              getAttendanceStaffData(staff.id)?.status ===
-                              attendance
-                                ? " border-blue-700 text-white" +
-                                  ((attendance === "present" &&
-                                    " bg-green-700 ") ||
-                                    (attendance === "absent" &&
-                                      " bg-red-700 ") ||
-                                    (attendance === "leave" &&
-                                      " bg-gray-500 ") ||
-                                    (attendance === "holiday" &&
-                                      " bg-purple-800 "))
-                                : " bg-white text-blue-900 border-blue-700"
-                            }`}
-                          >
-                            {attendance}
-                          </label>
-                        </div>
-                      )
+        <form className="space-y-2" onSubmit={AddAttendance}>
+          <div
+            className="space-y-2 px-5 overflow-y-auto"
+            style={{ height: "84vh" }}
+          >
+            <div>
+              <label className="text-sm block font-semibold mt-2">Date</label>
+              <input
+                type="date"
+                className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
+                required
+                value={DateFormate()}
+                onChange={(e) =>
+                  setAttendanceForm((val) => ({
+                    ...val,
+                    date: Timestamp.fromDate(new Date(e.target.value)),
+                  }))
+                }
+                onKeyDown={(e) => e.preventDefault()}
+              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    className={cn(
+                      "w-full flex justify-between input-tag ",
+                      !attendanceForm.date?.seconds && "text-muted-foreground"
                     )}
+                  >
+                    {attendanceForm.date?.seconds ? (
+                      formatDate(
+                        new Date(
+                          attendanceForm.date?.seconds * 1000 +
+                            attendanceForm.date?.nanoseconds / 1000000
+                        ),
+                        "PPP"
+                      )
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                    <CalendarIcon className="h-4 w-4 " />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="">
+                  <Calendar
+                    mode="single"
+                    selected={
+                      new Date(
+                        attendanceForm.date?.seconds * 1000 +
+                          attendanceForm.date?.nanoseconds / 1000000
+                      )
+                    }
+                    onSelect={(val) => {
+                      setAttendanceForm((pre) => ({
+                        ...pre,
+                        date: Timestamp.fromDate(val),
+                      }));
+                    }}
+                    initialFocus
+                    required
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="overflow-y-auto" style={{ height: "70vh" }}>
+              {staffData.length > 0 ? (
+                staffData.map((staff) => (
+                  <div key={staff.id} className="border-b-2 py-2">
+                    <div
+                      className="text-sm block font-semibold mt-2 p-2 flex justify-between items-center cursor-pointer"
+                      onClick={() => {
+                        const staffAttendanceData = getAttendanceStaffData(
+                          staff.id
+                        );
+                        if (staffAttendanceData?.status !== "present") {
+                          alert("select Attendance");
+                          return;
+                        }
+                        setActivePaymentDeductionsStaff({
+                          name: staff.name,
+                          isDailyWages: staff.isDailyWages,
+                          ...staffAttendanceData,
+                        });
+                      }}
+                    >
+                      {staff.name} <FaChevronRight />
+                    </div>
+                    <div className="flex">
+                      {["present", "absent", "leave", "holiday"].map(
+                        (attendance) => (
+                          <div
+                            key={attendance}
+                            className="flex-grow text-center"
+                          >
+                            <input
+                              type="radio"
+                              name={staff.id}
+                              id={attendance + staff.id}
+                              value={attendance}
+                              onChange={(e) =>
+                                onUpdatedStaffAttendance(e.target.value, staff)
+                              }
+                              className="hidden"
+                            />
+                            <label
+                              htmlFor={attendance + staff.id}
+                              className={`inline-block px-5 py-2 cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow ${
+                                getAttendanceStaffData(staff.id)?.status ===
+                                attendance
+                                  ? " border text-white" +
+                                    ((attendance === "present" &&
+                                      " bg-green-700 ") ||
+                                      (attendance === "absent" &&
+                                        " bg-red-700 ") ||
+                                      (attendance === "leave" &&
+                                        " bg-gray-500 ") ||
+                                      (attendance === "holiday" &&
+                                        " bg-purple-800 "))
+                                  : " bg-white text-gray-600 border "
+                              }`}
+                            >
+                              {attendance}
+                            </label>
+                          </div>
+                        )
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))
-            ) : (
-              <div>No Staff Found</div>
-            )}
+                ))
+              ) : (
+                <div>No Staff Found</div>
+              )}
+            </div>
           </div>
-        </div>
-        <button
-          className="mt-4 bg-blue-500 text-white py-2 px-4 rounded w-full"
-          onClick={AddAttendance}
-        >
-          Mark Attendance
-        </button>
+          <div
+            className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
+            style={{ height: "8vh" }}
+          >
+            <button type="submit" className="w-full btn-add">
+              Mark Attendance
+            </button>
+          </div>
+        </form>
       </div>
       <div>
         <PaymentsDeductions

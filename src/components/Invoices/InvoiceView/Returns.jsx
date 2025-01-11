@@ -144,12 +144,9 @@ function Returns({ invoice }) {
   }
 
   return (
-    <div className="w-full ">
-      <div
-        className="pb-8 pt-2 bg-gray-100 overflow-y-auto"
-        style={{ height: "76vh" }}
-      >
-        <div className="text-end pb-2 space-x-3 space-y-3">
+    <div className="main-container " style={{ height: "82vh" }}>
+      <div className="container" style={{ height: "72vh" }}>
+        <div className="text-end pb-2 space-x-3 px-5">
           <button
             className="px-4 py-2 text-gray-600  rounded-md border hover:bg-black hover:text-white"
             onClick={onSubmit}
@@ -174,9 +171,9 @@ function Returns({ invoice }) {
           </button>
         </div>
 
-        <div className="bg-white mt-3 rounded-lg shadow-md overflow-hidden">
-          <table className="min-w-full text-center text-gray-500 font-semibold">
-            <thead className="border-b bg-gray-50">
+        <div className="overflow-y-auto" style={{ height: "62vh " }}>
+          <table className="w-full text-center text-gray-500 font-semibold">
+            <thead className="border-b ">
               <tr>
                 <th className="px-1 py-4">
                   <input

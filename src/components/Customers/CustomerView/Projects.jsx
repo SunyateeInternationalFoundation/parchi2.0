@@ -42,10 +42,7 @@ function Projects({ projectsData }) {
   }
 
   return (
-    <div
-      className="w-full px-8 py-8 bg-gray-100 overflow-y-auto"
-      style={{ height: "80vh" }}
-    >
+    <div className="main-container" style={{ height: "80vh" }}>
       <div className="py-5">
         <nav className="flex mb-4 bg-white rounded-lg shadow items-center py-3 px-5">
           <div className="space-x-4 w-full flex items-center">
@@ -74,7 +71,7 @@ function Projects({ projectsData }) {
             <div className="grid grid-cols-3 gap-5">
               {modifiedProjectsList.map((item) => (
                 <div
-                  className={` bg-white border cursor-pointer rounded-lg h-56 hover:shadow-lg `}
+                  className={` bg-white border cursor-pointer rounded-lg shadow h-56 hover:shadow-md `}
                   key={item.id}
                 >
                   <div className="p-3 h-40">

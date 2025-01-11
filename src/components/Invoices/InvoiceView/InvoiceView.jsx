@@ -208,7 +208,7 @@ function InvoiceView() {
         </div>
       </header>
 
-      <div className="w-full px-5">
+      <div className="w-full ">
         {activeTab === "Invoice" && (
           <div>
             <Invoice

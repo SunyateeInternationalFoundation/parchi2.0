@@ -1,38 +1,54 @@
+import FormatTimestamp from "../../constants/FormatTimestamp";
+
 const Files = ({ files }) => {
   return (
-    <div
-      className="bg-white-500  p-4 overflow-y-auto"
-      style={{ height: "92vh" }}
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex space-x-3">
-          <h1 className="text-xl font-bold">Files</h1>
+    <div className="main-container" style={{ height: "82vh" }}>
+      <div className="container">
+        <div className=" rounded-lg overflow-y-auto" style={{ height: "80vh" }}>
+          <table className="w-full border-collapse text-start">
+            <thead className=" bg-white">
+              <tr className="border-b">
+                <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
+                  File
+                </td>
+                <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
+                  Name
+                </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                  Date
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              {files.length > 0 ? (
+                files.map((file) => (
+                  <tr
+                    key={file.id}
+                    className="border-b border-gray-200 text-center cursor-pointer"
+                  >
+                    <td className="px-8 py-3 text-start flex">
+                      <img
+                        src={file.fileURL}
+                        alt={file.name}
+                        className="w-16 h-16 rounded-md object-cover"
+                      />
+                    </td>
+                    <td className="px-5 py-3 text-start">{file.name}</td>
+                    <td className="px-5 py-3 text-start">
+                      <FormatTimestamp timestamp={file.createdAt} />
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3" className="h-24 text-center py-4 ">
+                    No file Found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-      </div>
-
-      <div className="rounded-lg p-6 space-y-4">
-        {files.map((file) => {
-          const createdAt = file.createdAt?.toDate().toLocaleDateString();
-
-          return (
-            <div
-              key={file.id}
-              className="flex items-center justify-between bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out"
-            >
-              <div className="flex items-center space-x-4">
-                <img
-                  src={file.fileURL}
-                  alt={file.name}
-                  className="w-16 h-16 rounded-md object-cover"
-                />
-                <div>
-                  <h2 className="text-gray-800 font-semibold">{file.name}</h2>
-                  <p className="text-gray-600 text-sm">{createdAt}</p>
-                </div>
-              </div>
-            </div>
-          );
-        })}
       </div>
     </div>
   );

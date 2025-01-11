@@ -140,7 +140,7 @@ const Approval = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="h-24 text-center py-4 ">
+                  <td colSpan="7" className="h-24 text-center py-4 ">
                     No Item Found
                   </td>
                 </tr>

@@ -49,7 +49,7 @@ function VendorBills({ purchasesData }) {
       className="w-full bg-gray-100 overflow-y-auto"
       style={{ height: "84vh" }}
     >
-      <div className=" px-8 py-4 space-x-3 border-b mb-3">
+      <div className=" px-8 py-4 space-x-3 border-b mb-3 bg-white">
         {Object.keys(tabs).map((ele) => (
           <button
             className={

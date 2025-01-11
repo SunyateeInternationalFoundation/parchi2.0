@@ -5,23 +5,22 @@ import {
   getDocs,
   setDoc,
   Timestamp,
-  updateDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { db, storage } from "../../firebase";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../UI/select";
+} from "../components/UI/select";
+import { db, storage } from "../firebase";
 
-function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
+function CreateProduct({ isOpen, onClose, setProductsData, from }) {
   const userDetails = useSelector((state) => state.users);
   const [productImage, setProductImage] = useState("");
   const [categories, setCategories] = useState([]);
@@ -84,13 +83,7 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
   useEffect(() => {
     fetchCategories();
     fetchWarehouses();
-    if (onProductUpdated?.id) {
-      setFormData({
-        ...onProductUpdated,
-      });
-      setProductImage(onProductUpdated.imageUrl || "");
-    }
-  }, [onProductUpdated, isOpen]);
+  }, []);
 
   function ResetForm() {
     setFormData({
@@ -132,93 +125,103 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
   async function onCreateProduct(e) {
     e.preventDefault();
     try {
-      if (onProductUpdated?.id) {
+      let productImageUrl = "";
+      if (productImage) {
+        productImageUrl = await handleFileChange(productImage);
+      }
+      const companyRef = doc(
+        db,
+        "companies",
+        userDetails.companies[userDetails.selectedCompanyIndex].companyId
+      );
+      const userRef = doc(db, "users", userDetails.userId);
+
+      const payload = {
+        ...formData,
+        imageUrl: productImageUrl,
+        createdAt: Timestamp.fromDate(new Date()),
+        companyRef,
+        userRef,
+      };
+      let productRef = "";
+      if (formData.barcode) {
         const productDocRef = doc(
           db,
           "companies",
           companyDetails.companyId,
           "products",
-          onProductUpdated.id
+          formData.barcode
         );
-
-        const productImageUrl = productImage
-          ? await handleFileChange(productImage)
-          : formData.imageUrl;
-        const { id, includingTax, unitPrice, taxAmount, ...rest } = formData;
-        const payload = {
-          ...rest,
-          imageUrl: productImageUrl,
-        };
-        await updateDoc(productDocRef, payload); // Update product
-        const productPayloadLogs = {
-          date: new Date(),
-          status: "update",
-          quantity: formData.stock,
-          from: "inventory",
-          ref: productDocRef,
-        };
-        await addDoc(collection(productDocRef, "logs"), productPayloadLogs);
-        alert("Product successfully updated.");
+        productRef = await setDoc(productDocRef, payload);
       } else {
-        let productImageUrl = "";
-        if (productImage) {
-          productImageUrl = await handleFileChange(productImage);
-        }
-        const companyRef = doc(
+        // productDocRef = collection(db, "products");
+        const productDocRef = collection(
           db,
           "companies",
-          userDetails.companies[userDetails.selectedCompanyIndex].companyId
+          companyDetails.companyId,
+          "products"
         );
-        const userRef = doc(db, "users", userDetails.userId);
-
-        const payload = {
-          ...formData,
-          imageUrl: productImageUrl,
-          createdAt: Timestamp.fromDate(new Date()),
-          companyRef,
-          userRef,
-        };
-        let productRef = "";
-        if (formData.barcode) {
-          const productDocRef = doc(
-            db,
-            "companies",
-            companyDetails.companyId,
-            "products",
-            formData.barcode
-          );
-          productRef = await setDoc(productDocRef, payload);
-        } else {
-          // productDocRef = collection(db, "products");
-          const productDocRef = collection(
-            db,
-            "companies",
-            companyDetails.companyId,
-            "products"
-          );
-          productRef = await addDoc(productDocRef, payload);
-        }
-        const productPayloadLogs = {
-          date: payload.createdAt,
-          status: "add",
-          quantity: formData.stock,
-          from: "inventory",
-          ref: productRef,
-        };
-        await addDoc(
-          collection(
-            db,
-            "companies",
-            companyDetails.companyId,
-            "products",
-            productRef.id,
-            "logs"
-          ),
-          productPayloadLogs
-        );
-        alert("Product successfully created.");
+        productRef = await addDoc(productDocRef, payload);
       }
-      onProductAdded();
+      let discount = +payload.discount || 0;
+
+      if (payload.discountType) {
+        discount = (+payload.sellingPrice / 100) * payload.discount;
+      }
+      const netAmount = +payload.sellingPrice - discount;
+      const taxRate = payload.tax || 0;
+
+      const sgst = taxRate / 2;
+      const cgst = taxRate / 2;
+      const taxAmount = netAmount * (taxRate / 100);
+      const sgstAmount = netAmount * (sgst / 100);
+      const cgstAmount = netAmount * (cgst / 100);
+      const totalAmount = payload.actionQty * netAmount;
+      const newProduct = {
+        id: productRef.id,
+        category: payload.category,
+        description: payload.description ?? "",
+        name: payload.name ?? "N/A",
+        quantity: payload.stock ?? 0,
+        sellingPrice: payload.sellingPrice ?? 0,
+        sellingPriceTaxType: payload.sellingPriceTaxType,
+        purchasePrice: payload.purchasePrice ?? 0,
+        purchasePriceTaxType: payload.purchasePriceTaxType,
+        discount: payload.discount ?? 0,
+        discountType: payload.discountType,
+        isAddDescription: false,
+        actionQty: 0,
+        tax: payload.tax,
+        netAmount: netAmount,
+        sgst,
+        cgst,
+        sgstAmount,
+        cgstAmount,
+        taxAmount,
+        totalAmount,
+      };
+
+      setProductsData((val) => [...val, newProduct]);
+
+      const productPayloadLogs = {
+        date: payload.createdAt,
+        status: "add",
+        quantity: formData.stock,
+        from,
+        ref: productRef,
+      };
+      await addDoc(
+        collection(
+          db,
+          "companies",
+          companyDetails.companyId,
+          "products",
+          productRef.id,
+          "logs"
+        ),
+        productPayloadLogs
+      );
+      alert("Product successfully created.");
 
       ResetForm();
       onClose();
@@ -226,7 +229,6 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
       console.log("🚀 ~ onCreateProduct ~ error:", error);
     }
   }
-
   return (
     <div
       className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
@@ -245,9 +247,7 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center border-b px-5 py-3">
-          <h2 className=" text-sm text-gray-600 ">
-            {onProductUpdated ? "Edit Product" : "New Product"}
-          </h2>
+          <h2 className=" text-sm text-gray-600 ">New Product</h2>
           <button
             onClick={() => {
               onClose();
@@ -453,7 +453,6 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
               <input
                 type="text"
                 value={formData.barcode}
-                readOnly={onProductUpdated?.barcode}
                 className="w-full input-tag"
                 onChange={(e) =>
                   setFormData((val) => ({
@@ -547,7 +546,7 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
           </div>
           <div className="w-full border-t bg-white sticky bottom-0 px-5 py-3">
             <button type="submit" className="w-full btn-add">
-              {onProductUpdated ? "Update " : "Create "}Product
+              Create Product
             </button>
           </div>
         </form>
@@ -558,8 +557,7 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
 CreateProduct.propTypes = {
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
-  onProductAdded: PropTypes.func,
-  onProductUpdated: PropTypes.object,
+  setProductsData: PropTypes.func,
 };
 
 export default CreateProduct;

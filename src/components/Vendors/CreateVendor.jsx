@@ -146,7 +146,7 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded, vendorData }) => {
           >
             <div className="space-y-1">
               <div className="grid w-full mb-2 items-center gap-1.5">
-                <div className=" font-semibold">Image</div>
+                <div className=" text-sm text-gray-600">Image</div>
                 <label
                   htmlFor="file"
                   className="cursor-pointer p-3 rounded-md border-2 border-dashed border shadow-[0_0_200px_-50px_rgba(0,0,0,0.72)]"
@@ -176,55 +176,57 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded, vendorData }) => {
               </div>
             </div>
             <div className="space-y-1">
-              <label className=" font-semibold">*Name</label>
+              <label className=" text-sm text-gray-600">
+                Name<span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-md"
+                className="input-tag w-full"
                 placeholder="Name"
                 required
               />
             </div>
             <div className="space-y-1">
-              <label className=" font-semibold">*Phone</label>
+              <label className=" text-sm  text-gray-600">
+                Phone<span className="text-red-500">*</span>
+              </label>
               <div className="flex items-center">
-                <span className="px-2 py-2 border border-gray-300 rounded-l-md">
-                  +91
-                </span>
+                <span className="border px-5 py-3  rounded-l-md">+91</span>
                 <input
                   type="text"
                   maxLength="10"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 p-2 rounded-r-md"
+                  className="border px-5 py-3 w-full rounded-r-md"
                   placeholder="Phone"
                   required
                 />
               </div>
             </div>
             <div className="space-y-1">
-              <label className=" font-semibold">Email ID</label>
+              <label className=" text-sm text-gray-600">Email ID</label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-md"
+                className="input-tag w-full"
                 placeholder="Email ID"
               />
             </div>
 
             <div className="space-y-1">
-              <label className=" font-semibold">Address</label>
+              <label className=" text-sm text-gray-600">Address</label>
               <input
                 type="text"
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-md"
+                className="input-tag w-full"
                 placeholder="Street Address"
               />
             </div>
@@ -235,7 +237,7 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded, vendorData }) => {
                 value={formData.zipCode}
                 onChange={handleChange}
                 placeholder="Pin Code"
-                className="w-1/2 border border-gray-300 p-2 rounded-md"
+                className="w-1/2 input-tag w-full"
               />
               <input
                 type="text"
@@ -243,29 +245,29 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded, vendorData }) => {
                 value={formData.city}
                 onChange={handleChange}
                 placeholder="City"
-                className="w-1/2 border border-gray-300 p-2 rounded-md"
+                className="w-1/2 input-tag w-full"
               />
             </div>
 
             <div className="space-y-1">
-              <label className=" font-semibold">GST Number</label>
+              <label className=" text-sm text-gray-600">GST Number</label>
               <input
                 type="text"
                 name="gstNumber"
                 value={formData.gstNumber}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-md"
+                className="input-tag w-full"
                 placeholder="GST Number"
               />
             </div>
             <div className="space-y-1">
-              <label className=" font-semibold">PAN Number</label>
+              <label className=" text-sm text-gray-600">PAN Number</label>
               <input
                 type="text"
                 name="panNumber"
                 value={formData.panNumber}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-md"
+                className="input-tag w-full"
                 placeholder="PAN Number"
               />
             </div>
@@ -274,10 +276,7 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded, vendorData }) => {
             className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
             style={{ height: "6vh" }}
           >
-            <button
-              type="submit"
-              className="w-full bg-purple-500 text-white px-5 py-3 text-sm text-gray-600 rounded-md"
-            >
+            <button type="submit" className="w-full btn-add">
               {vendorData?.id ? "Edit " : "Create "}
               Vendor
             </button>

@@ -287,10 +287,7 @@ function CreateProject() {
         )}
         <div className="mt-6 flex justify-end">
           <div className="flex gap-2">
-            <button
-              className="bg-blue-500 text-white py-1 px-4 rounded-lg flex items-center gap-1"
-              onClick={handleSubmit}
-            >
+            <button className="btn-add" onClick={handleSubmit}>
               <span className="text-lg">+</span> {id ? "Edit" : "Create"}{" "}
               Project
             </button>

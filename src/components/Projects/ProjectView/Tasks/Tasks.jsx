@@ -335,7 +335,7 @@ function Tasks() {
                       <td className="px-8 py-3 text-start">{task.name}</td>
 
                       <td className="px-5 py-3 text-start">
-                        <FormatTimestamp timestamp={task.endDate} />
+                        <FormatTimestamp timestamp={task.startDate} />
                       </td>
 
                       <td className="px-5 py-3 text-start">{task.status}</td>

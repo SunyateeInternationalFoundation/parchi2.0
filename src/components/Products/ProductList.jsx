@@ -298,7 +298,10 @@ const ProductList = () => {
       </div>
       <CreateProduct
         isOpen={isSideBarOpen}
-        onClose={() => setIsSideBarOpen(false)}
+        onClose={() => {
+          setIsSideBarOpen(false);
+          setEditingProduct(null);
+        }}
         onProductAdded={fetchProducts}
         onProductUpdated={editingProduct}
       />

@@ -251,8 +251,8 @@ const Files = () => {
                 })
               ) : (
                 <tr>
-                  <td colSpan="3" className="h-24 text-center py-4 ">
-                    No Item Found
+                  <td colSpan="5" className="h-24 text-center py-4 ">
+                    No file Found
                   </td>
                 </tr>
               )}

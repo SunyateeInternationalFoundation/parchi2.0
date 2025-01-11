@@ -191,7 +191,7 @@ const InvoiceList = () => {
                 className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
                 to="create-invoice"
               >
-                Create Invoice
+                + Create Invoice
               </Link>
             )}
           </div>

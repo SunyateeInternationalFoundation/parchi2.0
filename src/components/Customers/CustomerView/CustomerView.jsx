@@ -68,11 +68,12 @@ function CustomerView() {
     try {
       const sales = [
         "invoices",
+        "pos",
+        "services",
         "quotations",
         "proFormaInvoice",
         "creditNote",
         "deliveryChallan",
-        "pos",
       ];
       const saleNo = {
         invoices: "invoiceNo",
@@ -81,8 +82,10 @@ function CustomerView() {
         creditNote: "creditNoteNo",
         deliveryChallan: "deliveryChallanNo",
         pos: "posNo",
+        services: "serviceNo",
       };
       let salesData = {};
+      const amountCountIn = ["invoices", "pos", "services"];
       let expenseAmount = expenseData;
       for (let sale of sales) {
         const invoiceRef = collection(db, `/companies/${companyId}/${sale}`);
@@ -93,7 +96,7 @@ function CustomerView() {
         const querySnapshot = await getDocs(q);
         const data = querySnapshot.docs.map((doc) => {
           const data = doc.data();
-          if (sale == "invoices" || sale == "pos") {
+          if (amountCountIn.includes(sale)) {
             expenseAmount.income += +data.total;
           }
           return {
