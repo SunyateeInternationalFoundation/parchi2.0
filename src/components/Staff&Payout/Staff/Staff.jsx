@@ -158,7 +158,12 @@ function Staff() {
                         <span>{staff.name}</span>
                       </td>
                       <td className="px-5 py-3">{staff.phone}</td>
-                      <td className="px-5 py-3">₹{staff.paymentDetails}</td>
+                      <td className="px-5 py-3">
+                        ₹{staff.paymentDetails}
+                        <span className="text-xs text-gray-600">
+                          {staff.isDailyWages ? " (perDay)" : " (perMonth)"}
+                        </span>
+                      </td>
                       <td className="px-5 py-3">
                         <div
                           className="text-red-500 flex items-center justify-center"

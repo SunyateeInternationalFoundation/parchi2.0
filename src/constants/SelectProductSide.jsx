@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
+import CreateProduct from "./CreateProduct";
 
 function SelectProductSide({
   onClose,
@@ -10,10 +11,13 @@ function SelectProductSide({
   totalAmount,
   customActionQty,
   categories,
+  setProductsData,
+  from,
 }) {
   const [Products, setProducts] = useState(productList);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
   const filteredProducts = Products.filter(
     (ele) =>
@@ -24,7 +28,6 @@ function SelectProductSide({
   useEffect(() => {
     setProducts(productList);
   }, [productList]);
-
   return (
     <div
       className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
@@ -33,19 +36,22 @@ function SelectProductSide({
       onClick={onClose}
     >
       <div
-        className={`bg-white w-1/3 p-3 pt-2 transform transition-transform overflow-y-auto ${
+        className={`bg-white  pt-2 transform transition-transform overflow-y-auto ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ maxHeight: "100vh" }}
+        style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between">
-          <h2 className="font-bold text-xl mb-4"> Select Products</h2>
-          <button className="text-2xl mb-4" onClick={onClose}>
+        <div className="flex justify-between items-center border-b px-5 py-3">
+          <h2 className=" text-sm text-gray-600 ">Select Products</h2>
+          <button
+            className=" text-2xl text-gray-800 hover:text-gray-900 cursor-pointer"
+            onClick={onClose}
+          >
             <IoMdClose size={24} />
           </button>
         </div>
-        <div className="flex w-100 m-2">
+        <div className="flex w-100 m-2 px-3">
           <select
             className="w-1/4 rounded-s-md p-2 border"
             onChange={(e) => setSelectedCategory(e.target.value)}
@@ -57,7 +63,7 @@ function SelectProductSide({
               </option>
             ))}
           </select>
-          <div className="border rounded-e-md p-2 w-3/4">
+          <div className="border p-2 w-3/4">
             <input
               type="text"
               placeholder="Search products..."
@@ -65,9 +71,15 @@ function SelectProductSide({
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+          <button
+            className="w-20 rounded-e-md p-2 border"
+            onClick={() => setIsSideBarOpen(true)}
+          >
+            + New
+          </button>
         </div>
 
-        <div className="overflow-y-auto" style={{ height: "68vh" }}>
+        <div className="overflow-y-auto px-5" style={{ height: "72vh" }}>
           {filteredProducts.map((product) => (
             <div
               key={product.id}
@@ -123,14 +135,18 @@ function SelectProductSide({
             Total: ₹ {totalAmount.toFixed(2)}
           </h3>
         </div>
-
-        <button
-          className="mt-4 bg-green-500 text-white py-2 px-4 rounded w-full"
-          onClick={onClose}
-        >
-          Continue
-        </button>
+        <div className="w-full border-t bg-white sticky bottom-0 px-5 py-3">
+          <button className="btn-add w-full" onClick={onClose}>
+            Continue
+          </button>
+        </div>
       </div>
+      <CreateProduct
+        isOpen={isSideBarOpen}
+        onClose={() => setIsSideBarOpen(false)}
+        setProductsData={setProductsData}
+        from={from}
+      />
     </div>
   );
 }

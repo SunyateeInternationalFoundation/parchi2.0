@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 
 function FormatTimestamp({ timestamp }) {
-  if (!timestamp) {
+  if (!timestamp?.seconds) {
     return;
   }
   const milliseconds =

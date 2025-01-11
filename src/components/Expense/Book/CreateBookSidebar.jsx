@@ -33,7 +33,8 @@ function CreateBookSidebar({ onClose, isOpen, refresh }) {
       createdAt: "",
     });
   }
-  async function onCreateAccount() {
+  async function onCreateAccount(e) {
+    e.preventDefault();
     try {
       const payload = {
         ...formData,
@@ -207,10 +208,7 @@ function CreateBookSidebar({ onClose, isOpen, refresh }) {
             className="w-full border-t bg-white sticky bottom-0 px-5 py-4"
             style={{ height: "6vh" }}
           >
-            <button
-              type="submit"
-              className="w-full bg-purple-500 text-white px-5 py-3 text-sm text-gray-600 rounded-md"
-            >
+            <button type="submit" className="w-full btn-add">
               Add Account
             </button>
           </div>

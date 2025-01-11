@@ -285,264 +285,270 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
   ];
 
   return (
-    <div className="bg-white mt-3 rounded-lg shadow-md overflow-hidden">
-      <div className=" flex justify-between bg-white mt-3 border-b rounded-t-lg px-5 py-4">
-        <div className="space-x-4 flex ">
-          <button
-            className={
-              "px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white"
-            }
-            onClick={() => setIsInvoiceOpen(true)}
-          >
-            <IoDocumentTextOutline /> &nbsp; View
-          </button>
-          {(userDetails.selectedDashboard === "" || role?.edit) && (
+    <div className="px-8 py-8  bg-gray-100">
+      <div className="bg-white  rounded-lg shadow-md overflow-hidden ">
+        <div className=" flex justify-between bg-white mt-3 border-b rounded-t-lg px-5 py-4">
+          <div className="space-x-4 flex ">
             <button
               className={
                 "px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white"
               }
-              onClick={() => navigate("edit-invoice")}
+              onClick={() => setIsInvoiceOpen(true)}
             >
-              <TbEdit /> &nbsp; Edit
+              <IoDocumentTextOutline /> &nbsp; View
             </button>
-          )}
-          <button
-            className={
-              "px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white"
-            }
-            onClick={handleDownloadPdf}
-          >
-            <IoDownloadOutline /> &nbsp; Save As PDF
-          </button>
-          <button
-            className="px-4 py-1 text-gray-600  rounded-md flex items-center  border hover:bg-black hover:text-white"
-            onClick={handleWhatsAppShare}
-          >
-            <FaWhatsapp /> &nbsp; Share on WhatsApp
-          </button>
-          <button
-            className="px-4 py-1 text-gray-600 rounded-md flex items-center  border hover:bg-black hover:text-white"
-            onClick={handleEmailShare}
-          >
-            <MdOutlineMarkEmailRead /> &nbsp; Share via Email
-          </button>
-        </div>
-        <div className="flex items-center">
-          {invoice.paymentStatus !== "Paid" && (
-            <div className="text-end">
-              {(userDetails.selectedDashboard === "" || role?.delete) && (
-                <button
-                  className={
-                    "px-4 py-1 text-red-700 flex items-center border rounded-md hover:bg-red-700 hover:text-white"
-                  }
-                  onClick={handleDelete}
-                >
-                  <LiaTrashAltSolid />
-                  &nbsp; Delete
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="overflow-y-auto px-6" style={{ height: "70vh" }}>
-        <div className="p-5 bg-white rounded-lg">
-          <div className="flex gap-6 flex-col md:flex-row pt-8">
-            <div className="flex-1">
-              <span className="text-3xl font-bold text-primary-600">
-                {invoice.createdBy?.name}
-              </span>
-              <div className="mt-5">
-                <div className="text-lg font-semibold text-gray-900">
-                  Billing To:
-                </div>
-                <div className="text-lg  text-gray-800 mt-1">
-                  {invoice.userTo?.name}
-                </div>
-                <div className=" text-gray-600 mt-2">
-                  {invoice.userTo?.address} <br />
-                  {invoice.userTo?.city} <br />
-                  {invoice.userTo?.zipCode} <br />
-                </div>
-              </div>
-            </div>
-            <div className="flex-none md:text-end">
-              <div className="text-4xl font-semibold text-gray-900">
-                Invoice #
-              </div>
-              <div className="mt-1.5 text-xl  text-gray-600">
-                {invoice.prefix}-{invoice.no}
-              </div>
-              <div className="mt-4  text-gray-600">
-                {invoice.createdBy?.name} <br />
-                {invoice.createdBy?.address} <br />
-                {invoice.createdBy?.city} <br />
-                {invoice.createdBy?.zipCode} <br />
-              </div>
-              <div className="mt-8">
-                <div className="mb-2.5">
-                  <span className="mr-12  font-semibold text-gray-900">
-                    Invoice Date:
-                  </span>
-                  <span className="  text-gray-600">
-                    {DateFormate(invoice?.date)}
-                  </span>
-                </div>
-                <div>
-                  <span className="mr-12  font-semibold text-gray-900">
-                    Due Date:
-                  </span>
-                  <span className="  text-gray-600">
-                    {DateFormate(invoice?.dueDate)}
-                  </span>
-                </div>
-              </div>
-            </div>
+            {(userDetails.selectedDashboard === "" || role?.edit) && (
+              <button
+                className={
+                  "px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white"
+                }
+                onClick={() => navigate("edit-invoice")}
+              >
+                <TbEdit /> &nbsp; Edit
+              </button>
+            )}
+            <button
+              className={
+                "px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white"
+              }
+              onClick={handleDownloadPdf}
+            >
+              <IoDownloadOutline /> &nbsp; Save As PDF
+            </button>
+            <button
+              className="px-4 py-1 text-gray-600  rounded-md flex items-center  border hover:bg-black hover:text-white"
+              onClick={handleWhatsAppShare}
+            >
+              <FaWhatsapp /> &nbsp; Share on WhatsApp
+            </button>
+            <button
+              className="px-4 py-1 text-gray-600 rounded-md flex items-center  border hover:bg-black hover:text-white"
+              onClick={handleEmailShare}
+            >
+              <MdOutlineMarkEmailRead /> &nbsp; Share via Email
+            </button>
           </div>
-          <div className="mt-6 border-2  rounded-lg">
-            <table className="w-full ">
-              <thead>
-                <tr className="border-b-2 [&_th:last-child]:text-end">
-                  {columns.map((column) => (
-                    <th
-                      key={`invoice-table-${column.id}`}
-                      className="text-start p-3 "
-                    >
-                      {column.label}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="[&_tr:last-child]:border-1 ">
-                {invoice?.products?.length > 0 &&
-                  invoice?.products.map((item) => (
-                    <tr
-                      key={`invoice-description-${item.productRef.id}`}
-                      className="border-b-2 p-3 [&_td:last-child]:text-end"
-                    >
-                      <td className="  text-gray-600 max-w-[200px] truncate p-3">
-                        {item.name}
-                      </td>
-                      <td className="  text-gray-600 p-3">
-                        {item.quantity} pcs
-                      </td>
-                      <td className="  text-gray-600 whitespace-nowrap p-3">
-                        {item.discount}
-                      </td>
-                      <td className="  text-gray-600 whitespace-nowrap p-3">
-                        {item.tax}%
-                      </td>
-                      <td className="  text-gray-600 whitespace-nowrap p-3">
-                        {item.sellingPriceTaxType ? "YES" : "NO"}
-                      </td>
-                      <td className="ltr:text-right rtl:text-left   text-gray-600 p-3">
-                        ₹{item.sellingPrice}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-            <div className="mt-2 flex justify-end  p-6">
-              <div>
-                {[
-                  {
-                    label: "Sub Total",
-                    amount: invoice.subTotal,
-                  },
-                  {
-                    label: "Extra Discount",
-                    amount:
-                      invoice?.extraDiscountType === "percentage"
-                        ? `${invoice?.extraDiscount || 0}%`
-                        : `₹${invoice?.extraDiscount || 0}`,
-                  },
-                  {
-                    label: "TAX(%)",
-                    amount: totalTax,
-                  },
-                  {
-                    label: "Shipping",
-                    amount: "₹" + invoice.shippingCharges,
-                  },
-                  {
-                    label: "Packaging",
-                    amount: "₹" + invoice.packagingCharges,
-                  },
-                ].map((item, index) => (
-                  <div
-                    key={`invoice-item-${index}`}
-                    className="mb-3 text-end flex justify-end "
+          <div className="flex items-center">
+            {invoice.paymentStatus !== "Paid" && (
+              <div className="text-end">
+                {(userDetails.selectedDashboard === "" || role?.delete) && (
+                  <button
+                    className={
+                      "px-4 py-1 text-red-700 flex items-center border rounded-md hover:bg-red-700 hover:text-white"
+                    }
+                    onClick={handleDelete}
                   >
-                    <span className="  text-gray-600 ">{item.label}:</span>
-                    <span className="  text-end w-[100px] md:w-[160px] block ">
-                      {item.amount}
+                    <LiaTrashAltSolid />
+                    &nbsp; Delete
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="overflow-y-auto px-6" style={{ height: "70vh" }}>
+          <div className="p-5 bg-white rounded-lg">
+            <div className="flex gap-6 flex-col md:flex-row pt-8">
+              <div className="flex-1">
+                <span className="text-3xl font-bold text-primary-600">
+                  {invoice.createdBy?.name}
+                </span>
+                <div className="mt-5">
+                  <div className="text-lg font-semibold text-gray-900">
+                    Billing To:
+                  </div>
+                  <div className="text-lg  text-gray-800 mt-1">
+                    {invoice.userTo?.name}
+                  </div>
+                  <div className=" text-gray-600 mt-2">
+                    {invoice.userTo?.address} <br />
+                    {invoice.userTo?.city} <br />
+                    {invoice.userTo?.zipCode} <br />
+                  </div>
+                </div>
+              </div>
+              <div className="flex-none md:text-end">
+                <div className="text-4xl font-semibold text-gray-900">
+                  Invoice #
+                </div>
+                <div className="mt-1.5 text-xl  text-gray-600">
+                  {invoice.prefix}-{invoice.no}
+                </div>
+                <div className="mt-4  text-gray-600">
+                  {invoice.createdBy?.name} <br />
+                  {invoice.createdBy?.address} <br />
+                  {invoice.createdBy?.city} <br />
+                  {invoice.createdBy?.zipCode} <br />
+                </div>
+                <div className="mt-8">
+                  <div className="mb-2.5">
+                    <span className="mr-12  font-semibold text-gray-900">
+                      Invoice Date:
+                    </span>
+                    <span className="  text-gray-600">
+                      {DateFormate(invoice?.date)}
                     </span>
                   </div>
-                ))}
-                <div className="mb-3 text-end flex justify-end ">
-                  <span className="  text-gray-600 ">Total :</span>
-                  <span className="   text-end w-[100px] md:w-[160px] block  font-bold">
-                    {invoice.total}
-                  </span>
+                  <div>
+                    <span className="mr-12  font-semibold text-gray-900">
+                      Due Date:
+                    </span>
+                    <span className="  text-gray-600">
+                      {DateFormate(invoice?.dueDate)}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="  text-gray-600 mt-6">Note:</div>
-          <div className=" text-gray-800">{invoice.notes || "No notes"}</div>
-          <div className="mt-3.5   text-gray-600">Terms & Conditions:</div>
-          <div className=" text-gray-800 mt-1">
-            {invoice.terms || "No Terms and Conditions"}
-          </div>
-          <div className="mt-6 text-lg font-semibold text-gray-900">
-            Thank You!
-          </div>
-          <div className="mt-1  text-gray-800">
-            If you have any questions concerning this invoice, use the following
-            contact information:
-          </div>
-          <div className="text-xs text-gray-800 mt-2">{userDetails.email}</div>
-          <div className="text-xs text-gray-800 mt-1">{userDetails.phone}</div>
-          <div className="mt-8 text-xs text-gray-800">
-            © 2025 {invoice?.createdBy?.name}
-          </div>
-        </div>
-      </div>
-
-      {invoice.id && (
-        <div
-          className="fixed inset-0 z-20 "
-          onClick={() => setIsInvoiceOpen(false)}
-          style={{ display: isInvoiceOpen ? "block" : "none" }}
-        >
-          <div
-            className="fixed inset-0 flex pt-10 justify-center z-20 "
-            style={{ backgroundColor: "#0009" }}
-          >
-            <div className="h-4/5 " onClick={(e) => e.stopPropagation()}>
-              <div className="bg-white mb-5 overflow-y-auto w-fit h-fit rounded ">
-                <div className="flex justify-end border-b-2 py-2">
-                  <div
-                    className="relative text-2xl text-red-700 group px-2 cursor-pointer"
-                    onClick={() => setIsInvoiceOpen(false)}
-                  >
-                    <IoMdClose />
-                    <div className="absolute left-1/2 transform -translate-x-1/2 top-8 px-1 py-1 bg-gray-600 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 z-200">
-                      Close
+            <div className="mt-6 border-2  rounded-lg">
+              <table className="w-full ">
+                <thead>
+                  <tr className="border-b-2 [&_th:last-child]:text-end">
+                    {columns.map((column) => (
+                      <th
+                        key={`invoice-table-${column.id}`}
+                        className="text-start p-3 "
+                      >
+                        {column.label}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="[&_tr:last-child]:border-1 ">
+                  {invoice?.products?.length > 0 &&
+                    invoice?.products.map((item) => (
+                      <tr
+                        key={`invoice-description-${item.productRef.id}`}
+                        className="border-b-2 p-3 [&_td:last-child]:text-end"
+                      >
+                        <td className="  text-gray-600 max-w-[200px] truncate p-3">
+                          {item.name}
+                        </td>
+                        <td className="  text-gray-600 p-3">
+                          {item.quantity} pcs
+                        </td>
+                        <td className="  text-gray-600 whitespace-nowrap p-3">
+                          {item.discount}
+                        </td>
+                        <td className="  text-gray-600 whitespace-nowrap p-3">
+                          {item.tax}%
+                        </td>
+                        <td className="  text-gray-600 whitespace-nowrap p-3">
+                          {item.sellingPriceTaxType ? "YES" : "NO"}
+                        </td>
+                        <td className="ltr:text-right rtl:text-left   text-gray-600 p-3">
+                          ₹{item.sellingPrice}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+              <div className="mt-2 flex justify-end  p-6">
+                <div>
+                  {[
+                    {
+                      label: "Sub Total",
+                      amount: invoice.subTotal,
+                    },
+                    {
+                      label: "Extra Discount",
+                      amount:
+                        invoice?.extraDiscountType === "percentage"
+                          ? `${invoice?.extraDiscount || 0}%`
+                          : `₹${invoice?.extraDiscount || 0}`,
+                    },
+                    {
+                      label: "TAX(%)",
+                      amount: totalTax,
+                    },
+                    {
+                      label: "Shipping",
+                      amount: "₹" + invoice.shippingCharges,
+                    },
+                    {
+                      label: "Packaging",
+                      amount: "₹" + invoice.packagingCharges,
+                    },
+                  ].map((item, index) => (
+                    <div
+                      key={`invoice-item-${index}`}
+                      className="mb-3 text-end flex justify-end "
+                    >
+                      <span className="  text-gray-600 ">{item.label}:</span>
+                      <span className="  text-end w-[100px] md:w-[160px] block ">
+                        {item.amount}
+                      </span>
                     </div>
+                  ))}
+                  <div className="mb-3 text-end flex justify-end ">
+                    <span className="  text-gray-600 ">Total :</span>
+                    <span className="   text-end w-[100px] md:w-[160px] block  font-bold">
+                      {invoice.total}
+                    </span>
                   </div>
                 </div>
-                {templatesComponents[selectTemplate]}
-                {/* <Template7
+              </div>
+            </div>
+            <div className="  text-gray-600 mt-6">Note:</div>
+            <div className=" text-gray-800">{invoice.notes || "No notes"}</div>
+            <div className="mt-3.5   text-gray-600">Terms & Conditions:</div>
+            <div className=" text-gray-800 mt-1">
+              {invoice.terms || "No Terms and Conditions"}
+            </div>
+            <div className="mt-6 text-lg font-semibold text-gray-900">
+              Thank You!
+            </div>
+            <div className="mt-1  text-gray-800">
+              If you have any questions concerning this invoice, use the
+              following contact information:
+            </div>
+            <div className="text-xs text-gray-800 mt-2">
+              {userDetails.email}
+            </div>
+            <div className="text-xs text-gray-800 mt-1">
+              {userDetails.phone}
+            </div>
+            <div className="mt-8 text-xs text-gray-800">
+              © 2025 {invoice?.createdBy?.name}
+            </div>
+          </div>
+        </div>
+
+        {invoice.id && (
+          <div
+            className="fixed inset-0 z-20 "
+            onClick={() => setIsInvoiceOpen(false)}
+            style={{ display: isInvoiceOpen ? "block" : "none" }}
+          >
+            <div
+              className="fixed inset-0 flex pt-10 justify-center z-20 "
+              style={{ backgroundColor: "#0009" }}
+            >
+              <div className="h-4/5 " onClick={(e) => e.stopPropagation()}>
+                <div className="bg-white mb-5 overflow-y-auto w-fit h-fit rounded ">
+                  <div className="flex justify-end border-b-2 py-2">
+                    <div
+                      className="relative text-2xl text-red-700 group px-2 cursor-pointer"
+                      onClick={() => setIsInvoiceOpen(false)}
+                    >
+                      <IoMdClose />
+                      <div className="absolute left-1/2 transform -translate-x-1/2 top-8 px-1 py-1 bg-gray-600 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 z-200">
+                        Close
+                      </div>
+                    </div>
+                  </div>
+                  {templatesComponents[selectTemplate]}
+                  {/* <Template7
                   ref={invoiceRef}
                   invoiceData={invoice}
                   bankDetails={bankDetails}
                 /> */}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

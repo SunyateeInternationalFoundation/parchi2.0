@@ -4,6 +4,7 @@ import {
   deleteDoc,
   doc,
   getDocs,
+  Timestamp,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdTrash } from "react-icons/io";
@@ -191,7 +192,7 @@ const AddCategoryModal = ({ onClose, onAddCategory }) => {
       );
       const newCategory = {
         name: categoryName,
-        createdAt: new Date(),
+        createdAt: Timestamp.fromDate(new Date()),
       };
 
       const docRef = await addDoc(categoryRef, newCategory);

@@ -292,9 +292,6 @@ const Purchase = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="h-24 text-center py-4">
-                      No found
-                    </td>
                     <td colSpan="7" className="h-96 text-center py-4">
                       <div className="w-full flex justify-center">
                         <img

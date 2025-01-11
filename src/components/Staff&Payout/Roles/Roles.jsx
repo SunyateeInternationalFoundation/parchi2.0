@@ -63,6 +63,7 @@ const Roles = () => {
           item.id === staff.id ? { ...item, roles: updatedRoles } : item
         )
       );
+      alert("successfully Updated");
     } catch (error) {
       console.log("Error in handleUpdateRoles:", error);
     }
@@ -132,8 +133,11 @@ const Roles = () => {
                 <h2 className="text-xl">{staff.name}</h2>
                 {staff.isExpand && (
                   <button
-                    onClick={() => handleUpdateRoles(staff)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition "
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleUpdateRoles(staff);
+                    }}
+                    className="btn-add "
                   >
                     <TbEdit className="inline mr-2" />
                     Update Roles

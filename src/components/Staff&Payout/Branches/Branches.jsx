@@ -122,7 +122,7 @@ const Branches = () => {
           </button>
         </header>
 
-        {/* <div>
+        {/* <div className="space-y-1">
           <div className="text-4xl text-blue-700 font-bold">
             {branchesCount.total}
           </div>
@@ -277,74 +277,82 @@ const AddBranchModal = ({ isOpen, onClose, onAddBranch, companyId }) => {
       onClick={onClose}
     >
       <div
-        className={`bg-white w-96 p-3 pt-2 transform transition-transform overflow-y-auto ${
+        className={`bg-white  pt-2 transform transition-transform  ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ maxHeight: "100vh" }}
+        style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-xl font-semibold mb-5 ">Branch Details</h2>
-        <button
-          onClick={onClose}
-          className="absolute text-3xl top-4 right-4 text-gray-600 hover:text-gray-900 cursor-pointer"
+        <div
+          className="flex justify-between items-center border-b px-5 py-3"
+          style={{ height: "6vh" }}
         >
-          <IoMdClose />
-        </button>
-
-        <form className="space-y-1.5" onSubmit={onCreateBranch}>
-          <div>
-            <label className="text-sm block font-semibold">Branch Name</label>
-            <input
-              type="text"
-              name="branchName"
-              value={formData.branchName}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="Branch Name"
-            />
-          </div>
-          <div>
-            <label className="text-sm block font-semibold">City</label>
-            <input
-              type="text"
-              name="city"
-              value={formData.address.city}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="City"
-            />
-          </div>
-          <div>
-            <label className="text-sm block font-semibold">Address</label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address.address}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="Address"
-            />
-          </div>
-          <div>
-            <label className="text-sm block font-semibold ">Pin Code</label>
-            <input
-              type="text"
-              name="zip_code"
-              value={formData.address.zip_code}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="Pin Code"
-            />
-          </div>
+          <h2 className="text-xl font-semibold mb-5 ">Branch Details</h2>
           <button
-            type="submit"
-            disabled={isLoading}
-            className={`w-full p-2 rounded-md mt-4 ${
-              isLoading ? "bg-gray-400" : "bg-purple-500 text-white"
-            }`}
+            onClick={onClose}
+            className="absolute text-3xl top-4 right-4 text-gray-600 hover:text-gray-900 cursor-pointer"
           >
-            {isLoading ? "Adding..." : "Add Branch"}
+            <IoMdClose />
           </button>
+        </div>
+        <form onSubmit={onCreateBranch}>
+          <div
+            className="space-y-2 px-5 overflow-y-auto"
+            style={{ height: "84vh" }}
+          >
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600">Branch Name</label>
+              <input
+                type="text"
+                name="branchName"
+                value={formData.branchName}
+                onChange={handleInputChange}
+                className="input-tag w-full"
+                placeholder="Branch Name"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600">City</label>
+              <input
+                type="text"
+                name="city"
+                value={formData.address.city}
+                onChange={handleInputChange}
+                className="input-tag w-full"
+                placeholder="City"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600">Address</label>
+              <input
+                type="text"
+                name="address"
+                value={formData.address.address}
+                onChange={handleInputChange}
+                className="input-tag w-full"
+                placeholder="Address"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">Pin Code</label>
+              <input
+                type="text"
+                name="zip_code"
+                value={formData.address.zip_code}
+                onChange={handleInputChange}
+                className="input-tag w-full"
+                placeholder="Pin Code"
+              />
+            </div>
+          </div>
+          <div
+            className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
+            style={{ height: "6vh" }}
+          >
+            <button type="submit" className="w-full btn-add">
+              {isLoading ? "Adding..." : "Add Branch"}
+            </button>
+          </div>
         </form>
       </div>
     </div>

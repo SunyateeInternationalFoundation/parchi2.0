@@ -186,7 +186,7 @@ function PO() {
                   className="bg-[#442799] text-white text-center px-5 py-3 font-semibold rounded-md"
                   to="create-po"
                 >
-                  Create PO
+                  + Create PO
                 </Link>
               )}
             </div>

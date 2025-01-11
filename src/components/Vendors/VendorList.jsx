@@ -86,8 +86,22 @@ const VendorList = () => {
         const { total } = cur.data();
         return (acc += +total);
       }, 0);
+      const expenseRef = collection(db, "companies", companyId, "expenses");
+      const q = query(
+        expenseRef,
+        where("toWhom.userRef", "==", vendorRef),
+        where("transactionType", "==", "income")
+      );
+      const getExpenseDocs = await getDocs(q);
 
-      return vendorsPosAmount;
+      let expenseAmount = 0;
+
+      getExpenseDocs.docs.forEach((doc) => {
+        const data = doc.data();
+        expenseAmount += data.amount;
+      });
+
+      return vendorsPosAmount + expenseAmount;
     } catch (error) {
       console.log("🚀 ~ fetchInvoiceList ~ error:", error);
     }

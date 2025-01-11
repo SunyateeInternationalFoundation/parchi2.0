@@ -16,6 +16,13 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
 import FormatTimestamp from "../../../constants/FormatTimestamp";
 import { db, storage } from "../../../firebase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../UI/select";
 
 const Assets = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,7 +85,7 @@ const Assets = () => {
 
       await deleteDoc(doc(db, "assets", assetId));
 
-      setAsset((prev) => {
+      setAssets((prev) => {
         const updatedAsset = prev.filter((des) => des.id !== assetId);
 
         setAssetCount({ total: updatedAsset.length });
@@ -117,14 +124,14 @@ const Assets = () => {
           </button>
         </header>
 
-        {/* <div>
+        {/* <div className="space-y-1">
           <div className="text-4xl text-blue-700 font-bold">
             {assetCount.total}
           </div>
-          <div>Total Assets</div>
+          <div className="space-y-1">Total Assets</div>
         </div> */}
 
-        <div>
+        <div className="space-y-1">
           {loading ? (
             <div className="text-center">Loading...</div>
           ) : (
@@ -199,25 +206,6 @@ const Assets = () => {
             </div>
           )}
         </div>
-        {/* <div>
-          {loading ? (
-            <div className="text-center py-6">Loading Assets...</div>
-          ) : assets.length > 0 ? (
-            assets.map((asset) => (
-              <AssetCard
-                key={asset.id}
-                asset={asset}
-                setAsset={setAssets}
-                setAssetCount={setAssetCount}
-                companyId={companyDetails.companyId}
-              />
-            ))
-          ) : (
-            <div className="text-center border-2 shadow cursor-pointer rounded-lg p-3 mt-3">
-              No Asset
-            </div>
-          )}
-        </div> */}
 
         {isModalOpen && (
           <AddAssetModal
@@ -231,22 +219,6 @@ const Assets = () => {
     </div>
   );
 };
-
-// const AssetCard = ({ asset, setAsset, setAssetCount, companyId }) => {
-//   return (
-//     <div className="bg-white p-4 rounded shadow">
-//       <div className="flex justify-between items-center">
-//         <h2 className="text-xl font-semibold"></h2>
-//         <button
-//           onClick={(e) => }
-//           className="text-white bg-red-500 h-6 w-6 font-bold text-center rounded-full flex items-center justify-center"
-//         >
-//           <div className="w-3 h-1 bg-white"></div>
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
 
 const AddAssetModal = ({ onClose, onAddAsset, isOpen, companyId }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -351,113 +323,128 @@ const AddAssetModal = ({ onClose, onAddAsset, isOpen, companyId }) => {
       onClick={onClose}
     >
       <div
-        className={`bg-white w-96 p-3 pt-2 transform transition-transform overflow-y-auto ${
+        className={`bg-white  pt-2 transform transition-transform  ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ maxHeight: "100vh" }}
+        style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-xl font-semibold mb-5 ">Asset Details</h2>
-        <button
-          onClick={onClose}
-          className="absolute text-3xl top-4 right-4 text-gray-600 hover:text-gray-900 cursor-pointer"
+        <div
+          className="flex justify-between items-center border-b px-5 py-3"
+          style={{ height: "6vh" }}
         >
-          <IoMdClose />
-        </button>
+          <h2 className="text-sm text-gray-600 ">Asset Details</h2>
+          <button
+            onClick={onClose}
+            className=" text-2xl text-gray-800 hover:text-gray-900 cursor-pointer"
+          >
+            <IoMdClose />
+          </button>
+        </div>
+        <form onSubmit={handleAddAsset}>
+          <div
+            className="space-y-2 px-5 overflow-y-auto"
+            style={{ height: "84vh" }}
+          >
+            <div className="space-y-1">
+              <div className="grid w-full mb-2 items-center gap-1.5">
+                <div className="text-sm text-gray-600 ">Upload Image</div>
+                <label
+                  htmlFor="file"
+                  className="cursor-pointer p-3 rounded-md border-2 border-dashed border shadow-[0_0_200px_-50px_rgba(0,0,0,0.72)]"
+                >
+                  <div className="flex  items-center justify-center gap-1">
+                    {formData?.image?.name ? (
+                      <span className="py-1 px-4">{formData?.image?.name}</span>
+                    ) : (
+                      <>
+                        <svg
+                          viewBox="0 0 640 512"
+                          className="h-8 fill-gray-600"
+                        >
+                          <path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z" />
+                        </svg>
+                        <span className="py-1 px-4">Upload Image</span>
+                      </>
+                    )}
+                  </div>
+                  <input
+                    id="file"
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                </label>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600">Asset Name</label>
+              <input
+                type="text"
+                name="assetName"
+                value={formData.assetName}
+                onChange={handleInputChange}
+                className="w-full input-tag"
+                placeholder="Asset Name"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600">Asset Id</label>
+              <input
+                type="text"
+                name="assetId"
+                value={formData.assetId}
+                onChange={handleInputChange}
+                className="w-full input-tag"
+                placeholder="Asset Id"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600">Value of Assets</label>
+              <input
+                type="text"
+                name="value"
+                value={formData.value}
+                onChange={handleInputChange}
+                className="w-full input-tag"
+                placeholder="Value of Asset"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600">Assign Staff</label>
 
-        <form className="space-y-1.5" onSubmit={handleAddAsset}>
-          <div>
-            <div className="grid w-full mb-2 items-center gap-1.5">
-              <div className="text-sm block font-semibold ">Upload Image</div>
-              <label
-                htmlFor="file"
-                className="cursor-pointer p-3 rounded-md border-2 border-dashed border shadow-[0_0_200px_-50px_rgba(0,0,0,0.72)]"
+              <Select
+                value={formData.assignedTo || ""}
+                onValueChange={(val) => {
+                  setFormData((pre) => ({
+                    ...pre,
+                    assignedTo: val,
+                  }));
+                }}
+                required
               >
-                <div className="flex  items-center justify-center gap-1">
-                  {formData?.image?.name ? (
-                    <span className="py-1 px-4">{formData?.image?.name}</span>
-                  ) : (
-                    <>
-                      <svg viewBox="0 0 640 512" className="h-8 fill-gray-600">
-                        <path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z" />
-                      </svg>
-                      <span className="py-1 px-4">Upload Image</span>
-                    </>
-                  )}
-                </div>
-                <input
-                  id="file"
-                  type="file"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-              </label>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {staffData.map((staff) => (
+                    <SelectItem value={staff.name} key={staff.id}>
+                      {staff.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
-          <hr />
-          <div>
-            <label className="text-sm  font-semibold">Asset Name</label>
-            <input
-              type="text"
-              name="assetName"
-              value={formData.assetName}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="Asset Name"
-            />
-          </div>
-          <div>
-            <label className="text-sm block font-semibold">Asset Id</label>
-            <input
-              type="text"
-              name="assetId"
-              value={formData.assetId}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="Asset Id"
-            />
-          </div>
-          <div>
-            <label className="text-sm block font-semibold">
-              Value of Assets
-            </label>
-            <input
-              type="text"
-              name="value"
-              value={formData.value}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-2 rounded-md"
-              placeholder="Value of Asset"
-            />
-          </div>
-          <div>
-            <label className="text-sm block font-semibold">Assign Staff</label>
-            <select
-              name="assignedTo"
-              value={formData.assignedTo}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 p-2 rounded-md"
-            >
-              <option value="" disabled>
-                No Assets
-              </option>
-              {staffData.map((staff) => (
-                <option key={staff.id} value={staff.name}>
-                  {staff.name}
-                </option>
-              ))}
-            </select>
-          </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={`w-full p-2 rounded-md mt-4 ${
-              isLoading ? "bg-gray-400" : "bg-purple-500 text-white"
-            }`}
+          <div
+            className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
+            style={{ height: "6vh" }}
           >
-            {isLoading ? "Adding..." : "Add Asset"}
-          </button>
+            <button type="submit" className="w-full btn-add">
+              {isLoading ? "Adding..." : "Add Asset"}
+            </button>
+          </div>
         </form>
       </div>
     </div>

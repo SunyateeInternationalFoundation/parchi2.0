@@ -188,30 +188,32 @@ const CreateCustomer = ({ isOpen, onClose, customerData }) => {
               </label>
             </div>
             <div className="space-y-1">
-              <label className="text-sm text-gray-600">Name</label>
+              <label className="text-sm text-gray-600">
+                Name<span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-md"
+                className="w-full input-tag"
                 placeholder="Name"
                 required
               />
             </div>
             <div className="space-y-1">
-              <label className="text-sm text-gray-600">Phone</label>
+              <label className="text-sm text-gray-600">
+                Phone<span className="text-red-500">*</span>
+              </label>
               <div className="flex items-center">
-                <span className="px-2 py-2 border border-gray-300 rounded-l-md">
-                  +91
-                </span>
+                <span className="border px-5 py-3 rounded-l-md">+91</span>
                 <input
                   type="text"
                   maxLength="10"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 p-2 rounded-r-md"
+                  className="w-full border px-5 py-3  rounded-r-md"
                   placeholder="Phone"
                   required
                 />
@@ -224,7 +226,7 @@ const CreateCustomer = ({ isOpen, onClose, customerData }) => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-md"
+                className="w-full input-tag"
                 placeholder="Email ID"
               />
             </div>
@@ -236,7 +238,7 @@ const CreateCustomer = ({ isOpen, onClose, customerData }) => {
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-md"
+                className="w-full input-tag"
                 placeholder="Street Address"
               />
             </div>
@@ -247,7 +249,7 @@ const CreateCustomer = ({ isOpen, onClose, customerData }) => {
                 value={formData.zipCode}
                 onChange={handleChange}
                 placeholder="Pin Code"
-                className="w-1/2 border border-gray-300 p-2 rounded-md"
+                className="w-1/2 input-tag"
               />
               <input
                 type="text"
@@ -255,7 +257,7 @@ const CreateCustomer = ({ isOpen, onClose, customerData }) => {
                 value={formData.city}
                 onChange={handleChange}
                 placeholder="City"
-                className="w-1/2 border border-gray-300 p-2 rounded-md"
+                className="w-1/2 input-tag"
               />
             </div>
 
@@ -266,7 +268,7 @@ const CreateCustomer = ({ isOpen, onClose, customerData }) => {
                 name="gstNumber"
                 value={formData.gstNumber}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-md"
+                className="w-full input-tag"
                 placeholder="GST Number"
               />
             </div>
@@ -277,7 +279,7 @@ const CreateCustomer = ({ isOpen, onClose, customerData }) => {
                 name="panNumber"
                 value={formData.panNumber}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-md"
+                className="w-full input-tag"
                 placeholder="PAN Number"
               />
             </div>
@@ -286,10 +288,7 @@ const CreateCustomer = ({ isOpen, onClose, customerData }) => {
             className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
             style={{ height: "8vh" }}
           >
-            <button
-              type="submit"
-              className="w-full bg-purple-500 text-white px-5 py-3 text-sm text-gray-600 rounded-md"
-            >
+            <button type="submit" className="w-full btn-add">
               {customerData?.id ? "Edit " : "Create "}
               Customer
             </button>

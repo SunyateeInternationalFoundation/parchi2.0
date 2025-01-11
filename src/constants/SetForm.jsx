@@ -43,6 +43,7 @@ function SetForm(props) {
   const [isProductDropdownVisible, setIsProductDropdownVisible] =
     useState(false);
 
+  const purchaseList = ["Purchase", "PO", "DebitNote"];
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [categories, setCategories] = useState([]);
@@ -114,23 +115,6 @@ function SetForm(props) {
     }));
   }
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const categoriesRef = collection(
-        db,
-        "companies",
-        userDetails.companies[userDetails.selectedCompanyIndex].companyId,
-        "categories"
-      );
-      const snapshot = await getDocs(categoriesRef);
-
-      const categoriesData = snapshot.docs.map((doc) => doc.data().name);
-
-      setCategories(categoriesData);
-    };
-    fetchCategories();
-  }, []);
-
   const calculateTotal = () => {
     const discountAmount = formData.extraDiscountType
       ? (+totalAmounts.totalAmount * formData.extraDiscount) / 100
@@ -150,37 +134,33 @@ function SetForm(props) {
     setPersonSuggestions(personDetails);
   }, [personDetails]);
 
-  useEffect(() => {
-    function addActionQty() {
-      if (
-        formData?.products?.length === 0 ||
-        products.length === 0 ||
-        !formId
-      ) {
-        return;
-      }
-      setIsProductSelected(true);
-      let productData = products;
-      for (let ele of formData.products) {
-        productData = products.map((pro) => {
-          if (pro.id === ele.productRef.id) {
-            pro.description = ele.description;
-            pro.isAddDescription = ele.description ? true : false;
-            pro.actionQty = ele.quantity;
-            if (isVendor) {
-              pro.quantity -= ele.quantity;
-            } else {
-              pro.quantity += ele.quantity;
-            }
-
-            pro.totalAmount = ele.quantity * pro.netAmount;
-          }
-          return pro;
-        });
-      }
-      setProducts(productData);
-      calculateProduct(productData);
+  function addActionQty() {
+    if (formData?.products?.length === 0 || products.length === 0 || !formId) {
+      return;
     }
+    setIsProductSelected(true);
+    let productData = products;
+    for (let ele of formData.products) {
+      productData = products.map((pro) => {
+        if (pro.id === ele.productRef.id) {
+          pro.description = ele.description;
+          pro.isAddDescription = ele.description ? true : false;
+          pro.actionQty = ele.quantity;
+          if (isVendor) {
+            pro.quantity -= ele.quantity;
+          } else {
+            pro.quantity += ele.quantity;
+          }
+
+          pro.totalAmount = ele.quantity * pro.netAmount;
+        }
+        return pro;
+      });
+    }
+    setProducts(productData);
+    calculateProduct(productData);
+  }
+  useEffect(() => {
     addActionQty();
   }, [formData.products]);
 
@@ -220,6 +200,9 @@ function SetForm(props) {
       if (product.id === productId) {
         if (op === "+") {
           if (product.quantity > product.actionQty) {
+            ++product.actionQty;
+          }
+          if (purchaseList.includes(formName)) {
             ++product.actionQty;
           }
         } else {
@@ -336,132 +319,132 @@ function SetForm(props) {
     }));
   }
 
-  useEffect(() => {
-    async function fetchTax() {
-      try {
-        const tdsRef = collection(db, "tds");
-        const tdsQuerySnapshot = await getDocs(tdsRef);
-        const tdsData = tdsQuerySnapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            natureOfPayment: data.payment_nature,
-            percentage: data.percentage,
-            percentageValue: data.percentage_value,
-            tdsSection: data.tds_section,
-          };
-        });
-        const tcsRef = collection(db, "tcs_tax");
-        const tcsQuerySnapshot = await getDocs(tcsRef);
-        const tcsData = tcsQuerySnapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            tax: data.tax,
-            tax_value: data.tax_value,
-            type_of_goods: data.type_of_goods,
-          };
-        });
-
-        setTaxTypeOptions({
-          tds: tdsData,
-          tcs: tcsData,
-        });
-      } catch (error) {
-        console.log("🚀 ~ fetchTDC ~ error:", error);
-      }
-    }
-    async function fetchBooks() {
-      try {
-        const bookRef = collection(
-          db,
-          "companies",
-          companyDetails.companyId,
-          "books"
-        );
-        const getBookData = await getDocs(bookRef);
-        const fetchBooks = getBookData.docs.map((doc) => ({
+  async function fetchTax() {
+    try {
+      const tdsRef = collection(db, "tds");
+      const tdsQuerySnapshot = await getDocs(tdsRef);
+      const tdsData = tdsQuerySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
           id: doc.id,
-          ...doc.data(),
-        }));
-        setBooks(fetchBooks);
-      } catch (error) {
-        console.log("🚀 ~ fetchBooks ~ error:", error);
-      }
-    }
-    async function fetchWarehouse() {
-      try {
-        const bookRef = collection(
-          db,
-          "companies",
-          companyDetails.companyId,
-          "warehouses"
-        );
-        const getWarehouseData = await getDocs(bookRef);
-        const fetchWarehouses = getWarehouseData.docs.map((doc) => ({
+          natureOfPayment: data.payment_nature,
+          percentage: data.percentage,
+          percentageValue: data.percentage_value,
+          tdsSection: data.tds_section,
+        };
+      });
+      const tcsRef = collection(db, "tcs_tax");
+      const tcsQuerySnapshot = await getDocs(tcsRef);
+      const tcsData = tcsQuerySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
           id: doc.id,
-          ...doc.data(),
-        }));
-        setWarehouses(fetchWarehouses);
-      } catch (error) {
-        console.log("🚀 ~ fetchBooks ~ error:", error);
-      }
+          tax: data.tax,
+          tax_value: data.tax_value,
+          type_of_goods: data.type_of_goods,
+        };
+      });
+
+      setTaxTypeOptions({
+        tds: tdsData,
+        tcs: tcsData,
+      });
+    } catch (error) {
+      console.log("🚀 ~ fetchTDC ~ error:", error);
     }
-
-    const fetchProducts = async () => {
-      try {
-        const companyRef = doc(db, "companies", companyDetails.companyId);
-        const productRef = collection(
-          db,
-          "companies",
-          companyDetails.companyId,
-          "products"
-        );
-        const q = query(productRef, where("companyRef", "==", companyRef));
-        const querySnapshot = await getDocs(q);
-
-        const productsData = querySnapshot.docs.map((doc) => {
-          const data = doc.data();
-          const temp = {
-            id: doc.id,
-            category: data.category,
-            description: data.description ?? "",
-            name: data.name ?? "N/A",
-            quantity: data.stock ?? 0,
-            sellingPrice: data.sellingPrice ?? 0,
-            sellingPriceTaxType: data.sellingPriceTaxType,
-            purchasePrice: data.purchasePrice ?? 0,
-            purchasePriceTaxType: data.purchasePriceTaxType,
-            discount: data.discount ?? 0,
-            discountType: data.discountType,
-            isAddDescription: false,
-            actionQty: 0,
-            tax: data.tax,
-            totalAmount: 0,
-          };
-          return ModifiedProductData(temp);
-        });
-        setProducts(productsData);
-      } catch (error) {
-        console.error("Error fetching forms:", error);
-      }
-    };
-    const fetchCategories = async () => {
-      const categoriesRef = collection(
+  }
+  async function fetchBooks() {
+    try {
+      const bookRef = collection(
         db,
         "companies",
-        userDetails.companies[userDetails.selectedCompanyIndex].companyId,
-        "categories"
+        companyDetails.companyId,
+        "books"
       );
-      const snapshot = await getDocs(categoriesRef);
+      const getBookData = await getDocs(bookRef);
+      const fetchBooks = getBookData.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setBooks(fetchBooks);
+    } catch (error) {
+      console.log("🚀 ~ fetchBooks ~ error:", error);
+    }
+  }
+  async function fetchWarehouse() {
+    try {
+      const bookRef = collection(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "warehouses"
+      );
+      const getWarehouseData = await getDocs(bookRef);
+      const fetchWarehouses = getWarehouseData.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setWarehouses(fetchWarehouses);
+    } catch (error) {
+      console.log("🚀 ~ fetchBooks ~ error:", error);
+    }
+  }
 
-      const categoriesData = snapshot.docs.map((doc) => doc.data().name);
+  const fetchProducts = async () => {
+    try {
+      const companyRef = doc(db, "companies", companyDetails.companyId);
+      const productRef = collection(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "products"
+      );
+      const q = query(productRef, where("companyRef", "==", companyRef));
+      const querySnapshot = await getDocs(q);
 
-      setCategories(categoriesData);
-    };
+      const productsData = querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        const temp = {
+          id: doc.id,
+          category: data.category,
+          description: data.description ?? "",
+          name: data.name ?? "N/A",
+          quantity: data.stock ?? 0,
+          sellingPrice: data.sellingPrice ?? 0,
+          sellingPriceTaxType: data.sellingPriceTaxType,
+          purchasePrice: data.purchasePrice ?? 0,
+          purchasePriceTaxType: data.purchasePriceTaxType,
+          discount: data.discount ?? 0,
+          discountType: data.discountType,
+          isAddDescription: false,
+          actionQty: 0,
+          tax: data.tax,
+          totalAmount: 0,
+        };
+        return ModifiedProductData(temp);
+      });
+      console.log("🚀 ~ productList:", productsData);
 
+      setProducts(productsData);
+    } catch (error) {
+      console.error("Error fetching forms:", error);
+    }
+  };
+  const fetchCategories = async () => {
+    const categoriesRef = collection(
+      db,
+      "companies",
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId,
+      "categories"
+    );
+    const snapshot = await getDocs(categoriesRef);
+
+    const categoriesData = snapshot.docs.map((doc) => doc.data().name);
+
+    setCategories(categoriesData);
+  };
+  useEffect(() => {
     fetchCategories();
-
     fetchProducts();
     fetchBooks();
     fetchWarehouse();
@@ -478,7 +461,7 @@ function SetForm(props) {
     }
     let updatedProducts = products.map((product) => {
       if (product.id === productId) {
-        if (product.quantity >= value) {
+        if (product.quantity >= value || purchaseList.includes(formName)) {
           product.actionQty = value;
         }
         product.totalAmount = product.netAmount * product.actionQty;
@@ -968,17 +951,6 @@ function SetForm(props) {
                     )}
                   </tbody>
                 </table>
-                {isSidebarOpen && (
-                  <SelectProductSide
-                    isOpen={isSidebarOpen}
-                    onClose={() => setIsSidebarOpen(false)}
-                    productList={products}
-                    handleActionQty={handleActionQty}
-                    totalAmount={+totalAmounts.totalAmount}
-                    customActionQty={customActionQty}
-                    categories={categories}
-                  />
-                )}
               </div>
             </div>
           </div>
@@ -1331,6 +1303,20 @@ function SetForm(props) {
           {formName}
         </button>
       </div>
+
+      {isSidebarOpen && (
+        <SelectProductSide
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          productList={products}
+          handleActionQty={handleActionQty}
+          totalAmount={+totalAmounts.totalAmount}
+          customActionQty={customActionQty}
+          categories={categories}
+          setProductsData={setProducts}
+          from={formName}
+        />
+      )}
       {isVendor ? (
         <CreateVendor
           isOpen={isModalOpen}

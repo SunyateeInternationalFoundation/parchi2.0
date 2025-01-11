@@ -88,11 +88,19 @@ const SetInvoice = () => {
         setPreInvoiceList(noList.filter((ele) => ele !== formData.no));
       } else {
         setPreInvoiceList(noList);
-        setFormData((val) => ({
-          ...val,
-          no: String(+noList[noList.length - 1] + 1).padStart(4, 0),
-        }));
+        if (noList.length == 0) {
+          setFormData((val) => ({
+            ...val,
+            no: "0001",
+          }));
+        } else {
+          setFormData((val) => ({
+            ...val,
+            no: String(+noList[noList.length - 1] + 1).padStart(4, 0),
+          }));
+        }
       }
+      console.log("🚀 ~ fetchInvoiceNumbers ~ noList:", noList);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -301,6 +309,7 @@ const SetInvoice = () => {
     }
   }
 
+  console.log("🚀 ~ SetInvoice ~ formData:", formData);
   return (
     <SetForm
       formId={invoiceId}

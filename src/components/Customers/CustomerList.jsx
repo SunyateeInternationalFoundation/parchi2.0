@@ -17,13 +17,13 @@ import {
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import addItem from "../../assets/addItem.png";
 import { db } from "../../firebase";
 import {
   deleteCustomerDetails,
   setAllCustomersDetails,
 } from "../../store/CustomerSlice";
 import CreateCustomer from "./CreateCustomer";
-import addItem from "../../assets/addItem.png";
 
 const CustomerList = () => {
   const [loading, setLoading] = useState(false);
@@ -50,11 +50,11 @@ const CustomerList = () => {
   const dispatch = useDispatch();
 
   const fetchCustomers = async () => {
-    if (customersDetails.length !== 0) {
-      setTotalPages(Math.ceil(customersDetails.length / 10));
-      setPaginationData(customersDetails.slice(0, 10));
-      return;
-    }
+    // if (customersDetails.length !== 0) {
+    //   setTotalPages(Math.ceil(customersDetails.length / 10));
+    //   setPaginationData(customersDetails.slice(0, 10));
+    //   return;
+    // }
     setLoading(true);
     try {
       const customersRef = collection(db, "customers");
@@ -92,6 +92,7 @@ const CustomerList = () => {
       const invoiceRef = collection(db, "companies", companyId, "invoices");
       const serviceRef = collection(db, "companies", companyId, "services");
       const customerRef = doc(db, "customers", customerId);
+      const expenseRef = collection(db, "companies", companyId, "expenses");
       const invoiceQ = query(
         invoiceRef,
         where("customerDetails.customerRef", "==", customerRef)
@@ -100,6 +101,20 @@ const CustomerList = () => {
         serviceRef,
         where("customerDetails.customerRef", "==", customerRef)
       );
+      const q = query(
+        expenseRef,
+        where("toWhom.userRef", "==", customerRef),
+        where("transactionType", "==", "income")
+      );
+      const getExpenseDocs = await getDocs(q);
+
+      let expenseAmount = 0;
+
+      getExpenseDocs.docs.forEach((doc) => {
+        const data = doc.data();
+        expenseAmount += data.amount;
+      });
+
       const invoiceQuerySnapshot = await getDocs(invoiceQ);
       const serviesQuerySnapshot = await getDocs(serviceQ);
       const customersInvoicesAmount = invoiceQuerySnapshot.docs.reduce(
@@ -116,7 +131,7 @@ const CustomerList = () => {
         },
         0
       );
-      return customersInvoicesAmount + customersServiceAmount;
+      return customersInvoicesAmount + customersServiceAmount + expenseAmount;
     } catch (error) {
       console.log("🚀 ~ fetchInvoiceList ~ error:", error);
     }

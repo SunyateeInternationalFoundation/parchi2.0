@@ -8,10 +8,21 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
+import { CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { db } from "../../../firebase";
+import { cn, formatDate } from "../../../lib/utils";
+import { Calendar } from "../../UI/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../../UI/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../UI/select";
 
 function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
   const userDetails = useSelector((state) => state.users);
@@ -21,7 +32,7 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
     address: "",
     city: "",
     companyRef: "",
-    dateOfJoining: "",
+    dateOfJoining: Timestamp.fromDate(new Date()),
     designation: "",
     emailId: "",
     idNo: "",
@@ -186,11 +197,13 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
               </label>
             </div>
             <div className="space-y-1">
-              <label className="text-sm text-gray-600 ">Name</label>
+              <label className="text-sm text-gray-600 ">
+                Name<span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 name="Name"
-                className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
+                className="w-full input-tag"
                 placeholder="Name"
                 required
                 value={formData.name}
@@ -201,7 +214,7 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
             </div>
             <div className="space-y-1">
               <label className="text-sm text-gray-600 ">
-                Phone
+                Phone<span className="text-red-500">*</span>
                 {/* {phoneExists && (
                 <span className="ml-2 text-red-500 text-xs">
                   "Phone number is already in use.*"
@@ -209,26 +222,24 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
               )} */}
               </label>
               <div className="flex items-center mb-4">
-                <span className="px-3 py-2 bg-gray-200 border border-r-0 rounded-l-md text-gray-700">
-                  +91
-                </span>
+                <span className="border px-5 py-3  rounded-l-md">+91</span>
                 <input
                   type="text"
                   maxLength="10"
                   value={formData.phone}
                   onChange={(e) => handlePhoneNumberChange(e)}
                   placeholder="Enter your mobile number"
-                  className="px-4 py-2 border w-full focus:outline-none"
+                  className="border px-5 py-3 w-full rounded-r-md"
                   required
                 />
               </div>
             </div>
             <div className="space-y-1">
-              <label className="text-sm block font-semibold">
+              <label className="text-sm text-gray-600">
                 ID No.
                 {idExists && (
                   <span className="ml-2 text-red-500 text-xs">
-                    "Already ID No. exist*"
+                    "Already ID No. exist"
                   </span>
                 )}
               </label>
@@ -236,33 +247,66 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
                 type="text"
                 name="idNo"
                 value={formData.idNo}
-                className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
+                className="w-full input-tag"
                 placeholder="ID No."
                 onChange={handleIdNumberChange}
               />
             </div>
             <div className="space-y-1">
-              <label className="text-sm text-gray-600 ">Joining Date</label>
-              <input
-                type="date"
-                name="joiningDate"
-                className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
-                placeholder="Joining Date"
-                value={DateFormate(formData.dateOfJoining)}
-                onChange={(e) =>
-                  setFormData((val) => ({
-                    ...val,
-                    dateOfJoining: Timestamp.fromDate(new Date(e.target.value)),
-                  }))
-                }
-              />
+              <label className="text-sm text-gray-600 ">
+                Joining Date<span className="text-red-500">*</span>
+              </label>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    className={cn(
+                      "w-full flex justify-between input-tag ",
+                      !formData.dateOfJoining?.seconds &&
+                        "text-muted-foreground"
+                    )}
+                  >
+                    {formData.dateOfJoining?.seconds ? (
+                      formatDate(
+                        new Date(
+                          formData.dateOfJoining?.seconds * 1000 +
+                            formData.dateOfJoining?.nanoseconds / 1000000
+                        ),
+                        "PPP"
+                      )
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                    <CalendarIcon className="h-4 w-4 " />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="">
+                  <Calendar
+                    mode="single"
+                    selected={
+                      new Date(
+                        formData.dateOfJoining?.seconds * 1000 +
+                          formData.dateOfJoining?.nanoseconds / 1000000
+                      )
+                    }
+                    onSelect={(val) => {
+                      setFormData((pre) => ({
+                        ...pre,
+                        dateOfJoining: Timestamp.fromDate(val),
+                      }));
+                    }}
+                    initialFocus
+                    required
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="space-y-1">
               <label className="text-sm text-gray-600 ">Email</label>
               <input
                 type="email"
                 name="Email"
-                className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
+                className="w-full input-tag"
                 placeholder="Email"
                 value={formData.emailId}
                 onChange={(e) =>
@@ -275,7 +319,7 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
               <input
                 type="text"
                 name="Address"
-                className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
+                className="w-full input-tag"
                 placeholder="Address"
                 value={formData.address}
                 onChange={(e) =>
@@ -287,7 +331,7 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
               <input
                 type="text"
                 name="City"
-                className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
+                className="w-full input-tag"
                 placeholder="City"
                 value={formData.city}
                 onChange={(e) =>
@@ -297,7 +341,7 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
               <input
                 type="text"
                 name="PinCode"
-                className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
+                className="w-full input-tag"
                 placeholder="PinCode"
                 value={formData.zipCode}
                 onChange={(e) =>
@@ -307,36 +351,31 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
             </div>
             <div className="space-y-1">
               <label className="text-sm text-gray-600 ">Designation</label>
-              <select
-                className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
-                value={formData.designation}
-                onChange={(e) =>
-                  setFormData((val) => ({
-                    ...val,
-                    designation: e.target.value,
-                  }))
-                }
-              >
-                <option value={""} disabled>
-                  Designation
-                </option>
 
-                {designations.length > 0 &&
-                  designations.map((designation) => (
-                    <option
-                      key={designation.designationName}
-                      value={designation.designationName}
-                    >
-                      {designation.designationName}
-                    </option>
-                  ))}
-                {/* <option value="Voice Support">Voice Support</option>
-              <option value="Customer Support">Customer Support</option>
-              <option value="Admin">Admin</option>
-              <option value="Data Analyst">Data Analyst</option>
-              <option value="des2">des2</option>
-              <option value="des3">des3</option> */}
-              </select>
+              <Select
+                value={formData.designation || ""}
+                onValueChange={(value) => {
+                  setFormData((pre) => ({
+                    ...pre,
+                    designation: value,
+                  }));
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={"Select " + formData.designation} />
+                </SelectTrigger>
+                <SelectContent>
+                  {designations.length > 0 &&
+                    designations.map((designation) => (
+                      <SelectItem
+                        key={designation.designationName}
+                        value={designation.designationName}
+                      >
+                        {designation.designationName}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1">
               <label className="text-sm text-gray-600 ">PAN</label>
@@ -344,7 +383,7 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
                 type="text"
                 name="PAN"
                 value={formData.panNumber}
-                className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
+                className="w-full input-tag"
                 placeholder="PAN"
                 onChange={(e) =>
                   setFormData((val) => ({ ...val, panNumber: e.target.value }))
@@ -376,7 +415,7 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
               <input
                 type="text"
                 name="paymentDetails"
-                className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
+                className="w-full input-tag"
                 placeholder="paymentDetails"
                 value={formData.paymentDetails}
                 onChange={(e) =>
@@ -393,10 +432,7 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
             className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
             style={{ height: "6vh" }}
           >
-            <button
-              type="submit"
-              className="w-full bg-purple-500 text-white px-5 py-3 text-sm text-gray-600 rounded-md"
-            >
+            <button type="submit" className="w-full btn-add">
               {staffData?.id ? "Edit" : "Create"}
             </button>
           </div>
