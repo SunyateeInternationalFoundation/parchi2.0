@@ -16,6 +16,13 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import FormatTimestamp from "../../../../constants/FormatTimestamp";
 import { db } from "../../../../firebase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../UI/select";
 import TaskSideBar from "./TaskSideBar";
 
 function Tasks() {
@@ -357,8 +364,23 @@ function Tasks() {
             className="px-4 overflow-y-auto bg-white"
             style={{ height: "82vh" }}
           >
-            <div className="mt-2 flex justify-between cursor-pointer border-b">
+            <div className="mt-2 flex justify-between items-center cursor-pointer border-b">
               <div className="text-lg">{selectedTask.name}</div>
+              <Select
+                defaultValue={selectedTask.status}
+                onValueChange={(val) => {
+                  modifiedTask("status", val);
+                }}
+              >
+                <SelectTrigger className="w-48 h-8 mb-2">
+                  <SelectValue placeholder=" Select PurchasePriceTaxType" />
+                </SelectTrigger>
+                <SelectContent className="h-18">
+                  <SelectItem value="On-Going">On-Going</SelectItem>
+                  <SelectItem value="Delay">Delay</SelectItem>
+                  <SelectItem value="Completed">Completed</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className=" p-2 border-b">
               <div className="flex justify-between ">
@@ -401,15 +423,6 @@ function Tasks() {
                 <div className="w-full border-r-2">
                   <div className="flex items-center justify-between mr-2">
                     <span className="text-blue-700 font-bold">Progress</span>
-                    <select
-                      className="border p-2 rounded cursor-pointer"
-                      defaultValue={selectedTask.status}
-                      onChange={(e) => modifiedTask("status", e.target.value)}
-                    >
-                      <option value="On-Going">On-Going</option>
-                      <option value="Delay">Delay</option>
-                      <option value="Completed">Completed</option>
-                    </select>
                   </div>
                   <div className="text-5xl flex w-full ">
                     <div className=" text-green-700 mr-3">

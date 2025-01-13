@@ -11,6 +11,13 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase"; // Ensure Firebase is configured correctly
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../UI/select";
 
 const Approval = () => {
   const { id } = useParams();
@@ -91,17 +98,21 @@ const Approval = () => {
 
                     <td className="px-5 py-3 text-start">
                       <div>
-                        <select
-                          className="border border-gray-300 rounded px-2 py-1"
-                          value={approval.status}
-                          onChange={(e) =>
-                            handleStatusChange(e.target.value, approval.id)
-                          }
+                        <Select
+                          defaultValue={approval.status}
+                          onValueChange={(val) => {
+                            handleStatusChange(val, approval.id);
+                          }}
                         >
-                          <option value="Pending">Pending</option>
-                          <option value="Accepted">Accepted</option>
-                          <option value="Rejected">Rejected</option>
-                        </select>
+                          <SelectTrigger>
+                            <SelectValue placeholder=" Select PurchasePriceTaxType" />
+                          </SelectTrigger>
+                          <SelectContent className="h-18">
+                            <SelectItem value="Pending">Pending</SelectItem>
+                            <SelectItem value="Accepted">Accepted</SelectItem>
+                            <SelectItem value="Rejected">Rejected</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </td>
 
@@ -124,52 +135,5 @@ const Approval = () => {
     </div>
   );
 };
-
-// const ApprovalCard = ({ approval, projectId, onUpdate }) => {
-//   const [status, setStatus] = useState(approval.status);
-
-//   return (
-//     <div className="bg-white p-5 rounded-lg shadow-md flex justify-between items-center">
-//       <div className="flex items-center">
-//         <img
-//           src={approval.imageUrl || "https://via.placeholder.com/50"}
-//           alt={approval.name}
-//           className="w-16 h-16 rounded-full border-2 border-gray-200 mr-4"
-//         />
-//         <div>
-//           <h2 className="text-lg font-semibold text-gray-800">
-//             {approval.name}
-//           </h2>
-//           <p className="text-sm text-gray-600">
-//             Approver:{" "}
-//             <span className="font-medium">{approval.approvalBelongsTo}</span>
-//           </p>
-//           <p
-//             className={`text-sm font-medium ${
-//               status === "Pending"
-//                 ? "text-yellow-600"
-//                 : status === "Accepted"
-//                 ? "text-green-600"
-//                 : "text-red-600"
-//             }`}
-//           >
-//             Status: {status}
-//           </p>
-//         </div>
-//       </div>
-//       <div>
-//         <select
-//           className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-//           value={status}
-//           onChange={handleStatusChange}
-//         >
-//           <option value="Pending">Pending</option>
-//           <option value="Accepted">Accepted</option>
-//           <option value="Rejected">Rejected</option>
-//         </select>
-//       </div>
-//     </div>
-//   );
-// };
 
 export default Approval;

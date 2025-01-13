@@ -14,6 +14,13 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import FormatTimestamp from "../../../../constants/FormatTimestamp";
 import { db } from "../../../../firebase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../UI/select";
 import PaymentSidebar from "./PaymentSidebar";
 
 const Payment = ({ projectDetails }) => {
@@ -183,14 +190,22 @@ const Payment = ({ projectDetails }) => {
               />
               <IoSearch />
             </div>
-            <div className="flex items-center space-x-4 border px-5  py-3 rounded-md ">
-              <select onChange={(e) => setFilterUser(e.target.value)}>
-                <option value="All"> All</option>
-                <option value="Customer">Customer</option>
-                <option value="Vendors">Vendors</option>
-                <option value="Staff">Staff</option>
-              </select>
-            </div>
+            <Select
+              defaultValue={"All"}
+              onValueChange={(val) => {
+                setFilterUser(val);
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder=" Select PurchasePriceTaxType" />
+              </SelectTrigger>
+              <SelectContent className="h-18">
+                <SelectItem value="All"> All</SelectItem>
+                <SelectItem value="Customer">Customer</SelectItem>
+                <SelectItem value="Vendors">Vendors</SelectItem>
+                <SelectItem value="Staff">Staff</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="w-full">
             <div className=" flex justify-end items-center space-x-4">

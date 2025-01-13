@@ -11,6 +11,13 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase"; // Ensure Firebase is configured correctly
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../UI/select";
 
 const Approval = () => {
   const { id } = useParams();
@@ -91,17 +98,21 @@ const Approval = () => {
 
                     <td className="px-5 py-3 text-start">
                       <div>
-                        <select
-                          className="border border-gray-300 rounded px-2 py-1"
+                        <Select
                           value={approval.status}
-                          onChange={(e) =>
-                            handleStatusChange(e.target.value, approval.id)
+                          onValueChange={(value) =>
+                            handleStatusChange(value, approval.id)
                           }
                         >
-                          <option value="Pending">Pending</option>
-                          <option value="Accepted">Accepted</option>
-                          <option value="Rejected">Rejected</option>
-                        </select>
+                          <SelectTrigger>
+                            <SelectValue placeholder={" Membership Period"} />
+                          </SelectTrigger>
+                          <SelectContent className=" h-26">
+                            <SelectItem value="Pending">Pending</SelectItem>
+                            <SelectItem value="Accepted">Accepted</SelectItem>
+                            <SelectItem value="Rejected">Rejected</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </td>
 

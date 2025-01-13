@@ -17,6 +17,13 @@ import { TbEdit } from "react-icons/tb";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../UI/select";
 
 function ProjectView({ projectDetails, refreshProject }) {
   const { id } = useParams();
@@ -42,9 +49,8 @@ function ProjectView({ projectDetails, refreshProject }) {
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.project;
 
-  const handleUpdate = async (e) => {
+  const handleUpdate = async (value) => {
     try {
-      const { value } = e.target;
       const projectDoc = doc(db, "projects", id);
       await updateDoc(projectDoc, { status: value });
       setProject((val) => ({ ...val, status: value }));
@@ -170,24 +176,33 @@ function ProjectView({ projectDetails, refreshProject }) {
                 {project?.priority}
               </div>
 
-              <select
+              <div
                 className={
-                  "rounded-lg  w-fit p-2 text-xs " +
+                  "rounded-lg " +
                   (project?.status == "Completed"
                     ? "bg-green-100"
                     : project?.status == "On-Going"
                     ? "bg-blue-100"
                     : "bg-red-100")
                 }
-                name="status"
-                onChange={handleUpdate}
-                value={project?.status}
               >
-                <option value="On-Going">On-Going</option>
-                <option value="Delay">Delay</option>
-                <option value="Completed">Completed</option>
-              </select>
-
+                <Select
+                  value={project?.status}
+                  onValueChange={(val) => {
+                    handleUpdate(val);
+                  }}
+                  required
+                >
+                  <SelectTrigger className="w-32 h-8 text-xs">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent className="w-32 h-18">
+                    <SelectItem value="On-Going">On-Going</SelectItem>
+                    <SelectItem value="Delay">Delay</SelectItem>
+                    <SelectItem value="Completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="relative ">
                 <div
                   onClick={() => {

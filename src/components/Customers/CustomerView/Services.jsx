@@ -8,6 +8,13 @@ import {
   LuChevronsRight,
 } from "react-icons/lu";
 import FormatTimestamp from "../../../constants/FormatTimestamp";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../UI/select";
 
 function Services({ servicesList }) {
   const [currentPage, setCurrentPage] = useState(0);
@@ -56,16 +63,22 @@ function Services({ servicesList }) {
               />
               <IoSearch />
             </div>
-            <div
-              className="flex items-center space-x-4  border
-      px-5 py-3 rounded-md  "
+
+            <Select
+              defaultValue={"All"}
+              onValueChange={(val) => {
+                setFilterStatus(val);
+              }}
             >
-              <select onChange={(e) => setFilterStatus(e.target.value)}>
-                <option value="All"> All</option>
-                <option value="Active">Active</option>
-                <option value="InActive">InActive</option>
-              </select>
-            </div>
+              <SelectTrigger>
+                <SelectValue placeholder=" Select PurchasePriceTaxType" />
+              </SelectTrigger>
+              <SelectContent className="h-18">
+                <SelectItem value="All"> All</SelectItem>
+                <SelectItem value="Active">Active</SelectItem>
+                <SelectItem value="InActive">InActive</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </nav>
         <div style={{ height: "96vh" }}>

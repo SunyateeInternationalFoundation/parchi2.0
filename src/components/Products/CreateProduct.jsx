@@ -317,7 +317,7 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
                 <input
                   type="number"
                   name="pricing.sellingPrice.amount"
-                  className="w-full border px-5 py-3 rounded-l-md"
+                  className="w-full input-tag"
                   placeholder="Selling Price"
                   required
                   value={formData.sellingPrice || ""}
@@ -328,21 +328,24 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
                     }))
                   }
                 />
-                <select
-                  className="w-full  border px-5 py-3 rounded-r-md text-gray-600"
-                  name="pricing.sellingPrice.includingTax"
-                  value={formData.sellingPriceTaxType}
-                  onChange={(e) =>
-                    setFormData((val) => ({
-                      ...val,
-                      sellingPriceTaxType:
-                        e.target.value === "true" ? true : false,
-                    }))
-                  }
+
+                <Select
+                  defaultValue={formData.sellingPriceTaxType ? "true" : "false"}
+                  onValueChange={(val) => {
+                    setFormData((pre) => ({
+                      ...pre,
+                      sellingPriceTaxType: val == "true" ? true : false,
+                    }));
+                  }}
                 >
-                  <option value="true">Incl Tax</option>
-                  <option value="false">Excl Tax</option>
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder=" Select SellingPriceTaxType" />
+                  </SelectTrigger>
+                  <SelectContent className="h-18">
+                    <SelectItem value="true">Incl Tax</SelectItem>
+                    <SelectItem value="false">Excl Tax</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div className="space-y-1">
@@ -352,7 +355,7 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
                 <input
                   type="number"
                   name="purchasePricing"
-                  className="w-full border px-5 py-3 rounded-l-md"
+                  className="w-full input-tag"
                   placeholder="Purchase Pricing"
                   value={formData.purchasePrice || ""}
                   onChange={(e) =>
@@ -362,20 +365,25 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
                     }))
                   }
                 />
-                <select
-                  className="w-full  border px-5 py-3 rounded-r-md text-gray-600"
-                  value={formData.purchasePriceTaxType}
-                  onChange={(e) =>
-                    setFormData((val) => ({
-                      ...val,
-                      purchasePriceTaxType:
-                        e.target.value === "true" ? true : false,
-                    }))
+                <Select
+                  defaultValue={
+                    formData.purchasePriceTaxType ? "true" : "false"
                   }
+                  onValueChange={(val) => {
+                    setFormData((pre) => ({
+                      ...pre,
+                      purchasePriceTaxType: val == "true" ? true : false,
+                    }));
+                  }}
                 >
-                  <option value="true">Incl Tax</option>
-                  <option value="false">Excl Tax</option>
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder=" Select PurchasePriceTaxType" />
+                  </SelectTrigger>
+                  <SelectContent className="h-18">
+                    <SelectItem value="true">Incl Tax</SelectItem>
+                    <SelectItem value="false">Excl Tax</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div className="space-y-1">
@@ -385,7 +393,7 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
                 <input
                   type="number"
                   name="discount"
-                  className="w-full border px-5 py-3 rounded-l-md"
+                  className="w-full input-tag"
                   placeholder="Discount"
                   value={formData.discount || ""}
                   onChange={(e) =>
@@ -395,39 +403,47 @@ function CreateProduct({ isOpen, onClose, onProductAdded, onProductUpdated }) {
                     }))
                   }
                 />
-                <select
-                  className="w-full border px-5 py-3 rounded-r-md text-gray-600"
-                  value={formData.discountType}
-                  onChange={(e) =>
-                    setFormData((val) => ({
-                      ...val,
-                      discountType: e.target.value === "true" ? true : false,
-                    }))
-                  }
+                <Select
+                  defaultValue={formData.discountType ? "true" : "false"}
+                  onValueChange={(val) => {
+                    setFormData((pre) => ({
+                      ...pre,
+                      discountType: val == "true" ? true : false,
+                    }));
+                  }}
                 >
-                  <option value="true">%</option>
-                  <option value="false">Fixed</option>
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder=" Select discountType" />
+                  </SelectTrigger>
+                  <SelectContent className="h-18">
+                    <SelectItem value="true">%</SelectItem>
+                    <SelectItem value="false">Fixed</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div className="space-y-1">
               <label className=" text-sm text-gray-600">GST Tax</label>
-              <select
-                className="w-full input-tag text-gray-600"
-                value={formData.tax}
-                onChange={(e) =>
-                  setFormData((val) => ({
-                    ...val,
-                    tax: +e.target.value,
-                  }))
-                }
+              <Select
+                defaultValue={formData.tax}
+                onValueChange={(val) => {
+                  setFormData((pre) => ({
+                    ...pre,
+                    tax: +val,
+                  }));
+                }}
               >
-                <option value={0}>0 %</option>
-                <option value={5}>5 %</option>
-                <option value={12}>12 %</option>
-                <option value={18}>18 %</option>
-                <option value={28}>28 %</option>
-              </select>
+                <SelectTrigger>
+                  <SelectValue placeholder=" Select GST Tax" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={"0"}>0 </SelectItem>
+                  <SelectItem value={"5"}>5</SelectItem>
+                  <SelectItem value={"12"}>12 </SelectItem>
+                  <SelectItem value={"18"}>18</SelectItem>
+                  <SelectItem value={"28"}>28</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1">
               <label className=" text-sm text-gray-600">

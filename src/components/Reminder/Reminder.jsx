@@ -14,6 +14,13 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
 import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../UI/select";
 
 function Reminder() {
   const [activeTab, setActiveTab] = useState("Reminder");
@@ -151,17 +158,22 @@ function Reminder() {
                   setFormData({ ...formData, reminderTime: e.target.value })
                 }
               />
-              <select
-                className="w-full input-tag"
-                value={formData.priority}
-                onChange={(e) =>
-                  setFormData({ ...formData, priority: e.target.value })
-                }
+
+              <Select
+                defaultValue={"Low"}
+                onValueChange={(val) => {
+                  setFormData({ ...formData, priority: val });
+                }}
               >
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-              </select>
+                <SelectTrigger>
+                  <SelectValue placeholder=" Select PurchasePriceTaxType" />
+                </SelectTrigger>
+                <SelectContent className="h-18">
+                  <SelectItem value="Low">Low</SelectItem>
+                  <SelectItem value="Medium">Medium</SelectItem>
+                  <SelectItem value="High">High</SelectItem>
+                </SelectContent>
+              </Select>
               <button className="btn-add" onClick={onAddReminder}>
                 Add
               </button>

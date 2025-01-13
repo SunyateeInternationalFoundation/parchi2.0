@@ -212,7 +212,7 @@ function CreateProject() {
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={"Select Filter"} />
+                    <SelectValue placeholder={"Select Priority"} />
                   </SelectTrigger>
                   <SelectContent className=" h-26">
                     <SelectItem value="Low"> Low</SelectItem>

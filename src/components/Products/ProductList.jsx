@@ -5,6 +5,13 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import addItem from "../../assets/addItem.png";
 import { db } from "../../firebase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../UI/select";
 import CreateProduct from "./CreateProduct";
 
 const ProductList = () => {
@@ -107,7 +114,7 @@ const ProductList = () => {
   }, []);
 
   const filterProduct = products.filter((product) => {
-    if (!searchTerms && !selectedCategory) {
+    if (!searchTerms && selectedCategory == "All") {
       return true;
     }
     const isSearch = product.name
@@ -134,21 +141,27 @@ const ProductList = () => {
               />
               <IoSearch />
             </div>
-            <select
-              className="border
-                px-5  py-3 rounded-md w-full"
-              value={selectedCategory}
-              onChange={(e) => {
-                setSelectedCategory(e.target.value);
+
+            <Select
+              value={selectedCategory || "All"}
+              onValueChange={(val) => {
+                setSelectedCategory(val);
               }}
+              required
             >
-              <option value="">All</option>
-              {categoryList.map((ele) => (
-                <option key={ele} value={ele}>
-                  {ele}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">All</SelectItem>
+
+                {categoryList.map((ele, index) => (
+                  <SelectItem value={ele} key={index}>
+                    {ele}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <button
             className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"

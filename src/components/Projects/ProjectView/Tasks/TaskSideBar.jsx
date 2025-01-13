@@ -1,18 +1,25 @@
 import {
-    addDoc,
-    collection,
-    doc,
-    getDoc,
-    getDocs,
-    query,
-    Timestamp,
-    updateDoc,
-    where,
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  Timestamp,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { db } from "../../../../firebase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../UI/select";
 
 function TaskSideBar({
   isOpen,
@@ -164,171 +171,176 @@ function TaskSideBar({
       onClick={onClose}
     >
       <div
-        className={`bg-white w-96 p-3 pt-2 transform transition-transform overflow-y-auto ${
+        className={`bg-white  pt-2 transform transition-transform  ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ maxHeight: "100vh" }}
+        style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-xl font-semibold ">{typeOf}</h2>
-        <button
-          onClick={onClose}
-          className="absolute text-3xl top-4 right-4 text-gray-600 hover:text-gray-900 cursor-pointer"
+        <div
+          className="flex justify-between items-center border-b px-5 py-3"
+          style={{ height: "6vh" }}
         >
-          <IoMdClose />
-        </button>
+          <h2 className="text-xl font-semibold ">{typeOf}</h2>
+          <button
+            onClick={onClose}
+            className=" text-2xl text-gray-800 hover:text-gray-900 cursor-pointer"
+          >
+            <IoMdClose />
+          </button>
+        </div>
         <form className="space-y-1.5" onSubmit={onSubmit}>
-          {typeOf === "CreateTask" && (
-            <div>
-              <div>
-                <label className="text-sm block font-semibold mt-2">
-                  Task Name
-                </label>
-                <input
-                  type="text"
-                  name="taskName"
-                  className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
-                  placeholder="Task Name"
-                  required
-                  onChange={(e) =>
-                    setFormData((val) => ({ ...val, name: e.target.value }))
-                  }
-                />
-              </div>
-              <div>
-                <label className="text-sm block font-semibold mt-2">
-                  Description
-                </label>
-                <textarea
-                  name="des"
-                  className="w-full border border-gray-300 p-2 rounded-md  max-h-44 min-h-44 focus:outline-none "
-                  placeholder="Description"
-                  required
-                  onChange={(e) =>
-                    setFormData((val) => ({
-                      ...val,
-                      description: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div>
-                <label className="text-sm block font-semibold mt-2">
-                  Priority
-                </label>
+          <div
+            className="space-y-2 px-5 overflow-y-auto"
+            style={{ height: "84vh" }}
+          >
+            {typeOf === "CreateTask" && (
+              <div className="space-y-2">
+                <div className="space-y-1">
+                  <label className="text-sm text-gray-600">Task Name</label>
+                  <input
+                    type="text"
+                    name="taskName"
+                    className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
+                    placeholder="Task Name"
+                    required
+                    onChange={(e) =>
+                      setFormData((val) => ({ ...val, name: e.target.value }))
+                    }
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm text-gray-600">Description</label>
+                  <textarea
+                    name="des"
+                    className="w-full border border-gray-300 p-2 rounded-md  max-h-44 min-h-44 focus:outline-none "
+                    placeholder="Description"
+                    required
+                    onChange={(e) =>
+                      setFormData((val) => ({
+                        ...val,
+                        description: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm text-gray-600">Priority</label>
 
-                <select
-                  className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
-                  onChange={(e) =>
-                    setFormData((val) => ({
-                      ...val,
-                      priority: e.target.value,
-                    }))
-                  }
-                >
-                  <option disabled>Select Priority</option>
-                  <option>High</option>
-                  <option>Medium</option>
-                  <option>Low</option>
-                </select>
+                  <Select
+                    value={formData?.priority}
+                    onValueChange={(val) => {
+                      setFormData((pre) => ({
+                        ...pre,
+                        priority: val,
+                      }));
+                    }}
+                    required
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Priority" />
+                    </SelectTrigger>
+                    <SelectContent className=" h-18">
+                      <SelectItem value="High">High</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="Low">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm text-gray-600">Start Date</label>
+                  <input
+                    type="date"
+                    className="border p-2 rounded w-full  cursor-pointer"
+                    onChange={(e) => {
+                      setFormData((val) => ({
+                        ...val,
+                        startDate: Timestamp.fromDate(new Date(e.target.value)),
+                      }));
+                    }}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm text-gray-600">End Date</label>
+                  <input
+                    type="date"
+                    className="border p-2 rounded w-full  cursor-pointer"
+                    onChange={(e) => {
+                      setFormData((val) => ({
+                        ...val,
+                        endDate: Timestamp.fromDate(new Date(e.target.value)),
+                      }));
+                    }}
+                  />
+                </div>
               </div>
-              <div>
-                <label className="text-sm block font-semibold mt-2">
-                  Start Date
-                </label>
-                <input
-                  type="date"
-                  className="border p-2 rounded w-full  cursor-pointer"
-                  onChange={(e) => {
-                    setFormData((val) => ({
-                      ...val,
-                      startDate: Timestamp.fromDate(new Date(e.target.value)),
-                    }));
-                  }}
-                />
+            )}
+            {typeOf === "AddMileStone" && (
+              <div className="mt-10 space-y-2">
+                {milestoneData.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex justify-between border-b-2 my-2 items-center"
+                  >
+                    <div className="space-y-1">
+                      <div>{item.name}</div>
+                      <div>{DateFormate(item.createdAt)}</div>
+                    </div>
+                    <div>
+                      <input
+                        type="checkbox"
+                        className="w-5 h-5"
+                        checked={selectMileStoneData.includes(item.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectMileStoneData((val) => [...val, item.id]);
+                          } else {
+                            setSelectMileStoneData((val) =>
+                              val.filter((ele) => ele !== item.id)
+                            );
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div>
-                <label className="text-sm block font-semibold mt-2">
-                  End Date
-                </label>
-                <input
-                  type="date"
-                  className="border p-2 rounded w-full  cursor-pointer"
-                  onChange={(e) => {
-                    setFormData((val) => ({
-                      ...val,
-                      endDate: Timestamp.fromDate(new Date(e.target.value)),
-                    }));
-                  }}
-                />
-              </div>
-            </div>
-          )}
-          {typeOf === "AddMileStone" && (
-            <div className="mt-10">
-              {milestoneData.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex justify-between border-b-2 my-2 items-center"
-                >
-                  <div>
+            )}
+            {typeOf === "AddStaff" && (
+              <div className="mt-10 space-y-2">
+                {" "}
+                {staffData.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex justify-between border-b-2 my-2 items-center"
+                  >
                     <div>{item.name}</div>
-                    <div>{DateFormate(item.createdAt)}</div>
+                    <div>
+                      <input
+                        type="checkbox"
+                        className="w-5 h-5"
+                        checked={selectStaffData.includes(item.phone)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectStaffData((val) => [...val, item.phone]);
+                          } else {
+                            setSelectStaffData((val) =>
+                              val.filter((ele) => ele !== item.phone)
+                            );
+                          }
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <input
-                      type="checkbox"
-                      className="w-5 h-5"
-                      checked={selectMileStoneData.includes(item.id)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectMileStoneData((val) => [...val, item.id]);
-                        } else {
-                          setSelectMileStoneData((val) =>
-                            val.filter((ele) => ele !== item.id)
-                          );
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          {typeOf === "AddStaff" && (
-            <div className="mt-10">
-              {" "}
-              {staffData.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex justify-between border-b-2 my-2 items-center"
-                >
-                  <div>{item.name}</div>
-                  <div>
-                    <input
-                      type="checkbox"
-                      className="w-5 h-5"
-                      checked={selectStaffData.includes(item.phone)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectStaffData((val) => [...val, item.phone]);
-                        } else {
-                          setSelectStaffData((val) =>
-                            val.filter((ele) => ele !== item.phone)
-                          );
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          <div className="mt-4">
-            <button
-              type="submit"
-              className="w-full bg-purple-500 text-white p-2 rounded-md mt-4"
-            >
+                ))}
+              </div>
+            )}
+          </div>
+          <div
+            className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
+            style={{ height: "6vh" }}
+          >
+            <button type="submit" className="w-full btn-add">
               Save
             </button>
           </div>

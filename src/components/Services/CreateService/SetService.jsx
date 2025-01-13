@@ -17,6 +17,13 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import addItem from "../../../assets/addItem.png";
 import { db } from "../../../firebase";
 import CreateCustomer from "../../Customers/CreateCustomer";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../UI/select";
 import SideBarAddServices from "./SideBarAddServices";
 
 function SetService() {
@@ -805,25 +812,27 @@ function SetService() {
                 </div>
                 <div className="w-full ">
                   <div>Membership Period</div>
-                  <select
+
+                  <Select
                     value={membershipPeriod}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setMembershipPeriod(value);
-                    }}
-                    className="border p-2 rounded w-full"
+                    onValueChange={(value) => setMembershipPeriod(value)}
                   >
-                    <option value="" disabled>
-                      Membership Period
-                    </option>
-                    <option value="free">Free trial for 15 day</option>
-                    <option value="1">1 month</option>
-                    <option value="3">3 month</option>
-                    <option value="6">6 month</option>
-                    <option value="9">9 month</option>
-                    <option value="12">12 month</option>
-                    <option value="custom">custom</option>
-                  </select>
+                    <SelectTrigger>
+                      <SelectValue placeholder={" Membership Period"} />
+                    </SelectTrigger>
+                    <SelectContent className=" h-26">
+                      <SelectItem value="free">
+                        Free trial for 15 day
+                      </SelectItem>
+                      <SelectItem value="1">1 Months</SelectItem>
+                      <SelectItem value="3">3 Months</SelectItem>
+                      <SelectItem value="6">6 Months</SelectItem>
+                      <SelectItem value="9">9 Months</SelectItem>
+                      <SelectItem value="12">12 Months</SelectItem>
+                      <SelectItem value="custom">custom Months</SelectItem>
+                    </SelectContent>
+                  </Select>
+
                   {membershipPeriod === "custom" && (
                     <div>
                       <div>Select Custom Date</div>
@@ -843,37 +852,37 @@ function SetService() {
 
                 <div className="w-full ">
                   <div>Sign</div>
-                  <select
-                    className="border p-2 rounded w-full"
-                    value={" "}
-                    onChange={() => {}}
-                  >
-                    <option value=" " disabled>
-                      Select Sign
-                    </option>
-                  </select>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder={"Select Sign"} />
+                    </SelectTrigger>
+                    <SelectContent className=" h-26"></SelectContent>
+                  </Select>
                 </div>
                 <div className="w-full ">
                   <div>Payment Mode</div>
-                  <select
-                    className="border p-2 rounded w-full"
+                  <Select
                     value={formData.mode}
-                    onChange={(e) =>
+                    onValueChange={(value) =>
                       setFormData((val) => ({
                         ...val,
-                        mode: e.target.value,
+                        mode: value,
                       }))
                     }
                   >
-                    <option value="" disabled>
-                      Select Payment Mode
-                    </option>
-                    <option value="Cash">Cash</option>
-                    <option value="Emi">Emi</option>
-                    <option value="Cheque">Cheque</option>
-                    <option value="Net Banking">Net Banking</option>
-                    <option value="Credit/Debit Card">Credit/Debit Card</option>
-                  </select>
+                    <SelectTrigger>
+                      <SelectValue placeholder={"Select Payment Mode"} />
+                    </SelectTrigger>
+                    <SelectContent className=" h-26">
+                      <SelectItem value="Cash">Cash</SelectItem>
+                      <SelectItem value="Emi">Emi</SelectItem>
+                      <SelectItem value="Cheque">Cheque</SelectItem>
+                      <SelectItem value="Net Banking">Net Banking</SelectItem>
+                      <SelectItem value="Credit/Debit Card">
+                        Credit/Debit Card
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
