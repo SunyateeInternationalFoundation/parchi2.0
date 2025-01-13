@@ -13,6 +13,13 @@ import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { db } from "../../../../firebase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../UI/select";
 
 function InventoryAddSideBar({ projectId, isOpen, onClose, isMaterialAdd }) {
   const [itemList, setItemList] = useState([]);
@@ -142,133 +149,86 @@ function InventoryAddSideBar({ projectId, isOpen, onClose, isMaterialAdd }) {
       onClick={onClose}
     >
       <div
-        className={`bg-white w-96 p-3 pt-2 transform transition-transform overflow-y-auto ${
+        className={`bg-white  pt-2 transform transition-transform  ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ maxHeight: "100vh" }}
+        style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={onClose}
-          className="absolute text-3xl top-4 right-4 text-gray-600 hover:text-gray-900 cursor-pointer"
+        <div
+          className="flex justify-between items-center border-b px-5 py-3"
+          style={{ height: "6vh" }}
         >
-          <IoMdClose />
-        </button>
-        <h1 className="text-xl font-bold text-gray-800 mb-4">Add Material</h1>
-        <div className="space-y-4">
-          <div>
-            <select
-              className="mt-1 p-2 block w-full  border rounded-md shadow-sm focus:ring-blue-500  sm:text-sm"
-              onChange={onSelectItem}
-              defaultValue=""
-            >
-              <option value="" disabled>
-                Select Item
-              </option>
-              {itemList.map((item) => (
-                <option
-                  value={item.id}
-                  key={item.id}
-                  disabled={item.stock === 0}
-                >
-                  {item.name} - {item.stock} Quantity - ₹{item.sellingPrice} Pc
-                </option>
-              ))}
-            </select>
-          </div>
-          {/* <div className="relative">
-            <label
-              className="block text-sm font-medium text-gray-700 "
-              htmlFor="select-item"
-            >
-              Select Item
-            </label>
-            <div
-              className="mt-1 block w-full  rounded-md border shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm relative"
-              onClick={() => setShowDropdownItem(!showDropdownItem)}
-            >
-              <div className="p-2 cursor-pointer">
-                {selectedItem
-                  ? `${selectedItem.name} - ${selectedItem.quantity} units - ₹ ${selectedItem.price}`
-                  : "Select Item"}
-              </div>
-            </div>
-            {showDropdownItem && (
-              <div className="absolute z-10 mt-2 w-full bg-white border rounded-md shadow-lg max-h-48 overflow-y-auto">
-                {loadingItems ? (
-                  <div className="p-4 text-gray-500 text-center">
-                    Loading...
-                  </div>
-                ) : itemList.length > 0 ? (
-                  itemList.map((item) => (
-                    <div
+          <h2 className="text-sm text-gray-600 ">Add Material</h2>
+          <button
+            className=" text-2xl text-gray-800 hover:text-gray-900 cursor-pointer"
+            onClick={onClose}
+          >
+            <IoMdClose size={24} />
+          </button>
+        </div>
+
+        <form onSubmit={handleAddMaterial}>
+          <div
+            className="space-y-2 px-5 overflow-y-auto"
+            style={{ height: "84vh" }}
+          >
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">Select Product</label>
+              <Select onValueChange={onSelectItem}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select PaymentMode" />
+                </SelectTrigger>
+                <SelectContent>
+                  {itemList.map((item) => (
+                    <SelectItem
+                      value={item.id}
                       key={item.id}
-                      className="p-2 hover:bg-blue-100 cursor-pointer "
-                      onClick={() => {
-                        setSelectedItem({
-                          id: item.id,
-                          name: item.name,
-                          quantity: item.stock?.quantity,
-                          price: item.pricing?.sellingPrice?.amount,
-                        });
-                        setShowDropdownItem(false);
-                      }}
+                      disabled={item.stock === 0}
                     >
-                      {item.name} - {item.stock?.quantity} units - ₹
-                      {item.pricing?.sellingPrice?.amount}
-                    </div>
-                  ))
-                ) : (
-                  <div className="p-2 text-gray-500 text-center">
-                    No Items Found
-                  </div>
-                )}
-              </div>
-            )}
-          </div> */}
-
-          <div>
-            <label
-              className="block text-sm font-medium text-gray-700"
-              htmlFor="quantity"
-            >
-              Quantity
-            </label>
-            <input
-              type="number"
-              id="quantity"
-              value={quantity || ""}
-              onChange={(e) => setQuantity(e.target.value)}
-              className="mt-1 p-2 block w-full  border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              placeholder="Enter quantity"
-            />
+                      {item.name} - {item.stock} Quantity - ₹{item.sellingPrice}{" "}
+                      Pc
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 " htmlFor="quantity">
+                Quantity
+              </label>
+              <input
+                type="number"
+                id="quantity"
+                value={quantity || ""}
+                onChange={(e) => setQuantity(e.target.value)}
+                className="w-full input-tag"
+                placeholder="Enter quantity"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600 " htmlFor="description">
+                Description
+              </label>
+              <input
+                type="text"
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full input-tag"
+                placeholder="Enter description"
+              />
+            </div>
           </div>
-          <div>
-            <label
-              className="block text-sm font-medium text-gray-700"
-              htmlFor="description"
-            >
-              Description
-            </label>
-            <input
-              type="text"
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="mt-1 p-2 block w-full  border rounded-md shadow"
-              placeholder="Enter description"
-            />
-          </div>
-
-          <div className="mt-6">
-            <button
-              onClick={handleAddMaterial}
-              className="w-full py-2 px-4 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none"
-            >
+          <div
+            className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
+            style={{ height: "6vh" }}
+          >
+            <button type="submit" className="w-full btn-add">
               Add Material
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );

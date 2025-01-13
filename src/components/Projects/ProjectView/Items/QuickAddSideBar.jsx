@@ -137,107 +137,116 @@ function QuickAddSideBar({ isOpen, onClose, isMaterialAdd }) {
       onClick={onClose}
     >
       <div
-        className={`bg-white w-96 p-3 pt-2  transform transition-transform overflow-y-auto ${
+        className={`bg-white  pt-2 transform transition-transform  ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ maxHeight: "100vh" }}
+        style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-xl font-semibold mb-5">Add Items</h2>
-        <button
-          onClick={onClose}
-          className="absolute text-3xl top-4 right-4 text-gray-600 hover:text-gray-900 cursor-pointer"
+        <div
+          className="flex justify-between items-center border-b px-5 py-3"
+          style={{ height: "6vh" }}
         >
-          <IoMdClose />
-        </button>
-        <div className="space-y-3">
-          <div>
-            <label className="text-sm block font-semibold mt-2">
-              Item Name
-            </label>
-            <input
-              type="text"
-              name="ItemName"
-              className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
-              placeholder="Item Name"
-              required
-              onChange={(e) =>
-                setFormData((val) => ({ ...val, itemName: e.target.value }))
-              }
-            />
-          </div>
-          <div>
-            <label className="text-sm block font-semibold mt-2">
-              Description
-            </label>
-            <input
-              type="text"
-              name="ItemName"
-              className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
-              placeholder="Description"
-              required
-              onChange={(e) =>
-                setFormData((val) => ({ ...val, description: e.target.value }))
-              }
-            />
-          </div>
-          <div>
-            <label className="text-sm block font-semibold mt-2">Barcode</label>
-            <input
-              type="text"
-              name="barcode"
-              className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
-              placeholder="Barcode"
-              required
-              onChange={(e) =>
-                setFormData((val) => ({ ...val, barcode: e.target.value }))
-              }
-            />
-          </div>
-          <div className="flex items-center space-x-2">
-            <div>
-              <label className="text-sm block font-semibold">Price</label>
-              <input
-                type="number"
-                name="ItemName"
-                className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
-                placeholder="Price"
-                required
-                onChange={(e) =>
-                  setFormData((val) => ({
-                    ...val,
-                    itemPricePerPiece: +e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className="text-lg pt-6 font-bold">X</div>
-            <div>
-              <label className="text-sm block font-semibold">Quantity</label>
-              <input
-                type="number"
-                name="ItemName"
-                className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
-                placeholder="Quantity"
-                required
-                onChange={(e) =>
-                  setFormData((val) => ({
-                    ...val,
-                    quantity: +e.target.value,
-                  }))
-                }
-              />
-            </div>
-          </div>
-        </div>
-        <div className="mt-4">
+          <h2 className="text-sm text-gray-600 ">Quick Add</h2>
           <button
-            className="w-full bg-blue-700 text-white p-2 rounded-md mt-4"
-            onClick={onSubmit}
+            onClick={onClose}
+            className=" text-2xl text-gray-800 hover:text-gray-900 cursor-pointer"
           >
-            + Add Material
+            <IoMdClose />
           </button>
         </div>
+        <form onSubmit={onSubmit}>
+          <div
+            className="space-y-2 px-5 overflow-y-auto"
+            style={{ height: "84vh" }}
+          >
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600">Item Name</label>
+              <input
+                type="text"
+                name="ItemName"
+                className="w-full input-tag"
+                placeholder="Item Name"
+                required
+                onChange={(e) =>
+                  setFormData((val) => ({ ...val, itemName: e.target.value }))
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600">Description</label>
+              <input
+                type="text"
+                name="ItemName"
+                className="w-full input-tag"
+                placeholder="Description"
+                required
+                onChange={(e) =>
+                  setFormData((val) => ({
+                    ...val,
+                    description: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm text-gray-600">Barcode</label>
+              <input
+                type="text"
+                name="barcode"
+                className="w-full input-tag"
+                placeholder="Barcode"
+                required
+                onChange={(e) =>
+                  setFormData((val) => ({ ...val, barcode: e.target.value }))
+                }
+              />
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="space-y-1">
+                <label className="text-sm text-gray-600">Price</label>
+                <input
+                  type="number"
+                  name="ItemName"
+                  className="w-full input-tag"
+                  placeholder="Price"
+                  required
+                  onChange={(e) =>
+                    setFormData((val) => ({
+                      ...val,
+                      itemPricePerPiece: +e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="text-lg pt-6 font-bold">X</div>
+              <div className="space-y-1">
+                <label className="text-sm text-gray-600">Quantity</label>
+                <input
+                  type="number"
+                  name="ItemName"
+                  className="w-full input-tag"
+                  placeholder="Quantity"
+                  required
+                  onChange={(e) =>
+                    setFormData((val) => ({
+                      ...val,
+                      quantity: +e.target.value,
+                    }))
+                  }
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
+            style={{ height: "6vh" }}
+          >
+            <button type="submit" className="w-full btn-add">
+              + Add Material
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

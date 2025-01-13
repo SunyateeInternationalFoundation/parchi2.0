@@ -13,6 +13,13 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import FormatTimestamp from "../../../../constants/FormatTimestamp";
 import { db } from "../../../../firebase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../UI/select";
 
 const Files = () => {
   const [loading, setLoading] = useState(false);
@@ -153,8 +160,7 @@ const Files = () => {
     }
   };
 
-  const handleSelectionChange = (e) => {
-    const selectedId = e.target.value;
+  const handleSelectionChange = (selectedId) => {
     const selectedItem = (activeTab === "customers" ? customers : vendors).find(
       (item) => item.id === selectedId
     );
@@ -267,113 +273,132 @@ const Files = () => {
           onClick={() => setIsModalOpen(false)}
         >
           <div
-            className="bg-white w-96 p-3 pt-2  overflow-y-auto"
+            className="bg-white  pt-2 transform transition-transform "
+            style={{ maxHeight: "100vh", width: "500px" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              className="absolute top-4 right-4 text-gray-600 text-xl"
-              onClick={() => setIsModalOpen(false)}
+            <div
+              className="flex justify-between items-center border-b px-5 py-3"
+              style={{ height: "6vh" }}
             >
-              <IoMdClose size={24} />
-            </button>
-            <h2 className="text-xl font-bold mb-4">Add Files to Project</h2>
-            <form onSubmit={handleAddFile}>
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">File Name</label>
-                <input
-                  type="text"
-                  className="w-full border border-gray-300 rounded p-2"
-                  placeholder="Enter file name"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  required
-                />
-              </div>
-
-              <div className="flex justify-around mb-4">
-                <button
-                  onClick={() => handleTabClick("customers")}
-                  className={`px-4 py-1 rounded-full ${
-                    activeTab === "customers"
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-200 text-gray-500"
-                  }`}
-                >
-                  Customers
-                </button>
-                <button
-                  onClick={() => handleTabClick("vendors")}
-                  className={`px-4 py-1 rounded-full ${
-                    activeTab === "vendors"
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-200 text-gray-500"
-                  }`}
-                >
-                  Vendors
-                </button>
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">
-                  Select {activeTab.slice(0, -1)}
-                </label>
-                <select
-                  className="w-full border border-gray-300 rounded p-2"
-                  value={formData.customerOrVendorRef}
-                  onChange={handleSelectionChange}
-                  required
-                >
-                  <option value="">Select {activeTab.slice(0, -1)}</option>
-                  {(activeTab === "customers" ? customers : vendors).map(
-                    (item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.name}
-                      </option>
-                    )
-                  )}
-                </select>
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Upload File</label>
-
-                <label
-                  htmlFor="file"
-                  className="cursor-pointer p-3 rounded-md border-2 border-dashed border shadow-[0_0_200px_-50px_rgba(0,0,0,0.72)]"
-                >
-                  <div className="flex  items-center justify-center gap-1">
-                    {formData?.file?.name ? (
-                      <span className="py-1 px-4">{formData?.file?.name}</span>
-                    ) : (
-                      <>
-                        <svg
-                          viewBox="0 0 640 512"
-                          className="h-8 fill-gray-600"
-                        >
-                          <path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z" />
-                        </svg>
-                        <span className="py-1 px-4">Upload Image</span>
-                      </>
-                    )}
-                  </div>
-                  <input
-                    id="file"
-                    type="file"
-                    className="hidden"
-                    onChange={(e) =>
-                      setFormData({ ...formData, file: e.target.files[0] })
-                    }
-                  />
-                </label>
-              </div>
+              <h2 className="text-sm text-gray-600 ">Add Files to Project</h2>
               <button
-                type="submit"
-                className="bg-blue-500 text-white rounded p-2 w-full"
-                disabled={loading}
+                className=" text-2xl text-gray-800 hover:text-gray-900 cursor-pointer"
+                onClick={() => setIsModalOpen(false)}
               >
-                {loading ? "Uploading..." : "Upload File"}
+                <IoMdClose size={24} />
               </button>
+            </div>
+
+            <form onSubmit={handleAddFile}>
+              <div
+                className="space-y-2 px-5 overflow-y-auto"
+                style={{ height: "84vh" }}
+              >
+                <div className="space-y-1">
+                  <label className="text-sm text-gray-600">File Name</label>
+                  <input
+                    type="text"
+                    className="w-full input-tag"
+                    placeholder="Enter file name"
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+
+                <div className="flex space-x-3 space-y-1">
+                  <button
+                    type="button"
+                    onClick={() => handleTabClick("customers")}
+                    className={`btn-outline-black ${
+                      activeTab === "customers" && "bg-black text-white"
+                    }`}
+                  >
+                    Customers
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleTabClick("vendors")}
+                    className={`btn-outline-black ${
+                      activeTab === "vendors" && "bg-black text-white"
+                    }`}
+                  >
+                    Vendors
+                  </button>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-sm text-gray-600">
+                    Select {activeTab.slice(0, -1)}
+                  </label>
+
+                  <Select
+                    value={formData.customerOrVendorRef}
+                    onValueChange={handleSelectionChange}
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={`Select ${activeTab.slice(0, -1)}`}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(activeTab === "customers" ? customers : vendors).map(
+                        (item) => (
+                          <SelectItem key={item.id} value={item.id}>
+                            {item.name}
+                          </SelectItem>
+                        )
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid space-y-1">
+                  <label className="text-sm text-gray-600">Upload File</label>
+
+                  <label
+                    htmlFor="file"
+                    className="cursor-pointer p-3 rounded-md border-2 border-dashed border shadow-[0_0_200px_-50px_rgba(0,0,0,0.72)]"
+                  >
+                    <div className="flex  items-center justify-center gap-1">
+                      {formData?.file?.name ? (
+                        <span className="py-1 px-4">
+                          {formData?.file?.name}
+                        </span>
+                      ) : (
+                        <>
+                          <svg
+                            viewBox="0 0 640 512"
+                            className="h-8 fill-gray-600"
+                          >
+                            <path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z" />
+                          </svg>
+                          <span className="py-1 px-4">Upload Image</span>
+                        </>
+                      )}
+                    </div>
+                    <input
+                      id="file"
+                      type="file"
+                      className="hidden"
+                      onChange={(e) =>
+                        setFormData({ ...formData, file: e.target.files[0] })
+                      }
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div
+                className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
+                style={{ height: "6vh" }}
+              >
+                <button type="submit" className="w-full btn-add">
+                  {loading ? "Uploading..." : "Upload File"}
+                </button>
+              </div>
             </form>
           </div>
         </div>

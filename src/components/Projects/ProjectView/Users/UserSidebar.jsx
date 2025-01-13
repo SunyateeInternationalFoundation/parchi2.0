@@ -154,24 +154,29 @@ function UserSidebar({ isOpen, onClose, projectId, projectDetails, Refresh }) {
       onClick={onClose}
     >
       <div
-        className={`bg-white w-96 p-3 pt-2 transform transition-transform overflow-y-auto ${
+        className={`bg-white  pt-2 transform transition-transform  ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ maxHeight: "100vh" }}
+        style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-xl font-semibold mb-5">Project Members</h2>
-        <button
-          onClick={onClose}
-          className="absolute text-3xl top-4 right-4 text-gray-600 hover:text-gray-900 cursor-pointer"
+        <div
+          className="flex justify-between items-center border-b px-5 py-3"
+          style={{ height: "6vh" }}
         >
-          <IoMdClose />
-        </button>
-        <div>
+          <h2 className="text-sm text-gray-600 ">Project Members</h2>
+          <button
+            onClick={onClose}
+            className="absolute text-3xl top-4 right-4 text-gray-600 hover:text-gray-900 cursor-pointer"
+          >
+            <IoMdClose />
+          </button>
+        </div>
+        <div className=" p-5">
           <input
             type="text"
             placeholder="Search"
-            className="border p-2 rounded w-full mb-4"
+            className="input-tag w-full"
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
@@ -179,44 +184,38 @@ function UserSidebar({ isOpen, onClose, projectId, projectDetails, Refresh }) {
           <div className="flex justify-around mb-4">
             <button
               onClick={() => handleTabClick("customers")}
-              className={`px-4 py-1 rounded-full ${
-                activeNav === "customers"
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-200 text-gray-500"
+              className={`btn-outline-black ${
+                activeNav === "customers" && "bg-black text-white"
               }`}
             >
               Customers
             </button>
             <button
               onClick={() => handleTabClick("vendors")}
-              className={`px-4 py-1 rounded-full ${
-                activeNav === "vendors"
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-200 text-gray-500"
+              className={`btn-outline-black ${
+                activeNav === "vendors" && "bg-black text-white"
               }`}
             >
               Vendors
             </button>
             <button
               onClick={() => handleTabClick("staff")}
-              className={`px-4 py-1 rounded-full ${
-                activeNav === "staff"
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-200 text-gray-500"
+              className={`btn-outline-black ${
+                activeNav === "staff" && "bg-black text-white"
               }`}
             >
               Staff
             </button>
           </div>
         </div>
-        <div className="overflow-y-auto h-64">
+        <div className="space-y-2  overflow-y-auto" style={{ height: "84vh" }}>
           {loading ? (
             <div className="text-center py-6">Loading...</div>
           ) : (
             modifiedData.map((item) => (
               <div
                 key={item.id}
-                className="flex justify-between items-center py-2 border-b"
+                className="flex justify-between items-center py-2 border-b px-5"
               >
                 <div>
                   <div className="font-bold">{item.name}</div>
@@ -243,12 +242,14 @@ function UserSidebar({ isOpen, onClose, projectId, projectDetails, Refresh }) {
           )}
         </div>
 
-        <button
-          className="bg-green-500 text-white w-full mt-4 py-2 rounded-md"
-          onClick={onAddSelectedItems}
+        <div
+          className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
+          style={{ height: "8vh" }}
         >
-          Save
-        </button>
+          <button className="w-full btn-add" onClick={onAddSelectedItems}>
+            Save
+          </button>
+        </div>
       </div>
     </div>
   );

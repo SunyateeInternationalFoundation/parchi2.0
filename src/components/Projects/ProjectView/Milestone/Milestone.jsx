@@ -8,6 +8,7 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { db } from "../../../../firebase"; // Ensure Firebase is initialized and configured
@@ -68,10 +69,7 @@ const Milestone = () => {
         </div>
 
         {(userDetails.selectedDashboard === "" || role?.access) && (
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-blue-500 text-white px-2 rounded hover:bg-blue-600 transition"
-          >
+          <button onClick={() => setIsModalOpen(true)} className="btn-add">
             + Create Milestone
           </button>
         )}
@@ -154,32 +152,45 @@ const AddMilestoneModal = ({ onClose, onAddMilestone, projectId }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-end">
-      <div className="bg-white w-full max-w-sm p-6 shadow-lg">
-        <h2 className="text-xl font-bold mb-4">Add Milestone</h2>
-        <div className="mb-4">
-          <label htmlFor="milestoneName" className="block text-gray-700 mb-2">
+      <div
+        className={`bg-white  pt-2 transform transition-transform  `}
+        style={{ maxHeight: "100vh", width: "500px" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div
+          className="flex justify-between items-center border-b px-5 py-3"
+          style={{ height: "6vh" }}
+        >
+          <h2 className="text-sm text-gray-600 ">Add Milestone</h2>
+          <button
+            className=" text-2xl text-gray-800 hover:text-gray-900 cursor-pointer"
+            onClick={onClose}
+          >
+            <IoMdClose size={24} />
+          </button>
+        </div>
+        <div
+          className="space-y-2 px-5 overflow-y-auto"
+          style={{ height: "84vh" }}
+        >
+          <label htmlFor="milestoneName" className="text-sm text-gray-600">
             Milestone Name
           </label>
           <input
             id="milestoneName"
             type="text"
-            className="w-full p-2 border rounded"
+            className="w-full input-tag"
             value={milestoneName}
             onChange={(e) => setMilestoneName(e.target.value)}
           />
         </div>
-        <div className="flex justify-between">
-          <button
-            onClick={onClose}
-            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
-          >
-            Cancel
-          </button>
+        <div
+          className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
+          style={{ height: "6vh" }}
+        >
           <button
             onClick={handleAddMilestone}
-            className={`${
-              isLoading ? "bg-blue-300" : "bg-blue-500"
-            } text-white px-4 py-2 rounded hover:bg-blue-600 transition`}
+            className="w-full btn-add"
             disabled={isLoading}
           >
             {isLoading ? "Adding..." : "Add Milestone"}
