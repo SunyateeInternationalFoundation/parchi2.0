@@ -6,6 +6,7 @@ import {
   Timestamp,
   where,
 } from "firebase/firestore";
+import { CalendarIcon } from "lucide-react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
@@ -13,6 +14,12 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import addItem from "../assets/addItem.png";
 import CreateCustomer from "../components/Customers/CreateCustomer";
+import { Calendar } from "../components/UI/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../components/UI/popover";
 import {
   Select,
   SelectContent,
@@ -22,6 +29,7 @@ import {
 } from "../components/UI/select";
 import CreateVendor from "../components/Vendors/CreateVendor";
 import { db } from "../firebase";
+import { cn, formatDate } from "../lib/utils";
 import SelectProductSide from "./SelectProductSide";
 
 function SetForm(props) {
@@ -623,34 +631,101 @@ function SetForm(props) {
                   <label className="text-sm text-gray-600">
                     {formName} Date <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="date"
-                    value={DateFormate(formData.date)}
-                    className="border p-1 rounded-md w-full mt-1  px-5  py-2"
-                    onChange={(e) => {
-                      setFormData((prevFormData) => ({
-                        ...prevFormData,
-                        date: Timestamp.fromDate(new Date(e.target.value)),
-                      }));
-                    }}
-                    required
-                  />
+
+                  <div>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button
+                          className={cn(
+                            "w-full flex justify-between items-center input-tag ",
+                            !formData.date?.seconds && "text-muted-foreground"
+                          )}
+                        >
+                          {formData.date?.seconds ? (
+                            formatDate(
+                              new Date(
+                                formData.date?.seconds * 1000 +
+                                  formData.date?.nanoseconds / 1000000
+                              ),
+                              "PPP"
+                            )
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="h-4 w-4 " />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            new Date(
+                              formData.date?.seconds * 1000 +
+                                formData.date?.nanoseconds / 1000000
+                            )
+                          }
+                          onSelect={(val) => {
+                            setFormData((pre) => ({
+                              ...pre,
+                              date: Timestamp.fromDate(val),
+                            }));
+                          }}
+                          initialFocus
+                          required
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
                 <div>
                   <label className="text-sm text-gray-600">
                     Due Date <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="date"
-                    value={DateFormate(formData.dueDate)}
-                    className="border p-1 rounded-md w-full mt-1  px-5  py-2"
-                    onChange={(e) => {
-                      setFormData((prevFormData) => ({
-                        ...prevFormData,
-                        dueDate: Timestamp.fromDate(new Date(e.target.value)),
-                      }));
-                    }}
-                  />
+                  <div>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button
+                          className={cn(
+                            "w-full flex justify-between   items-center input-tag ",
+                            !formData.dueDate?.seconds &&
+                              "text-muted-foreground"
+                          )}
+                        >
+                          {formData.dueDate?.seconds ? (
+                            formatDate(
+                              new Date(
+                                formData.dueDate?.seconds * 1000 +
+                                  formData.dueDate?.nanoseconds / 1000000
+                              ),
+                              "PPP"
+                            )
+                          ) : (
+                            <span>Due Date</span>
+                          )}
+                          <CalendarIcon className="h-4 w-4 " />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            new Date(
+                              formData.dueDate?.seconds * 1000 +
+                                formData.dueDate?.nanoseconds / 1000000
+                            )
+                          }
+                          onSelect={(val) => {
+                            setFormData((prevFormData) => ({
+                              ...prevFormData,
+                              dueDate: Timestamp.fromDate(new Date(val)),
+                            }));
+                          }}
+                          initialFocus
+                          required
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
                 <div>
                   <label className="text-sm text-gray-600">
@@ -1018,7 +1093,7 @@ function SetForm(props) {
                   <div>Sign</div>
                   <Select>
                     <SelectTrigger>
-                      <SelectValue placeholder=" Select book" />
+                      <SelectValue placeholder=" Select Sign" />
                     </SelectTrigger>
                     <SelectContent>
                       {/* {books.map((book) => (

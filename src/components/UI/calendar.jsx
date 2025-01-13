@@ -19,7 +19,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }) {
         table: "w-full border-collapse space-y-1",
         head_row: "flex",
         head_cell:
-          "flex-1 text-muted-foreground rounded-md w-9 font-normal text-[0.8rem] ",
+          "flex-1 text-gray-100 rounded-md w-9 font-normal text-[0.8rem] ",
         row: "flex w-full gap-1 mt-2",
         cell: "flex-1 text-center text-sm p-0 relative [&:has([aria-selected])]:bg-primary [&:has([aria-selected])]:rounded-md focus-within:relative focus-within:z-20",
         // first:
@@ -28,8 +28,8 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }) {
         day_selected:
           "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground w-full ",
         day_today: "bg-accent text-accent-foreground",
-        day_outside: "text-muted-foreground opacity-50",
-        day_disabled: "text-muted-foreground opacity-50",
+        day_outside: "text-gray-100 opacity-50",
+        day_disabled: "text-gray-100 opacity-50",
         day_range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",

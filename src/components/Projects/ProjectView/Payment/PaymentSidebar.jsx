@@ -241,7 +241,7 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
                   <PopoverTrigger asChild>
                     <button
                       className={cn(
-                        "w-full flex justify-between input-tag ",
+                        "w-full flex justify-between items-center input-tag ",
                         !formData.date?.seconds && "text-muted-foreground"
                       )}
                     >

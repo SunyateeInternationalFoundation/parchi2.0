@@ -132,8 +132,8 @@ function InventoryAddSideBar({ projectId, isOpen, onClose, isMaterialAdd }) {
       alert("Failed to add material. Please try again.");
     }
   };
-  function onSelectItem(e) {
-    const data = itemList.find((ele) => ele.id === e.target.value);
+  function onSelectItem(id) {
+    const data = itemList.find((ele) => ele.id === id);
     setSelectedItem({
       id: data.id,
       name: data.name,

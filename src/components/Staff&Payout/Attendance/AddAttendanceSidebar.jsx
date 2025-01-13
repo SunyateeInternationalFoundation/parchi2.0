@@ -183,24 +183,11 @@ function AddAttendanceSidebar({
           >
             <div>
               <label className="text-sm block font-semibold mt-2">Date</label>
-              <input
-                type="date"
-                className="w-full border border-gray-300 p-2 rounded-md  focus:outline-none"
-                required
-                value={DateFormate()}
-                onChange={(e) =>
-                  setAttendanceForm((val) => ({
-                    ...val,
-                    date: Timestamp.fromDate(new Date(e.target.value)),
-                  }))
-                }
-                onKeyDown={(e) => e.preventDefault()}
-              />
               <Popover>
                 <PopoverTrigger asChild>
                   <button
                     className={cn(
-                      "w-full flex justify-between input-tag ",
+                      "w-full flex justify-between items-center input-tag ",
                       !attendanceForm.date?.seconds && "text-muted-foreground"
                     )}
                   >

@@ -261,7 +261,7 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
                 <PopoverTrigger asChild>
                   <button
                     className={cn(
-                      "w-full flex justify-between input-tag ",
+                      "w-full flex justify-between items-center input-tag ",
                       !formData.dateOfJoining?.seconds &&
                         "text-muted-foreground"
                     )}
