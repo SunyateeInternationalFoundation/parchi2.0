@@ -7,11 +7,15 @@ import {
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
+import { Calendar1Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
+import { cn, formatDate } from "../../../lib/utils";
+import { Calendar } from "../../UI/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../../UI/popover";
 import {
   Select,
   SelectContent,
@@ -184,26 +188,99 @@ function CreateProject() {
             <h2 className="mb-2">Timelines</h2>
             <div className="grid grid-cols-3 gap-4 rounded-lg">
               <div>
-                <label className="text-gray-600">Start Date</label>
-                <input
-                  type="date"
-                  className="border p-3 rounded-lg w-full mt-1"
-                  defaultValue={DateFormate(projectForm.startDate) || ""}
-                  onChange={(e) =>
-                    handleDateChange("startDate", e.target.value)
-                  }
-                />
+                <label className="text-gray-600">
+                  Start Date <span className="text-red-500">*</span>
+                </label>
+
+                <div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button
+                        className={cn(
+                          "w-full flex justify-between items-center input-tag ",
+                          !projectForm.startDate?.seconds &&
+                            "text-muted-foreground"
+                        )}
+                      >
+                        {projectForm.startDate?.seconds ? (
+                          formatDate(
+                            new Date(
+                              projectForm.startDate?.seconds * 1000 +
+                                projectForm.startDate?.nanoseconds / 1000000
+                            ),
+                            "PPP"
+                          )
+                        ) : (
+                          <span className="text-gray-600">Pick a date</span>
+                        )}
+                        <Calendar1Icon className="h-4 w-4 " />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="">
+                      <Calendar
+                        mode="single"
+                        selected={
+                          new Date(
+                            projectForm.startDate?.seconds * 1000 +
+                              projectForm.startDate?.nanoseconds / 1000000
+                          )
+                        }
+                        onSelect={(val) => {
+                          handleDateChange("startDate", val);
+                        }}
+                        initialFocus
+                        required
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
               <div>
                 <label className="text-gray-600">Due Date</label>
-                <input
-                  type="date"
-                  className="border p-3 rounded-lg w-full mt-1"
-                  defaultValue={DateFormate(projectForm.dueDate) || ""}
-                  onChange={(e) => handleDateChange("dueDate", e.target.value)}
-                />
+
+                <div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button
+                        className={cn(
+                          "w-full flex justify-between items-center input-tag ",
+                          !projectForm.dueDate?.seconds &&
+                            "text-muted-foreground"
+                        )}
+                      >
+                        {projectForm.dueDate?.seconds ? (
+                          formatDate(
+                            new Date(
+                              projectForm.dueDate?.seconds * 1000 +
+                                projectForm.dueDate?.nanoseconds / 1000000
+                            ),
+                            "PPP"
+                          )
+                        ) : (
+                          <span className="text-gray-600">Pick a date</span>
+                        )}
+                        <Calendar1Icon className="h-4 w-4 " />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="">
+                      <Calendar
+                        mode="single"
+                        selected={
+                          new Date(
+                            projectForm.dueDate?.seconds * 1000 +
+                              projectForm.dueDate?.nanoseconds / 1000000
+                          )
+                        }
+                        onSelect={(val) => {
+                          handleDateChange("dueDate", val);
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
-              <div className="space-y-1">
+              <div className="">
                 <label className="text-gray-600">Priority</label>
                 <Select
                   value={projectForm.priority ?? "Low"}

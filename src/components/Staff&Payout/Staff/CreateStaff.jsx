@@ -275,7 +275,7 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
                         "PPP"
                       )
                     ) : (
-                      <span>Pick a date</span>
+                      <span className="text-gray-600">Pick a date</span>
                     )}
                     <CalendarIcon className="h-4 w-4 " />
                   </button>
@@ -292,7 +292,7 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
                     onSelect={(val) => {
                       setFormData((pre) => ({
                         ...pre,
-                        dateOfJoining: Timestamp.fromDate(val),
+                        dateOfJoining: Timestamp.fromDate(new Date(val)),
                       }));
                     }}
                     initialFocus

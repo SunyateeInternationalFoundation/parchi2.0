@@ -232,7 +232,7 @@ function ExpenseSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
                           "PPP"
                         )
                       ) : (
-                        <span>Pick a date</span>
+                        <span className="text-gray-600">Pick a date</span>
                       )}
                       <CalendarIcon className="h-4 w-4 " />
                     </button>

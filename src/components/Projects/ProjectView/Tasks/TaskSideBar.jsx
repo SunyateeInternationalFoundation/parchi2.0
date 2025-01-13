@@ -9,10 +9,14 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
+import { CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { db } from "../../../../firebase";
+import { cn, formatDate } from "../../../../lib/utils";
+import { Calendar } from "../../../UI/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../UI/popover";
 import {
   Select,
   SelectContent,
@@ -249,29 +253,101 @@ function TaskSideBar({
                 </div>
                 <div className="space-y-1">
                   <label className="text-sm text-gray-600">Start Date</label>
-                  <input
-                    type="date"
-                    className="border p-2 rounded w-full  cursor-pointer"
-                    onChange={(e) => {
-                      setFormData((val) => ({
-                        ...val,
-                        startDate: Timestamp.fromDate(new Date(e.target.value)),
-                      }));
-                    }}
-                  />
+
+                  <div>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button
+                          className={cn(
+                            "w-full flex justify-between items-center input-tag ",
+                            !formData.startDate?.seconds &&
+                              "text-muted-foreground"
+                          )}
+                        >
+                          {formData.startDate?.seconds ? (
+                            formatDate(
+                              new Date(
+                                formData.startDate?.seconds * 1000 +
+                                  formData.startDate?.nanoseconds / 1000000
+                              ),
+                              "PPP"
+                            )
+                          ) : (
+                            <span className="text-gray-600">Pick a date</span>
+                          )}
+                          <CalendarIcon className="h-4 w-4 " />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            new Date(
+                              formData.startDate?.seconds * 1000 +
+                                formData.startDate?.nanoseconds / 1000000
+                            )
+                          }
+                          onSelect={(val) => {
+                            setFormData((pre) => ({
+                              ...pre,
+                              startDate: Timestamp.fromDate(new Date(val)),
+                            }));
+                          }}
+                          initialFocus
+                          required
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
                 <div className="space-y-1">
                   <label className="text-sm text-gray-600">End Date</label>
-                  <input
-                    type="date"
-                    className="border p-2 rounded w-full  cursor-pointer"
-                    onChange={(e) => {
-                      setFormData((val) => ({
-                        ...val,
-                        endDate: Timestamp.fromDate(new Date(e.target.value)),
-                      }));
-                    }}
-                  />
+
+                  <div>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button
+                          className={cn(
+                            "w-full flex justify-between items-center input-tag ",
+                            !formData.endDate?.seconds &&
+                              "text-muted-foreground"
+                          )}
+                        >
+                          {formData.endDate?.seconds ? (
+                            formatDate(
+                              new Date(
+                                formData.endDate?.seconds * 1000 +
+                                  formData.endDate?.nanoseconds / 1000000
+                              ),
+                              "PPP"
+                            )
+                          ) : (
+                            <span className="text-gray-600">Pick a date</span>
+                          )}
+                          <CalendarIcon className="h-4 w-4 " />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            new Date(
+                              formData.endDate?.seconds * 1000 +
+                                formData.endDate?.nanoseconds / 1000000
+                            )
+                          }
+                          onSelect={(val) => {
+                            setFormData((pre) => ({
+                              ...pre,
+                              endDate: Timestamp.fromDate(new Date(val)),
+                            }));
+                          }}
+                          initialFocus
+                          required
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
               </div>
             )}

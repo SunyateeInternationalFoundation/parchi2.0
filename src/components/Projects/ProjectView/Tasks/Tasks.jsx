@@ -8,6 +8,7 @@ import {
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
+import { CalendarIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FaFilter } from "react-icons/fa";
 import { IoMdSend } from "react-icons/io";
@@ -16,6 +17,9 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import FormatTimestamp from "../../../../constants/FormatTimestamp";
 import { db } from "../../../../firebase";
+import { cn, formatDate } from "../../../../lib/utils";
+import { Calendar } from "../../../UI/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../UI/popover";
 import {
   Select,
   SelectContent,
@@ -385,38 +389,100 @@ function Tasks() {
             <div className=" p-2 border-b">
               <div className="flex justify-between ">
                 <div className="flex items-center">
-                  <div className="w-full">Start Date: </div>
-                  <input
-                    type="date"
-                    className="border p-2 rounded w-full mx-3 cursor-pointer"
-                    defaultValue={DateFormate(
-                      selectedTask.startDate,
-                      "yyyy-mm-dd"
-                    )}
-                    onChange={(e) =>
-                      modifiedTask(
-                        "startDate",
-                        Timestamp.fromDate(new Date(e.target.value))
-                      )
-                    }
-                  />
+                  <div className="w-32">Start Date: </div>
+                  <div className="w-full">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button
+                          className={cn(
+                            "w-full flex justify-between items-center input-tag ",
+                            !selectedTask.startDate?.seconds &&
+                              "text-muted-foreground"
+                          )}
+                        >
+                          {selectedTask.startDate?.seconds ? (
+                            formatDate(
+                              new Date(
+                                selectedTask.startDate?.seconds * 1000 +
+                                  selectedTask.startDate?.nanoseconds / 1000000
+                              ),
+                              "PPP"
+                            )
+                          ) : (
+                            <span className="text-gray-600">Pick a date</span>
+                          )}
+                          <CalendarIcon className="h-4 w-4 " />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            new Date(
+                              selectedTask.startDate?.seconds * 1000 +
+                                selectedTask.startDate?.nanoseconds / 1000000
+                            )
+                          }
+                          onSelect={(val) => {
+                            modifiedTask(
+                              "startDate",
+                              Timestamp.fromDate(new Date(val))
+                            );
+                          }}
+                          initialFocus
+                          required
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
                 <div className="flex items-center">
-                  <div className="w-full ">End Date: </div>
-                  <input
-                    type="date"
-                    className="border p-2 rounded w-full mx-3 cursor-pointer"
-                    defaultValue={DateFormate(
-                      selectedTask.endDate,
-                      "yyyy-mm-dd"
-                    )}
-                    onChange={(e) =>
-                      modifiedTask(
-                        "endDate",
-                        Timestamp.fromDate(new Date(e.target.value))
-                      )
-                    }
-                  />
+                  <div className="w-32 ">End Date: </div>
+                  <div className="w-full ">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button
+                          className={cn(
+                            "w-full flex justify-between items-center input-tag ",
+                            !selectedTask.endDate?.seconds &&
+                              "text-muted-foreground"
+                          )}
+                        >
+                          {selectedTask.endDate?.seconds ? (
+                            formatDate(
+                              new Date(
+                                selectedTask.endDate?.seconds * 1000 +
+                                  selectedTask.endDate?.nanoseconds / 1000000
+                              ),
+                              "PPP"
+                            )
+                          ) : (
+                            <span className="text-gray-600">Pick a date</span>
+                          )}
+                          <CalendarIcon className="h-4 w-4 " />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            new Date(
+                              selectedTask.endDate?.seconds * 1000 +
+                                selectedTask.endDate?.nanoseconds / 1000000
+                            )
+                          }
+                          onSelect={(val) => {
+                            modifiedTask(
+                              "endDate",
+                              Timestamp.fromDate(new Date(val))
+                            );
+                          }}
+                          initialFocus
+                          required
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
               </div>
               <div className="flex justify-between mt-3">

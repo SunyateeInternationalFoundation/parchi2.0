@@ -46,30 +46,34 @@ function SideBarAddServices({
       onClick={onClose}
     >
       <div
-        className={`bg-white w-96 p-3 pt-2 transform transition-transform overflow-y-auto ${
+        className={`bg-white  pt-2 transform transition-transform overflow-y-auto ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ maxHeight: "100vh" }}
+        style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-xl font-semibold ">Add Service</h2>
-        <button
-          onClick={onClose}
-          className="absolute text-3xl top-4 right-4 text-gray-600 hover:text-gray-900 cursor-pointer"
-        >
-          <IoMdClose />
-        </button>
-        <div className="mt-5 space-y-3 ">
-          <div className="border p-1 rounded-lg w-full mt-1 flex items-center ">
-            <input
-              type="text"
-              className="w-full py-2 focus:outline-none"
-              placeholder="Search Services"
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <IoSearch size={25} />
+        <div className="flex justify-between items-center border-b px-5 py-3">
+          <h2 className=" text-sm text-gray-600 ">Add Service</h2>
+          <button
+            className=" text-2xl text-gray-800 hover:text-gray-900 cursor-pointer"
+            onClick={onClose}
+          >
+            <IoMdClose size={24} />
+          </button>
+        </div>
+        <div className="mt-5 space-y-3  ">
+          <div className="px-5 ">
+            <div className="border p-1 rounded-lg w-full  flex items-center ">
+              <input
+                type="text"
+                className="w-full py-2 focus:outline-none"
+                placeholder="Search Services"
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <IoSearch size={25} />
+            </div>
           </div>
-          <div className="overflow-y-auto" style={{ height: "70vh" }}>
+          <div className="overflow-y-auto px-5" style={{ height: "74vh" }}>
             {modifiedServices.map((service) => (
               <div
                 key={service.id}
@@ -96,12 +100,14 @@ function SideBarAddServices({
             ))}
           </div>
         </div>
-        <button
-          className="w-full bg-purple-500 text-white p-2 rounded-md mt-4"
-          onClick={onSubmit}
+        <div
+          className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
+          style={{ height: "6vh" }}
         >
-          Add Service
-        </button>
+          <button className="btn-add w-full" onClick={onSubmit}>
+            Add Service
+          </button>
+        </div>
       </div>
     </div>
   );

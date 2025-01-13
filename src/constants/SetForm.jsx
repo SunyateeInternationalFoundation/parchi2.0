@@ -650,7 +650,7 @@ function SetForm(props) {
                               "PPP"
                             )
                           ) : (
-                            <span>Pick a date</span>
+                            <span className="text-gray-600">Pick a date</span>
                           )}
                           <CalendarIcon className="h-4 w-4 " />
                         </button>
@@ -667,7 +667,7 @@ function SetForm(props) {
                           onSelect={(val) => {
                             setFormData((pre) => ({
                               ...pre,
-                              date: Timestamp.fromDate(val),
+                              date: Timestamp.fromDate(new Date(val)),
                             }));
                           }}
                           initialFocus

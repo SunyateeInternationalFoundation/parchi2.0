@@ -254,7 +254,7 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
                           "PPP"
                         )
                       ) : (
-                        <span>Pick a date</span>
+                        <span className="text-gray-600">Pick a date</span>
                       )}
                       <CalendarIcon className="h-4 w-4 " />
                     </button>
@@ -271,7 +271,7 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
                       onSelect={(val) => {
                         setFormData((pre) => ({
                           ...pre,
-                          date: Timestamp.fromDate(val),
+                          date: Timestamp.fromDate(new Date(val)),
                         }));
                       }}
                       initialFocus

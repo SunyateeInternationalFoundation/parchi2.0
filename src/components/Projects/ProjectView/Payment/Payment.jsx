@@ -11,7 +11,7 @@ import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
 import { LiaTrashAltSolid } from "react-icons/lia";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import FormatTimestamp from "../../../../constants/FormatTimestamp";
 import { db } from "../../../../firebase";
 import {
@@ -25,6 +25,7 @@ import PaymentSidebar from "./PaymentSidebar";
 
 const Payment = ({ projectDetails }) => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [filterUser, setFilterUser] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [expenses, setExpenses] = useState([]);
@@ -88,28 +89,33 @@ const Payment = ({ projectDetails }) => {
     }
   }
 
+  const fetch_Cus_Vend_Staff_data = async (collectionName) => {
+    setLoading(true);
+    try {
+      const ref = collection(db, collectionName);
+
+      const companyRef = doc(db, "companies", companyId);
+      const q = query(ref, where("companyRef", "==", companyRef));
+
+      const querySnapshot = await getDocs(q);
+
+      const data = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setUserDataset((val) => ({ ...val, [collectionName]: data }));
+    } catch (error) {
+      console.error(`Error fetching ${collectionName}:`, error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetch_Cus_Vend_Staff_data = async (collectionName) => {
-      setLoading(true);
-      try {
-        const ref = collection(db, collectionName);
-
-        const companyRef = doc(db, "companies", companyId);
-        const q = query(ref, where("companyRef", "==", companyRef));
-
-        const querySnapshot = await getDocs(q);
-
-        const data = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setUserDataset((val) => ({ ...val, [collectionName]: data }));
-      } catch (error) {
-        console.error(`Error fetching ${collectionName}:`, error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (!projectDetails?.book?.id) {
+      alert("Please Select the Bank");
+      navigate("?tab=Dashboard");
+      return;
+    }
     fetchExpenses();
     fetch_Cus_Vend_Staff_data("staff");
     fetch_Cus_Vend_Staff_data("vendors");
