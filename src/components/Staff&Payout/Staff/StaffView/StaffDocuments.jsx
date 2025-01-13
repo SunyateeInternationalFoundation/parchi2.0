@@ -9,6 +9,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
+import { IoSearch } from "react-icons/io5";
 import {
   deleteObject,
   getDownloadURL,
@@ -32,7 +33,7 @@ const StaffDocuments = (StaffData) => {
   const [currentFolder, setCurrentFolder] = useState(null);
   const [folderName, setFolderName] = useState("New Folder");
   const [countOfNewFolder, setCountOfNewFolder] = useState(0);
-
+const [searchTerm, setSearchTerm] = useState(""); // Add state for search term
   const [isLoading, setIsLoading] = useState(false);
   const [pathnames, setPathnames] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(null);
@@ -260,6 +261,13 @@ const StaffDocuments = (StaffData) => {
       console.error("Error deleting item:", error);
     }
   };
+  const filteredFolders = folders.filter((folder) =>
+    folder.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredFiles = files.filter((file) =>
+    file.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="main-container">
@@ -279,6 +287,8 @@ const StaffDocuments = (StaffData) => {
               type="text"
               placeholder="Search..."
               className="px-4 py-2 rounded-md border"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
             {isLoading && <span className="text-gray-500">Loading...</span>}
           </div>
@@ -356,7 +366,7 @@ const StaffDocuments = (StaffData) => {
           </nav>
         </div>
         <div className="grid grid-cols-8 gap-4 ">
-          {folders.map((folder) => (
+          {filteredFolders.map((folder) => (
             <div
               key={folder.id}
               onClick={() => navigateToFolder(folder)}
