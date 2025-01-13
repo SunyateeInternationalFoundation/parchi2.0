@@ -119,8 +119,8 @@ const ProductList = () => {
     }
     const isSearch = product.name
       .toLowerCase()
-      .includes(searchTerms.toLowerCase());
-    const isCategory = product.category.includes(selectedCategory);
+      ?.includes(searchTerms.toLowerCase());
+    const isCategory = product.category?.includes(selectedCategory);
     return isSearch && isCategory;
   });
 
