@@ -220,7 +220,7 @@ function Attendance() {
             + Add Attendance
           </button>
         </header>
-        <div>
+        <div className="h-96">
           {loading ? (
             <div className="text-center">Loading...</div>
           ) : filteredAttendance.length > 0 ? (

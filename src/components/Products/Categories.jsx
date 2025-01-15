@@ -137,14 +137,14 @@ const Categories = () => {
                     </td>
                     <td className="px-5 py-3 text-start">{category.name}</td>
 
-                    <td
-                      className="px-10 py-3 text-end flex justify-end text-red-700 text-2xl"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        OnDeleteCategory(e, category.id);
-                      }}
-                    >
-                      <IoMdTrash />
+                    <td className="px-10 py-3 text-end flex justify-end ">
+                      <IoMdTrash
+                        onClick={(e) => {
+                          e.preventDefault();
+                          OnDeleteCategory(e, category.id);
+                        }}
+                        className="cursor-pointer text-red-700 text-2xl"
+                      />
                     </td>
                   </tr>
                 ))

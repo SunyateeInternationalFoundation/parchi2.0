@@ -82,6 +82,10 @@ function Staff() {
 
   const handleDeleteStaff = async (staffId) => {
     try {
+      const confirmDelete = window.confirm(
+        "Are you sure you want to delete this Staff?"
+      );
+      if (!confirmDelete) return;
       await deleteDoc(doc(db, "staff", staffId));
       fetchStaffData();
     } catch (error) {
@@ -167,7 +171,10 @@ function Staff() {
                       <td className="px-5 py-3">
                         <div
                           className="text-red-500 flex items-center justify-center"
-                          onClick={() => handleDeleteStaff(staff.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteStaff(staff.id);
+                          }}
                         >
                           <RiDeleteBin6Line />
                         </div>

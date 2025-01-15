@@ -31,6 +31,8 @@ import CreateVendor from "../components/Vendors/CreateVendor";
 import { db } from "../firebase";
 import { cn, formatDate } from "../lib/utils";
 import SelectProductSide from "./SelectProductSide";
+import tcsData from "./tcsData";
+import tdsData from "./tdsData";
 
 function SetForm(props) {
   const {
@@ -82,9 +84,13 @@ function SetForm(props) {
     totalCgstAmount_9: 0,
     totalAmount: 0,
   });
-  function onSelect_TDS_TCS(e) {
-    const taxId = e.target.value;
-    let taxDetails = taxTypeOptions[taxSelect].find((ele) => ele.id === taxId);
+  function onSelect_TDS_TCS(index) {
+    let taxDetails = tcsData[index];
+    if (taxSelect === "tds") {
+      taxDetails = tdsData[index];
+    } else {
+      taxDetails = tcsData[index];
+    }
     setSelectedTaxDetails(taxDetails);
   }
 
@@ -510,29 +516,29 @@ function SetForm(props) {
     };
   }
   function onSubmit() {
-    const tcs = {
-      isTcsApplicable: Boolean(taxSelect === "tcs"),
-      tax: taxSelect === "tcs" ? selectedTaxDetails.tax : "",
-      tax_value: taxSelect === "tcs" ? selectedTaxDetails.tax_value : 0,
-      type_of_goods:
-        taxSelect === "tcs" ? selectedTaxDetails.type_of_goods : "",
-      tcs_amount: taxSelect === "tcs" ? total_Tax_Amount : 0,
-    };
+    // const tcs = {
+    //   isTcsApplicable: Boolean(taxSelect === "tcs"),
+    //   tax: taxSelect === "tcs" ? selectedTaxDetails.tax : "",
+    //   tax_value: taxSelect === "tcs" ? selectedTaxDetails.tax_value : 0,
+    //   type_of_goods:
+    //     taxSelect === "tcs" ? selectedTaxDetails.type_of_goods : "",
+    //   tcs_amount: taxSelect === "tcs" ? total_Tax_Amount : 0,
+    // };
 
-    const tds = {
-      isTdsApplicable: Boolean(taxSelect === "tds"),
-      natureOfPayment:
-        taxSelect === "tds" ? selectedTaxDetails.natureOfPayment : "",
-      percentage: taxSelect === "tds" ? selectedTaxDetails.percentage : 0,
-      percentageValue:
-        taxSelect === "tds" ? selectedTaxDetails.percentageValue : "",
-      tdsSection: taxSelect === "tds" ? selectedTaxDetails.tdsSection : "",
-      tds_amount: taxSelect === "tds" ? total_Tax_Amount : 0,
-    };
+    // const tds = {
+    //   isTdsApplicable: Boolean(taxSelect === "tds"),
+    //   natureOfPayment:
+    //     taxSelect === "tds" ? selectedTaxDetails.natureOfPayment : "",
+    //   percentage: taxSelect === "tds" ? selectedTaxDetails.percentage : 0,
+    //   percentageValue:
+    //     taxSelect === "tds" ? selectedTaxDetails.percentageValue : "",
+    //   tdsSection: taxSelect === "tds" ? selectedTaxDetails.tdsSection : "",
+    //   tds_amount: taxSelect === "tds" ? total_Tax_Amount : 0,
+    // };
 
     const payload = {
-      tds,
-      tcs,
+      // tds,
+      // tcs,
       products,
       total: +calculateTotal(),
     };
@@ -1214,36 +1220,44 @@ function SetForm(props) {
               <div>
                 <div className="w-full flex ">
                   {taxSelect === "tds" && (
-                    <select
-                      className="border p-2 rounded w-full focus:outline-none"
-                      defaultValue=""
-                      onChange={onSelect_TDS_TCS}
-                    >
-                      <option value="" disabled>
-                        Select {taxSelect.toUpperCase()} Option
-                      </option>
-                      {taxTypeOptions.tds.map((ele) => (
-                        <option key={ele.id} value={ele.id}>
-                          {ele.natureOfPayment} {ele.percentage}
-                        </option>
-                      ))}
-                    </select>
+                    // <Select onValueChange={onSelect_TDS_TCS}>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={`Select ${taxSelect.toUpperCase()} Option`}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {tdsData.map((ele, index) => (
+                          <SelectItem key={index} value={index}>
+                            <span className="font-semibold">
+                              {ele.rate}% - {ele.code}
+                            </span>
+                            <span> - {ele.description}</span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   )}
                   {taxSelect === "tcs" && (
-                    <select
-                      className="border p-2 rounded w-full focus:outline-none"
-                      defaultValue=""
-                      onChange={onSelect_TDS_TCS}
-                    >
-                      <option value="" disabled>
-                        Select {taxSelect.toUpperCase()} Option
-                      </option>
-                      {taxTypeOptions.tcs.map((ele) => (
-                        <option key={ele.id} value={ele.id}>
-                          {ele.type_of_goods} {ele.tax}
-                        </option>
-                      ))}
-                    </select>
+                    // <Select onValueChange={onSelect_TDS_TCS}>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={`Select ${taxSelect.toUpperCase()} Option`}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {tcsData.map((ele, index) => (
+                          <SelectItem key={index} value={index}>
+                            <span className="font-semibold">
+                              {ele.rate}% - {ele.code}
+                            </span>
+                            <span> - {ele.description}</span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   )}
                   {(taxSelect === "tds" || taxSelect === "tcs") && (
                     <div className="border p-2 rounded w-1/5">

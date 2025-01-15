@@ -136,9 +136,9 @@ function SelectProductSide({
               <div className="text-end">
                 <div className="font-bold">₹ {product.sellingPrice}</div>
                 <div className="text-sm">
-                  Discount :{!product.discountType && "₹"}{" "}
-                  {product.discount.toFixed(2)}
-                  {product.discountType && "%"}
+                  Discount :{!product?.discountType && "₹"}{" "}
+                  {product?.discount?.toFixed(2)}
+                  {product?.discountType && "%"}
                 </div>
                 <div className="text-sm"> Tax: {product.tax} %</div>
               </div>
