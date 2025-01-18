@@ -11,6 +11,12 @@ import {
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -25,6 +31,10 @@ const Designation = () => {
   });
   const [loading, setLoading] = useState(true);
   const [searchInput, setSearchInput] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
+
   const userDetails = useSelector((state) => state.users);
   const companyDetails =
     userDetails.companies[userDetails.selectedCompanyIndex];
@@ -47,7 +57,8 @@ const Designation = () => {
         id: doc.id,
         ...doc.data(),
       }));
-
+      setTotalPages(Math.ceil(designationData.length / 10));
+      setPaginationData(designationData.slice(0, 10));
       setDesignation(designationData);
       setDesignationCount({
         total: designationData.length,
@@ -69,10 +80,6 @@ const Designation = () => {
       total: prev.total + 1,
     }));
   };
-
-  const filteredDesignations = designation.filter((d) =>
-    d.designationName.toLowerCase().includes(searchInput.toLowerCase())
-  );
 
   const navigate = useNavigate();
 
@@ -98,6 +105,14 @@ const Designation = () => {
       console.error("Error deleting Designation:", error);
     }
   }
+  useEffect(() => {
+    const filteredDesignations = designation.filter((d) =>
+      d.designationName.toLowerCase().includes(searchInput.toLowerCase())
+    );
+    setPaginationData(
+      filteredDesignations.slice(currentPage * 10, currentPage * 10 + 10)
+    );
+  }, [currentPage, designation, searchInput]);
 
   return (
     <div className="main-container" style={{ height: "82vh" }}>
@@ -138,7 +153,7 @@ const Designation = () => {
           {loading ? (
             <div className="text-center">Loading...</div>
           ) : (
-            <div className="overflow-y-auto py-3" style={{ height: "76vh" }}>
+            <div className="py-3" style={{ height: "92vh" }}>
               <table className="w-full border-collapse text-start">
                 <thead className="bg-white">
                   <tr className="border-b">
@@ -154,8 +169,8 @@ const Designation = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredDesignations.length > 0 ? (
-                    filteredDesignations.map((designation) => (
+                  {paginationData.length > 0 ? (
+                    paginationData.map((designation) => (
                       <tr
                         key={designation.id}
                         className="border-b border-gray-200 text-center cursor-pointer"
@@ -197,6 +212,51 @@ const Designation = () => {
               </table>
             </div>
           )}
+          <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
+            <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+              {currentPage + 1} of {totalPages || 1} row(s) selected.
+            </div>
+            <div className="flex flex-wrap items-center gap-6">
+              <div className="flex items-center gap-2">
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage(0)}
+                  disabled={currentPage <= 0}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronsLeft className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage((val) => val - 1)}
+                  disabled={currentPage <= 0}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronLeft className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage((val) => val + 1)}
+                  disabled={currentPage + 1 >= totalPages}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronRight className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage(totalPages - 1)}
+                  disabled={currentPage + 1 >= totalPages}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronsRight />
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         {isModalOpen && (

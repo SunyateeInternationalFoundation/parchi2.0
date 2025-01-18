@@ -54,8 +54,14 @@ const CompanyForm = ({ userRef }) => {
         isCompanyProfileDone: true,
       });
       alert("Successfully Created!");
-      dispatch(setCompanyData({ companyId: companyRef.id, ...formData }));
-      navigate("/expense");
+      dispatch(
+        setCompanyData({
+          companyId: companyRef.id,
+          ...formData,
+          isCompanyProfileDone: true,
+        })
+      );
+      navigate("/invoice");
     } catch (error) {
       console.log("🚀 ~ Submit ~ error:", error);
     }

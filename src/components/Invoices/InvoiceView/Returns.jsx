@@ -8,6 +8,12 @@ import {
 } from "firebase/firestore";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { db } from "../../../firebase";
@@ -17,10 +23,19 @@ function Returns({ invoice }) {
 
   const [products, setProducts] = useState([]);
   const [isAllReturnsChecked, setIsAllReturnsChecked] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
 
   useEffect(() => {
     setProducts([...invoice.items]);
+    setTotalPages(Math.ceil(invoice.items.length / 10));
+    setPaginationData(invoice.items.slice(0, 10));
   }, [invoice]);
+
+  useEffect(() => {
+    setPaginationData(products.slice(currentPage * 10, currentPage * 10 + 10));
+  }, [currentPage, products]);
 
   const userDetails = useSelector((state) => state.users);
   let companyId;
@@ -145,7 +160,7 @@ function Returns({ invoice }) {
 
   return (
     <div className="main-container " style={{ height: "82vh" }}>
-      <div className="container" style={{ height: "72vh" }}>
+      <div className="container">
         <div className="text-end pb-2 space-x-3 px-5">
           <button
             className="px-4 py-2 text-gray-600  rounded-md border hover:bg-black hover:text-white"
@@ -171,7 +186,7 @@ function Returns({ invoice }) {
           </button>
         </div>
 
-        <div className="overflow-y-auto" style={{ height: "62vh " }}>
+        <div style={{ height: "76vh " }}>
           <table className="w-full text-center text-gray-500 font-semibold">
             <thead className="border-b ">
               <tr>
@@ -197,8 +212,8 @@ function Returns({ invoice }) {
               </tr>
             </thead>
             <tbody>
-              {products.length > 0 ? (
-                products.map((product) => (
+              {paginationData.length > 0 ? (
+                paginationData.map((product) => (
                   <tr key={product.productRef.id} className="border-b">
                     <td className="px-1 py-4">
                       <input
@@ -255,13 +270,58 @@ function Returns({ invoice }) {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="py-10 text-center">
+                  <td colSpan="9" className="py-10 text-center">
                     No Product Found
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
+        </div>
+        <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
+          <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+            {currentPage + 1} of {totalPages || 1} row(s) selected.
+          </div>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2">
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(0)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val - 1)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val + 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronRight className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(totalPages - 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsRight />
+                </div>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

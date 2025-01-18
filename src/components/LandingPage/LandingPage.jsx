@@ -75,6 +75,15 @@ const LandingPage = () => {
 
   const handlePhoneNumberSubmit = async () => {
     if (phoneNumber) {
+      if (!isLogin) {
+        const userRef = collection(db, "users");
+        const q = query(userRef, where("phone", "==", phoneNumber));
+        const userData = await getDocs(q);
+        if (userData.docs.length != 0) {
+          alert("This Mobile is already exists");
+          return;
+        }
+      }
       configureRecaptcha();
       const appVerifier = window.recaptchaVerifier;
       try {

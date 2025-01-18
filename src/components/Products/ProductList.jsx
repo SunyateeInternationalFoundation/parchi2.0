@@ -1,6 +1,12 @@
 import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import addItem from "../../assets/addItem.png";
@@ -22,6 +28,9 @@ const ProductList = () => {
   const [searchTerms, setSearchTerms] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [categoryList, setCategoryList] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
 
   const userDetails = useSelector((state) => state.users);
   const companyDetails =
@@ -59,6 +68,8 @@ const ProductList = () => {
         };
       });
       setProducts(productsData);
+      setTotalPages(Math.ceil(productsData.length / 10));
+      setPaginationData(productsData.slice(0, 10));
       setLoading(false);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -113,16 +124,22 @@ const ProductList = () => {
     fetchCategory();
   }, []);
 
-  const filterProduct = products.filter((product) => {
-    if (!searchTerms && selectedCategory == "All") {
-      return true;
-    }
-    const isSearch = product.name
-      .toLowerCase()
-      ?.includes(searchTerms.toLowerCase());
-    const isCategory = product.category?.includes(selectedCategory);
-    return isSearch && isCategory;
-  });
+  useEffect(() => {
+    const filterProduct = products.filter((product) => {
+      if (!searchTerms && selectedCategory == "All") {
+        return true;
+      }
+      const isSearch = product.name
+        .toLowerCase()
+        ?.includes(searchTerms.toLowerCase());
+      const isCategory = product.category?.includes(selectedCategory);
+      return isSearch && isCategory;
+    });
+
+    setPaginationData(
+      filterProduct.slice(currentPage * 10, currentPage * 10 + 10)
+    );
+  }, [currentPage, products, searchTerms, selectedCategory]);
 
   return (
     <div className="main-container" style={{ height: "82vh" }}>
@@ -178,7 +195,7 @@ const ProductList = () => {
             <p className="text-gray-500">Loading products...</p>
           </div>
         ) : (
-          <div className=" overflow-y-auto py-3" style={{ height: "60vh" }}>
+          <div className="" style={{ height: "92vh" }}>
             <table className="w-full border-collapse ">
               <thead className="bg-white">
                 <tr className="border-b">
@@ -215,8 +232,8 @@ const ProductList = () => {
                 </tr>
               </thead>
               <tbody>
-                {filterProduct.length > 0 ? (
-                  filterProduct.map((product) => (
+                {paginationData.length > 0 ? (
+                  paginationData.map((product) => (
                     <tr
                       key={product.id}
                       className="hover:bg-gray-100 cursor-pointer text-gray-600"
@@ -308,6 +325,51 @@ const ProductList = () => {
             </table>
           </div>
         )}
+        <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
+          <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+            {currentPage + 1} of {totalPages || 1} row(s) selected.
+          </div>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2">
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(0)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val - 1)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val + 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronRight className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(totalPages - 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsRight />
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
       <CreateProduct
         isOpen={isSideBarOpen}

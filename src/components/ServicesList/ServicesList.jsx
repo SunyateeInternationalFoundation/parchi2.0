@@ -7,6 +7,12 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
 import addItem from "../../assets/addItem.png";
@@ -19,6 +25,10 @@ const ServicesList = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const userDetails = useSelector((state) => state.users);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
+
   const companyDetails =
     userDetails.companies[userDetails.selectedCompanyIndex];
 
@@ -35,6 +45,9 @@ const ServicesList = () => {
         id: doc.id,
         ...doc.data(),
       }));
+      setTotalPages(Math.ceil(fetchedServices.length / 10));
+      setPaginationData(fetchedServices.slice(0, 10));
+
       setServices(fetchedServices);
     } catch (error) {
       console.error("Error fetching services:", error);
@@ -64,6 +77,10 @@ const ServicesList = () => {
       console.log("🚀 ~ onHandleDeleteService ~ error:", error);
     }
   }
+  useEffect(() => {
+    setPaginationData(services.slice(currentPage * 10, currentPage * 10 + 10));
+  }, [currentPage, services]);
+
   return (
     <div className="main-container" style={{ height: "92vh" }}>
       <div className="container">
@@ -77,11 +94,11 @@ const ServicesList = () => {
           </button>
         </div>
         {loading ? (
-          <div className="text-center" style={{ height: "92hv" }}>
+          <div className="text-center" style={{ height: "62hv" }}>
             Loading services...
           </div>
         ) : (
-          <div className="overflow-y-auto" style={{ height: "72vh" }}>
+          <div className="" style={{ height: "62vh" }}>
             <table className="w-full ">
               <thead className="sticky z-10" style={{ top: "0" }}>
                 <tr className="border-b">
@@ -106,8 +123,8 @@ const ServicesList = () => {
                 </tr>
               </thead>
               <tbody className="">
-                {services.length > 0 ? (
-                  services.map((service) => (
+                {paginationData.length > 0 ? (
+                  paginationData.map((service) => (
                     <tr
                       key={service.id}
                       className="hover:bg-blue-100 border-b cursor-pointer"
@@ -164,6 +181,51 @@ const ServicesList = () => {
             </table>
           </div>
         )}
+        <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
+          <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+            {currentPage + 1} of {totalPages || 1} row(s) selected.
+          </div>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2">
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(0)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val - 1)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val + 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronRight className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(totalPages - 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsRight />
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
       <CreateServiceList
         isOpen={isSideBarOpen}
