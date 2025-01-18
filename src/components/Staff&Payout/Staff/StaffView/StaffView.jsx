@@ -113,7 +113,7 @@ function StaffView({ staffCompanyId }) {
     <div className="bg-gray-100" style={{ width: "100%" }}>
       <header className="flex items-center  space-x-3 px-3 bg-white">
         <Link className="flex items-center " to={"./../../?tab=Staff"}>
-          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
+          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500  text-gray-500" />
         </Link>
         <h1 className="text-2xl font-bold">{staffData.name}</h1>
         <div>

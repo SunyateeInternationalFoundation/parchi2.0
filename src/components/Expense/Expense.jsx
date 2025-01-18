@@ -173,7 +173,7 @@ function Expense() {
         <div className=" mt-4 py-3">
           <div className="flex items-center pb-3">
             <Link className="flex items-center" to={"./../"}>
-              <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
+              <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500  text-gray-500" />
             </Link>
             <h1 className="text-2xl font-bold ">Expenses Overview</h1>
           </div>

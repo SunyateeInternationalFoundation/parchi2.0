@@ -510,7 +510,7 @@ function SetService() {
       <div className="px-5 pb-5">
         <header className="flex items-center space-x-3  my-2">
           <Link className="flex items-center" to={"./../"}>
-            <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
+            <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500  text-gray-500" />
           </Link>
           <h1 className="text-2xl font-bold">
             {id ? "Edit" : "Create"} Service

@@ -1,5 +1,5 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Breadcrumbs = () => {
   const location = useLocation();
@@ -29,7 +29,7 @@ const Breadcrumbs = () => {
         onClick={GoBack}
         className="flex items-center bg-gray-300 text-gray-700 py-1 px-4 rounded-full transform hover:bg-gray-400 hover:text-white transition duration-200 ease-in-out"
       >
-        <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
+        <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500  text-gray-500" />
       </button>
     </nav>
   );

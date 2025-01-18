@@ -76,7 +76,7 @@ function ProductViewHome() {
     <div className="  pb-5" style={{ width: "100%" }}>
       <header className="flex items-center space-x-3  px-5  border-b bg-white">
         <Link className="flex items-center " to={"./../"}>
-          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
+          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500  text-gray-500" />
         </Link>
         <nav className="flex space-x-4 ">
           <button

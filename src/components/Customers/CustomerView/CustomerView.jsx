@@ -193,7 +193,7 @@ function CustomerView() {
     <div className=" bg-gray-100" style={{ width: "100%" }}>
       <header className="flex items-center bg-white  px-3 space-x-3 ">
         <Link className="flex items-center" to={"./../"}>
-          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
+          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500  text-gray-500" />
         </Link>
         <h1 className="text-xl font-bold pe-4">{customerData.name}</h1>
         <nav className="flex space-x-4 ">

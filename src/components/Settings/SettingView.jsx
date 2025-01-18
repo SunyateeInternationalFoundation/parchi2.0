@@ -9,7 +9,7 @@ const SettingsView = () => {
     <div className="space-y-2">
       <div className="flex items-center">
         <Link to="/invoice" className="flex items-center ">
-          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500" />
+          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500  text-gray-500" />
           <span className="text-lg font-medium"></span>
         </Link>
         <h1 className="text-2xl font-bold text-gray-800">Settings</h1>
