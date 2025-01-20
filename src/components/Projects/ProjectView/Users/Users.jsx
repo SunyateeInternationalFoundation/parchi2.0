@@ -5,6 +5,12 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { db } from "../../../../firebase";
 import UserSidebar from "./UserSidebar";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 
 function Users() {
   const { id } = useParams();
@@ -20,6 +26,10 @@ function Users() {
   const [projectDetails, setProjectDetails] = useState();
   const [modifiedProjectData, setModifiedProjectData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
+
   const fetchDetails = async (refs) => {
     try {
       const data = [];
@@ -68,6 +78,8 @@ function Users() {
           field = "staffRef";
         }
         setModifiedProjectData(payload[field]);
+        setTotalPages(Math.ceil(payload[field].length / 10));
+        setPaginationData(payload[field].slice(0, 10)); 
         console.log("🚀 ~ fetchProjectData ~ payload:", payload);
       }
     } catch (error) {
@@ -92,9 +104,11 @@ function Users() {
       const filterData = projectDetails[field].filter((val) =>
         `${val.name} ${val.phone}`.toLowerCase().includes(searchTerm)
       );
+      setTotalPages(Math.ceil(filterData.length / 10)); 
+      setPaginationData(filterData.slice(currentPage * 10, currentPage * 10 + 10)); 
       setModifiedProjectData(filterData);
     }
-  }, [activeNav, projectDetails, searchTerm]);
+  }, [activeNav, projectDetails, searchTerm, currentPage]);
 
   return (
     <div className="main-container" style={{ height: "82vh" }}>
@@ -227,6 +241,51 @@ function Users() {
             </div>
           </div>
         )}
+        <div className="flex items-center flex-wrap gap-2 justify-between p-5">
+          <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+            {currentPage + 1} of {totalPages || 1} row(s) selected.
+          </div>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2">
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(0)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val - 1)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val + 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronRight className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(totalPages - 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsRight />
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
       {isSideBarOpen && !loading && (
         <div>

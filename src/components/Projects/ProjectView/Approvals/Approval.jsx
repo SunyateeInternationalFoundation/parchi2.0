@@ -5,6 +5,12 @@ import { useParams } from "react-router-dom";
 import FormatTimestamp from "../../../../constants/FormatTimestamp";
 import { db } from "../../../../firebase"; // Ensure Firebase is configured correctly
 import CreateApproval from "./CreateApproval";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 
 const Approval = () => {
   const { id } = useParams();
@@ -25,6 +31,12 @@ const Approval = () => {
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.approvals;
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
+
   const fetchApprovals = async () => {
     const approvalsRef = collection(db, `projects/${projectId}/approvals`);
     const snapshot = await getDocs(approvalsRef);
@@ -35,15 +47,21 @@ const Approval = () => {
     }));
 
     setApprovals(approvalsData);
+    setTotalPages(Math.ceil(approvalsData.length / 10)); // Set total pages based on the data length
+    setPaginationData(approvalsData.slice(0, 10)); // Set initial pagination data
   };
   useEffect(() => {
     fetchApprovals();
   }, [projectId]);
 
-  // Filter approvals based on selected category
+  useEffect(() => {
+    // Update pagination data when approvals or currentPage changes
   const filteredApprovals = approvals.filter(
     (approval) => filter === "All" || approval.categories === filter
   );
+    setTotalPages(Math.ceil(filteredApprovals.length / 10)); // Update total pages based on filtered approvals length
+    setPaginationData(filteredApprovals.slice(currentPage * 10, currentPage * 10 + 10)); // Update pagination data
+  }, [approvals, currentPage, filter]);
 
   return (
     <div className="px-8 py-4">
@@ -107,8 +125,8 @@ const Approval = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredApprovals.length > 0 ? (
-                filteredApprovals.map((approval) => (
+              {paginationData.length > 0 ? (
+                paginationData.map((approval) => (
                   <tr key={approval.id} className="border-b-2 border-gray-200 ">
                     <td className="px-8 py-3 text-start ">
                       <FormatTimestamp timestamp={approval.createdAt} />
@@ -148,6 +166,53 @@ const Approval = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        <div className="flex items-center flex-wrap gap-2 justify-between p-5">
+          <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+            {currentPage + 1} of {totalPages || 1} page(s)
+          </div>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2">
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(0)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val - 1)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val + 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronRight className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(totalPages - 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsRight />
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
       {isSideBarOpen && (
         <div>
@@ -164,30 +229,5 @@ const Approval = () => {
     </div>
   );
 };
-
-// const ApprovalCard = ({ approval, isSideBarOpen }) => {
-//   return (
-//     <div className="bg-white p-4 rounded shadow flex justify-between items-center ">
-//       <div className="flex items-center">
-//         <div>
-//           <h2 className="text-lg font-semibold">{approval.name}</h2>
-//           <p className="text-gray-500 text-sm">:</p>
-//           <p
-//             className={`text-sm ${
-//               approval.status === "Pending"
-//                 ? "text-yellow-500"
-//                 : "text-green-500"
-//             }`}
-//           >
-//             Status: {approval.status}
-//           </p>
-//         </div>
-//       </div>
-//       <button className="text-blue-500 hover:text-blue-700">
-//         View Details
-//       </button>
-//     </div>
-//   );
-// };
 
 export default Approval;

@@ -7,6 +7,7 @@ import { db } from "../../../../firebase";
 import InventoryAddSideBar from "./InventoryAddSideBar";
 import ItemView from "./ItemView";
 import QuickAddSideBar from "./QuickAddSideBar";
+import { LuChevronLeft, LuChevronRight, LuChevronsLeft, LuChevronsRight } from "react-icons/lu";
 
 function Items() {
   const { id } = useParams();
@@ -24,6 +25,11 @@ function Items() {
     qty: 0,
     price: 0,
   });
+
+ 
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
 
   const fetchMaterials = async () => {
     try {
@@ -47,6 +53,8 @@ function Items() {
       });
 
       setItemsData(data);
+      setTotalPages(Math.ceil(data.length / 10)); 
+      setPaginationData(data.slice(0, 10)); 
     } catch (error) {
       console.log("🚀 ~ fetchMaterials ~ error:", error);
     } finally {
@@ -57,6 +65,12 @@ function Items() {
   useEffect(() => {
     fetchMaterials();
   }, []);
+
+  useEffect(() => {
+    
+    setPaginationData(itemsData.slice(currentPage * 10, currentPage * 10 + 10));
+    setTotalPages(Math.ceil(itemsData.length / 10)); 
+  }, [itemsData, currentPage]);
 
   async function OnDeleteItem(e, itemId) {
     e.stopPropagation();
@@ -160,8 +174,8 @@ function Items() {
                 </tr>
               </thead>
               <tbody>
-                {itemsData.length > 0 ? (
-                  itemsData.map((item) => (
+                {paginationData.length > 0 ? (
+                  paginationData.map((item) => (
                     <tr
                       key={item.id}
                       className="border-b border-gray-200 text-center cursor-pointer"
@@ -202,6 +216,51 @@ function Items() {
               </tbody>
             </table>
           </div>
+        <div className="flex items-center flex-wrap gap-2 justify-between p-5">
+          <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+            {currentPage + 1} of {totalPages || 1} row(s) selected.
+          </div>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2">
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(0)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val - 1)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val + 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronRight className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(totalPages - 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsRight />
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
       {isSideBarOpen &&

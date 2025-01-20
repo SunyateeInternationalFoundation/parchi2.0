@@ -15,6 +15,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
 import FormatTimestamp from "../../../constants/FormatTimestamp";
 import { db } from "../../../firebase";
+import { LuChevronLeft, LuChevronRight, LuChevronsLeft, LuChevronsRight } from "react-icons/lu";
 
 const Branches = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,6 +25,11 @@ const Branches = () => {
   const [branchesCount, setBranchesCount] = useState({
     total: 0,
   });
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
 
   const userDetails = useSelector((state) => state.users);
   const companyId =
@@ -53,8 +59,10 @@ const Branches = () => {
       setBranchesCount({
         total: branchesData.length,
       });
+      setTotalPages(Math.ceil(branchesData.length / 10)); // Set total pages based on the data length
+      setPaginationData(branchesData.slice(0, 10)); // Set initial pagination data
     } catch (error) {
-      console.error("Error fetching customers:", error);
+      console.error("Error fetching branches:", error);
     } finally {
       setLoading(false);
     }
@@ -62,6 +70,12 @@ const Branches = () => {
   useEffect(() => {
     fetchBranches();
   }, [companyId]);
+
+  useEffect(() => {
+    // Update pagination data when branches or currentPage changes
+    setPaginationData(branches.slice(currentPage * 10, currentPage * 10 + 10));
+    setTotalPages(Math.ceil(branches.length / 10)); // Update total pages based on branches length
+  }, [branches, currentPage]);
 
   const handleAddBranch = (newBranch) => {
     setBranches((prev) => [...prev, newBranch]);
@@ -151,8 +165,8 @@ const Branches = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredBranches.length > 0 ? (
-                    filteredBranches.map((branch) => (
+                  {paginationData.length > 0 ? (
+                    paginationData.map((branch) => (
                       <tr
                         key={branch.id}
                         className="border-b border-gray-200 text-center cursor-pointer"
@@ -193,6 +207,54 @@ const Branches = () => {
             </div>
           )}
         </div>
+
+        {/* Pagination Controls */}
+        <div className="flex items-center flex-wrap gap-2 justify-between p-5">
+          <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+            {currentPage + 1} of {totalPages || 1} page(s)
+          </div>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2">
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(0)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val - 1)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val + 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronRight className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(totalPages - 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsRight />
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
         {isModalOpen && (
           <AddBranchModal
             isOpen={isModalOpen}
@@ -202,7 +264,6 @@ const Branches = () => {
           />
         )}
       </div>
-    </div>
   );
 };
 

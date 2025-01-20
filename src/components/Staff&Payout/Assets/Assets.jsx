@@ -23,6 +23,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../UI/select";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 
 const Assets = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -35,6 +41,11 @@ const Assets = () => {
   const userDetails = useSelector((state) => state.users);
   const companyDetails =
     userDetails.companies[userDetails.selectedCompanyIndex];
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
 
   const fetchAsset = async () => {
     setLoading(true);
@@ -58,6 +69,8 @@ const Assets = () => {
       setAssetCount({
         total: assetData.length,
       });
+      setTotalPages(Math.ceil(assetData.length / 10)); // Set total pages based on the data length
+      setPaginationData(assetData.slice(0, 10)); // Set initial pagination data
     } catch (error) {
       console.error("Error fetching Assets:", error);
     } finally {
@@ -67,7 +80,13 @@ const Assets = () => {
 
   useEffect(() => {
     fetchAsset();
-  }, [companyDetails.companyId]);
+  }, []);
+
+  useEffect(() => {
+    // Update pagination data when assets or currentPage changes
+    setPaginationData(assets.slice(currentPage * 10, currentPage * 10 + 10));
+    setTotalPages(Math.ceil(assets.length / 10)); // Update total pages based on assets length
+  }, [assets, currentPage]);
 
   const handleAddAsset = (newAsset) => {
     setAssets((prev) => [...prev, newAsset]);
@@ -160,8 +179,8 @@ const Assets = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {assets.length > 0 ? (
-                    assets.map((asset) => (
+                  {paginationData.length > 0 ? (
+                    paginationData.map((asset) => (
                       <tr
                         key={asset.id}
                         className="border-b border-gray-200 text-center cursor-pointer"
@@ -207,6 +226,53 @@ const Assets = () => {
           )}
         </div>
 
+        {/* Pagination Controls */}
+        <div className="flex items-center flex-wrap gap-2 justify-between p-5">
+          <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+            {currentPage + 1} of {totalPages || 1} page(s)
+          </div>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2">
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(0)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val - 1)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val + 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronRight className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(totalPages - 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsRight />
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
         {isModalOpen && (
           <AddAssetModal
             onClose={() => setIsModalOpen(false)}
@@ -216,7 +282,6 @@ const Assets = () => {
           />
         )}
       </div>
-    </div>
   );
 };
 

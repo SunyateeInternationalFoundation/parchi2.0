@@ -20,6 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../UI/select";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 
 const Files = () => {
   const [loading, setLoading] = useState(false);
@@ -52,6 +58,11 @@ const Files = () => {
       ?.files;
   const { id } = useParams();
   const projectId = id;
+
+  
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
 
   useEffect(() => {
     fetchFiles();
@@ -93,10 +104,18 @@ const Files = () => {
         ...doc.data(),
       }));
       setFiles(filesData);
+      setTotalPages(Math.ceil(filesData.length / 10)); 
+      setPaginationData(filesData.slice(0, 10)); 
     } catch (error) {
       console.error("Error fetching files:", error);
     }
   }
+
+  useEffect(() => {
+   
+    setPaginationData(files.slice(currentPage * 10, currentPage * 10 + 10));
+    setTotalPages(Math.ceil(files.length / 10));
+  }, [files, currentPage]);
 
   // Handle File Upload
   async function handleAddFile(e) {
@@ -214,8 +233,8 @@ const Files = () => {
               </tr>
             </thead>
             <tbody>
-              {files.length > 0 ? (
-                files.map((file) => {
+              {paginationData.length > 0 ? (
+                paginationData.map((file) => {
                   const customer = customers.find(
                     (customer) => customer.id === file.customerOrVendorRef
                   );
@@ -264,6 +283,53 @@ const Files = () => {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex items-center flex-wrap gap-2 justify-between p-5">
+          <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+            {currentPage + 1} of {totalPages || 1} page(s)
+          </div>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2">
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(0)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val - 1)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val + 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronRight className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(totalPages - 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsRight />
+                </div>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       {/* Modal */}
