@@ -10,6 +10,12 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
 import FormatTimestamp from "../../constants/FormatTimestamp";
@@ -32,6 +38,9 @@ function Reminder() {
     isComplete: false,
   });
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
 
   const userDetails = useSelector((state) => state.users);
   const companyDetails =
@@ -49,6 +58,9 @@ function Reminder() {
         id: doc.id,
         ...doc.data(),
       }));
+      setTotalPages(Math.ceil(remindersData.length / 10));
+      setPaginationData(remindersData.slice(0, 10));
+
       setReminders(remindersData);
     } catch (err) {
       console.error("Error fetching reminders:", err);
@@ -120,6 +132,9 @@ function Reminder() {
       console.error("Error deleting reminder:", err);
     }
   };
+  useEffect(() => {
+    setPaginationData(reminders.slice(currentPage * 10, currentPage * 10 + 10));
+  }, [currentPage, reminders]);
 
   return (
     <div className="main-container " style={{ height: "92vh" }}>
@@ -183,7 +198,7 @@ function Reminder() {
         {loading ? (
           <div className="text-center py-6">Loading...</div>
         ) : (
-          <div className="py-3" style={{ height: "82vh" }}>
+          <div className="py-3" style={{ height: "92vh" }}>
             <table className="w-full border-collapse text-start ">
               <thead className=" bg-white">
                 <tr className="border-b">
@@ -205,8 +220,8 @@ function Reminder() {
                 </tr>
               </thead>
               <tbody>
-                {reminders.length > 0 ? (
-                  reminders
+                {paginationData.length > 0 ? (
+                  paginationData
                     .filter((item) =>
                       activeTab === "Reminder"
                         ? !item.isComplete
@@ -258,6 +273,51 @@ function Reminder() {
             </table>
           </div>
         )}
+        <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
+          <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+            {currentPage + 1} of {totalPages || 1} row(s) selected.
+          </div>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2">
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(0)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val - 1)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val + 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronRight className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(totalPages - 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsRight />
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

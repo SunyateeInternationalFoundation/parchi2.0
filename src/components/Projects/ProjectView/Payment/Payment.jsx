@@ -131,21 +131,21 @@ const Payment = ({ projectDetails }) => {
   }, []);
 
   useEffect(() => {
-  const filterExpensesData = expenses.filter((expense) => {
-    const { toWhom } = expense;
+    const filterExpensesData = expenses.filter((expense) => {
+      const { toWhom } = expense;
 
-    const userTypeLower = toWhom.userType.toLowerCase();
-    const filterUserLower = filterUser.toLowerCase();
+      const userTypeLower = toWhom.userType.toLowerCase();
+      const filterUserLower = filterUser.toLowerCase();
 
-    const matchesSearch = toWhom.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesStatus =
-      filterUser === "All" || userTypeLower === filterUserLower;
+      const matchesSearch = toWhom.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const matchesStatus =
+        filterUser === "All" || userTypeLower === filterUserLower;
 
-    return matchesSearch && matchesStatus;
-  });
-
+      return matchesSearch && matchesStatus;
+    });
+  
     setTotalPages(Math.ceil(filterExpensesData.length / 10)); 
     setPaginationData(
       filterExpensesData.slice(currentPage * 10, currentPage * 10 + 10)

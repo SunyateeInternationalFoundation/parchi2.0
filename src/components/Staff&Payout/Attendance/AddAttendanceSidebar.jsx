@@ -58,19 +58,6 @@ function AddAttendanceSidebar({
     }));
   }
 
-  function DateFormate(timestamp) {
-    if (!timestamp) {
-      return;
-    }
-    const milliseconds =
-      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
-    const date = new Date(milliseconds);
-    const getDate = String(date.getDate()).padStart(2, "0");
-    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
-    const getFullYear = date.getFullYear();
-    return `${getFullYear}-${getMonth}-${getDate}`;
-  }
-
   const today = new Date().toISOString().split("T")[0];
 
   function setDateAsId(timestamp) {
@@ -86,7 +73,8 @@ function AddAttendanceSidebar({
     return `${getDate}${getMonth}${getFullYear}`;
   }
 
-  async function AddAttendance() {
+  async function AddAttendance(e) {
+    e.preventDefault();
     try {
       const attendanceId = setDateAsId(attendanceForm.date);
       if (!attendanceId) {

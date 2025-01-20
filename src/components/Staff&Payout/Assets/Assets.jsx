@@ -273,15 +273,15 @@ const Assets = () => {
           </div>
         </div>
       </div>
-        {isModalOpen && (
-          <AddAssetModal
-            onClose={() => setIsModalOpen(false)}
-            isOpen={isModalOpen}
-            onAddAsset={handleAddAsset}
-            companyId={companyDetails.companyId}
-          />
-        )}
-      </div>
+      {isModalOpen && (
+        <AddAssetModal
+          onClose={() => setIsModalOpen(false)}
+          isOpen={isModalOpen}
+          onAddAsset={handleAddAsset}
+          companyId={companyDetails.companyId}
+        />
+      )}
+    </div>
   );
 };
 

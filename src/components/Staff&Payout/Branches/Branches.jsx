@@ -255,15 +255,15 @@ const Branches = () => {
           </div>
         </div>
       </div>
-        {isModalOpen && (
-          <AddBranchModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onAddBranch={handleAddBranch}
-            companyId={companyId}
-          />
-        )}
-      </div>
+      {isModalOpen && (
+        <AddBranchModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onAddBranch={handleAddBranch}
+          companyId={companyId}
+        />
+      )}
+    </div>
   );
 };
 

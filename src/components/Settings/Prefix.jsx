@@ -4,35 +4,30 @@ import { useSelector } from "react-redux";
 import { db } from "../../firebase";
 
 const PREFIX_FIELDS = [
-  { name: "invoice", label: "Invoice", placeholder: "Prefix for Invoice" },
-  { name: "service", label: "Service", placeholder: "Prefix for Service" },
+  { name: "invoice", default: "INV" },
+  { name: "service", default: "SRE" },
   {
     name: "quotation",
-    label: "Quotation",
-    placeholder: "Prefix for Quotation",
+    default: "QTN",
   },
-  { name: "purchase", label: "Purchase", placeholder: "Prefix for Purchase" },
+  { name: "purchase", default: "PUR" },
   {
     name: "proformaInvoice",
-    label: "ProForma Invoice",
-    placeholder: "Prefix for ProFormaInvoice",
+    default: "PRF",
   },
-  { name: "po", label: "PO", placeholder: "Prefix for PO" },
-  { name: "pos", label: "POS", placeholder: "Prefix for POS" },
+  { name: "po", default: "PO" },
+  { name: "pos", default: "POS" },
   {
     name: "deliveryChallan",
-    label: "Delivery Challan",
-    placeholder: "Prefix for DeliveryChallan",
+    default: "DC",
   },
   {
     name: "creditNote",
-    label: "Credit Note",
-    placeholder: "Prefix for CreditNote",
+    default: "CN",
   },
   {
     name: "debitNote",
-    label: "Debit Note",
-    placeholder: "Prefix for DebitNote",
+    default: "DN",
   },
 ];
 
@@ -61,6 +56,7 @@ const Prefix = () => {
 
     fetchCompanyDetails();
   }, [companyId]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -70,7 +66,7 @@ const Prefix = () => {
     try {
       const updatedFormData = { ...formData };
       const prefix = PREFIX_FIELDS.reduce((acc, field) => {
-        acc[field.name] = updatedFormData?.[field.name] ?? field.label;
+        acc[field.name] = updatedFormData?.[field.name] ?? field.default;
         return acc;
       }, {});
 
@@ -86,9 +82,6 @@ const Prefix = () => {
 
   return (
     <div className="flex">
-      {/* <div className="w-1/4">
-        <SettingsView />
-      </div> */}
       <div className="p-6 bg-gray-100 w-full max-h-screen overflow-y-auto mt-4">
         <div className="mx-auto bg-white shadow-md rounded-md p-6">
           <div className="flex justify-between items-center mb-6">
@@ -99,15 +92,15 @@ const Prefix = () => {
               <div className="flex justify-between" key={field.name}>
                 <div className="w-1/4">
                   <label className="block text-gray-600 text-sm font-bold mt-1">
-                    {field.label}:
+                    {field.name.charAt(0).toUpperCase() + field.name.slice(1)} :
                   </label>
                 </div>
                 <div className="w-3/4">
                   <input
                     type="text"
                     name={field.name}
-                    placeholder={field.placeholder}
-                    value={formData[field.name] ?? field.label}
+                    placeholder={"Enter Prefix of " + field.name}
+                    value={formData[field.name] ?? field.default}
                     onChange={handleChange}
                     className="bg-gray-40 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 block w-full p-2 hover:border-blue-500 hover:shadow-md hover:shadow-blue-300"
                   />

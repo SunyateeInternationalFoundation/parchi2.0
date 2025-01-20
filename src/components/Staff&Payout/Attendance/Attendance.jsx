@@ -7,6 +7,12 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 import { useSelector } from "react-redux";
 import FormatTimestamp from "../../../constants/FormatTimestamp";
 import { db } from "../../../firebase";
@@ -20,6 +26,9 @@ function Attendance() {
   const [selectedMonth, setSelectedMonth] = useState("");
   const [overallSalary, setOverallSalary] = useState(0);
   const [onUpdateAttendance, setOnUpdateAttendance] = useState({});
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
 
   const userDetails = useSelector((state) => state.users);
   const companyId =
@@ -80,7 +89,8 @@ function Attendance() {
           absent,
         };
       });
-
+      setTotalPages(Math.ceil(staffAttendance.length / 10));
+      setPaginationData(staffAttendance.slice(0, 10));
       setStaffAttendance(staffAttendance);
     } catch (error) {
       console.log("🚀 ~ fetchStaffData ~ error:", error);
@@ -164,7 +174,6 @@ function Attendance() {
       if (onUpdateAttendance.id && ele.id !== onUpdateAttendance.id) {
         return false;
       }
-
       return true;
     });
     removedAlreadyAddAttendance.push(data);
@@ -175,12 +184,17 @@ function Attendance() {
     setStaffAttendance(sortedData);
   }
 
-  const filteredAttendance = staffAttendance.filter((ele) => {
-    if (!selectedMonth) {
-      return true;
-    }
-    return ele.id.slice(2) === selectedMonth.split("-").reverse().join("");
-  });
+  useEffect(() => {
+    const filteredAttendance = staffAttendance.filter((ele) => {
+      if (!selectedMonth) {
+        return true;
+      }
+      return ele.id.slice(2) === selectedMonth.split("-").reverse().join("");
+    });
+    setPaginationData(
+      filteredAttendance.slice(currentPage * 10, currentPage * 10 + 10)
+    );
+  }, [currentPage, staffAttendance, selectedMonth]);
 
   return (
     <div className="main-container" style={{ height: "82vh" }}>
@@ -220,11 +234,11 @@ function Attendance() {
             + Add Attendance
           </button>
         </header>
-        <div className="h-96">
+        <div className="">
           {loading ? (
             <div className="text-center">Loading...</div>
-          ) : filteredAttendance.length > 0 ? (
-            <div className="overflow-y-auto py-3" style={{ height: "70vh" }}>
+          ) : paginationData.length > 0 ? (
+            <div className="py-3" style={{ height: "92vh" }}>
               <table className="w-full border-collapse text-start">
                 <thead className="bg-white">
                   <tr className="border-b">
@@ -240,8 +254,8 @@ function Attendance() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredAttendance.length > 0 ? (
-                    filteredAttendance.map((item) => (
+                  {paginationData.length > 0 ? (
+                    paginationData.map((item) => (
                       <tr
                         key={item.id}
                         className="border-b border-gray-200 text-center cursor-pointer"
@@ -272,6 +286,51 @@ function Attendance() {
               No Attendance Found for the Selected Month
             </div>
           )}
+        </div>
+        <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
+          <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+            {currentPage + 1} of {totalPages || 1} row(s) selected.
+          </div>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2">
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(0)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val - 1)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val + 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronRight className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(totalPages - 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsRight />
+                </div>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       {isSidebarOpen && (

@@ -56,9 +56,9 @@ const Approval = () => {
 
   useEffect(() => {
     // Update pagination data when approvals or currentPage changes
-  const filteredApprovals = approvals.filter(
-    (approval) => filter === "All" || approval.categories === filter
-  );
+    const filteredApprovals = approvals.filter(
+      (approval) => filter === "All" || approval.categories === filter
+    );
     setTotalPages(Math.ceil(filteredApprovals.length / 10)); // Update total pages based on filtered approvals length
     setPaginationData(filteredApprovals.slice(currentPage * 10, currentPage * 10 + 10)); // Update pagination data
   }, [approvals, currentPage, filter]);
