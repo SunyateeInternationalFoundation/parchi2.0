@@ -1,4 +1,11 @@
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  updateDoc,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
@@ -8,10 +15,11 @@ import {
   LuChevronsRight,
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import addItem from "../../assets/addItem.png";
-import FormatTimestamp from "../../constants/FormatTimestamp";
+import DateTimeFormate from "../../constants/DateTimeFormate";
 import { db } from "../../firebase";
+import Handsontable from "../UI/Handsontable";
 import {
   Select,
   SelectContent,
@@ -42,7 +50,6 @@ function PO() {
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.po;
 
-  const navigate = useNavigate();
   const [POList, setPOList] = useState([]);
 
   const [POCount, setPOCount] = useState({
@@ -55,9 +62,11 @@ function PO() {
     async function fetchPoList() {
       setLoading(true);
       try {
-        const getData = await getDocs(
-          collection(db, "companies", companyId, "po")
+        const q = query(
+          collection(db, "companies", companyId, "po"),
+          orderBy("date", "desc")
         );
+        const getData = await getDocs(q);
         let receivedCount = 0;
         let totalPrice = 0;
         const data = getData.docs.map((doc) => {
@@ -68,7 +77,14 @@ function PO() {
           totalPrice += res.total;
           return {
             id: doc.id,
-            ...res,
+            ...DateTimeFormate(res.date),
+            poNo: res.prefix + "-" + res.poNo,
+            vendorName: res.vendorDetails.name,
+            vendorPhone: res.vendorDetails.phone,
+            total: res.total,
+            orderStatus: res.orderStatus,
+            createdBy: res.createdBy.who,
+            mode: res.mode,
           };
         });
         setTotalPages(Math.ceil(data.length / 10));
@@ -105,15 +121,11 @@ function PO() {
   }
   useEffect(() => {
     const filteredPO = POList.filter((po) => {
-      const { vendorDetails, poNo, orderStatus } = po;
-      const vendorName = vendorDetails?.name || "";
+      const { vendorName, vendorPhone, poNo, orderStatus } = po;
       const matchesSearch =
         vendorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         poNo?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vendorDetails?.phone
-          .toString()
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
+        vendorPhone.toString().toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesStatus =
         filterStatus === "All" || orderStatus === filterStatus;
@@ -124,7 +136,110 @@ function PO() {
       filteredPO.slice(currentPage * 10, currentPage * 10 + 10)
     );
   }, [currentPage, POList, searchTerm, filterStatus]);
+  const columns = [
+    {
+      title: "Date",
+      data: "date",
+      editor: false,
+      readOnly: true,
+      width: 100,
+      renderer: (instance, td, row, col, prop, value, cellProperties) => {
+        const time = paginationData[cellProperties.row].time;
+        const combinedValue = `${value} <br/><span style="color: gray; font-size:14px">${time}</small>`;
+        td.innerHTML = combinedValue;
+        td.style.paddingLeft = "30px";
+        return td;
+      },
+    },
 
+    {
+      title: "Po No",
+      type: "text",
+      data: "poNo",
+      className: " font-bold",
+      editor: false,
+      readOnly: true,
+      width: 90,
+    },
+    {
+      title: "Vendor",
+      type: "text",
+      data: "vendorName",
+      editor: false,
+      readOnly: true,
+      width: 90,
+      renderer: (instance, td, row, col, prop, value, cellProperties) => {
+        const vendorPhone = paginationData[cellProperties.row].vendorPhone;
+        const combinedValue = `${value} <br/><span style="color: gray; font-size:14px">Ph.No ${vendorPhone}</span>`;
+        td.innerHTML = combinedValue;
+        return td;
+      },
+    },
+
+    {
+      title: "Amount",
+      type: "numeric",
+      data: "total",
+      numericFormat: {
+        pattern: "₹ 0,0.0 ",
+        culture: "en-IN",
+      },
+      className: "htLeft font-bold",
+      editor: false,
+      readOnly: true,
+      width: 90,
+    },
+    {
+      title: "Status",
+      type: "text",
+      editor: false,
+      data: "orderStatus",
+      width: 90,
+      className: "updateStatus",
+      renderer: (instance, td, row, col, prop, value, cellProperties) => {
+        const select = document.createElement("select");
+        const options = ["Pending", "Received"];
+        options.forEach((option) => {
+          const opt = document.createElement("option");
+          opt.value = option;
+          opt.text = option;
+          select.appendChild(opt);
+        });
+        select.value = value;
+        select.className =
+          "px-3 py-1 rounded-md cursor-pointer " +
+          (value === "Received" ? "bg-green-100" : "bg-red-100");
+        select.onchange = async (e) => {
+          const newStatus = e.target.value;
+          await onStatusUpdate(
+            paginationData[cellProperties.row].id,
+            newStatus
+          );
+        };
+        td.innerHTML = "";
+        td.appendChild(select);
+        td.style.color = "black";
+        td.className = "updateStatus";
+        return td;
+      },
+    },
+    {
+      title: "Mode",
+      type: "text",
+      data: "mode",
+      editor: false,
+      readOnly: true,
+      width: 90,
+    },
+    {
+      title: "Created By",
+      type: "text",
+      data: "createdBy",
+      editor: false,
+      readOnly: true,
+      width: 90,
+    },
+  ];
   return (
     <div className="w-full">
       <div className="main-container" style={{ height: "92vh" }}>
@@ -209,121 +324,33 @@ function PO() {
               Loading po...
             </div>
           ) : (
-            <div style={{ height: "92vh" }}>
-              <table className="w-full border-collapse text-start">
-                <thead className=" bg-white">
-                  <tr className="border-b">
-                    <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
-                      Date
-                    </td>
-                    <td className="px-5 py-1 text-gray-400 font-semibold text-center">
-                      PO No
-                    </td>
-                    <td className="px-5 py-1 text-gray-400 font-semibold text-start">
-                      Vendor
-                    </td>
-                    <td className="px-5 py-1 text-gray-400 font-semibold  text-center">
-                      Amount
-                    </td>
-                    <td className="px-5 py-1 text-gray-400 font-semibold text-center ">
-                      Status
-                    </td>
-                    <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
-                      Mode
-                    </td>
-                    <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
-                      Created By
-                    </td>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginationData.length > 0 ? (
-                    paginationData.map((po) => (
-                      <tr
-                        key={po.id}
-                        className="border-b text-center cursor-pointer text-start"
-                        onClick={(e) => {
-                          navigate(po.id);
-                        }}
-                      >
-                        <td className="px-8 py-3 text-start">
-                          <FormatTimestamp timestamp={po.date} />
-                        </td>
-                        <td className="px-5 py-3 font-bold text-center">
-                          {po.prefix || ""}-{po.poNo}
-                        </td>
-                        <td className="px-5 py-3 text-start">
-                          {po.vendorDetails?.name} <br />
-                          <span className="text-gray-500">
-                            Ph.No {po.vendorDetails.phone}
-                          </span>
-                        </td>
-                        <td className="px-5 py-3  text-center">{`₹ ${po.total.toFixed(
-                          2
-                        )}`}</td>
-                        <td
-                          className="px-5 py-3 w-32"
-                          onClick={(e) => e.stopPropagation()}
+            <div
+              style={{ height: "92vh", width: "100%" }}
+              className="overflow-hidden"
+            >
+              <div className="py-2">
+                {paginationData.length > 0 ? (
+                  <Handsontable columns={columns} data={paginationData} />
+                ) : (
+                  <div className="my-10">
+                    <div className="w-full flex justify-center">
+                      <img src={addItem} alt="add Item" className="w-24 h-24" />
+                    </div>
+                    <div className="my-6 text-center">No Po Found</div>
+                    <div className="w-full flex justify-center">
+                      {(userDetails.selectedDashboard === "" ||
+                        role?.create) && (
+                        <Link
+                          className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                          to="create-po"
                         >
-                          <div
-                            className={` text-center flex justify-center items-center h-8 overflow-hidden border rounded-lg text-xs  ${
-                              po.orderStatus !== "Pending"
-                                ? "bg-green-200 "
-                                : "bg-red-200 "
-                            }`}
-                          >
-                            <Select
-                              value={po.orderStatus}
-                              onValueChange={(value) =>
-                                onStatusUpdate(po.id, value)
-                              }
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder={"Select Status"} />
-                              </SelectTrigger>
-                              <SelectContent className="w-10 h-18">
-                                <SelectItem value="Pending" className="h-8">
-                                  Pending
-                                </SelectItem>
-                                <SelectItem value="Received" className="h-8">
-                                  Received
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </td>
-                        <td className="px-5 py-3">{po.mode || "Online"}</td>
-
-                        <td className="px-5 py-3">{po?.createdBy?.who}</td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="7" className="h-96 text-center py-4">
-                        <div className="w-full flex justify-center">
-                          <img
-                            src={addItem}
-                            alt="add Item"
-                            className="w-24 h-24"
-                          />
-                        </div>
-                        <div className="mb-6">No po Created</div>
-                        <div className="">
-                          {(userDetails.selectedDashboard === "" ||
-                            role?.create) && (
-                            <Link
-                              className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-                              to="create-po"
-                            >
-                              + Create po
-                            </Link>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                          + Create Po
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
           <div className="flex items-center flex-wrap gap-2 justify-between  p-5">

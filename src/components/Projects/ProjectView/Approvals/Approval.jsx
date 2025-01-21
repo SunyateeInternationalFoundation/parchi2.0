@@ -1,16 +1,16 @@
 import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import FormatTimestamp from "../../../../constants/FormatTimestamp";
-import { db } from "../../../../firebase"; // Ensure Firebase is configured correctly
-import CreateApproval from "./CreateApproval";
 import {
   LuChevronLeft,
   LuChevronRight,
   LuChevronsLeft,
   LuChevronsRight,
 } from "react-icons/lu";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import FormatTimestamp from "../../../../constants/FormatTimestamp";
+import { db } from "../../../../firebase"; // Ensure Firebase is configured correctly
+import CreateApproval from "./CreateApproval";
 
 const Approval = () => {
   const { id } = useParams();
@@ -60,7 +60,9 @@ const Approval = () => {
       (approval) => filter === "All" || approval.categories === filter
     );
     setTotalPages(Math.ceil(filteredApprovals.length / 10)); // Update total pages based on filtered approvals length
-    setPaginationData(filteredApprovals.slice(currentPage * 10, currentPage * 10 + 10)); // Update pagination data
+    setPaginationData(
+      filteredApprovals.slice(currentPage * 10, currentPage * 10 + 10)
+    ); // Update pagination data
   }, [approvals, currentPage, filter]);
 
   return (

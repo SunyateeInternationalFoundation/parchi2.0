@@ -5,12 +5,17 @@ import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
-import { IoDocumentTextOutline, IoDownloadOutline } from "react-icons/io5";
+import {
+  IoDocumentTextOutline,
+  IoDownloadOutline,
+  IoPrintOutline,
+} from "react-icons/io5";
 import { LiaTrashAltSolid } from "react-icons/lia";
 import { MdOutlineMarkEmailRead } from "react-icons/md";
 import { TbEdit } from "react-icons/tb";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useReactToPrint } from "react-to-print";
 import { db, storage } from "../../../firebase";
 import Template1 from "../../Templates/Template1";
 import Template10 from "../../Templates/Template10";
@@ -42,6 +47,9 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [totalTax, setTotalTax] = useState(0);
   const invoiceRef = useRef();
+  const reactToPrintFn = useReactToPrint({
+    contentRef: invoiceRef,
+  });
 
   const templatesComponents = {
     template1: (
@@ -90,6 +98,7 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
       />
     ),
   };
+
   useEffect(() => {
     if (invoice.products) {
       const tax = invoice?.products.reduce((acc, cur) => {
@@ -285,7 +294,7 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
   ];
 
   return (
-    <div className="px-8 py-8  bg-gray-100">
+    <div className="px-8 pt-4  bg-gray-100">
       <div className="bg-white  rounded-lg shadow-md overflow-hidden ">
         <div className=" flex justify-between bg-white mt-3 border-b rounded-t-lg px-5 py-4">
           <div className="space-x-4 flex ">
@@ -326,6 +335,12 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
               onClick={handleEmailShare}
             >
               <MdOutlineMarkEmailRead /> &nbsp; Share via Email
+            </button>
+            <button
+              className="px-4 py-1 text-gray-600 rounded-md flex items-center  border hover:bg-black hover:text-white"
+              onClick={() => reactToPrintFn()}
+            >
+              <IoPrintOutline /> &nbsp; Print
             </button>
           </div>
           <div className="flex items-center">

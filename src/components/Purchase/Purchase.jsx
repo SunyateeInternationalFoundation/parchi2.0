@@ -17,8 +17,9 @@ import {
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import addItem from "../../assets/addItem.png";
-import FormatTimestamp from "../../constants/FormatTimestamp";
+import DateTimeFormate from "../../constants/DateTimeFormate";
 import { db } from "../../firebase";
+import Handsontable from "../UI/Handsontable";
 import {
   Select,
   SelectContent,
@@ -49,18 +50,27 @@ const Purchase = () => {
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.purchase;
-  const navigate = useNavigate();
   useEffect(() => {
     const fetchPurchases = async () => {
       setLoading(true);
       try {
         const purchaseRef = collection(db, "companies", companyId, "purchases");
-        const q = query(purchaseRef, orderBy("purchaseNo", "asc"));
+        const q = query(purchaseRef, orderBy("date", "desc"));
         const querySnapshot = await getDocs(q);
-        const purchasesData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        const purchasesData = querySnapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...DateTimeFormate(data.date),
+            purchaseNo: data.prefix + "-" + data.purchaseNo,
+            vendorName: data.vendorDetails.name,
+            vendorPhone: data.vendorDetails.phone,
+            total: data.total,
+            orderStatus: data.orderStatus,
+            createdBy: data.createdBy.who,
+            mode: data.mode,
+          };
+        });
         setTotalPages(Math.ceil(purchasesData.length / 10));
         setPaginationData(purchasesData.slice(0, 10));
         setPurchases(purchasesData);
@@ -112,17 +122,16 @@ const Purchase = () => {
     .reduce((sum, purchase) => sum + purchase.total, 0);
   useEffect(() => {
     const filteredPurchases = purchases.filter((purchase) => {
-      const { vendorDetails, purchaseNo, orderStatus } = purchase;
-      const VendorName = vendorDetails?.name || "";
+      const { vendorName, vendorPhone, purchaseNo, orderStatus } = purchase;
       const matchesSearch =
-        VendorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        vendorName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         purchaseNo
           ?.toString()
           .toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
-        vendorDetails?.phone
-          .toString()
-          .toLowerCase()
+        vendorPhone
+          ?.toString()
+          ?.toLowerCase()
           .includes(searchTerm.toLowerCase());
 
       const matchesStatus =
@@ -135,6 +144,110 @@ const Purchase = () => {
     );
   }, [currentPage, purchases, searchTerm, filterStatus]);
 
+  const columns = [
+    {
+      title: "Date",
+      data: "date",
+      editor: false,
+      readOnly: true,
+      width: 100,
+      renderer: (instance, td, row, col, prop, value, cellProperties) => {
+        const time = paginationData[cellProperties.row].time;
+        const combinedValue = `${value} <br/><span style="color: gray; font-size:14px">${time}</small>`;
+        td.innerHTML = combinedValue;
+        td.style.paddingLeft = "30px";
+        return td;
+      },
+    },
+
+    {
+      title: "Purchase No",
+      type: "text",
+      data: "purchaseNo",
+      className: " font-bold",
+      editor: false,
+      readOnly: true,
+      width: 90,
+    },
+    {
+      title: "Vendor",
+      type: "text",
+      data: "vendorName",
+      editor: false,
+      readOnly: true,
+      width: 90,
+      renderer: (instance, td, row, col, prop, value, cellProperties) => {
+        const vendorPhone = paginationData[cellProperties.row].vendorPhone;
+        const combinedValue = `${value} <br/><span style="color: gray; font-size:14px">Ph.No ${vendorPhone}</span>`;
+        td.innerHTML = combinedValue;
+        return td;
+      },
+    },
+
+    {
+      title: "Amount",
+      type: "numeric",
+      data: "total",
+      numericFormat: {
+        pattern: "₹ 0,0.0 ",
+        culture: "en-IN",
+      },
+      className: "htLeft font-bold",
+      editor: false,
+      readOnly: true,
+      width: 90,
+    },
+    {
+      title: "Status",
+      type: "text",
+      editor: false,
+      data: "orderStatus",
+      width: 90,
+      className: "updateStatus",
+      renderer: (instance, td, row, col, prop, value, cellProperties) => {
+        const select = document.createElement("select");
+        const options = ["Pending", "Received"];
+        options.forEach((option) => {
+          const opt = document.createElement("option");
+          opt.value = option;
+          opt.text = option;
+          select.appendChild(opt);
+        });
+        select.value = value;
+        select.className =
+          "px-3 py-1 rounded-md cursor-pointer " +
+          (value === "Received" ? "bg-green-100" : "bg-red-100");
+        select.onchange = async (e) => {
+          const newStatus = e.target.value;
+          await handleStatusChange(
+            paginationData[cellProperties.row].id,
+            newStatus
+          );
+        };
+        td.innerHTML = "";
+        td.appendChild(select);
+        td.style.color = "black";
+        td.className = "updateStatus";
+        return td;
+      },
+    },
+    {
+      title: "Mode",
+      type: "text",
+      data: "mode",
+      editor: false,
+      readOnly: true,
+      width: 90,
+    },
+    {
+      title: "Created By",
+      type: "text",
+      data: "createdBy",
+      editor: false,
+      readOnly: true,
+      width: 90,
+    },
+  ];
   return (
     <div className="main-container" style={{ height: "92vh" }}>
       <div className="mt-4 py-3">
@@ -218,123 +331,32 @@ const Purchase = () => {
             Loading purchases...
           </div>
         ) : (
-          <div style={{ height: "92vh" }}>
-            <table className="w-full border-collapse text-start">
-              <thead className=" bg-white">
-                <tr className="border-b">
-                  <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
-                    Date
-                  </td>
-                  <td className="px-5 py-3 text-gray-400 font-semibold text-center">
-                    Purchase No
-                  </td>
-                  <td className="px-5 py-3 text-gray-400 font-semibold text-start">
-                    Vendor
-                  </td>
-                  <td className="px-5 py-3 text-center text-gray-400 font-semibold  ">
-                    Amount
-                  </td>
-                  <td className="px-5 py-3 text-gray-400 font-semibold text-center ">
-                    Status
-                  </td>
-                  <td className="px-5 py-3 text-gray-400 font-semibold text-start ">
-                    Mode
-                  </td>
-                  <td className="px-5 py-3 text-gray-400 font-semibold text-start ">
-                    Created By
-                  </td>
-                </tr>
-              </thead>
-              <tbody>
-                {paginationData.length > 0 ? (
-                  paginationData.map((purchase) => (
-                    <tr
-                      key={purchase.id}
-                      className="border-b text-center cursor-pointer text-start"
-                      onClick={() => {
-                        navigate(purchase.id);
-                      }}
-                    >
-                      <td className="px-8 py-3 text-start">
-                        <FormatTimestamp timestamp={purchase.date} />
-                      </td>
-                      <td className="px-5 py-3 font-bold text-center">
-                        {purchase.prefix || ""}-{purchase.purchaseNo}
-                      </td>
-
-                      <td className="px-5 py-3 text-start">
-                        {purchase.vendorDetails?.name} <br />
-                        <span className="text-gray-500 text-sm">
-                          Ph.No {purchase.vendorDetails.phone}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3 font-bold text-center">{`₹ ${purchase.total.toFixed(
-                        2
-                      )}`}</td>
-
-                      <td
-                        className="px-5 py-3 w-32"
-                        onClick={(e) => e.stopPropagation()}
+          <div
+            style={{ height: "92vh", width: "100%" }}
+            className="overflow-hidden"
+          >
+            <div className="py-2">
+              {paginationData.length > 0 ? (
+                <Handsontable columns={columns} data={paginationData} />
+              ) : (
+                <div className="my-10">
+                  <div className="w-full flex justify-center">
+                    <img src={addItem} alt="add Item" className="w-24 h-24" />
+                  </div>
+                  <div className="my-6 text-center">No Purchase Found</div>
+                  <div className="w-full flex justify-center">
+                    {(userDetails.selectedDashboard === "" || role?.create) && (
+                      <Link
+                        className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                        to="create-purchase"
                       >
-                        <div
-                          className={` text-center flex justify-center items-center h-8 overflow-hidden border rounded-lg text-xs  ${
-                            purchase.orderStatus !== "Pending"
-                              ? "bg-green-200 "
-                              : "bg-red-200 "
-                          }`}
-                        >
-                          <Select
-                            value={purchase.orderStatus}
-                            onValueChange={(value) =>
-                              handleStatusChange(purchase.id, value)
-                            }
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder={"Select Status"} />
-                            </SelectTrigger>
-                            <SelectContent className="w-10 h-18">
-                              <SelectItem value="Pending" className="h-8">
-                                Pending
-                              </SelectItem>
-                              <SelectItem value="Received" className="h-8">
-                                Received
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </td>
-                      <td className="px-5 py-3">{purchase.mode || "Online"}</td>
-
-                      <td className="px-5 py-3">{purchase?.createdBy?.who}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="7" className="h-96 text-center py-4">
-                      <div className="w-full flex justify-center">
-                        <img
-                          src={addItem}
-                          alt="add Item"
-                          className="w-24 h-24"
-                        />
-                      </div>
-                      <div className="mb-6">No purchases Created</div>
-                      <div className="">
-                        {(userDetails.selectedDashboard === "" ||
-                          role?.create) && (
-                          <Link
-                            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-                            to="create-purchase"
-                          >
-                            + Create purchases
-                          </Link>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                        + Create Purchase
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
         <div className="flex items-center flex-wrap gap-2 justify-between  p-5">

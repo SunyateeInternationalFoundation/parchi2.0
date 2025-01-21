@@ -8,18 +8,18 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
-import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import addItem from "../../assets/addItem.png";
-import { db } from "../../firebase";
-
 import {
   LuChevronLeft,
   LuChevronRight,
   LuChevronsLeft,
   LuChevronsRight,
 } from "react-icons/lu";
-import FormatTimestamp from "../../constants/FormatTimestamp";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import addItem from "../../assets/addItem.png";
+import DateTimeFormate from "../../constants/DateTimeFormate";
+import { db } from "../../firebase";
+import Handsontable from "../UI/Handsontable";
 import {
   Select,
   SelectContent,
@@ -49,20 +49,28 @@ const InvoiceList = () => {
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.invoice;
-  const navigate = useNavigate();
-
   useEffect(() => {
     const fetchInvoices = async () => {
       setLoading(true);
       try {
         const invoiceRef = collection(db, "companies", companyId, "invoices");
 
-        const q = query(invoiceRef, orderBy("invoiceNo", "asc"));
+        const q = query(invoiceRef, orderBy("date", "desc"));
         const querySnapshot = await getDocs(q);
-        const invoicesData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        const invoicesData = querySnapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...DateTimeFormate(data.date),
+            invoiceNo: data.prefix + "-" + data.invoiceNo,
+            customerName: data.customerDetails.name,
+            customerPhone: data.customerDetails.phone,
+            total: data.total,
+            paymentStatus: data.paymentStatus,
+            createdBy: data.createdBy.who,
+            mode: data.mode,
+          };
+        });
         setTotalPages(Math.ceil(invoicesData.length / 10));
         setInvoicePaginationData(invoicesData.slice(0, 10));
         setInvoices(invoicesData);
@@ -107,15 +115,14 @@ const InvoiceList = () => {
 
   useEffect(() => {
     const filteredInvoices = invoices.filter((invoice) => {
-      const { customerDetails, invoiceNo, paymentStatus } = invoice;
-      const customerName = customerDetails?.name || "";
+      const { customerName, customerPhone, invoiceNo, paymentStatus } = invoice;
       const matchesSearch =
         customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         invoiceNo
           ?.toString()
           .toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
-        customerDetails?.phone
+        customerPhone
           .toString()
           .toLowerCase()
           .includes(searchTerm.toLowerCase());
@@ -130,9 +137,118 @@ const InvoiceList = () => {
       filteredInvoices.slice(currentPage * 10, currentPage * 10 + 10)
     );
   }, [currentPage, invoices, searchTerm, filterStatus]);
+  const columns = [
+    {
+      title: "Date",
+      data: "date",
+      editor: false,
+      readOnly: true,
+      width: 100,
+      renderer: (instance, td, row, col, prop, value, cellProperties) => {
+        const time = invoicePaginationData[cellProperties.row].time;
+        const combinedValue = `${value} <br/><span style="color: gray; font-size:14px">${time}</small>`;
+        td.innerHTML = combinedValue;
+        td.style.paddingLeft = "30px";
+        return td;
+      },
+    },
+
+    {
+      title: "Invoice No",
+      type: "text",
+      data: "invoiceNo",
+      className: " font-bold",
+      editor: false,
+      readOnly: true,
+      width: 90,
+    },
+    {
+      title: "Customer",
+      type: "text",
+      data: "customerName",
+      editor: false,
+      readOnly: true,
+      width: 90,
+      renderer: (instance, td, row, col, prop, value, cellProperties) => {
+        const customerPhone =
+          invoicePaginationData[cellProperties.row].customerPhone;
+        const combinedValue = `${value} <br/><span style="color: gray; font-size:14px">Ph.No ${customerPhone}</span>`;
+        td.innerHTML = combinedValue;
+        return td;
+      },
+    },
+
+    {
+      title: "Amount",
+      type: "numeric",
+      data: "total",
+      numericFormat: {
+        pattern: "₹ 0,0.0 ",
+        culture: "en-IN",
+      },
+      className: "htLeft font-bold",
+      editor: false,
+      readOnly: true,
+      width: 90,
+    },
+    {
+      title: "Status",
+      type: "text",
+      editor: false,
+      data: "paymentStatus",
+      width: 90,
+      className: "updateStatus",
+      renderer: (instance, td, row, col, prop, value, cellProperties) => {
+        const select = document.createElement("select");
+        const options = ["Pending", "Paid", "UnPaid"];
+        options.forEach((option) => {
+          const opt = document.createElement("option");
+          opt.value = option;
+          opt.text = option;
+          select.appendChild(opt);
+        });
+        select.value = value;
+        select.className =
+          "px-3 py-1 rounded-md cursor-pointer " +
+          (value === "Paid"
+            ? "bg-green-100"
+            : value === "Pending"
+            ? "bg-yellow-100"
+            : "bg-red-100");
+        select.onchange = async (e) => {
+          const newStatus = e.target.value;
+          await handleStatusChange(
+            invoicePaginationData[cellProperties.row].id,
+            newStatus
+          );
+        };
+        td.innerHTML = "";
+        td.appendChild(select);
+        td.style.color = "black";
+        td.className = "updateStatus";
+        return td;
+      },
+    },
+    {
+      title: "Mode",
+      type: "text",
+      data: "mode",
+      editor: false,
+      readOnly: true,
+      width: 90,
+    },
+    {
+      title: "Created By",
+      type: "text",
+      data: "createdBy",
+      editor: false,
+      readOnly: true,
+      width: 90,
+    },
+  ];
 
   return (
-    <div className="main-container" style={{ height: "92vh" }}>
+    <div className="main-container" style={{ height: "92vh", width: "85vw" }}>
       <div className=" mt-4 py-3">
         <h1 className="text-2xl font-bold pb-3 ">Invoice Overview</h1>
         <div className="grid grid-cols-4 gap-8  ">
@@ -214,131 +330,32 @@ const InvoiceList = () => {
             Loading invoices...
           </div>
         ) : (
-          <div style={{ height: "92vh" }}>
-            <table className="w-full border-collapse text-start">
-              <thead className=" bg-white">
-                <tr className="border-b">
-                  <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
-                    Date
-                  </td>
-                  <td className="px-5 py-1 text-gray-400 font-semibold text-center">
-                    Invoice No
-                  </td>
-                  <td className="px-5 py-1 text-gray-400 font-semibold text-start">
-                    Customer
-                  </td>
-                  <td className="px-5 py-1 text-gray-400 font-semibold  text-center">
-                    Amount
-                  </td>
-                  <td className="px-5 py-1 text-gray-400 font-semibold text-center ">
-                    Status
-                  </td>
-                  <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
-                    Mode
-                  </td>
-                  <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
-                    Created By
-                  </td>
-                </tr>
-              </thead>
-              <tbody>
-                {invoicePaginationData.length > 0 ? (
-                  invoicePaginationData.map((invoice) => (
-                    <tr
-                      key={invoice.id}
-                      className="border-b border-gray-200 text-center cursor-pointer"
-                      onClick={(e) => {
-                        navigate(invoice.id);
-                      }}
-                    >
-                      <td className="px-8 py-3 text-start">
-                        <FormatTimestamp timestamp={invoice.date} />
-                      </td>
-                      <td className="px-5 py-3 font-bold">
-                        {invoice.prefix || ""}-{invoice.invoiceNo}
-                      </td>
-                      <td className="px-5 py-3 text-start">
-                        {invoice.customerDetails?.name} <br />
-                        <span className="text-gray-500 text-sm">
-                          Ph.No {invoice.customerDetails.phone}
-                        </span>
-                      </td>
-
-                      <td className="px-5 py-3 font-bold  text-center">{`₹ ${invoice.total.toFixed(
-                        2
-                      )}`}</td>
-                      <td
-                        className="px-5 py-3 w-32"
-                        onClick={(e) => e.stopPropagation()}
+          <div
+            style={{ height: "92vh", width: "100%" }}
+            className="overflow-hidden"
+          >
+            <div className="py-2">
+              {invoicePaginationData.length > 0 ? (
+                <Handsontable columns={columns} data={invoicePaginationData} />
+              ) : (
+                <div className="my-10">
+                  <div className="w-full flex justify-center">
+                    <img src={addItem} alt="add Item" className="w-24 h-24" />
+                  </div>
+                  <div className="my-6 text-center">No Invoice Found</div>
+                  <div className="w-full flex justify-center">
+                    {(userDetails.selectedDashboard === "" || role?.create) && (
+                      <Link
+                        className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                        to="create-invoice"
                       >
-                        <div
-                          className={` text-center flex justify-center items-center h-8 overflow-hidden border rounded-lg text-xs  ${
-                            invoice.paymentStatus === "Paid"
-                              ? "bg-green-100 "
-                              : invoice.paymentStatus === "Pending"
-                              ? "bg-yellow-100 "
-                              : "bg-red-100"
-                          }`}
-                        >
-                          <Select
-                            value={invoice.paymentStatus}
-                            onValueChange={(value) =>
-                              handleStatusChange(invoice.id, value)
-                            }
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder={"Select Status"} />
-                            </SelectTrigger>
-                            <SelectContent className="w-10 h-26">
-                              <SelectItem value="Pending" className="h-8">
-                                Pending
-                              </SelectItem>
-                              <SelectItem value="Paid" className="h-8">
-                                Paid
-                              </SelectItem>
-                              <SelectItem value="UnPaid" className="h-8">
-                                UnPaid
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </td>
-                      <td className="px-5 py-3 text-start">
-                        {invoice.mode || "Online"}
-                      </td>
-
-                      <td className="px-5 py-3 text-start">
-                        {invoice?.createdBy?.who}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="7" className="h-96 text-center py-4">
-                      <div className="w-full flex justify-center">
-                        <img
-                          src={addItem}
-                          alt="add Item"
-                          className="w-24 h-24"
-                        />
-                      </div>
-                      <div className="mb-6">No invoices Created</div>
-                      <div className="">
-                        {(userDetails.selectedDashboard === "" ||
-                          role?.create) && (
-                          <Link
-                            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-                            to="create-invoice"
-                          >
-                            Create Invoice
-                          </Link>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                        + Create Invoice
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
         <div className="flex items-center flex-wrap gap-2 justify-between  p-5">

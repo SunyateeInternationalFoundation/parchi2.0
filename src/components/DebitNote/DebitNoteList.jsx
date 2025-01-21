@@ -1,4 +1,11 @@
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  updateDoc,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
@@ -8,10 +15,11 @@ import {
   LuChevronsRight,
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import addItem from "../../assets/addItem.png";
-import FormatTimestamp from "../../constants/FormatTimestamp";
+import DateTimeFormate from "../../constants/DateTimeFormate";
 import { db } from "../../firebase";
+import Handsontable from "../UI/Handsontable";
 import {
   Select,
   SelectContent,
@@ -41,7 +49,6 @@ function DebitNoteList() {
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.debitNote;
 
-  const navigate = useNavigate();
   const [DebitNoteList, setDebitNoteList] = useState([]);
 
   const [DebitNoteCount, setDebitNoteCount] = useState({
@@ -53,12 +60,14 @@ function DebitNoteList() {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    async function fetchPoList() {
+    async function fetchDNList() {
       setLoading(true);
       try {
-        const getData = await getDocs(
-          collection(db, "companies", companyId, "debitNote")
+        const q = query(
+          collection(db, "companies", companyId, "debitNote"),
+          orderBy("date", "desc")
         );
+        const getData = await getDocs(q);
         let receivedCount = 0;
         let totalPrice = 0;
         const data = getData.docs.map((doc) => {
@@ -69,7 +78,14 @@ function DebitNoteList() {
           totalPrice += res.total;
           return {
             id: doc.id,
-            ...res,
+            ...DateTimeFormate(res.date),
+            debitNoteNo: res.prefix + "-" + res.debitNoteNo,
+            vendorName: res.vendorDetails.name,
+            vendorPhone: res.vendorDetails.phone,
+            total: res.total,
+            orderStatus: res.orderStatus,
+            createdBy: res.createdBy.who,
+            mode: res.mode,
           };
         });
         setTotalPages(Math.ceil(data.length / 10));
@@ -81,11 +97,11 @@ function DebitNoteList() {
           totalPrice: totalPrice,
         });
       } catch (error) {
-        console.log("🚀 ~ fetchPoList ~ error:", error);
+        console.log("🚀 ~ fetchDebitNoteList ~ error:", error);
       }
       setLoading(false);
     }
-    fetchPoList();
+    fetchDNList();
   }, []);
 
   async function onStatusUpdate(value, debitNoteId) {
@@ -106,18 +122,14 @@ function DebitNoteList() {
   }
   useEffect(() => {
     const filteredDebitNote = DebitNoteList.filter((debitNote) => {
-      const { vendorDetails, debitNoteNo, orderStatus } = debitNote;
-      const vendorName = vendorDetails?.name || "";
+      const { vendorName, vendorPhone, debitNoteNo, orderStatus } = debitNote;
       const matchesSearch =
         vendorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         debitNoteNo
           ?.toString()
           .toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
-        vendorDetails?.phone
-          .toString()
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
+        vendorPhone.toString().toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesStatus =
         filterStatus === "All" || orderStatus === filterStatus;
@@ -128,7 +140,110 @@ function DebitNoteList() {
       filteredDebitNote.slice(currentPage * 10, currentPage * 10 + 10)
     );
   }, [currentPage, DebitNoteList, searchTerm, filterStatus]);
+  const columns = [
+    {
+      title: "Date",
+      data: "date",
+      editor: false,
+      readOnly: true,
+      width: 100,
+      renderer: (instance, td, row, col, prop, value, cellProperties) => {
+        const time = paginationData[cellProperties.row].time;
+        const combinedValue = `${value} <br/><span style="color: gray; font-size:14px">${time}</small>`;
+        td.innerHTML = combinedValue;
+        td.style.paddingLeft = "30px";
+        return td;
+      },
+    },
 
+    {
+      title: "debitNote No",
+      type: "text",
+      data: "debitNoteNo",
+      className: " font-bold",
+      editor: false,
+      readOnly: true,
+      width: 90,
+    },
+    {
+      title: "Vendor",
+      type: "text",
+      data: "vendorName",
+      editor: false,
+      readOnly: true,
+      width: 90,
+      renderer: (instance, td, row, col, prop, value, cellProperties) => {
+        const vendorPhone = paginationData[cellProperties.row].vendorPhone;
+        const combinedValue = `${value} <br/><span style="color: gray; font-size:14px">Ph.No ${vendorPhone}</span>`;
+        td.innerHTML = combinedValue;
+        return td;
+      },
+    },
+
+    {
+      title: "Amount",
+      type: "numeric",
+      data: "total",
+      numericFormat: {
+        pattern: "₹ 0,0.0 ",
+        culture: "en-IN",
+      },
+      className: "htLeft font-bold",
+      editor: false,
+      readOnly: true,
+      width: 90,
+    },
+    {
+      title: "Status",
+      type: "text",
+      editor: false,
+      data: "orderStatus",
+      width: 90,
+      className: "updateStatus",
+      renderer: (instance, td, row, col, prop, value, cellProperties) => {
+        const select = document.createElement("select");
+        const options = ["Pending", "Received"];
+        options.forEach((option) => {
+          const opt = document.createElement("option");
+          opt.value = option;
+          opt.text = option;
+          select.appendChild(opt);
+        });
+        select.value = value;
+        select.className =
+          "px-3 py-1 rounded-md cursor-pointer " +
+          (value === "Received" ? "bg-green-100" : "bg-red-100");
+        select.onchange = async (e) => {
+          const newStatus = e.target.value;
+          await onStatusUpdate(
+            paginationData[cellProperties.row].id,
+            newStatus
+          );
+        };
+        td.innerHTML = "";
+        td.appendChild(select);
+        td.style.color = "black";
+        td.className = "updateStatus";
+        return td;
+      },
+    },
+    {
+      title: "Mode",
+      type: "text",
+      data: "mode",
+      editor: false,
+      readOnly: true,
+      width: 90,
+    },
+    {
+      title: "Created By",
+      type: "text",
+      data: "createdBy",
+      editor: false,
+      readOnly: true,
+      width: 90,
+    },
+  ];
   return (
     <div className="main-container" style={{ height: "92vh" }}>
       <div className="mt-4 py-3">
@@ -210,124 +325,32 @@ function DebitNoteList() {
             Loading debitNote...
           </div>
         ) : (
-          <div style={{ height: "92vh" }}>
-            <table className="w-full border-collapse text-start">
-              <thead className=" bg-white">
-                <tr className="border-b">
-                  <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
-                    Date
-                  </td>
-                  <td className="px-5 py-1 text-gray-400 font-semibold text-center">
-                    DebitNote No
-                  </td>
-                  <td className="px-5 py-1 text-gray-400 font-semibold text-start">
-                    Vendor
-                  </td>
-                  <td className="px-5 py-1 text-gray-400 font-semibold  text-center">
-                    Amount
-                  </td>
-                  <td className="px-5 py-1 text-gray-400 font-semibold text-center ">
-                    Status
-                  </td>
-                  <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
-                    Mode
-                  </td>
-                  <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
-                    Created By
-                  </td>
-                </tr>
-              </thead>
-              <tbody>
-                {paginationData.length > 0 ? (
-                  paginationData.map((debitNote) => (
-                    <tr
-                      key={debitNote.id}
-                      className="border-b text-center cursor-pointer text-start"
-                      onClick={(e) => {
-                        navigate(debitNote.id);
-                      }}
-                    >
-                      <td className="px-8 py-3 text-start">
-                        <FormatTimestamp timestamp={debitNote.date} />
-                      </td>
-                      <td className="px-5 py-3 font-bold text-center">
-                        {debitNote.prefix || ""}-{debitNote.debitNoteNo}
-                      </td>
-
-                      <td className="px-5 py-3 text-start">
-                        {debitNote.vendorDetails?.name} <br />
-                        <span className="text-gray-500">
-                          Ph.No {debitNote.vendorDetails.phone}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3  text-center">{`₹ ${debitNote.total.toFixed(
-                        2
-                      )}`}</td>
-                      <td
-                        className="px-5 py-3 w-32"
-                        onClick={(e) => e.stopPropagation()}
+          <div
+            style={{ height: "92vh", width: "100%" }}
+            className="overflow-hidden"
+          >
+            <div className="py-2">
+              {paginationData.length > 0 ? (
+                <Handsontable columns={columns} data={paginationData} />
+              ) : (
+                <div className="my-10">
+                  <div className="w-full flex justify-center">
+                    <img src={addItem} alt="add Item" className="w-24 h-24" />
+                  </div>
+                  <div className="my-6 text-center">No DebitNote Found</div>
+                  <div className="w-full flex justify-center">
+                    {(userDetails.selectedDashboard === "" || role?.create) && (
+                      <Link
+                        className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                        to="create-debitNote"
                       >
-                        <div
-                          className={` text-center flex justify-center items-center h-8 overflow-hidden border rounded-lg text-xs  ${
-                            debitNote.orderStatus !== "Pending"
-                              ? "bg-green-200 "
-                              : "bg-red-200 "
-                          }`}
-                        >
-                          <Select
-                            value={debitNote.orderStatus}
-                            onValueChange={(value) =>
-                              onStatusUpdate(debitNote.id, value)
-                            }
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder={"Select Status"} />
-                            </SelectTrigger>
-                            <SelectContent className="w-10 h-18">
-                              <SelectItem value="Pending" className="h-8">
-                                Pending
-                              </SelectItem>
-                              <SelectItem value="Received" className="h-8">
-                                Received
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </td>
-                      <td className="px-5 py-3">
-                        {debitNote.mode || "Online"}
-                      </td>
-
-                      <td className="px-5 py-3">{debitNote?.createdBy?.who}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="7" className="h-96 text-center py-4">
-                      <div className="w-full flex justify-center">
-                        <img
-                          src={addItem}
-                          alt="add Item"
-                          className="w-24 h-24"
-                        />
-                      </div>
-                      <div className="mb-6">No Debit Note Created</div>
-                      <div className="">
-                        {(userDetails.selectedDashboard === "" ||
-                          role?.create) && (
-                          <Link
-                            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-                            to="create-debitNote"
-                          >
-                            + Create Debit Note
-                          </Link>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                        + Create DebitNote
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
         <div className="flex items-center flex-wrap gap-2 justify-between  p-5">

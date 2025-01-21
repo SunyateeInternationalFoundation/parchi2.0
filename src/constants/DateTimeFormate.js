@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 
-function FormatTimestamp({ timestamp }) {
+function DateTimeFormate(timestamp) {
   if (!timestamp?.seconds) {
     return;
   }
@@ -15,24 +15,18 @@ function FormatTimestamp({ timestamp }) {
   const ampm = hours >= 12 ? "PM" : "AM";
 
   hours = hours % 12 || 12;
-
-  return (
-    <>
-      <div>
-        {day}-{month}-{year}
-      </div>
-      <div className="text-sm text-gray-400">
-        {hours}:{minutes} {ampm}
-      </div>
-    </>
-  );
+  const payload = {
+    date: `${day}-${month}-${year}`,
+    time: `${hours}:${minutes} ${ampm}`,
+  };
+  return payload;
 }
 
-FormatTimestamp.propTypes = {
+DateTimeFormate.propTypes = {
   timestamp: PropTypes.shape({
     seconds: PropTypes.number.isRequired,
     nanoseconds: PropTypes.number.isRequired,
   }).isRequired,
 };
 
-export default FormatTimestamp;
+export default DateTimeFormate;

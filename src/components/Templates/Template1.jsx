@@ -3,11 +3,10 @@ import { forwardRef } from "react";
 
 const Template1 = forwardRef((props, ref) => {
   const { dataSet, bankDetails } = props;
-  if (Object.keys(dataSet).length===0) {
+  if (Object.keys(dataSet).length === 0) {
     return;
   }
-  const removedColumn = { service: ["QUANTITY"] }
-  
+  const removedColumn = { service: ["QUANTITY"] };
 
   function DateFormate(timestamp) {
     const milliseconds =
@@ -70,7 +69,9 @@ const Template1 = forwardRef((props, ref) => {
                 <th className="border border-black pb-2">Product</th>
                 <th className="border border-black pb-2">Unit Price</th>
                 <th className="border border-black pb-2">Discount</th>
-                {(!removedColumn[dataSet?.type.toLowerCase()]?.includes("QUANTITY"))  && <th className="border border-black pb-2">Qty</th>}
+                {!removedColumn[dataSet?.type.toLowerCase()]?.includes(
+                  "QUANTITY"
+                ) && <th className="border border-black pb-2">Qty</th>}
                 <th className="border border-black pb-2">Net Amount</th>
                 <th className="border border-black pb-2">Tax Rate</th>
                 <th className="border border-black pb-2">Tax Type</th>
@@ -93,9 +94,13 @@ const Template1 = forwardRef((props, ref) => {
                   <td className="border border-black pt-2 pb-2 pl-1">
                     {item.discount.toFixed(1)}
                   </td>
-                  {(!removedColumn[dataSet?.type.toLowerCase()]?.includes("QUANTITY")) && <td className="border border-black pt-2 pb-2 pl-1">
-                    {item.quantity}
-                  </td>}
+                  {!removedColumn[dataSet?.type.toLowerCase()]?.includes(
+                    "QUANTITY"
+                  ) && (
+                    <td className="border border-black pt-2 pb-2 pl-1">
+                      {item.quantity}
+                    </td>
+                  )}
                   <td className="border border-black pt-2 pb-2 pl-1">
                     {item.sellingPrice.toFixed(1)}
                   </td>
@@ -135,13 +140,17 @@ const Template1 = forwardRef((props, ref) => {
           {dataSet?.tcs?.isTcsApplicable && (
             <div>
               TCS :
-              <span className="ml-5">{dataSet?.tcs?.tcs_amount.toFixed(2)}</span>
+              <span className="ml-5">
+                {dataSet?.tcs?.tcs_amount.toFixed(2)}
+              </span>
             </div>
           )}
           {dataSet?.tds?.isTdsApplicable && (
             <div>
               TDS :
-              <span className="ml-5">{dataSet?.tds?.tds_amount.toFixed(2)}</span>
+              <span className="ml-5">
+                {dataSet?.tds?.tds_amount.toFixed(2)}
+              </span>
             </div>
           )}
           {dataSet?.totalCgstAmount_9 > 0 && (
@@ -198,30 +207,34 @@ const Template1 = forwardRef((props, ref) => {
           <h3>Total : ₹ {+dataSet?.total?.toFixed(2)}</h3>
         </div>
 
-      {bankDetails &&  <div className=" flex justify-between">
-          <div>
+        {bankDetails && (
+          <div className=" flex justify-between">
             <div>
-              <strong>Bank Details</strong>
+              <div>
+                <strong>Bank Details</strong>
+              </div>
+              <div>
+                Bank :{" "}
+                <span className="font-bold">{bankDetails?.bankName}</span>{" "}
+              </div>
+              <div>
+                Account # :{" "}
+                <span className="font-bold">{bankDetails?.accountNo}</span>
+              </div>
+              <div>
+                IFSC Code :{" "}
+                <span className="font-bold">{bankDetails?.ifscCode}</span>
+              </div>
+              <div>
+                Branch :{" "}
+                <span className="font-bold">{bankDetails?.branch}</span>
+              </div>
             </div>
-            <div>
-              Bank : <span className="font-bold">{bankDetails?.bankName}</span>{" "}
-            </div>
-            <div>
-              Account # :{" "}
-              <span className="font-bold">{bankDetails?.accountNo}</span>
-            </div>
-            <div>
-              IFSC Code :{" "}
-              <span className="font-bold">{bankDetails?.ifscCode}</span>
-            </div>
-            <div>
-              Branch : <span className="font-bold">{bankDetails?.branch}</span>
+            <div className="mt-24">
+              <div>Authorized Signatory</div>
             </div>
           </div>
-          <div className="mt-24">
-            <div>Authorized Signatory</div>
-          </div>
-        </div>}
+        )}
       </div>
     </div>
   );
