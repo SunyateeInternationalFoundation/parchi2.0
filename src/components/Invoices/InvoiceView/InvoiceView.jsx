@@ -19,6 +19,7 @@ import ReturnsHistory from "./ReturnsHistory";
 
 function InvoiceView() {
   const { id } = useParams();
+
   const [activeTab, setActiveTab] = useState("Invoice");
   const [invoice, setInvoice] = useState({});
   const userDetails = useSelector((state) => state.users);

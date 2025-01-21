@@ -300,8 +300,11 @@ const SetInvoice = () => {
       alert(
         "Successfully " + (invoiceId ? "Updated" : "Created") + " the Invoice"
       );
-
-      navigate("/invoice/" + invoiceRef.id);
+      if (isPrint) {
+        navigate("/invoice/" + invoiceRef.id + "?print=true");
+      } else {
+        navigate("/invoice/" + invoiceRef.id);
+      }
     } catch (err) {
       console.error(err);
     }

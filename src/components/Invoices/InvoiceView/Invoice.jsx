@@ -14,7 +14,7 @@ import { LiaTrashAltSolid } from "react-icons/lia";
 import { MdOutlineMarkEmailRead } from "react-icons/md";
 import { TbEdit } from "react-icons/tb";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 import { db, storage } from "../../../firebase";
 import Template1 from "../../Templates/Template1";
@@ -31,6 +31,9 @@ import Template9 from "../../Templates/Template9";
 
 function Invoice({ invoice, bankDetails, selectTemplate }) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const print = searchParams.get("print");
   const userDetails = useSelector((state) => state.users);
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
@@ -106,7 +109,10 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
       }, 0);
       setTotalTax(tax);
     }
-  }, [invoice]);
+    if (print === "true") {
+      reactToPrintFn();
+    }
+  }, [invoice, print]);
 
   const handleDownloadPdf = () => {
     if (!invoice.id) {
