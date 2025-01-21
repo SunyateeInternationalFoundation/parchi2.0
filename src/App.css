@@ -6,8 +6,9 @@ input:focus {
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
+    /* -webkit-appearance: none; */
     margin: 0;
+
 }
 
 input[type=number] {
@@ -22,23 +23,58 @@ table tbody tr:hover {
     background: rgba(240, 240, 240, 0.579);
 }
 
-/* width */
 ::-webkit-scrollbar {
     width: 8px;
 }
 
-/* Track */
 ::-webkit-scrollbar-track {
     background: #f1f1f1;
 }
 
-/* Handle */
 ::-webkit-scrollbar-thumb {
     background: #d7d6d6;
     border-radius: 5px;
 }
 
-/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
     background: #dddcdc;
+}
+
+
+.handsontable table {
+    font-size: medium;
+}
+
+.handsontable table thead th {
+    font-weight: bold;
+    font-size: medium;
+    background-color: white;
+    color: rgb(158, 156, 156);
+    font-weight: 500;
+    border: none !important;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb !important;
+    padding-left: 12px;
+}
+
+.handsontable table tbody td {
+    color: black !important;
+    border: none !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    padding-left: 12px;
+}
+
+.handsontable table thead th:first-child {
+    padding-left: 30px !important;
+}
+
+.handsontable table thead th:last-child {
+    padding-right: 30px !important;
+}
+
+.handsontable table tbody tr:hover td {
+    background: rgba(240, 240, 240, 0.579) !important;
+    cursor: pointer;
 }
