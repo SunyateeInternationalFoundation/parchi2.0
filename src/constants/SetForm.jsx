@@ -11,7 +11,7 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import addItem from "../assets/addItem.png";
 import CreateCustomer from "../components/Customers/CreateCustomer";
 import { Calendar } from "../components/UI/calendar";
@@ -35,6 +35,7 @@ import tcsData from "./tcsData";
 import tdsData from "./tdsData";
 
 function SetForm(props) {
+  const navigate = useNavigate();
   const {
     formId,
     formName,
@@ -515,7 +516,7 @@ function SetForm(props) {
       totalAmount,
     };
   }
-  function onSubmit() {
+  function onSubmit(isPrint = false) {
     // const tcs = {
     //   isTcsApplicable: Boolean(taxSelect === "tcs"),
     //   tax: taxSelect === "tcs" ? selectedTaxDetails.tax : "",
@@ -540,6 +541,7 @@ function SetForm(props) {
       // tds,
       // tcs,
       products,
+      isPrint,
       total: +calculateTotal(),
     };
     if (!selectedPersonData.id) {
@@ -1407,9 +1409,30 @@ function SetForm(props) {
           </div>
         </div>
       </div>
-      <div className="flex justify-end sticky bottom-0 bg-white p-2 pe-10 border-t mt-5">
+      <div className="flex justify-end sticky bottom-0 space-x-4 bg-white p-2 pe-10 border-t mt-5">
         <button
-          className="rounded-lg  bg-[#442799] text-white text-center   px-5 py-3 pt-2 font-semibold rounded-md"
+          className="btn-outline-black "
+          onClick={() => {
+            navigate("./../");
+          }}
+        >
+          Cancel
+        </button>
+        <button
+          className=" bg-[#442799] text-white text-center   px-5 py-3 pt-2 font-semibold rounded-md"
+          onClick={() => {
+            {
+              products.length > 0 && isProductSelected
+                ? onSubmit(true)
+                : alert("Please select items to proceed.");
+            }
+          }}
+        >
+          <span className="text-lg">+</span> {formId ? "Edit " : "Create "}&
+          Print
+        </button>
+        <button
+          className=" bg-[#442799] text-white text-center   px-5 py-3 pt-2 font-semibold rounded-md"
           onClick={() => {
             {
               products.length > 0 && isProductSelected

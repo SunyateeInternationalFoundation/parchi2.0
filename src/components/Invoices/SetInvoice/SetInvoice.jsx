@@ -184,7 +184,7 @@ const SetInvoice = () => {
   async function onSetInvoice(data) {
     try {
       const { no, ...restForm } = formData;
-      const { products, ...rest } = data;
+      const { products, isPrint, ...rest } = data;
       const customerRef = doc(db, "customers", selectedCustomerData.id);
       const companyRef = doc(db, "companies", companyDetails.companyId);
       let subTotal = 0;
@@ -293,23 +293,20 @@ const SetInvoice = () => {
         if (invoiceId) {
           productPayloadLogs.status = "update";
         }
-        console.log(
-          "🚀 ~ onSetInvoice ~ productPayloadLogs:",
-          productPayloadLogs
-        );
+
         await addDoc(collection(item.productRef, "logs"), productPayloadLogs);
       }
 
       alert(
         "Successfully " + (invoiceId ? "Updated" : "Created") + " the Invoice"
       );
-      navigate("./../");
+
+      navigate("/invoice/" + invoiceRef.id);
     } catch (err) {
       console.error(err);
     }
   }
 
-  console.log("🚀 ~ SetInvoice ~ formData:", formData);
   return (
     <SetForm
       formId={invoiceId}
