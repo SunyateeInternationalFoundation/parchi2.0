@@ -193,7 +193,7 @@ const Files = () => {
 
   return (
     <div
-      className="bg-white-500 px-8 py-4 overflow-y-auto"
+      className="bg-white-500 p-8 overflow-y-auto"
       style={{ height: "82vh" }}
     >
       <div className="bg-white rounded-lg">
@@ -211,7 +211,7 @@ const Files = () => {
             </button>
           )}
         </div>
-        <div className=" rounded-lg overflow-y-auto" style={{ height: "80vh" }}>
+        <div className=" overflow-hidden " style={{ minHeight: "92vh" }}>
           <table className="w-full border-collapse text-start">
             <thead className=" bg-white">
               <tr className="border-b">
