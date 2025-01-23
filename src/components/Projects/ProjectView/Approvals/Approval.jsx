@@ -66,7 +66,7 @@ const Approval = () => {
   }, [approvals, currentPage, filter]);
 
   return (
-    <div className="p-8 ">
+    <div className="main-container mt-8" style={{ height: "81vh" }}>
       <div className="bg-white rounded-lg ">
         {/* Filter Buttons */}
         <div className="flex justify-between p-5 ">
