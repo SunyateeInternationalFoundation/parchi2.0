@@ -19,9 +19,9 @@ const Template10 = forwardRef((props, ref) => {
   return (
     <div
       className=" bg-white border border-gray-300 rounded-md shadow-md overflow-y-auto"
-      style={{ height: "80vh" }}
+      style={{ height: "80vh", width: "600px" }}
     >
-      <div ref={ref} style={{ width: "595px", padding: "20px" }}>
+      <div ref={ref} style={{ minWidth: "595px", padding: "20px" }}>
         {/* Header */}
         <div className="text-center text-lg pb-3 uppercase">
           Tax {dataSet?.type}

@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { forwardRef } from "react";
 
 const Template4 = forwardRef((props, ref) => {
   const { dataSet } = props;
-  if (Object.keys(dataSet).length===0) {
+  if (Object.keys(dataSet).length === 0) {
     return;
   }
   function DateFormate(timestamp) {
@@ -19,9 +19,9 @@ const Template4 = forwardRef((props, ref) => {
   return (
     <div
       className=" bg-white border border-gray-300 rounded-md shadow-md overflow-y-auto"
-      style={{ height: "80vh" }}
+      style={{ height: "80vh", width: "600px" }}
     >
-      <div ref={ref} style={{ width: "595px", padding: "20px" }}>
+      <div ref={ref} style={{ minWidth: "595px", padding: "20px" }}>
         <div className="border border-black ">
           {/* Header */}
           <div className="text-center">

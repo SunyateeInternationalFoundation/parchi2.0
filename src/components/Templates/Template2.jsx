@@ -19,9 +19,9 @@ const Template2 = forwardRef(function Template2(props, ref) {
   return (
     <div
       className=" bg-white border border-gray-300 rounded-md shadow-md overflow-y-auto"
-      style={{ height: "80vh" }}
+      style={{ height: "80vh", width: "600px" }}
     >
-      <div ref={ref} style={{ width: "595px", padding: "20px" }}>
+      <div ref={ref} style={{ minWidth: "595px", padding: "20px" }}>
         <div className="flex justify-between items-center border-b pb-4 mb-6">
           <div>
             <span className="text-3xl font-bold text-primary-600">

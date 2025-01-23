@@ -19,9 +19,9 @@ const Template6 = forwardRef((props, ref) => {
   return (
     <div
       className=" bg-white border border-gray-300 rounded-md shadow-md overflow-y-auto"
-      style={{ height: "80vh" }}
+      style={{ height: "80vh", width: "600px" }}
     >
-      <div ref={ref} style={{ width: "595px", padding: "20px" }}>
+      <div ref={ref} style={{ minWidth: "595px", padding: "20px" }}>
         <div className="flex justify-between items-center pb-4 mb-3">
           <h1 className="text-3xl font-bold ">{dataSet?.createdBy?.name}</h1>
           <div className="text-end">

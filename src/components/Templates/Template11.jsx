@@ -19,7 +19,7 @@ const Template11 = forwardRef((props, ref) => {
   return (
     <div
       className=" border border-gray-300 rounded-md shadow-md overflow-y-auto"
-      style={{ height: "80vh" }}
+      style={{ height: "80vh", width: "600px" }}
     >
       <div ref={ref} style={{ width: "595px" }}>
         <div className="bg-white" style={{ padding: "20px" }}>
