@@ -66,7 +66,7 @@ const Approval = () => {
   }, [approvals, currentPage, filter]);
 
   return (
-    <div className="px-8 py-4">
+    <div className="p-8 ">
       <div className="bg-white rounded-lg ">
         {/* Filter Buttons */}
         <div className="flex justify-between p-5 ">
@@ -97,8 +97,8 @@ const Approval = () => {
 
         {/* Approval Cards */}
         <div
-          className="bg-white rounded-lg   overflow-y-auto"
-          style={{ height: "62vh" }}
+          className="bg-white rounded-lg   overflow-hidden"
+          style={{ minHeight: "82vh" }}
         >
           <table className="w-full border-collapse text-start  ">
             <thead className=" bg-white">

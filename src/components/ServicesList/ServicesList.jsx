@@ -104,7 +104,7 @@ const ServicesList = () => {
             Loading services...
           </div>
         ) : (
-          <div className="" style={{ minHeight: "62vh" }}>
+          <div className="overflow-hidden" style={{ minHeight: "80vh" }}>
             <table className="w-full ">
               <thead className="sticky z-10" style={{ top: "0" }}>
                 <tr className="border-b">
