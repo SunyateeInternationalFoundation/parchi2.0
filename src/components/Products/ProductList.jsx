@@ -142,7 +142,7 @@ const ProductList = () => {
   }, [currentPage, products, searchTerms, selectedCategory]);
 
   return (
-    <div className="main-container" style={{ height: "82vh" }}>
+    <div className="main-container" style={{ height: "81vh" }}>
       <div className="container">
         <div className="flex justify-between items-center px-5 ">
           <div className="flex justify-between items-center space-x-5 w-1/2">

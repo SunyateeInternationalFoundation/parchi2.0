@@ -6,7 +6,7 @@ input:focus {
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-    /* -webkit-appearance: none; */
+    -webkit-appearance: none;
     margin: 0;
 
 }
@@ -82,4 +82,8 @@ table tbody tr:hover {
 
 .border {
     border: 1px solid #e5e7eb;
+}
+
+.handsontable .ht_master table td.htCustomMenuRenderer {
+    background: white !important;
 }

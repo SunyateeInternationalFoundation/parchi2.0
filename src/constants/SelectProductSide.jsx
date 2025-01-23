@@ -118,7 +118,7 @@ function SelectProductSide({
                     </button>
                     <input
                       type="number"
-                      value={product.actionQty || ""}
+                      value={product.actionQty || "0"}
                       onChange={(e) => {
                         customActionQty(+e.target.value, product.id);
                       }}

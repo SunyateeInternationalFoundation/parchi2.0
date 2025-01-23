@@ -99,7 +99,7 @@ const Stock = () => {
   }
 
   return (
-    <div className="main-container" style={{ height: "82vh" }}>
+    <div className="main-container" style={{ height: "81vh" }}>
       <div className="container">
         <div className="flex space-x-4 px-5 pb-3 border-b">
           <button
@@ -140,7 +140,7 @@ const Stock = () => {
             {lowStockItems.length > 0 ? (
               <div
                 className="overflow-y-auto border"
-                style={{ height: "54vh" }}
+                style={{ minHeight: "52vh" }}
               >
                 <table className="w-full border-collapse text-start ">
                   <thead>

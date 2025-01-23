@@ -129,7 +129,7 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
   };
 
   const handleWhatsAppShare = async () => {
-    if (!invoice.id) {
+    if (!invoice.id || !invoice.userTo?.phone) {
       console.error("Invoice ID is missing!");
       return;
     }
@@ -140,23 +140,47 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
       doc.html(invoiceRef.current, {
         callback: async function (doc) {
           const pdfBlob = doc.output("blob");
-
-          // Create a reference to the file in Firebase Storage
           const fileName = `invoices/${invoice.id}.pdf`;
           const fileRef = ref(storage, fileName);
 
-          // Upload the file
           await uploadBytes(fileRef, pdfBlob);
-
-          // Generate a public download URL
           const downloadURL = await getDownloadURL(fileRef);
+          const mobileNumber = invoice.userTo?.phone;
 
-          // Share the public link via WhatsApp
-          const message = `Here is your invoice for ${invoice.userTo.name}: ${downloadURL}`;
-          window.open(
-            `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`,
-            "_blank"
-          );
+          const url =
+            import.meta.env.VITE_FIREBASE_WHATSAPP_URL + "91" + mobileNumber;
+          const token = import.meta.env.VITE_FIREBASE_WHATSAPP_TOKEN;
+          try {
+            const response = await fetch(url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json-patch+json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                template_name: "invoice_pdf",
+                broadcast_name: "invoice_pdf",
+                parameters: [
+                  {
+                    name: "pdflink",
+                    value: downloadURL,
+                  },
+                  {
+                    name: "name",
+                    value: "invoice",
+                  },
+                ],
+              }),
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+            alert("Invoice As Send to " + invoice?.userTo?.name + ".");
+          } catch (err) {
+            console.log("🚀 ~ err:", err);
+          }
         },
         x: 0,
         y: 0,

@@ -110,7 +110,7 @@ const Warehouse = () => {
   }, [currentPage, warehouses, searchTerms]);
 
   return (
-    <div className="main-container">
+    <div className="main-container overflow-y-auto" style={{ height: "81vh" }}>
       <div className="container">
         <div className="flex justify-between items-center px-5 ">
           <div
@@ -133,7 +133,10 @@ const Warehouse = () => {
             + Create Warehouse
           </button>
         </div>
-        <div className=" rounded-lg py-3" style={{ height: "92vh" }}>
+        <div
+          className=" rounded-lg py-3 overflow-hidden"
+          style={{ minHeight: "92vh" }}
+        >
           <table className="w-full border-collapse text-start  ">
             <thead className=" bg-white">
               <tr className="border-b">
