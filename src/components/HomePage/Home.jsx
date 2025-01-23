@@ -26,7 +26,6 @@ import Branches from "../Staff&Payout/Branches/Branches";
 import StaffView from "../Staff&Payout/Staff/StaffView/StaffView";
 import StaffPayout from "../Staff&Payout/StaffPayout";
 import Navbar from "../UI/Navbar";
-import SideBar from "../UI/Sidebar";
 import VendorList from "../Vendors/VendorList";
 import VendorView from "../Vendors/VendorView/VendorView";
 // import CreateProFormaInvoice from "../ProFormaInvoice/CreateProFormaInvoice/CreateProFormaInvoice";
@@ -63,6 +62,7 @@ import SubscriptionPlan from "../Settings/SubscriptionPlan";
 import UserProfile from "../Settings/UserProfile";
 import Designation from "../Staff&Payout/Designation/Designation";
 import DesignationView from "../Staff&Payout/Designation/DesignationView";
+import Sidebar2 from "../UI/Sidebar2";
 import VendorPO from "../VendorDashBoard/VendorPO";
 import Dashboard from "./Dashboard";
 
@@ -97,14 +97,17 @@ const Home = () => {
         <Navbar />
       </div>
       <div className="flex" style={{ height: "92vh" }}>
-        {!noSideBarPagesList ? (
+        <Sidebar2 />
+        {/* {!noSideBarPagesList ? (
           location.pathname !== "/" && (
             <div>
               <SideBar />
             </div>
           )
         ) : (
-          <div className="w-1/4">
+        )} */}
+        {noSideBarPagesList && (
+          <div className="w-1/5">
             <SettingView />
           </div>
         )}

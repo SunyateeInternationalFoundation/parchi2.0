@@ -109,246 +109,205 @@ const CompanyProfile = () => {
   };
 
   return (
-    <div className="flex">
-      {/* <div className="w-1/4">
-        {" "}
-        <SettingsView />
-      </div> */}
-      <div className="p-6 bg-gray-100 w-full max-h-screen overflow-y-auto mt-4">
-        <div className="mx-auto bg-white shadow-md rounded-md p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-semibold text-gray-700">
-              Company Details
-            </h1>
-          </div>
+    <div className="main-container overflow-y-auto" style={{ height: "92vh" }}>
+      <div className="container px-6">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-semibold text-gray-700">
+            Company Details
+          </h1>
+        </div>
 
-          <div className="flex items-center space-x-4 mb-6">
-            <div className="w-36 h-36 bg-gray-200 border border-dashed border-gray-400 flex items-center justify-center rounded relative hover:border-blue-500">
-              {formData.companyLogo ? (
-                <img
-                  src={formData.companyLogo}
-                  alt="Profile"
-                  className="w-36 h-36 bg-gray-200 border border-dashed border-gray-400 flex items-center justify-center rounded relative object-cover"
-                />
-              ) : (
-                <label
-                  htmlFor="image-upload"
-                  className="absolute inset-0 flex items-center justify-center cursor-pointer text-gray-500 text-sm"
-                >
-                  Upload
-                </label>
-              )}
-              <input
-                id="image-upload"
-                type="file"
-                className="absolute inset-0 opacity-0 cursor-pointer"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  handleFileUpload(file);
-                }}
+        <div className="flex items-center space-x-4 mb-6">
+          <div className="w-36 h-36 bg-gray-200 border border-dashed border-gray-400 flex items-center justify-center rounded relative hover:border-blue-500">
+            {formData.companyLogo ? (
+              <img
+                src={formData.companyLogo}
+                alt="Profile"
+                className="w-36 h-36 bg-gray-200 border border-dashed border-gray-400 flex items-center justify-center rounded relative object-cover"
               />
-            </div>
-
-            {/* <div className="flex-grow">
-              {/* <div>
-                <label className="block text-sm font-medium text-gray-600">
-                  User Name:
-                </label>
-                <input
-                  type="text"
-                  name="userName"
-                  value={formData.userName}
-                  onChange={handleChange}
-                  className="bg-gray-40 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 block w-full p-2  hover:border-blue-500 hover:shadow-md hover:shadow-blue-300"
-                  placeholder="User Name"
-                />
-              </div> 
-            </div> */}
+            ) : (
+              <label
+                htmlFor="image-upload"
+                className="absolute inset-0 flex items-center justify-center cursor-pointer text-gray-500 text-sm"
+              >
+                Upload
+              </label>
+            )}
+            <input
+              id="image-upload"
+              type="file"
+              className="absolute inset-0 opacity-0 cursor-pointer"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                handleFileUpload(file);
+              }}
+            />
           </div>
+        </div>
 
-          <div className="space-y-4 mt-3">
-            <div>
-              <label className="text-sm space-y-1 text-gray-600">
-                Company Name
-              </label>
-              <div>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="input-tag w-full"
-                  placeholder="YOUR BUSINESS NAME"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-sm space-y-1 text-gray-600">
-                Company Phone
-              </label>
-              <div>
-                <input
-                  type="text"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="input-tag w-full"
-                  placeholder="phone number..."
-                />
-              </div>
-            </div>
+        <div className="space-y-4 mt-3">
+          <div>
             <label className="text-sm space-y-1 text-gray-600">
-                Tagline
-              </label>
-              {/* <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 ">
-                  <FaHashtag />
-                </span> */}
-              <textarea
+              Company Name
+            </label>
+            <div>
+              <input
                 type="text"
-                name="tagline"
-                value={formData.tagline}
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
-                  className="input-tag w-full"
-                placeholder="Enter your tagline..."
+                className="input-tag w-full"
+                placeholder="YOUR BUSINESS NAME"
               />
-            </div>
-            <div>
-              <label className="text-sm space-y-1 text-gray-600">
-                 Company Email
-              </label>
-              <div>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="input-tag w-full"
-                  placeholder="Company Email Address"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="text-sm space-y-1 text-gray-600">
-                Alternative Contact Number
-              </label>
-              <div>
-                <input
-                  type="text"
-                  name="altContact"
-                  value={formData.altContact}
-                  onChange={handleChange}
-                  className="input-tag w-full"
-                    placeholder="Alternative Contact Number"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="text-sm space-y-1 text-gray-600">
-                Address
-              </label>
-              <div>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  className="input-tag w-full"
-                  placeholder="Address"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="text-sm space-y-1 text-gray-600">
-                PIN Code
-              </label>
-              <div>
-                <input
-                  type="text"
-                  name="zipCode"
-                  value={formData.zipCode}
-                  onChange={handleChange}
-                  className="input-tag w-full"
-                  placeholder="PIN Code"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="text-sm space-y-1 text-gray-600">
-                City
-              </label>
-              <div>
-                <input
-                  type="text"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  className="input-tag w-full"
-                  placeholder="City"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="text-sm space-y-1 text-gray-600">
-                Website
-              </label>
-              <div>
-                <input
-                  type="url"
-                  name="website"
-                  value={formData.website}
-                  onChange={handleChange}
-                  className="input-tag w-full"
-                  placeholder="Website"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="text-sm space-y-1 text-gray-600">
-                GST
-              </label>
-              <div>
-                <input
-                  type="text"
-                  name="gst"
-                  value={formData.gst}
-                  onChange={handleChange}
-                  className="input-tag w-full"
-                  placeholder="GST"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="text-sm space-y-1 text-gray-600">
-                PAN Number
-              </label>
-              <div>
-                <input
-                  type="text"
-                  name="panNumber"
-                  value={formData.panNumber}
-                  onChange={handleChange}
-                  className="input-tag w-full"
-                  placeholder="PAN Number"
-                />
-              </div>
             </div>
           </div>
 
-          <div className="text-right">
-            <button
-              className="px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-500"
-              onClick={handleSave}
-            >
-              Save & Update
-            </button>
+          <div>
+            <label className="text-sm space-y-1 text-gray-600">
+              Company Phone
+            </label>
+            <div>
+              <input
+                type="text"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="input-tag w-full"
+                placeholder="phone number..."
+              />
+            </div>
+          </div>
+          <label className="text-sm space-y-1 text-gray-600">Tagline</label>
+
+          <textarea
+            type="text"
+            name="tagline"
+            value={formData.tagline}
+            onChange={handleChange}
+            className="input-tag w-full"
+            placeholder="Enter your tagline..."
+          />
+        </div>
+        <div>
+          <label className="text-sm space-y-1 text-gray-600">
+            Company Email
+          </label>
+          <div>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="input-tag w-full"
+              placeholder="Company Email Address"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="text-sm space-y-1 text-gray-600">
+            Alternative Contact Number
+          </label>
+          <div>
+            <input
+              type="text"
+              name="altContact"
+              value={formData.altContact}
+              onChange={handleChange}
+              className="input-tag w-full"
+              placeholder="Alternative Contact Number"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="text-sm space-y-1 text-gray-600">Address</label>
+          <div>
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              className="input-tag w-full"
+              placeholder="Address"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="text-sm space-y-1 text-gray-600">PIN Code</label>
+          <div>
+            <input
+              type="text"
+              name="zipCode"
+              value={formData.zipCode}
+              onChange={handleChange}
+              className="input-tag w-full"
+              placeholder="PIN Code"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="text-sm space-y-1 text-gray-600">City</label>
+          <div>
+            <input
+              type="text"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              className="input-tag w-full"
+              placeholder="City"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="text-sm space-y-1 text-gray-600">Website</label>
+          <div>
+            <input
+              type="url"
+              name="website"
+              value={formData.website}
+              onChange={handleChange}
+              className="input-tag w-full"
+              placeholder="Website"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="text-sm space-y-1 text-gray-600">GST</label>
+          <div>
+            <input
+              type="text"
+              name="gst"
+              value={formData.gst}
+              onChange={handleChange}
+              className="input-tag w-full"
+              placeholder="GST"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="text-sm space-y-1 text-gray-600">PAN Number</label>
+          <div>
+            <input
+              type="text"
+              name="panNumber"
+              value={formData.panNumber}
+              onChange={handleChange}
+              className="input-tag w-full"
+              placeholder="PAN Number"
+            />
           </div>
         </div>
       </div>
-    
-    
+
+      <div className="text-right">
+        <button
+          className="px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-500"
+          onClick={handleSave}
+        >
+          Save & Update
+        </button>
+      </div>
+    </div>
   );
 };
 

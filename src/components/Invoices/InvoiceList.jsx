@@ -15,7 +15,7 @@ import {
   LuChevronsRight,
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import addItem from "../../assets/addItem.png";
 import DateTimeFormate from "../../constants/DateTimeFormate";
 import { db } from "../../firebase";
@@ -143,7 +143,7 @@ const InvoiceList = () => {
       data: "date",
       editor: false,
       readOnly: true,
-      width: 100,
+      width: 90,
       renderer: (instance, td, row, col, prop, value, cellProperties) => {
         const time = invoicePaginationData[cellProperties.row].time;
         const combinedValue = `${value} <br/><span style="color: gray; font-size:14px">${time}</small>`;
@@ -189,7 +189,7 @@ const InvoiceList = () => {
       className: "htLeft font-bold",
       editor: false,
       readOnly: true,
-      width: 90,
+      width: 80,
     },
     {
       title: "Status",
@@ -235,7 +235,7 @@ const InvoiceList = () => {
       data: "mode",
       editor: false,
       readOnly: true,
-      width: 90,
+      width: 70,
     },
     {
       title: "Created By",
@@ -243,12 +243,12 @@ const InvoiceList = () => {
       data: "createdBy",
       editor: false,
       readOnly: true,
-      width: 90,
+      width: 80,
     },
   ];
 
   return (
-    <div className="main-container" style={{ height: "92vh", width: "85vw" }}>
+    <div className="main-container" style={{ height: "92vh" }}>
       <div className=" mt-4 py-3">
         <h1 className="text-2xl font-bold pb-3 ">Invoice Overview</h1>
         <div className="grid grid-cols-4 gap-8  ">
@@ -331,10 +331,10 @@ const InvoiceList = () => {
           </div>
         ) : (
           <div
-            style={{ height: "92vh", width: "100%" }}
+            style={{ minHeight: "92vh", width: "100%" }}
             className="overflow-hidden"
           >
-            <div className="py-2">
+            <div className="pt-2">
               {invoicePaginationData.length > 0 ? (
                 <Handsontable columns={columns} data={invoicePaginationData} />
               ) : (

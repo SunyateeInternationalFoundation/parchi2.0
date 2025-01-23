@@ -34,7 +34,7 @@ function Handsontable({ data, columns, className }) {
         autoWrapRow={true}
         autoWrapCol={true}
         width="100%"
-        height="92vh"
+        height="95vh"
         stretchH="all"
         columnSorting={true}
         className={className}

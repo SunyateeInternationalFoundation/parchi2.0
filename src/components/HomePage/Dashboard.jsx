@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { collection, doc, getDocs, query, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Business from "../../assets/dashboard/Business.png";
 import Credit from "../../assets/dashboard/Credit.png";
@@ -10,7 +11,6 @@ import Documents from "../../assets/dashboard/Documents.png";
 import Estimate from "../../assets/dashboard/Estimate.png";
 import expense from "../../assets/dashboard/expense.png";
 import expenseArrow from "../../assets/dashboard/expenseArrow.png";
-import heartPartnerHandshake from "../../assets/dashboard/heart-partner-handshake.png";
 import hello from "../../assets/dashboard/hello.png";
 import incomeArrow from "../../assets/dashboard/incomeArrow.png";
 import Inventory from "../../assets/dashboard/Inventory.png";
@@ -24,39 +24,28 @@ import Projects from "../../assets/dashboard/Projects.png";
 import Purchase from "../../assets/dashboard/Purchase.png";
 import Reminders from "../../assets/dashboard/Reminders.png";
 import Reports from "../../assets/dashboard/Reports.png";
-import settings from "../../assets/dashboard/settings.png";
-import signOut from "../../assets/dashboard/signOut.png";
 import Staff from "../../assets/dashboard/Staff.png";
 import Subscriptions from "../../assets/dashboard/Subscriptions.png";
-import subscriptionUser from "../../assets/dashboard/subscriptionUser.png";
-import userTrust from "../../assets/dashboard/userTrust.png";
 import Vendors from "../../assets/dashboard/Vendors.png";
-import { setUserLogout } from "../../store/UserSlice";
+import { db } from "../../firebase";
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [expenseAmount, setExpenseAmount] = useState({
+    expense: 0,
+    income: 0,
+    balance: 0,
+  });
+  const [countItems, setCountItems] = useState({
+    customers: 0,
+    vendors: 0,
+    staff: 0,
+    projects: 0,
+  });
+  const userDetails = useSelector((state) => state.users);
+  const companyDetails =
+    userDetails.companies[userDetails.selectedCompanyIndex];
+
   const icons = {
-    navbar: [
-      {
-        name: "Support",
-        img: heartPartnerHandshake,
-        link: "",
-      },
-      {
-        name: "Subscriptions",
-        img: subscriptionUser,
-        link: "",
-      },
-      {
-        name: "Profile",
-        img: userTrust,
-        link: "",
-      },
-      {
-        name: "Settings",
-        img: settings,
-        link: "/settings/user-profile",
-      },
-    ],
     quick: [
       {
         name: "Expense",
@@ -169,6 +158,7 @@ const Dashboard = () => {
       },
     ],
   };
+
   const [isOpen, setIsOpen] = useState(false);
 
   const createOptions = [
@@ -219,86 +209,206 @@ const Dashboard = () => {
     navigate(option.link);
   };
 
-  const dispatch = useDispatch();
-  return (
-    <div className="flex  bg-white">
-      <aside
-        className="relative w-[120px] 
- bg-[#182238] border-r border-[#D9D9D9] text-white font-inter text-xs font-normal leading-4 text-left underline-offset-auto decoration-slice"
-      >
-        <ul className="flex flex-col p-4 space-y-9">
-          {icons.navbar.map((item) => (
-            <li
-              className="font-semibold cursor-pointer"
-              key={item.name}
-              onClick={() => navigate(item.link)}
-            >
-              <div className="space-y-3 ">
-                <div className="flex items-center justify-center">
-                  <img src={item.img} width="35px" height="35px" />
-                </div>
-                <div className="text-center">{item.name}</div>
-              </div>
-            </li>
-          ))}
-        </ul>
-        <div
-          className="space-y-3 absolute bottom-0 border-t py-5 w-full cursor-pointer"
-          onClick={() => {
-            dispatch(setUserLogout());
-            navigate("/");
-          }}
-        >
-          <div className="flex items-center justify-center ">
-            <img src={signOut} width="35px" height="35px" />
-          </div>
-          <div className="text-center">Logout</div>
-        </div>
-      </aside>
+  async function fetchCountData() {
+    try {
+      const companyRef = doc(db, "companies", companyDetails.companyId);
+      const qProjects = query(
+        collection(db, "projects"),
+        where("companyRef", "==", companyRef)
+      );
+      const qCustomers = query(
+        collection(db, "customers"),
+        where("companyRef", "==", companyRef)
+      );
+      const qVendors = query(
+        collection(db, "vendors"),
+        where("companyRef", "==", companyRef)
+      );
+      const qStaff = query(
+        collection(db, "staff"),
+        where("companyRef", "==", companyRef)
+      );
 
-      <main className="flex w-full overflow-y-auto" style={{ height: "92vh" }}>
-        <div className=" w-full">
+      const [
+        projectsSnapshot,
+        customersSnapshot,
+        vendorsSnapshot,
+        staffSnapshot,
+      ] = await Promise.all([
+        getDocs(qProjects),
+        getDocs(qCustomers),
+        getDocs(qVendors),
+        getDocs(qStaff),
+      ]);
+
+      const projectsCount = projectsSnapshot.size;
+      const customersCount = customersSnapshot.size;
+      const vendorsCount = vendorsSnapshot.size;
+      const staffCount = staffSnapshot.size;
+
+      setCountItems((prevState) => ({
+        ...prevState,
+        projects: projectsCount,
+        customers: customersCount,
+        vendors: vendorsCount,
+        staff: staffCount,
+      }));
+    } catch (error) {
+      console.log("🚀 ~ fetchDashboardData ~ error:", error);
+    }
+  }
+  async function fetchExpenseData() {
+    try {
+      const expenseRef = collection(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "expenses"
+      );
+      const invoiceRef = collection(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "invoices"
+      );
+      const serviceRef = collection(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "services"
+      );
+      const posRef = collection(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "pos"
+      );
+      const poRef = collection(db, "companies", companyDetails.companyId, "po");
+
+      const [
+        expenseSnapshot,
+        invoiceSnapshot,
+        serviceSnapshot,
+        posSnapshot,
+        poSnapshot,
+      ] = await Promise.all([
+        getDocs(expenseRef),
+        getDocs(invoiceRef),
+        getDocs(serviceRef),
+        getDocs(posRef),
+        getDocs(poRef),
+      ]);
+
+      const fetchedExpenses = expenseSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        amount: doc.data().amount,
+      }));
+      const fetchedInvoices = invoiceSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        amount: doc.data().total,
+      }));
+      const fetchedServices = serviceSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        amount: doc.data().total,
+      }));
+      const fetchedPos = posSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        amount: doc.data().total,
+      }));
+      const fetchedPo = poSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        amount: doc.data().total,
+      }));
+      const totalExpense = [...fetchedPo, ...fetchedExpenses].reduce(
+        (acc, item) => acc + item.amount,
+        0
+      );
+      const totalIncome = [
+        ...fetchedInvoices,
+        ...fetchedServices,
+        ...fetchedPos,
+      ].reduce((acc, item) => acc + item.amount, 0);
+
+      const totalBalance = totalIncome - totalExpense;
+      setExpenseAmount({
+        expense: totalExpense,
+        income: totalIncome,
+        balance: totalBalance,
+      });
+    } catch (error) {
+      console.log("🚀 ~ fetchExpenseData ~ error:", error);
+    }
+  }
+  useEffect(() => {
+    fetchCountData();
+    fetchExpenseData();
+  }, []);
+
+  return (
+    <div className="flex bg-white h-full">
+      <main className="flex w-full overflow-y-auto">
+        <div className="w-full">
           <div className="px-6 py-2 border-b shadow">
-            <div className=" font-semibold flex items-center space-x-2">
+            <div className="font-semibold flex items-center space-x-2">
               <img src={hello} width="50px" height="46px" />
-              <div className="text-[20px]">Hey, Prateek</div>
+              <div className="text-[20px]">Hey, {userDetails.name}</div>
             </div>
             <div className="shadow border rounded-2xl">
               <div className="flex items-center justify-between border px-6 py-2 rounded-t-2xl">
                 <div className="flex items-center w-3/4 space-x-4">
-                  <div className="border rounded-full">
-                    <img src={man} width="89px" height="89px" />
+                  <div className="border rounded-full w-[89px] h-[89px] shadow flex items-center justify-center">
+                    {companyDetails.companyLogo ? (
+                      <img
+                        src={companyDetails.companyLogo}
+                        width="89px"
+                        height="89px"
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <img
+                        src={man}
+                        width="89px"
+                        height="89px"
+                        className="rounded-full"
+                      />
+                    )}
                   </div>
                   <div className="space-y-2">
                     <div>
                       <div className="text-[24px] font-semibold">
-                        ABC Company
+                        {companyDetails.name}
                       </div>
-                      <div className="text-[16px] ]">Hyderabad</div>
+                      <div className="text-[16px]">
+                        {companyDetails.address}
+                      </div>
                     </div>
                     <div className="flex items-center space-x-8 text-[14px]">
                       <div>Plan</div>
-                      <div className="rounded-2xl px-4 py-1 bg-[#0060E6]  text-white">
+                      <div className="rounded-2xl px-4 py-1 bg-[#0060E6] text-white">
                         Free
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-around w-full space-x-6">
-                  <div className="border-r w-full flex justify-between px-4">
+                <div className="flex items-center justify-around w-full space-x-3">
+                  <div className="border-r w-full flex justify-between pe-2">
                     <div>
                       <div className="text-[16px]">Expense</div>
-                      <div className="text-[24px] font-bold">Rs 0</div>
+                      <div className="text-[24px] font-bold">
+                        Rs {expenseAmount.expense}
+                      </div>
                     </div>
                     <div>
                       <img src={expenseArrow} width="27px" height="24px" />
                     </div>
                   </div>
                   <div className="border-r w-full">
-                    <div className="border-r w-full flex justify-between px-4">
+                    <div className="border-r w-full flex justify-between pe-2">
                       <div>
                         <div className="text-[16px]">Income</div>
-                        <div className="text-[24px] font-bold">Rs 0</div>
+                        <div className="text-[24px] font-bold">
+                          Rs {expenseAmount.income}
+                        </div>
                       </div>
                       <div>
                         <img src={incomeArrow} width="27px" height="24px" />
@@ -307,7 +417,9 @@ const Dashboard = () => {
                   </div>
                   <div className="w-full">
                     <div className="text-[16px]">Balance</div>
-                    <div className="text-[24px] font-bold">Rs 0</div>
+                    <div className="text-[24px] font-bold">
+                      Rs {expenseAmount.balance}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -315,32 +427,31 @@ const Dashboard = () => {
                 <div className="flex items-center justify-between text-center w-full text-white font-bold">
                   <div>
                     <div className="text-[14px]">Customers</div>
-                    <div className="text-[40px]  ">3</div>
+                    <div className="text-[40px]">{countItems.customers}</div>
                   </div>
                   <div>
-                    <div className="text-[14px]">vendors</div>
-                    <div className="text-[40px]">3</div>
+                    <div className="text-[14px]">Vendors</div>
+                    <div className="text-[40px]">{countItems.vendors}</div>
                   </div>
                   <div>
                     <div className="text-[14px]">Staff</div>
-                    <div className="text-[40px]">3</div>
+                    <div className="text-[40px]">{countItems.staff}</div>
                   </div>
                   <div>
                     <div className="text-[14px]">Projects</div>
-                    <div className="text-[40px]">3</div>
+                    <div className="text-[40px]">{countItems.projects}</div>
                   </div>
                 </div>
                 <div className="w-3/5 flex items-center justify-end">
                   <div className="relative cursor-pointer">
-                    {/* Selected Option */}
                     <div
-                      className="bg-white  px-4 py-2 rounded-lg flex items-center justify-between w-[200px] text-[#0366E6] text-[14px]"
+                      className="bg-white px-4 py-2 rounded-lg flex items-center justify-between w-[200px] text-[#0366E6] text-[14px]"
                       onClick={() => setIsOpen(!isOpen)}
                     >
                       <span>Create</span>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className={`h-4 w-4 transition-transform  ${
+                        className={`h-4 w-4 transition-transform ${
                           isOpen ? "rotate-0" : "-rotate-90"
                         }`}
                         viewBox="0 0 512 512"
@@ -350,11 +461,11 @@ const Dashboard = () => {
                     </div>
 
                     {isOpen && (
-                      <div className="absolute top-full left-0 bg-white w-[200px]  mt-1 rounded shadow-lg flex flex-col z-50 max-h-96 overflow-y-auto">
+                      <div className="absolute top-full left-0 bg-white w-[200px] mt-1 rounded shadow-lg flex flex-col z-50 max-h-96 overflow-y-auto">
                         {createOptions.map((option, index) => (
                           <div
                             key={index}
-                            className={`px-4 py-2 text-[#0366E6] hover:bg-[#0366E6] hover:text-white rounded border-b`}
+                            className="px-4 py-2 text-[#0366E6] hover:bg-[#0366E6] hover:text-white rounded border-b"
                             onClick={() => handleSelect(option)}
                           >
                             {option.name}
@@ -370,10 +481,10 @@ const Dashboard = () => {
               {icons.quick.map((item) => (
                 <div
                   key={item.name}
-                  className="cursor-pointer space-y-1 "
+                  className="cursor-pointer space-y-1"
                   onClick={() => navigate(item.link)}
                 >
-                  <div className="flex items-center justify-center ">
+                  <div className="flex items-center justify-center">
                     <img
                       src={item.img}
                       width="60px"
@@ -396,7 +507,7 @@ const Dashboard = () => {
                   className="cursor-pointer"
                   onClick={() => navigate(item.link)}
                 >
-                  <div className="flex items-center justify-center ">
+                  <div className="flex items-center justify-center">
                     <img
                       src={item.img}
                       width="60px"
@@ -411,9 +522,9 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="w-1/3 border px-4 py-2">
-          <div className="">
-            <div className="font-inria-sans bg-gradient-to-r from-[#3FC2C9] to-[#0C9DA0] rounded-t-2xl py-2 text-white h-[220px] relative ">
-              <div className=" text-6xl font-bold pt-5 px-4 ">₹199</div>
+          <div>
+            <div className="font-inria-sans bg-gradient-to-r from-[#3FC2C9] to-[#0C9DA0] rounded-t-2xl py-2 text-white h-[220px] relative">
+              <div className="text-6xl font-bold pt-5 px-4">₹199</div>
               <div className="text-[15px] px-4">per month</div>
               <div className="text-center bottom-6 absolute w-full text-[16px]">
                 Choose best plan for you!
@@ -422,7 +533,7 @@ const Dashboard = () => {
             <div className="border-2 border-dashed rounded-b-2xl flex justify-between items-center px-4 py-2">
               <div>Details</div>
               <div
-                className="bg-black rounded-full py-2 px-4 text-white cursor-pointer text-[16px] "
+                className="bg-black rounded-full py-2 px-4 text-white cursor-pointer text-[16px]"
                 onClick={() => navigate("/settings/subscription-plan")}
               >
                 Upgrade
@@ -434,10 +545,10 @@ const Dashboard = () => {
             {icons.more.map((item) => (
               <div
                 key={item.name}
-                className="shadow border rounded-2xl h-[140px] cursor-pointer "
+                className="shadow border rounded-2xl h-[140px] cursor-pointer"
                 onClick={() => navigate(item.link)}
               >
-                <div className="bg-[#F0F4F8] rounded-t-2xl  text-white flex justify-center items-center h-[99px]">
+                <div className="bg-[#F0F4F8] rounded-t-2xl text-white flex justify-center items-center h-[99px]">
                   <img src={item.img} width="56px" height="56px" />
                 </div>
                 <div className="rounded-b-2xl text-center px-4 py-2 text-[14px]">

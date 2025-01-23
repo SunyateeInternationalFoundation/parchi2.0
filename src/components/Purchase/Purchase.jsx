@@ -15,7 +15,7 @@ import {
   LuChevronsRight,
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import addItem from "../../assets/addItem.png";
 import DateTimeFormate from "../../constants/DateTimeFormate";
 import { db } from "../../firebase";
@@ -332,7 +332,7 @@ const Purchase = () => {
           </div>
         ) : (
           <div
-            style={{ height: "92vh", width: "100%" }}
+            style={{ minHeight: "92vh", width: "100%" }}
             className="overflow-hidden"
           >
             <div className="py-2">

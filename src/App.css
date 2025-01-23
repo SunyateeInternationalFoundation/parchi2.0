@@ -55,6 +55,7 @@ table tbody tr:hover {
     text-align: left;
     border-bottom: 1px solid #e5e7eb !important;
     padding-left: 12px;
+    z-index: 1 !important;
 }
 
 .handsontable table tbody td {

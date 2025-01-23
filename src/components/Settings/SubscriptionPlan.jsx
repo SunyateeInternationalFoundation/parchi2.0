@@ -1,8 +1,7 @@
-import { useState } from "react";
 import { SiTicktick } from "react-icons/si";
 
 const Pricing = () => {
-  const [plans, setPlans] = useState([
+  const plans = [
     {
       name: "Basic",
       price: 0,
@@ -35,10 +34,12 @@ const Pricing = () => {
       features: ["Based on customization"],
       pricingType: "custom",
     },
-  ]);
-
+  ];
   return (
-    <div className=" text-blue-600 py-12">
+    <div
+      className="overflow-y-auto text-blue-600 py-6"
+      style={{ height: "92vh" }}
+    >
       <div className="max-w-7xl mx-auto px-4">
         <h2 className="text-3xl font-semibold text-blue-900 text-center mb-6">
           Pricing

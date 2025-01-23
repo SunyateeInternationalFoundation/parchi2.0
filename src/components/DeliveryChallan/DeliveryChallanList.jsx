@@ -337,7 +337,7 @@ const DeliveryChallanList = () => {
           </div>
         ) : (
           <div
-            style={{ height: "92vh", width: "100%" }}
+            style={{ minHeight: "92vh", width: "100%" }}
             className="overflow-hidden"
           >
             <div className="py-2">
