@@ -61,7 +61,7 @@ const CompanyForm = ({ userRef }) => {
           isCompanyProfileDone: true,
         })
       );
-      navigate("/invoice");
+      navigate("");
     } catch (error) {
       console.log("🚀 ~ Submit ~ error:", error);
     }

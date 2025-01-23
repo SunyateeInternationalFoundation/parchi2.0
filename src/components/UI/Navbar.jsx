@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-  FaBell,
-  FaBolt,
-  FaBullhorn,
-  FaStore,
-  FaUserCircle,
-} from "react-icons/fa";
+import { FaStore } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { HiUsers } from "react-icons/hi";
 import { IoMdSettings } from "react-icons/io";
@@ -14,6 +8,8 @@ import { RiCustomerService2Fill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import SunyaLogo from "../../assets/SunyaLogo.jpg";
+import circleUser from "../../assets/dashboard/circleUser.png";
+import notification from "../../assets/dashboard/notification.png";
 import {
   setUserLogin,
   setUserLogout,
@@ -138,16 +134,10 @@ const Navbar = () => {
                 {companyName?.slice(0, 2).toUpperCase() || "YB"}
               </div>
 
-              {/* Company Name */}
               <div>
                 <span className="font-bold text-gray-800 text-sm group-hover:text-gray-500 transition-colors duration-300">
                   {companyName}
                 </span>
-              </div>
-
-              {/* Tooltip */}
-              <div className="absolute z-10 left-0 top-6 w-max px-1 py-1 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transform group-hover:translate-y-1 transition-all duration-300">
-                Change Company
               </div>
             </div>
 
@@ -189,42 +179,15 @@ const Navbar = () => {
               type="button"
               className="relative group px-2 py-1 rounded-full text-gray-600 hover:text-black ml-[3px]"
             >
-              <FaBolt className="text-gray-600" size={16} />
-              <div className="absolute z-10 left-1/2 transform -translate-x-1/2 top-8 px-2 py-1 bg-gray-600 text-white text-xs rounded-md opacity-0 group-hover:opacity-100">
-                Create
-              </div>
+              <img src={notification} width={30} alt="user" height={30} />
             </button>
-
-            <button
-              type="button"
-              className="relative group px-2 py-1 rounded-full text-gray-600 hover:text-black ml-[3px]"
-            >
-              <FaBell className="text-gray-600" size={16} />
-              <div className="absolute z-10 left-1/2 transform -translate-x-1/2 top-8 px-2 py-1 bg-gray-600 text-white text-xs rounded-md opacity-0 group-hover:opacity-100">
-                Notifications
-              </div>
-            </button>
-
-            <button
-              type="button"
-              className="relative group px-2 py-1 rounded-full text-gray-600 hover:text-black ml-[3px]"
-            >
-              <FaBullhorn className="text-gray-600" size={16} />
-              <div className="absolute z-10 left-1/2 transform -translate-x-1/2 top-8 px-2 py-1 bg-gray-600 text-white text-xs rounded-md opacity-0 group-hover:opacity-100">
-                Announcements
-              </div>
-            </button>
-
             {userDetails.selectedDashboard !== "staff" && (
               <button
                 type="button"
                 className="relative group px-2 py-1 rounded-full text-gray-600 hover:text-black ml-[3px]"
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
               >
-                <FaUserCircle className="text-gray-600" size={16} />
-                <div className="absolute z-10 left-1/2 transform -translate-x-1/2 top-8 px-2 py-1 bg-gray-600 text-white text-xs rounded-md opacity-0 group-hover:opacity-100">
-                  Profile
-                </div>
+                <img src={circleUser} width={30} alt="user" height={30} />
               </button>
             )}
           </div>

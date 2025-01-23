@@ -48,7 +48,13 @@ const ServicesList = () => {
       setTotalPages(Math.ceil(fetchedServices.length / 10));
       setPaginationData(fetchedServices.slice(0, 10));
 
-      setServices(fetchedServices);
+      setServices([
+        ...fetchedServices,
+        ...fetchedServices,
+        ...fetchedServices,
+        ...fetchedServices,
+        ...fetchedServices,
+      ]);
     } catch (error) {
       console.error("Error fetching services:", error);
     } finally {
@@ -98,7 +104,7 @@ const ServicesList = () => {
             Loading services...
           </div>
         ) : (
-          <div className="" style={{ height: "62vh" }}>
+          <div className="" style={{ minHeight: "62vh" }}>
             <table className="w-full ">
               <thead className="sticky z-10" style={{ top: "0" }}>
                 <tr className="border-b">

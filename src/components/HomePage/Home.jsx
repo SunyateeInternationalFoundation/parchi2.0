@@ -64,6 +64,7 @@ import UserProfile from "../Settings/UserProfile";
 import Designation from "../Staff&Payout/Designation/Designation";
 import DesignationView from "../Staff&Payout/Designation/DesignationView";
 import VendorPO from "../VendorDashBoard/VendorPO";
+import Dashboard from "./Dashboard";
 
 const Home = () => {
   const location = useLocation();
@@ -78,7 +79,7 @@ const Home = () => {
     "/services/create-service",
   ];
   const match = [
-    "settings",
+    "/settings",
     "/settings/user-profile",
     "/settings/company-profile",
     "/settings/prefix",
@@ -92,20 +93,25 @@ const Home = () => {
   return (
     <div>
       <div style={{ height: "8vh" }}>
+        {/* {location.pathname !== "/home" && <Navbar />} */}
         <Navbar />
       </div>
       <div className="flex" style={{ height: "92vh" }}>
         {!noSideBarPagesList ? (
-          <div>
-            <SideBar />
-          </div>
+          location.pathname !== "/" && (
+            <div>
+              <SideBar />
+            </div>
+          )
         ) : (
           <div className="w-1/4">
             <SettingView />
           </div>
         )}
+
         <div style={{ width: "100%", height: "92vh" }} className="bg-gray-100">
           <Routes>
+            <Route path="/" element={<Dashboard />}></Route>
             <Route path="/invoice" element={<InvoiceList />}></Route>
             <Route
               path="/invoice/create-invoice"

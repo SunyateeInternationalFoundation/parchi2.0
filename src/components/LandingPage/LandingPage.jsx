@@ -167,7 +167,7 @@ const LandingPage = () => {
             return { companyId: companyRef.id, vendorId: doc.id };
           });
 
-          navigate("/invoice");
+          navigate("/");
         }
 
         const payload = {
