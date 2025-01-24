@@ -76,7 +76,7 @@ const Home = () => {
     "/vendors/:id",
     "/staff-payout/staff/:id",
     "/create-po",
-    "/services/create-service",
+    "/subscriptions/create-service",
   ];
   const match = [
     "/settings",
@@ -173,8 +173,8 @@ const Home = () => {
             <Route path="/vendors" element={<VendorList />}></Route>
             <Route path="/vendors/:id" element={<VendorView />}></Route>
             <Route path="/products" element={<ProductHome />}></Route>
-            <Route path="/services-list" element={<ServicesList />}></Route>
-            <Route path="/services/:id" element={<ServiceView />}></Route>
+            <Route path="/plan-list" element={<ServicesList />}></Route>
+            <Route path="/subscriptions/:id" element={<ServiceView />}></Route>
             <Route path="/projects" element={<Projects />}></Route>
             <Route path="/products/:id" element={<ProductViewHome />}></Route>
             <Route
@@ -223,13 +223,13 @@ const Home = () => {
               element={<Attendance />}
             ></Route> */}
 
-            <Route path="/services" element={<Services />}></Route>
+            <Route path="/subscriptions" element={<Services />}></Route>
             <Route
-              path="/services/create-service"
+              path="/subscriptions/create-service"
               element={<SetService />}
             ></Route>
             <Route
-              path="/services/:id/edit-service"
+              path="/subscriptions/:id/edit-service"
               element={<SetService />}
             ></Route>
             <Route path="/po" element={<PO />}></Route>

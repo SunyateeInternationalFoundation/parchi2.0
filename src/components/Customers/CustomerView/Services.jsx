@@ -148,7 +148,7 @@ function Services({ servicesList }) {
                 ) : (
                   <tr>
                     <td colSpan="6" className="h-24 text-center py-4">
-                      No services found
+                      No subscriptions found
                     </td>
                   </tr>
                 )}

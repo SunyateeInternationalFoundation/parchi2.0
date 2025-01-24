@@ -97,12 +97,12 @@ const Dashboard = () => {
       {
         name: "Subscriptions",
         img: Subscriptions,
-        link: "/services",
+        link: "/subscriptions",
       },
       {
         name: "Plans",
         img: Plans,
-        link: "/services-list",
+        link: "/plan-list",
       },
       {
         name: "Point-Of-Sale",
@@ -180,7 +180,7 @@ const Dashboard = () => {
     },
     {
       name: "Service",
-      link: "/services/create-service",
+      link: "/subscriptions/create-service",
     },
     {
       name: "Credit Note",

@@ -48,13 +48,7 @@ const ServicesList = () => {
       setTotalPages(Math.ceil(fetchedServices.length / 10));
       setPaginationData(fetchedServices.slice(0, 10));
 
-      setServices([
-        ...fetchedServices,
-        ...fetchedServices,
-        ...fetchedServices,
-        ...fetchedServices,
-        ...fetchedServices,
-      ]);
+      setServices(fetchedServices);
     } catch (error) {
       console.error("Error fetching services:", error);
     } finally {
@@ -91,17 +85,17 @@ const ServicesList = () => {
     <div className="main-container" style={{ height: "92vh" }}>
       <div className="container">
         <div className="flex justify-between items-center px-5">
-          <h1 className="text-2xl font-bold">Services List</h1>
+          <h1 className="text-2xl font-bold">Plan List</h1>
           <button
             className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
             onClick={() => setIsSideBarOpen(true)}
           >
-            + Create Service
+            + Create Plan
           </button>
         </div>
         {loading ? (
           <div className="text-center" style={{ height: "62hv" }}>
-            Loading services...
+            Loading plan...
           </div>
         ) : (
           <div className="overflow-hidden" style={{ minHeight: "80vh" }}>

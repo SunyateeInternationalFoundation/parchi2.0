@@ -236,7 +236,7 @@ function Services() {
   return (
     <div className="main-container" style={{ height: "92vh" }}>
       <div className="mt-4 py-3">
-        <h1 className="text-2xl font-bold pb-3 ">Service Overview</h1>
+        <h1 className="text-2xl font-bold pb-3 ">Subscriptions Overview</h1>
         <div className="grid grid-cols-4 gap-8 ">
           <div className="rounded-lg p-5 bg-white shadow ">
             <div className="text-lg">Total Amount</div>
@@ -313,7 +313,7 @@ function Services() {
 
         {loading ? (
           <div className="text-center py-6" style={{ height: "92vh" }}>
-            Loading services...
+            Loading subscriptions...
           </div>
         ) : (
           <div

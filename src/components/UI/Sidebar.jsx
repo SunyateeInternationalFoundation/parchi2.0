@@ -45,7 +45,7 @@ function SideBar() {
         {
           id: "services",
           name: "Subscription",
-          path: "/services",
+          path: "/subscriptions",
         },
         {
           id: "creditNote",
@@ -93,7 +93,7 @@ function SideBar() {
         {
           id: "subscriptionPlans",
           name: "Subscription Plans",
-          path: "/services-list",
+          path: "/plan-list",
         },
         {
           id: "staff&Payout",

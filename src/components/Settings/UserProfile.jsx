@@ -1,8 +1,6 @@
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { useEffect, useState } from "react";
-import { FaUser } from "react-icons/fa";
-import { MdEmail, MdOutlineLocalPhone } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { db, storage } from "../../firebase";
 import { updateUserDetails } from "../../store/UserSlice";
@@ -104,12 +102,10 @@ const Prefix = () => {
   };
 
   return (
-    <div className="flex">
-      {/* <div className="w-1/4">
-        {" "}
-        <SettingsView />
-      </div> */}
-      <div className="p-6 bg-gray-100 w-full max-h-screen overflow-y-auto mt-4">
+    <div className="main-container">
+      <h1 className="text-2xl font-bold text-gray-800 px-5">Settings</h1>
+
+      <div className="container">
         <div className="mx-auto bg-white shadow-md rounded-md p-6">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-semibold text-gray-700">

@@ -341,8 +341,8 @@ function SetService() {
       alert(`successfully ${id ? "Updated" : "Created"}  Service`);
       navigate(
         userDetails.selectedDashboard === "staff"
-          ? "/staff/services"
-          : "/services"
+          ? "/staff/subscriptions"
+          : "/subscriptions"
       );
     } catch (err) {
       console.error(err);

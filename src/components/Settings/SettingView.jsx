@@ -11,7 +11,6 @@ const SettingsView = () => {
           <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500  text-gray-500" />
           <span className="text-lg font-medium"></span>
         </Link> */}
-        <h1 className="text-2xl font-bold text-gray-800 px-5">Settings</h1>
       </div>
       <div className="flex ml-4" style={{ height: "85vh" }}>
         <div className="w-full">
@@ -55,7 +54,7 @@ const SettingsView = () => {
               >
                 Prefix
               </li>
-              <li
+              {/* <li
                 className={`mt-3 font-medium ${
                   location.pathname === "/settings/subscription-plan"
                     ? "text-blue-600"
@@ -66,7 +65,7 @@ const SettingsView = () => {
                 }}
               >
                 Subscription Plan
-              </li>
+              </li> */}
             </ul>
           </ul>
         </div>

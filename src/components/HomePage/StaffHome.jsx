@@ -29,12 +29,7 @@ import ProFormaView from "../ProFormaInvoice/ProFormaInvoiceView/ProFormaView";
 import SetProFormaInvoice from "../ProFormaInvoice/SetProFormaInvoice/SetProFormaInvoice";
 import CreateProject from "../Projects/CreateProject/CreateProject";
 import Projects from "../Projects/Projects";
-import Approval from "../Projects/ProjectView/Approvals/Approval";
-import Files from "../Projects/ProjectView/Files/Files";
-import Milestone from "../Projects/ProjectView/Milestone/Milestone";
 import ProjectViewHome from "../Projects/ProjectView/ProjectViewHome";
-import Tasks from "../Projects/ProjectView/Tasks/Tasks";
-import Users from "../Projects/ProjectView/Users/Users";
 import Purchase from "../Purchase/Purchase";
 import PurchaseViewHome from "../Purchase/PurchaseView/PurchaseViewHome";
 import SetPurchase from "../Purchase/SetPurchase/SetPurchase";
@@ -245,17 +240,17 @@ const StaffHome = () => {
               <Route path="/po/:poId/edit-po" element={<SetPO />}></Route>
             )}
             {checkPermission("services", "create") && (
-              <Route path="/services" element={<Services />}></Route>
+              <Route path="/subscriptions" element={<Services />}></Route>
             )}
             {checkPermission("services", "view") && (
               <Route
-                path="/services/create-service"
+                path="/subscriptions/create-service"
                 element={<SetService />}
               ></Route>
             )}
             {checkPermission("services", "edit") && (
               <Route
-                path="/services/:id/edit-service"
+                path="/subscriptions/:id/edit-service"
                 element={<SetService />}
               ></Route>
             )}
