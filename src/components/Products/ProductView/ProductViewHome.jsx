@@ -14,6 +14,7 @@ import { db } from "../../../firebase";
 import ProductLogs from "./ProductLogs";
 import ProductReturns from "./ProductReturns";
 import ProductView from "./ProductView";
+import Stocks from "./Stocks";
 
 function ProductViewHome() {
   const [activeTab, setActiveTab] = useState("Product");
@@ -72,58 +73,39 @@ function ProductViewHome() {
     fetchProduct();
   }, [productId, companyDetails.companyId]);
 
+  const tabs = [
+    { name: "Product", component: <ProductView productData={product} /> },
+    { name: "Logs", component: <ProductLogs logs={logs} /> },
+    { name: "Returns", component: <ProductReturns returns={returns} /> },
+    { name: "Stocks", component: <Stocks stocks={[]} /> },
+  ];
+
   return (
-    <div className="  pb-5" style={{ width: "100%" }}>
-      <header className="flex items-center space-x-3  px-5  border-b bg-white">
-        <Link className="flex items-center " to={"./../"}>
-          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500  text-gray-500" />
+    <div className="pb-5" style={{ width: "100%" }}>
+      <header className="flex items-center space-x-3 px-5 border-b bg-white">
+        <Link className="flex items-center" to={"./../"}>
+          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500 text-gray-500" />
         </Link>
-        <nav className="flex space-x-4 ">
-          <button
-            className={
-              "p-4 font-semibold text-gray-500 " +
-              (activeTab === "Product" ? " border-b-4 border-blue-500 " : "")
-            }
-            onClick={() => setActiveTab("Product")}
-          >
-            Product
-          </button>
-          <button
-            className={
-              "p-4 font-semibold text-gray-500 " +
-              (activeTab === "Logs" ? " border-b-4 border-blue-500 " : "")
-            }
-            onClick={() => setActiveTab("Logs")}
-          >
-            Logs
-          </button>
-          <button
-            className={
-              "p-4 font-semibold text-gray-500 " +
-              (activeTab === "Returns" ? " border-b-4 border-blue-500 " : "")
-            }
-            onClick={() => setActiveTab("Returns")}
-          >
-            Returns
-          </button>
+        <nav className="flex space-x-4">
+          {tabs.map((tab) => (
+            <button
+              key={tab.name}
+              className={
+                "p-4 font-semibold text-gray-500 " +
+                (activeTab === tab.name ? " border-b-4 border-blue-500 " : "")
+              }
+              onClick={() => setActiveTab(tab.name)}
+            >
+              {tab.name}
+            </button>
+          ))}
         </nav>
       </header>
 
-      <div className="w-full  ">
-        {activeTab === "Product" && (
-          <div>
-            <ProductView productData={product} />
-          </div>
-        )}
-        {activeTab === "Logs" && (
-          <div>
-            <ProductLogs logs={logs} />
-          </div>
-        )}
-        {activeTab === "Returns" && (
-          <div>
-            <ProductReturns returns={returns} />
-          </div>
+      <div className="w-full">
+        {tabs.map(
+          (tab) =>
+            activeTab === tab.name && <div key={tab.name}>{tab.component}</div>
         )}
       </div>
     </div>

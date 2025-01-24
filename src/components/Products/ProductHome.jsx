@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Categories from "./Categories";
+import Categories from "./Categories/Categories";
 import ProductList from "./ProductList";
 import Stock from "./Stock";
-import Warehouse from "./Warehouse";
+import Warehouse from "./WareHouses/Warehouse";
 
 const ProductHome = () => {
   const [activeTab, setActiveTab] = useState("Products");
@@ -11,11 +11,9 @@ const ProductHome = () => {
       <header className="flex items-center  space-x-3 ">
         {/* <Link
           className="flex items-center "
-     
            to={"./../"}
         >
              <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500  text-gray-500" />
-           
         </Link> */}
         {/* <h1 className="text-2xl font-bold">Products</h1> */}
       </header>

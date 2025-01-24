@@ -44,6 +44,7 @@ import SetInvoice from "../Invoices/SetInvoice/SetInvoice";
 import PoView from "../PO/PoView/PoView";
 import SetPO from "../PO/SetPO/SetPO";
 import SetPos from "../POS/SetPos/SetPos";
+import CreateProduct from "../Products/CreateProduct";
 import ProductViewHome from "../Products/ProductView/ProductViewHome";
 import ProFormaView from "../ProFormaInvoice/ProFormaInvoiceView/ProFormaView";
 import SetProFormaInvoice from "../ProFormaInvoice/SetProFormaInvoice/SetProFormaInvoice";
@@ -173,6 +174,14 @@ const Home = () => {
             <Route path="/vendors" element={<VendorList />}></Route>
             <Route path="/vendors/:id" element={<VendorView />}></Route>
             <Route path="/products" element={<ProductHome />}></Route>
+            <Route
+              path="/products/create-product"
+              element={<CreateProduct />}
+            ></Route>
+            <Route
+              path="/products/edit-product/:id"
+              element={<CreateProduct />}
+            ></Route>
             <Route path="/plan-list" element={<ServicesList />}></Route>
             <Route path="/subscriptions/:id" element={<ServiceView />}></Route>
             <Route path="/projects" element={<Projects />}></Route>

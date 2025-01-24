@@ -1,11 +1,4 @@
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  Timestamp,
-} from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdTrash } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
@@ -16,8 +9,9 @@ import {
   LuChevronsRight,
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
-import FormatTimestamp from "../../constants/FormatTimestamp";
-import { db } from "../../firebase";
+import FormatTimestamp from "../../../constants/FormatTimestamp";
+import { db } from "../../../firebase";
+import SetCategory from "./SetCategory";
 
 const Categories = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -217,88 +211,14 @@ const Categories = () => {
           </div>
         </div>
       </div>
-      {isModalOpen && (
-        <AddCategoryModal
-          onClose={() => setIsModalOpen(false)}
-          onAddCategory={handleAddCategory}
-        />
-      )}
+      <SetCategory
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAddCategory={handleAddCategory}
+        companyId={companyDetails.companyId}
+      />
     </div>
   );
 };
 
-const AddCategoryModal = ({ onClose, onAddCategory }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [categoryName, setCategoryName] = useState("");
-  const userDetails = useSelector((state) => state.users);
-  const companyDetails =
-    userDetails.companies[userDetails.selectedCompanyIndex];
-
-  const handleAddCategory = async () => {
-    if (!categoryName.trim()) {
-      alert("Category name is required");
-      return;
-    }
-    setIsLoading(true);
-
-    try {
-      const categoryRef = collection(
-        db,
-        "companies",
-        companyDetails.companyId,
-        "categories"
-      );
-      const newCategory = {
-        name: categoryName,
-        createdAt: Timestamp.fromDate(new Date()),
-      };
-
-      const docRef = await addDoc(categoryRef, newCategory);
-
-      onAddCategory({ id: docRef.id, ...newCategory });
-      onClose();
-    } catch (error) {
-      console.error("Error adding Category:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-end">
-      <div className="bg-white w-full max-w-sm p-6 shadow-lg">
-        <h2 className="text-xl font-bold mb-4">Add Category</h2>
-        <div className="mb-4">
-          <label htmlFor="CategoryName" className="block text-gray-700 mb-2">
-            Category Name
-          </label>
-          <input
-            id="categoryName"
-            type="text"
-            className="w-full p-2 border rounded"
-            value={categoryName}
-            onChange={(e) => setCategoryName(e.target.value)}
-          />
-        </div>
-        <div className="flex justify-between">
-          <button
-            onClick={onClose}
-            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleAddCategory}
-            className={`${
-              isLoading ? "bg-blue-300" : "bg-blue-500"
-            } text-white px-4 py-2 rounded hover:bg-blue-600 transition`}
-            disabled={isLoading}
-          >
-            {isLoading ? "Adding..." : "Add Category"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
 export default Categories;

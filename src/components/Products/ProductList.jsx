@@ -18,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../UI/select";
-import CreateProduct from "./CreateProduct";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -185,6 +184,7 @@ const ProductList = () => {
             onClick={() => {
               setIsSideBarOpen(true);
               setEditingProduct(null);
+              navigate("create-product");
             }}
           >
             + Create Product
@@ -272,13 +272,18 @@ const ProductList = () => {
                         {product.includingTax ? "Yes" : "No"}
                       </td>
                       <td className="px-5 py-3 ">{product.stock}</td>
-                      <td className="px-5 py-3 text-start">
+                      <td
+                        className="px-5 py-3 text-start"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      >
                         <div className="flex justify-center items-center space-x-4">
                           <button
                             className="text-blue-500 hover:text-blue-700"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleEdit(product);
+                              navigate("edit-product/" + product.id);
                             }}
                           >
                             ✏️
@@ -371,15 +376,6 @@ const ProductList = () => {
           </div>
         </div>
       </div>
-      <CreateProduct
-        isOpen={isSideBarOpen}
-        onClose={() => {
-          setIsSideBarOpen(false);
-          setEditingProduct(null);
-        }}
-        onProductAdded={fetchProducts}
-        onProductUpdated={editingProduct}
-      />
     </div>
   );
 };
