@@ -1,10 +1,10 @@
+import axios from "axios";
 import {
   addDoc,
   collection,
   doc,
   getDoc,
   getDocs,
-  setDoc,
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
@@ -12,8 +12,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
-import hsnData from "../../constants/hsn";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { db, storage } from "../../firebase";
 import {
   Select,
@@ -26,14 +25,14 @@ import SetCategory from "./Categories/SetCategory";
 import SetWarehouse from "./WareHouses/SetWarehouse";
 
 function CreateProduct() {
-  const { id } = useParams();
+  const { id: productId } = useParams();
   const userDetails = useSelector((state) => state.users);
   const [productImage, setProductImage] = useState("");
   const [categories, setCategories] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [sideBarOpen, setSidebarOpen] = useState("");
   const [isHsnDropdownVisible, setIsHsnDropdownVisible] = useState(false);
-  const [hsnSuggestions, setHsnSuggestions] = useState(hsnData.slice(0, 100));
+  const [hsnSuggestions, setHsnSuggestions] = useState([]);
   const [selectedHSN, setSelectedHSN] = useState("");
   const [formData, setFormData] = useState({
     barcode: "",
@@ -55,7 +54,7 @@ function CreateProduct() {
     userRef: "",
     warehouse: "",
   });
-
+  const navigate = useNavigate();
   const companyDetails =
     userDetails.companies[userDetails.selectedCompanyIndex];
 
@@ -97,13 +96,14 @@ function CreateProduct() {
         "companies",
         companyDetails.companyId,
         "products",
-        id
+        productId
       );
       const productSnap = await getDoc(productRef);
       if (productSnap.exists()) {
         const productData = productSnap.data();
         setFormData(productData);
         setProductImage(productData.imageUrl || "");
+        setSelectedHSN(productData.hsn);
       } else {
         console.log("No such document!");
       }
@@ -114,7 +114,7 @@ function CreateProduct() {
   useEffect(() => {
     fetchCategories();
     fetchWarehouses();
-    if (id) {
+    if (productId) {
       fetchProduct();
     }
   }, []);
@@ -132,24 +132,32 @@ function CreateProduct() {
     }
   };
 
-  async function onCreateProduct(e) {
-    e.preventDefault();
+  async function onCreateProduct() {
+    const { stock, name, category, sellingPrice } = formData;
+    const isValid = stock > 0 && category && name && sellingPrice > 0;
+    if (!isValid) {
+      alert("Please Required Details");
+      return;
+    }
+
     try {
-      if (id) {
+      if (productId) {
         const productDocRef = doc(
           db,
           "companies",
           companyDetails.companyId,
           "products",
-          id
+          productId
         );
 
         const productImageUrl = productImage
           ? await handleFileChange(productImage)
           : formData.imageUrl;
-        const { id, includingTax, unitPrice, taxAmount, ...rest } = formData;
+
+        const { id, ...rest } = formData;
         const payload = {
           ...rest,
+          hsn: selectedHSN,
           imageUrl: productImageUrl,
         };
         await updateDoc(productDocRef, payload); // Update product
@@ -176,31 +184,22 @@ function CreateProduct() {
 
         const payload = {
           ...formData,
+          hsn: selectedHSN,
           imageUrl: productImageUrl,
           createdAt: Timestamp.fromDate(new Date()),
           companyRef,
           userRef,
         };
-        let productRef = "";
-        if (formData.barcode) {
-          const productDocRef = doc(
-            db,
-            "companies",
-            companyDetails.companyId,
-            "products",
-            formData.barcode
-          );
-          productRef = await setDoc(productDocRef, payload);
-        } else {
-          // productDocRef = collection(db, "products");
-          const productDocRef = collection(
-            db,
-            "companies",
-            companyDetails.companyId,
-            "products"
-          );
-          productRef = await addDoc(productDocRef, payload);
-        }
+
+        // productDocRef = collection(db, "products");
+        const productDocRef = collection(
+          db,
+          "companies",
+          companyDetails.companyId,
+          "products"
+        );
+        const productRef = await addDoc(productDocRef, payload);
+
         const productPayloadLogs = {
           date: payload.createdAt,
           status: "add",
@@ -221,51 +220,63 @@ function CreateProduct() {
         );
         alert("Product successfully created.");
       }
+      navigate("/products");
     } catch (error) {
       console.log("🚀 ~ onCreateProduct ~ error:", error);
     }
   }
 
-  const handleHsnInputChange = (e) => {
+  const handleHsnInputChange = async (e) => {
     const value = e.target.value.trim();
     setSelectedHSN({ code: value });
     setIsHsnDropdownVisible(true);
-    if (value) {
-      const filteredSuggestions = hsnData
-        .slice(0, 100)
-        .filter((item) =>
-          item.code.toLowerCase().includes(value.toLowerCase())
+    if (value.length < 4) {
+      return;
+    }
+    try {
+      let response = [];
+
+      if (!isNaN(+value)) {
+        response = await axios.get(
+          `https://services.gst.gov.in/commonservices/hsn/search/qsearch?inputText=${value}&selectedType=byCode&category=null`
         );
-      setHsnSuggestions(filteredSuggestions);
-      setIsHsnDropdownVisible(true);
-    } else {
-      setHsnSuggestions(hsnData.slice(0, 100));
+      } else {
+        response = await axios.get(
+          `https://services.gst.gov.in/commonservices/hsn/search/qsearch?inputText=${value}&selectedType=byDesc&category=P`
+        );
+      }
+      if (response?.data) {
+        setHsnSuggestions(response.data.data);
+      }
+    } catch (e) {
+      console.log("🚀 ~ handleHsnInputChange ~ e:", e);
     }
   };
+
   return (
     <div className="bg-gray-100 overflow-y-auto" style={{ height: "92vh" }}>
-      <header className="flex items-center space-x-3  my-2">
+      <header className="flex items-center   my-2">
         <Link className="flex items-center" to={"/products"}>
           <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500  text-gray-500" />
         </Link>
-        <h2 className="px-5 text-lg text-gray-600 font-bold">
-          {id ? "Edit Product" : "New Product"}
+        <h2 className="text-lg text-gray-600 font-bold">
+          {productId ? "Edit Product" : "New Product"}
         </h2>
       </header>
       <div className="px-5">
         <div className="container">
-          <div className="space-y-2">
-            <div className="border-b py-3 px-5">
+          <div className="">
+            <div className="border-b py-3 px-5 space-y-2">
               <div className="">Product Information</div>
               <div className="space-y-1">
-                <label className=" text-sm text-gray-600">
+                <label className="  text-gray-600">
                   Item Name<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   name="name"
-                  className="input-tag w-full"
-                  placeholder="name"
+                  className="input-tag w-full "
+                  placeholder="Name"
                   value={formData.name || ""}
                   required
                   onChange={(e) =>
@@ -274,7 +285,7 @@ function CreateProduct() {
                 />
               </div>
               <div className="space-y-1">
-                <label className=" text-sm text-gray-600">
+                <label className="  text-gray-600">
                   Category<span className="text-red-500">*</span>
                 </label>
                 <div className="flex justify-center items-center">
@@ -287,7 +298,12 @@ function CreateProduct() {
                       }));
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger
+                      style={{
+                        borderTopRightRadius: "0px",
+                        borderBottomRightRadius: "0px",
+                      }}
+                    >
                       <SelectValue placeholder=" Select Category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -301,6 +317,10 @@ function CreateProduct() {
                   <button
                     type="button"
                     className="w-28 btn-outline-black h-12"
+                    style={{
+                      borderTopLeftRadius: "0px",
+                      borderBottomLeftRadius: "0px",
+                    }}
                     onClick={() => setSidebarOpen("category")}
                   >
                     + New
@@ -308,7 +328,7 @@ function CreateProduct() {
                 </div>
               </div>
               <div className="space-y-1">
-                <label className=" text-sm text-gray-600">
+                <label className="  text-gray-600">
                   Selling Price<span className="text-red-500">*</span>
                 </label>
 
@@ -316,7 +336,7 @@ function CreateProduct() {
                   <input
                     type="number"
                     name="pricing.sellingPrice.amount"
-                    className="w-full input-tag"
+                    className="w-full input-tag "
                     placeholder="Selling Price"
                     required
                     value={formData.sellingPrice || ""}
@@ -326,6 +346,10 @@ function CreateProduct() {
                         sellingPrice: +e.target.value,
                       }))
                     }
+                    style={{
+                      borderTopRightRadius: "0px",
+                      borderBottomRightRadius: "0px",
+                    }}
                   />
 
                   <Select
@@ -339,7 +363,13 @@ function CreateProduct() {
                       }));
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger
+                      style={{
+                        height: "50px",
+                        borderTopLeftRadius: "0px",
+                        borderBottomLeftRadius: "0px",
+                      }}
+                    >
                       <SelectValue placeholder=" Select SellingPriceTaxType" />
                     </SelectTrigger>
                     <SelectContent className="h-18">
@@ -350,7 +380,7 @@ function CreateProduct() {
                 </div>
               </div>
               <div className="space-y-1">
-                <label className=" text-sm text-gray-600">Purchase Price</label>
+                <label className="  text-gray-600">Purchase Price</label>
 
                 <div className="flex items-center justify-center">
                   <input
@@ -365,6 +395,10 @@ function CreateProduct() {
                         purchasePrice: +e.target.value,
                       }))
                     }
+                    style={{
+                      borderTopRightRadius: "0px",
+                      borderBottomRightRadius: "0px",
+                    }}
                   />
                   <Select
                     defaultValue={
@@ -377,7 +411,13 @@ function CreateProduct() {
                       }));
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger
+                      style={{
+                        height: "50px",
+                        borderTopLeftRadius: "0px",
+                        borderBottomLeftRadius: "0px",
+                      }}
+                    >
                       <SelectValue placeholder=" Select PurchasePriceTaxType" />
                     </SelectTrigger>
                     <SelectContent className="h-18">
@@ -388,7 +428,7 @@ function CreateProduct() {
                 </div>
               </div>
               <div className="space-y-1">
-                <label className=" text-sm text-gray-600">Discount</label>
+                <label className="  text-gray-600">Discount</label>
 
                 <div className="flex items-center justify-center ">
                   <input
@@ -403,6 +443,10 @@ function CreateProduct() {
                         discount: +e.target.value || 0,
                       }))
                     }
+                    style={{
+                      borderTopRightRadius: "0px",
+                      borderBottomRightRadius: "0px",
+                    }}
                   />
                   <Select
                     defaultValue={formData.discountType ? "true" : "false"}
@@ -413,7 +457,13 @@ function CreateProduct() {
                       }));
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger
+                      style={{
+                        height: "50px",
+                        borderTopLeftRadius: "0px",
+                        borderBottomLeftRadius: "0px",
+                      }}
+                    >
                       <SelectValue placeholder=" Select discountType" />
                     </SelectTrigger>
                     <SelectContent className="h-18">
@@ -424,11 +474,11 @@ function CreateProduct() {
                 </div>
               </div>
             </div>
-            <div className="border-b py-3 px-5">
+            <div className="border-b py-3 px-5 space-y-2">
               <div>Product Media</div>
               <div className="space-y-1">
                 <div className="grid w-full mb-2 items-center gap-1.5">
-                  <label className="text-sm text-gray-600">Product Image</label>
+                  <label className=" text-gray-600">Product Image</label>
                   <label
                     htmlFor="file"
                     className="cursor-pointer p-3 rounded-md border-2 border-dashed border shadow-[0_0_200px_-50px_rgba(0,0,0,0.72)]"
@@ -458,11 +508,11 @@ function CreateProduct() {
                 </div>
               </div>
             </div>
-            <div className="border-b py-3 px-5">
+            <div className="border-b py-3 px-5 space-y-2">
               <div className="">Inventory</div>
               <div className="flex space-x-3">
                 <div className="space-y-1 w-full">
-                  <label className=" text-sm text-gray-600">SKU ID</label>
+                  <label className="  text-gray-600">SKU ID</label>
                   <input
                     type="text"
                     name="SKU"
@@ -478,7 +528,7 @@ function CreateProduct() {
                   />
                 </div>
                 <div className="space-y-1 w-full">
-                  <label className=" text-sm text-gray-600">
+                  <label className="  text-gray-600">
                     Stock<span className="text-red-500">*</span>
                   </label>
                   <input
@@ -498,10 +548,10 @@ function CreateProduct() {
                 </div>
               </div>
             </div>
-            <div className="border-b py-3 px-5">
+            <div className="border-b py-3 px-5 space-y-2">
               <div className="">Shipping & Tax</div>
               <div className="space-y-1">
-                <label className=" text-sm text-gray-600">Units</label>
+                <label className="  text-gray-600">Units</label>
                 <input
                   type="text"
                   name="units"
@@ -517,17 +567,16 @@ function CreateProduct() {
                 />
               </div>
               <div className="flex-1">
-                <h2 className="font-semibold mb-2">HSN Code</h2>
+                <label className="  text-gray-600">HSN Code</label>
                 <div className="relative w-full">
                   <input
                     type="text"
-                    placeholder="Search ... "
-                    className="text-base text-gray-900 font-semibold border  rounded-s-md w-full mt-1 px-5  py-2"
+                    placeholder="HSN CODE "
+                    className="w-full input-tag"
                     value={selectedHSN?.code}
                     onChange={handleHsnInputChange}
                     onFocus={() => {
                       setIsHsnDropdownVisible(true);
-                      setHsnSuggestions(hsnData.slice(0, 100) || []);
                     }}
                     onBlur={() => {
                       setTimeout(() => {
@@ -541,21 +590,24 @@ function CreateProduct() {
                   />
                   {isHsnDropdownVisible && hsnSuggestions.length > 0 && (
                     <div className="absolute z-20 bg-white border border-gray-300 rounded-lg shadow-md max-h-60 overflow-y-auto w-full">
-                      {hsnSuggestions.map((item) => (
+                      {hsnSuggestions.map((item, index) => (
                         <div
-                          key={item.id}
+                          key={index}
                           onMouseDown={() => {
-                            setSelectedHSN(item);
+                            setSelectedHSN({
+                              code: item.c,
+                              description: item.n,
+                            });
                             setIsHsnDropdownVisible(false);
                           }}
                           className="flex flex-col px-4 py-2 text-gray-800 hover:bg-blue-50 cursor-pointer transition-all duration-150 ease-in-out"
                         >
-                          <span className="font-medium text-sm">
+                          <span className="font-medium ">
                             code:
-                            <span className="font-semibold">{item.code}</span>
+                            <span className="font-semibold">{item.c}</span>
                           </span>
                           <span className="text-xs text-gray-600">
-                            Descriptions: {item.description}
+                            Descriptions: {item.n}
                           </span>
                         </div>
                       ))}
@@ -565,9 +617,9 @@ function CreateProduct() {
               </div>
 
               <div className="space-y-1">
-                <label className=" text-sm text-gray-600">GST Tax</label>
+                <label className=" text-gray-600">GST Tax</label>
                 <Select
-                  defaultValue={formData.tax}
+                  value={String(formData.tax)}
                   onValueChange={(val) => {
                     setFormData((pre) => ({
                       ...pre,
@@ -576,25 +628,24 @@ function CreateProduct() {
                   }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder=" Select GST Tax" />
+                    <SelectValue placeholder="Select GST Tax" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={"0"}>0 </SelectItem>
-                    <SelectItem value={"5"}>5</SelectItem>
-                    <SelectItem value={"12"}>12 </SelectItem>
-                    <SelectItem value={"18"}>18</SelectItem>
-                    <SelectItem value={"28"}>28</SelectItem>
+                    <SelectItem value="0">0</SelectItem>
+                    <SelectItem value="5">5</SelectItem>
+                    <SelectItem value="12">12</SelectItem>
+                    <SelectItem value="18">18</SelectItem>
+                    <SelectItem value="28">28</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            <div className="border-b py-3 px-5">
+            <div className="border-b py-3 px-5 space-y-2">
               <div className="space-y-1">
-                <label className=" text-sm text-gray-600 ">Barcode</label>
+                <label className="  text-gray-600 ">Barcode</label>
                 <input
                   type="text"
                   value={formData.barcode}
-                  readOnly={formData.barcode}
                   placeholder="Barcode"
                   className="w-full input-tag"
                   onChange={(e) =>
@@ -606,7 +657,7 @@ function CreateProduct() {
                 />
               </div>
               <div className="space-y-1">
-                <label className=" text-sm text-gray-600">Warehouse</label>
+                <label className="  text-gray-600">Warehouse</label>
                 <div className="flex justify-center items-center">
                   <Select
                     value={formData.warehouse ?? ""}
@@ -617,7 +668,12 @@ function CreateProduct() {
                       }));
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger
+                      style={{
+                        borderTopRightRadius: "0px",
+                        borderBottomRightRadius: "0px",
+                      }}
+                    >
                       <SelectValue placeholder="Select a Warehouse" />
                     </SelectTrigger>
                     <SelectContent>
@@ -632,13 +688,17 @@ function CreateProduct() {
                     type="button"
                     className="w-28 btn-outline-black h-12"
                     onClick={() => setSidebarOpen("warehouse")}
+                    style={{
+                      borderTopLeftRadius: "0px",
+                      borderBottomLeftRadius: "0px",
+                    }}
                   >
                     + New
                   </button>
                 </div>
               </div>
               <div className="space-y-1">
-                <label className=" text-sm text-gray-600">Description </label>
+                <label className="  text-gray-600">Description </label>
                 <textarea
                   type="text"
                   name="description"
@@ -658,8 +718,8 @@ function CreateProduct() {
         </div>
       </div>
       <div className="w-full border-t bg-white sticky bottom-0 flex justify-end py-3 px-5">
-        <button type="submit" className=" btn-add" onClick={onCreateProduct}>
-          {id ? "Update " : "Create "} Product
+        <button className="btn-add" onClick={onCreateProduct}>
+          {productId ? "Update " : "Create "} Product
         </button>
       </div>
       {sideBarOpen && (

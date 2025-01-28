@@ -7,10 +7,11 @@ import {
   Timestamp,
   where,
 } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { db } from "../../../../firebase";
+import { db, storage } from "../../../../firebase";
 import {
   Select,
   SelectContent,
@@ -33,9 +34,7 @@ function CreateApproval({ isOpen, projectId, onClose, newApprovalAdded }) {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   }
-  let role =
-    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
-      ?.approvals;
+
   const [filter, setFilter] = useState("Customer");
   const [typeOfFile, setTypeOfFile] = useState("Image");
   const [uploadedFile, setUploadedFile] = useState("");
@@ -103,12 +102,13 @@ function CreateApproval({ isOpen, projectId, onClose, newApprovalAdded }) {
     }
   }, [companyId]);
 
-  async function onCreateApproval() {
+  async function onCreateApproval(e) {
+    e.preventDefault();
     try {
-      // const storageRef = ref(storage, `files/${uploadedFile.name}`);
-      // await uploadBytes(storageRef, uploadedFile);
-      // const fileURL = await getDownloadURL(storageRef);
-      // const fileField = typeOfFile === "Image" ? "image" : "pdfUrl";
+      const storageRef = ref(storage, `files/${uploadedFile.name}`);
+      await uploadBytes(storageRef, uploadedFile);
+      const fileURL = await getDownloadURL(storageRef);
+      const fileField = typeOfFile === "Image" ? "image" : "pdfUrl";
       const payload = {
         ...approvalForm,
 
@@ -117,7 +117,7 @@ function CreateApproval({ isOpen, projectId, onClose, newApprovalAdded }) {
         createdAt: Timestamp.fromDate(new Date()),
         typeOfFile: typeOfFile,
       };
-      // payload.file[fileField] = fileURL;
+      payload.file[fileField] = fileURL;
       const approvalsRef = collection(db, `projects/${projectId}/approvals`);
       await addDoc(approvalsRef, payload);
       newApprovalAdded();

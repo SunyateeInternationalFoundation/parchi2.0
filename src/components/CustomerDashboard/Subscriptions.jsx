@@ -18,7 +18,8 @@ import {
   SelectValue,
 } from "../UI/select";
 
-function Quotations({ quotations }) {
+function Subscriptions({ subscriptions }) {
+  console.log("🚀 ~ Subscriptions ~ subscriptions:", subscriptions);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [currentPage, setCurrentPage] = useState(0);
@@ -27,12 +28,12 @@ function Quotations({ quotations }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const filteredQuotations = quotations.filter((quotation) => {
-      const { createdBy, quotationNo, paymentStatus } = quotation;
+    const filteredSubscriptions = subscriptions.filter((subscription) => {
+      const { createdBy, subscriptionNo, status } = subscription;
       const customerName = createdBy?.name || "";
       const matchesSearch =
         customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        quotationNo
+        subscriptionNo
           ?.toString()
           .toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
@@ -41,29 +42,28 @@ function Quotations({ quotations }) {
           .toLowerCase()
           .includes(searchTerm.toLowerCase());
 
-      const matchesStatus =
-        filterStatus === "All" || paymentStatus === filterStatus;
+      const matchesStatus = filterStatus === "All" || status === filterStatus;
 
       return matchesSearch && matchesStatus;
     });
 
     setPaginationData(
-      filteredQuotations.slice(currentPage * 10, currentPage * 10 + 10)
+      filteredSubscriptions.slice(currentPage * 10, currentPage * 10 + 10)
     );
-    setTotalPages(Math.ceil(quotations.length / 10));
-  }, [currentPage, quotations?.length, searchTerm, filterStatus]);
+    setTotalPages(Math.ceil(subscriptions.length / 10));
+  }, [currentPage, subscriptions?.length, searchTerm, filterStatus]);
 
   return (
     <div className="main-container" style={{ height: "92vh" }}>
       <div className="flex items-center text-lg font-bold space-x-3">
         <AiOutlineHome
-          className="cursor-pointer"
           size={24}
+          className="cursor-pointer"
           onClick={() => {
             navigate("/customer");
           }}
         />
-        <div>Quotations</div>
+        <div>Subscriptions</div>
       </div>
       <div className="container">
         <nav className="flex mb-4 items-center px-5">
@@ -74,7 +74,7 @@ function Quotations({ quotations }) {
             >
               <input
                 type="text"
-                placeholder="Search by quotation #..."
+                placeholder="Search by subscription #..."
                 className=" w-full focus:outline-none"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -107,7 +107,7 @@ function Quotations({ quotations }) {
                   Date
                 </td>
                 <td className="px-5 py-1 text-gray-400 font-semibold text-center">
-                  Quotation No
+                  Subscription No
                 </td>
                 <td className="px-5 py-1 text-gray-400 font-semibold text-start">
                   Company
@@ -129,26 +129,26 @@ function Quotations({ quotations }) {
             </thead>
             <tbody>
               {paginationData.length > 0 ? (
-                paginationData.map((quotation) => (
+                paginationData.map((subscription) => (
                   <tr
-                    key={quotation.id}
+                    key={subscription.id}
                     className="border-b cursor-pointer text-start"
                   >
                     <td className="px-8 py-3 text-start">
-                      <FormatTimestamp timestamp={quotation.date} />
+                      <FormatTimestamp timestamp={subscription.date} />
                     </td>
                     <td className="px-5 py-3 font-bold text-center">
-                      {quotation.prefix || ""}-{quotation.quotationNo}
+                      {subscription.prefix || ""}-{subscription.serviceNo}
                     </td>
 
                     <td className="px-5 py-3 text-start">
-                      {quotation.createdBy?.name} <br />
+                      {subscription.createdBy?.name} <br />
                       <span className="text-gray-500 text-sm">
-                        Ph.No {quotation.createdBy.phoneNo}
+                        Ph.No {subscription.createdBy.phoneNo}
                       </span>
                     </td>
 
-                    <td className="px-5 py-3 font-bold  text-center">{`₹ ${quotation.total.toFixed(
+                    <td className="px-5 py-3 font-bold  text-center">{`₹ ${subscription.total.toFixed(
                       2
                     )}`}</td>
                     <td
@@ -158,29 +158,29 @@ function Quotations({ quotations }) {
                       {" "}
                       <div
                         className={`px-1 text-center py-2 rounded-lg text-xs  ${
-                          quotation.paymentStatus === "Paid"
+                          subscription.status === "Active"
                             ? "bg-green-100 "
-                            : quotation.paymentStatus === "Pending"
-                            ? "bg-yellow-100 "
                             : "bg-red-100"
                         }`}
                       >
                         <div
                           className={
-                            quotation.paymentStatus === "Paid"
+                            subscription.status === "Active"
                               ? "bg-green-100 "
-                              : quotation.paymentStatus === "Pending"
-                              ? "bg-yellow-100 "
                               : "bg-red-100 "
                           }
                         >
-                          {quotation.paymentStatus}
+                          {subscription.status}
                         </div>
                       </div>
                     </td>
-                    <td className="px-5 py-3">{quotation.mode || "Online"}</td>
+                    <td className="px-5 py-3">
+                      {subscription.mode || "Online"}
+                    </td>
 
-                    <td className="px-5 py-3">{quotation?.createdBy?.who}</td>
+                    <td className="px-5 py-3">
+                      {subscription?.createdBy?.who}
+                    </td>
                   </tr>
                 ))
               ) : (
@@ -189,7 +189,7 @@ function Quotations({ quotations }) {
                     <div className="w-full flex justify-center">
                       <img src={addItem} alt="add Item" className="w-24 h-24" />
                     </div>
-                    <div className="mb-6">No quotations found</div>
+                    <div className="mb-6">No subscriptions found</div>
                   </td>
                 </tr>
               )}
@@ -246,4 +246,4 @@ function Quotations({ quotations }) {
   );
 }
 
-export default Quotations;
+export default Subscriptions;

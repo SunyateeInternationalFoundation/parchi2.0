@@ -1,7 +1,8 @@
 import { addDoc, collection, Timestamp } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
-import { db } from "../../../firebase";
+import { db, storage } from "../../../firebase";
 
 function SetCategory({ isOpen, onClose, onAddCategory, companyId }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,11 +20,21 @@ function SetCategory({ isOpen, onClose, onAddCategory, companyId }) {
       return;
     }
     setIsLoading(true);
+    let fileUrl = "";
+    if (imageData?.name) {
+      const storageRef = ref(
+        storage,
+        `warehouses/${Date.now()}_${imageData.name}`
+      );
+      await uploadBytes(storageRef, imageData);
+      fileUrl = await getDownloadURL(storageRef);
+    }
 
     try {
       const categoryRef = collection(db, "companies", companyId, "categories");
       const newCategory = {
         ...formData,
+        image: fileUrl,
         createdAt: Timestamp.fromDate(new Date()),
       };
 
@@ -126,7 +137,9 @@ function SetCategory({ isOpen, onClose, onAddCategory, companyId }) {
                 type="text"
                 className="w-full input-tag"
                 value={formData.tag}
-                onChange={(e) => setFormData(e.target.value)}
+                onChange={(e) =>
+                  setFormData((val) => ({ ...val, tag: e.target.value }))
+                }
               />
             </div>
           </div>

@@ -1,5 +1,6 @@
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { AiOutlineHome } from "react-icons/ai";
 import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -148,7 +149,17 @@ function Projects() {
   return (
     <div className="main-container" style={{ height: "92vh" }}>
       <div className=" mt-4 py-3">
-        <h1 className="text-2xl font-bold pb-3">Projects Overview</h1>
+        <div className="text-2xl font-bold pb-3 flex items-center space-x-3">
+          {userDetails.selectedDashboard === "staff" && (
+            <AiOutlineHome
+              size={24}
+              onClick={() => {
+                navigate("/staff");
+              }}
+            />
+          )}
+          <div>Projects Overview</div>
+        </div>
         <div className="grid grid-cols-4 gap-12 ">
           <div className="rounded-lg p-5 bg-white shadow ">
             <div className="text-lg">Total Projects</div>

@@ -40,9 +40,9 @@ import SetService from "../Services/CreateService/SetService";
 import Services from "../Services/Services";
 import StaffView from "../Staff&Payout/Staff/StaffView/StaffView";
 import Navbar from "../UI/Navbar";
-import SideBar from "../UI/Sidebar";
 import VendorList from "../Vendors/VendorList";
 import VendorView from "../Vendors/VendorView/VendorView";
+import StaffDashboard from "./StaffDashboard";
 
 const StaffHome = () => {
   const dispatch = useDispatch();
@@ -107,11 +107,12 @@ const StaffHome = () => {
         <Navbar />
       </div>
       <div className="flex" style={{ height: "92vh" }}>
-        <div>
-          <SideBar />
-        </div>
         <div style={{ width: "100%", height: "92vh" }} className="bg-gray-100">
           <Routes>
+            <Route
+              path="/"
+              element={<StaffDashboard checkPermission={checkPermission} />}
+            ></Route>
             <Route path="/profile/:id" element={<StaffView />}></Route>
 
             {checkPermission("invoice", "view") && (
@@ -239,10 +240,10 @@ const StaffHome = () => {
             {checkPermission("po", "edit") && (
               <Route path="/po/:poId/edit-po" element={<SetPO />}></Route>
             )}
-            {checkPermission("services", "create") && (
+            {checkPermission("services", "view") && (
               <Route path="/subscriptions" element={<Services />}></Route>
             )}
-            {checkPermission("services", "view") && (
+            {checkPermission("services", "create") && (
               <Route
                 path="/subscriptions/create-service"
                 element={<SetService />}

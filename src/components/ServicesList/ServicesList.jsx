@@ -7,6 +7,7 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { AiOutlineHome } from "react-icons/ai";
 import {
   LuChevronLeft,
   LuChevronRight,
@@ -15,6 +16,7 @@ import {
 } from "react-icons/lu";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import addItem from "../../assets/addItem.png";
 import { db } from "../../firebase";
 import CreateServiceList from "./CreateServiceList";
@@ -28,7 +30,7 @@ const ServicesList = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
-
+  const navigate = useNavigate();
   const companyDetails =
     userDetails.companies[userDetails.selectedCompanyIndex];
 
@@ -83,6 +85,17 @@ const ServicesList = () => {
 
   return (
     <div className="main-container" style={{ height: "92vh" }}>
+      <div className="text-2xl font-bold pb-3 flex items-center space-x-3">
+        {userDetails.selectedDashboard === "staff" && (
+          <AiOutlineHome
+            size={24}
+            onClick={() => {
+              navigate("/staff");
+            }}
+          />
+        )}
+        <div>Subscriptions Plans </div>
+      </div>
       <div className="container">
         <div className="flex justify-between items-center px-5">
           <h1 className="text-2xl font-bold">Plan List</h1>

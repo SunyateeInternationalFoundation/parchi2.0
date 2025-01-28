@@ -1,5 +1,6 @@
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { AiOutlineHome } from "react-icons/ai";
 import { IoSearch } from "react-icons/io5";
 import {
   LuChevronLeft,
@@ -8,6 +9,7 @@ import {
   LuChevronsRight,
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import addItem from "../../assets/addItem.png";
 import FormatTimestamp from "../../constants/FormatTimestamp";
 import { db } from "../../firebase";
@@ -29,7 +31,7 @@ const VendorPurchase = () => {
   const [paginationData, setPaginationData] = useState([]);
   const [filterStatus, setFilterStatus] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
-
+  const navigate = useNavigate();
   useEffect(() => {
     setLoading(true);
     async function fetchPurchase() {
@@ -98,6 +100,16 @@ const VendorPurchase = () => {
   }, [currentPage, purchaseList, searchTerm, filterStatus]);
   return (
     <div className="main-container" style={{ height: "92vh" }}>
+      <div className="flex items-center text-lg font-bold space-x-3">
+        <AiOutlineHome
+          className="cursor-pointer"
+          size={24}
+          onClick={() => {
+            navigate("/vendor");
+          }}
+        />
+        <div>Purchase</div>
+      </div>
       <div className="container">
         <nav className="flex mb-4 items-center px-5">
           <div className="space-x-4 w-full flex items-center">

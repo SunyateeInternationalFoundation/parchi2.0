@@ -234,7 +234,7 @@ function SideBar() {
       </div>
       <div className="p-1">
         <div className="border-b-2 ">
-          <Link to="/" className=" cursor-pointer mb-10">
+          <Link to={"/"} className=" cursor-pointer mb-10">
             <div className="text-lg font-semibold pl-3">Home</div>
           </Link>
         </div>

@@ -196,7 +196,8 @@ const Navbar = () => {
 
       {isDashboardOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-10 z-20"
+          className="fixed inset-0 bg-black bg-opacity-10"
+          style={{ zIndex: 999 }}
           onClick={() => setIsDashboardOpen(false)}
         >
           <div
@@ -245,7 +246,8 @@ const Navbar = () => {
       )}
       {isProfileOpen && (
         <div
-          className="fixed pr-2 flex items-start justify-end inset-0 bg-black bg-opacity-10 z-20"
+          className="fixed pr-2 flex items-start justify-end inset-0 bg-black bg-opacity-10"
+          style={{ zIndex: 999 }}
           onClick={() => setIsProfileOpen(false)}
         >
           <div
@@ -355,7 +357,8 @@ const Navbar = () => {
       )}
       {isCompanyOpen && (
         <div
-          className="fixed pr-3 pl-40 inset-0 bg-black bg-opacity-10 z-20"
+          className="fixed pr-3 pl-40 inset-0 bg-black bg-opacity-10 "
+          style={{ zIndex: 999 }}
           onClick={() => setIsCompanyOpen(false)}
           onWheel={() => setIsCompanyOpen(false)}
         >

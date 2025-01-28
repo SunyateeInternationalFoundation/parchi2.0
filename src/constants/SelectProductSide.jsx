@@ -105,8 +105,9 @@ function SelectProductSide({
               }
             >
               <div>
-                <div className="font-bold">
-                  {product.name} - Quantity: {product.quantity || "0"}
+                <div>
+                  <span className="font-bold">{product.name} </span>- Quantity:{" "}
+                  {product.quantity || "0"}
                 </div>
                 {product.quantity !== 0 && (
                   <div className="border-2 rounded-lg flex justify-between w-24 text-lg mt-2 bg-gray-50">

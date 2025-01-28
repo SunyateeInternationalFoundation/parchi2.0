@@ -7,6 +7,7 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { AiOutlineHome } from "react-icons/ai";
 import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -114,6 +115,16 @@ function Projects() {
   }, [filterStatus, searchInput, projectsList]);
   return (
     <div className="main-container" style={{ height: "92vh" }}>
+      <div className="flex items-center text-lg font-bold space-x-3">
+        <AiOutlineHome
+          className="cursor-pointer"
+          size={24}
+          onClick={() => {
+            navigate("/vendor");
+          }}
+        />
+        <div>Projects</div>
+      </div>
       <div className="py-5">
         <nav className="flex mb-4 bg-white rounded-lg shadow items-center py-3 px-5  ">
           <div className="space-x-4 w-full flex items-center">

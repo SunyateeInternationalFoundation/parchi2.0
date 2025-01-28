@@ -7,6 +7,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { AiOutlineHome } from "react-icons/ai";
 import { IoSearch } from "react-icons/io5";
 import {
   LuChevronLeft,
@@ -15,7 +16,7 @@ import {
   LuChevronsRight,
 } from "react-icons/lu";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import addItem from "../../assets/addItem.png";
 import DateTimeFormate from "../../constants/DateTimeFormate";
 import { db } from "../../firebase";
@@ -36,7 +37,7 @@ function PO() {
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-
+  const navigate = useNavigate();
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
     companyId =
@@ -144,7 +145,7 @@ function PO() {
       readOnly: true,
       width: 100,
       renderer: (instance, td, row, col, prop, value, cellProperties) => {
-        const time = paginationData[cellProperties.row].time;
+        const time = paginationData[cellProperties.row]?.time;
         const combinedValue = `${value} <br/><span style="color: gray; font-size:14px">${time}</small>`;
         td.innerHTML = combinedValue;
         td.style.paddingLeft = "30px";
@@ -169,7 +170,7 @@ function PO() {
       readOnly: true,
       width: 90,
       renderer: (instance, td, row, col, prop, value, cellProperties) => {
-        const vendorPhone = paginationData[cellProperties.row].vendorPhone;
+        const vendorPhone = paginationData[cellProperties.row]?.vendorPhone;
         const combinedValue = `${value} <br/><span style="color: gray; font-size:14px">Ph.No ${vendorPhone}</span>`;
         td.innerHTML = combinedValue;
         return td;
@@ -212,7 +213,7 @@ function PO() {
         select.onchange = async (e) => {
           const newStatus = e.target.value;
           await onStatusUpdate(
-            paginationData[cellProperties.row].id,
+            paginationData[cellProperties.row]?.id,
             newStatus
           );
         };
@@ -244,7 +245,17 @@ function PO() {
     <div className="w-full">
       <div className="main-container" style={{ height: "92vh" }}>
         <div className="mt-4 py-3">
-          <h1 className="text-2xl font-bold pb-3 ">PO Overview</h1>
+          <div className="text-2xl font-bold pb-3 flex items-center space-x-3">
+            {userDetails.selectedDashboard === "staff" && (
+              <AiOutlineHome
+                size={24}
+                onClick={() => {
+                  navigate("/staff");
+                }}
+              />
+            )}
+            <div>PO Overview</div>
+          </div>
           <div className="grid grid-cols-4 gap-8">
             <div className="rounded-lg p-5  bg-white shadow  ">
               <div className="text-lg">All PO&apos;s</div>

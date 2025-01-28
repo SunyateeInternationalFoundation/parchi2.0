@@ -1,7 +1,8 @@
 import { addDoc, collection, Timestamp } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
-import { db } from "../../../firebase";
+import { db, storage } from "../../../firebase";
 
 function SetWarehouse({ isOpen, onClose, onAddWarehouse, companyId }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -34,9 +35,15 @@ function SetWarehouse({ isOpen, onClose, onAddWarehouse, companyId }) {
         setIsLoading(false);
         return;
       }
-      // const storageRef = ref(storage, `warehouses/${Date.now()}_${file.name}`);
-      // await uploadBytes(storageRef, file);
-      // const fileUrl = await getDownloadURL(storageRef);
+      let fileUrl = "";
+      if (file?.name) {
+        const storageRef = ref(
+          storage,
+          `warehouses/${Date.now()}_${file.name}`
+        );
+        await uploadBytes(storageRef, file);
+        fileUrl = await getDownloadURL(storageRef);
+      }
 
       const warehouseData = {
         name,
@@ -45,7 +52,7 @@ function SetWarehouse({ isOpen, onClose, onAddWarehouse, companyId }) {
           city: location.city,
         },
         phone,
-        // fileUrl,
+        fileUrl,
         createdAt: Timestamp.fromDate(new Date()),
         updatedAt: Timestamp.fromDate(new Date()),
       };
@@ -152,7 +159,9 @@ function SetWarehouse({ isOpen, onClose, onAddWarehouse, companyId }) {
               </div>
             </div>
             <div className="space-y-1">
-              <label className="text-sm text-gray-600">Warehouse Name</label>
+              <label className="text-sm text-gray-600">
+                Warehouse Name<span className="text-red-600">*</span>
+              </label>
               <input
                 type="text"
                 name="name"
@@ -185,7 +194,9 @@ function SetWarehouse({ isOpen, onClose, onAddWarehouse, companyId }) {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-sm text-gray-600 ">Phone</label>
+              <label className="text-sm text-gray-600 ">
+                Phone<span className="text-red-600">*</span>
+              </label>
               <div className="flex items-center mb-4">
                 <span className="px-5 py-3  border border-r-0 rounded-l-md text-gray-700">
                   +91

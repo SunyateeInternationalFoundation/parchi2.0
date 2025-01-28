@@ -7,6 +7,7 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { AiOutlineHome } from "react-icons/ai";
 import { IoSearch } from "react-icons/io5";
 import {
   LuChevronLeft,
@@ -31,7 +32,7 @@ const VendorList = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
-
+  const navigate = useNavigate();
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
     companyId =
@@ -144,7 +145,17 @@ const VendorList = () => {
   }, [currentPage, vendors, searchQuery]);
   return (
     <div className="main-container" style={{ height: "92vh" }}>
-      <h1 className="text-2xl font-bold mt-4 py-3">Vendor</h1>
+      <div className="text-2xl font-bold flex items-center space-x-3 mt-8">
+        {userDetails.selectedDashboard === "staff" && (
+          <AiOutlineHome
+            size={24}
+            onClick={() => {
+              navigate("/staff");
+            }}
+          />
+        )}
+        <div>Vendor</div>
+      </div>
       <div className="container">
         <nav className="flex pb-3 px-5">
           <div className="space-x-4 w-full">
