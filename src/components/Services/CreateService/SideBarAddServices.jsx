@@ -8,6 +8,7 @@ function SideBarAddServices({
   isOpen,
   servicesList,
   onSubmitService,
+  setMembershipPeriod,
 }) {
   const [Services, setServices] = useState(servicesList);
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,6 +24,13 @@ function SideBarAddServices({
     const updatedData = servicesList.map((ele) => {
       if (ele.id === id) {
         ele.isSelected = !ele.isSelected;
+        if (ele.isSelected) {
+          setMembershipPeriod(ele.monthDuration);
+        } else {
+          setMembershipPeriod("");
+        }
+      } else {
+        ele.isSelected = false;
       }
       return ele;
     });

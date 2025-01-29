@@ -25,9 +25,7 @@ const CustomerDashboard = ({ amount, icons }) => {
                     ) : ( */}
                     <img
                       src={man}
-                      width="89px"
-                      height="89px"
-                      className="rounded-full"
+                      className="rounded-full object-cover w-[89px] h-[89px]"
                     />
                     {/* )} */}
                   </div>
@@ -46,7 +44,7 @@ const CustomerDashboard = ({ amount, icons }) => {
                     <div>
                       <div className="text-[16px]">Paid Amount</div>
                       <div className="text-[24px] font-bold">
-                        Rs {amount.paid}
+                        Rs {amount.paid.toFixed(1)}
                       </div>
                     </div>
                   </div>
@@ -55,7 +53,7 @@ const CustomerDashboard = ({ amount, icons }) => {
                       <div>
                         <div className="text-[16px]">UnPaid Amount</div>
                         <div className="text-[24px] font-bold">
-                          Rs {amount.unPaid}
+                          Rs {amount.unPaid.toFixed(1)}
                         </div>
                       </div>
                     </div>
@@ -63,7 +61,7 @@ const CustomerDashboard = ({ amount, icons }) => {
                   <div className="w-full">
                     <div className="text-[16px]">Pending Amount</div>
                     <div className="text-[24px] font-bold">
-                      Rs {amount.pending}
+                      Rs {amount.pending.toFixed(1)}
                     </div>
                   </div>
                 </div>
@@ -78,9 +76,7 @@ const CustomerDashboard = ({ amount, icons }) => {
                 >
                   <img
                     src={item.img}
-                    width="70px"
-                    height="70px"
-                    className="bg-[#F0F4F8] p-3 rounded-2xl"
+                    className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-cover w-[70px] h-[70px]"
                   />
                   <div className="ps-5">
                     <div className="text-lg font-semibold">{item.name}</div>

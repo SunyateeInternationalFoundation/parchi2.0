@@ -121,7 +121,7 @@ function Staff() {
         {loading ? (
           <div className="text-center py-6">Loading Staff...</div>
         ) : (
-          <div style={{ height: "82vh" }}>
+          <div style={{ minHeight: "82vh" }}>
             <table className="w-full border-collapse text-start">
               <thead className="bg-white">
                 <tr className="border-b">

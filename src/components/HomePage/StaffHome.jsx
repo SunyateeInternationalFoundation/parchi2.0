@@ -246,13 +246,13 @@ const StaffHome = () => {
             )}
             {checkPermission("subscription", "create") && (
               <Route
-                path="/subscriptions/create-service"
+                path="/subscriptions/create-subscription"
                 element={<SetService />}
               ></Route>
             )}
             {checkPermission("subscription", "edit") && (
               <Route
-                path="/subscriptions/:id/edit-service"
+                path="/subscriptions/:id/edit-subscription"
                 element={<SetService />}
               ></Route>
             )}

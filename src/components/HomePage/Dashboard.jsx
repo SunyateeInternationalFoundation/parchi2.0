@@ -180,7 +180,7 @@ const Dashboard = () => {
     },
     {
       name: "Service",
-      link: "/subscriptions/create-service",
+      link: "/subscriptions/create-subscription",
     },
     {
       name: "Credit Note",
@@ -360,16 +360,12 @@ const Dashboard = () => {
                     {companyDetails.companyLogo ? (
                       <img
                         src={companyDetails.companyLogo}
-                        width="68px"
-                        height="68px"
-                        className="rounded-full"
+                        className="rounded-full object-cover w-[89px] h-[89px]"
                       />
                     ) : (
                       <img
                         src={man}
-                        width="89px"
-                        height="89px"
-                        className="rounded-full"
+                        className="rounded-full object-cover w-[89px] h-[89px]"
                       />
                     )}
                   </div>
@@ -395,7 +391,7 @@ const Dashboard = () => {
                     <div>
                       <div className="text-[16px]">Expense</div>
                       <div className="text-[24px] font-bold">
-                        Rs {expenseAmount.expense}
+                        Rs {expenseAmount.expense.toFixed(1)}
                       </div>
                     </div>
                     <div>
@@ -407,7 +403,7 @@ const Dashboard = () => {
                       <div>
                         <div className="text-[16px]">Income</div>
                         <div className="text-[24px] font-bold">
-                          Rs {expenseAmount.income}
+                          Rs {expenseAmount.income.toFixed(1)}
                         </div>
                       </div>
                       <div>
@@ -418,7 +414,7 @@ const Dashboard = () => {
                   <div className="w-full">
                     <div className="text-[16px]">Balance</div>
                     <div className="text-[24px] font-bold">
-                      Rs {expenseAmount.balance}
+                      Rs {expenseAmount.balance.toFixed(1)}
                     </div>
                   </div>
                 </div>
@@ -487,9 +483,7 @@ const Dashboard = () => {
                   <div className="flex items-center justify-center">
                     <img
                       src={item.img}
-                      width="60px"
-                      height="60px"
-                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow"
+                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-cover w-[60px] h-[60px]"
                     />
                   </div>
                   <div className="text-center font-inria-sans text-[16px] py-2">
@@ -510,9 +504,7 @@ const Dashboard = () => {
                   <div className="flex items-center justify-center">
                     <img
                       src={item.img}
-                      width="60px"
-                      height="60px"
-                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow"
+                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-cover w-[60px] h-[60px]"
                     />
                   </div>
                   <div className="text-center">{item.name}</div>
@@ -549,7 +541,10 @@ const Dashboard = () => {
                 onClick={() => navigate(item.link)}
               >
                 <div className="bg-[#F0F4F8] rounded-t-2xl text-white flex justify-center items-center h-[99px]">
-                  <img src={item.img} width="56px" height="56px" />
+                  <img
+                    src={item.img}
+                    className="object-cover w-[56px] h-[56px]"
+                  />
                 </div>
                 <div className="rounded-b-2xl text-center px-4 py-2 text-[14px]">
                   {item.name}

@@ -1,11 +1,9 @@
 import {
   collection,
   doc,
-  getDoc,
   getDocs,
   orderBy,
   query,
-  Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -40,6 +38,7 @@ function Services() {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
+
   const navigate = useNavigate();
 
   let companyId;
@@ -53,7 +52,7 @@ function Services() {
   }
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
-      ?.services;
+      ?.subscription;
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -106,13 +105,6 @@ function Services() {
 
   const totalAmount = services.reduce((sum, invoice) => sum + invoice.total, 0);
 
-  const paidAmount = services
-    .filter((service) => service.status === "Paid")
-    .reduce((sum, service) => sum + service.total, 0);
-  const pendingAmount = services
-    .filter((service) => service.status === "Pending")
-    .reduce((sum, invoice) => sum + invoice.total, 0);
-
   useEffect(() => {
     const filteredServices = services.filter((service) => {
       const { customerName, customerPhone, status, serviceNo } = service;
@@ -135,7 +127,8 @@ function Services() {
       filteredServices.slice(currentPage * 10, currentPage * 10 + 10)
     );
   }, [currentPage, services, searchTerm, filterStatus]);
-  const columns = [
+
+  let columns = [
     {
       title: "Date",
       data: "date",
@@ -165,7 +158,7 @@ function Services() {
       data: "customerName",
       editor: false,
       readOnly: true,
-      width: 90,
+      width: 100,
       renderer: (instance, td, row, col, prop, value, cellProperties) => {
         const customerPhone = paginationData[cellProperties.row]?.customerPhone;
         const combinedValue = `${value} <br/><span style="color: gray; font-size:14px">Ph.No ${customerPhone}</span>`;
@@ -184,7 +177,7 @@ function Services() {
       className: "htLeft font-bold",
       editor: false,
       readOnly: true,
-      width: 90,
+      width: 80,
     },
     {
       title: "Status",
@@ -195,7 +188,7 @@ function Services() {
       className: "updateStatus",
       renderer: (instance, td, row, col, prop, value, cellProperties) => {
         const select = document.createElement("select");
-        const options = ["Active", "InActive", "UnPaid"];
+        const options = ["Active", "InActive"];
         options.forEach((option) => {
           const opt = document.createElement("option");
           opt.value = option;
@@ -216,6 +209,7 @@ function Services() {
         td.innerHTML = "";
         td.appendChild(select);
         td.style.color = "black";
+        td.style.paddingLeft = "8px";
         td.className = "updateStatus";
         return td;
       },
@@ -226,7 +220,7 @@ function Services() {
       data: "mode",
       editor: false,
       readOnly: true,
-      width: 90,
+      width: 80,
     },
     {
       title: "Created By",
@@ -258,12 +252,20 @@ function Services() {
       width: 100,
       renderer: (instance, td, row, col, prop, value, cellProperties) => {
         const time = paginationData[cellProperties.row]?.expireDate?.time;
-        const combinedValue = `${value.date} <br/><span style="color: gray; font-size:14px">${time}</small>`;
+        const currentDate = new Date();
+        const expireDate = new Date(value.date);
+        const timeDiff = expireDate.getTime() - currentDate.getTime();
+        const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        const color = daysDiff <= 7 ? "orange" : "gray";
+        const combinedValue = `<div style="color: ${color};">${value.date} <br/><span  font-size:14px">${time}</small></div>`;
         td.innerHTML = combinedValue;
+
         return td;
       },
     },
-    {
+  ];
+  if (userDetails.selectedDashboard === "" || role?.create) {
+    columns.push({
       title: "Renewal",
       type: "text",
       editor: false,
@@ -274,62 +276,20 @@ function Services() {
         const button = document.createElement("button");
         td.innerHTML = "";
         td.className = "updateStatus";
-        button.innerText = "Renew";
+        td.style.paddingLeft = "8px";
+        button.innerText = "Renewal";
         button.className =
           "px-3 py-1 rounded-md bg-blue-500 text-white cursor-pointer";
-        button.onclick = async () => {
-          try {
-            const serviceDoc = doc(
-              db,
-              "companies",
-              companyId,
-              "services",
-              value
-            );
-            const getData = (await getDoc(serviceDoc)).data();
-            console.log("🚀 ~ button.onclick= ~ getData:", getData);
-            if (getData.typeOfEndMembership == "free") {
-              return;
-            }
-            //   const membershipStartDate= Timestamp.fromDate(new Date())
-            //   const milliseconds =
-            //   membershipStartDate.seconds * 1000 +
-            //   membershipStartDate.nanoseconds / 1000000;
-            // const inputDate = new Date(milliseconds);
-            // let endDate = new Date();
-            // if (membershipPeriod === "free") {
-            //   endDate = new Date(inputDate.setDate(inputDate.getDate() + 15));
-            // } else if (membershipPeriod !== "custom") {
-            //   endDate = new Date(
-            //     inputDate.setMonth(inputDate.getMonth() + +membershipPeriod)
-            //   );
-            // }
-            // setMembershipEndDate(Timestamp.fromDate(endDate));
-            const payload = {
-              ...getData,
-              createdBy: {
-                ...getData.createdBy,
-                who:
-                  userDetails.selectedDashboard === "staff" ? "staff" : "owner",
-              },
-              date: Timestamp.fromDate(new Date()),
-              dueDate: Timestamp.fromDate(new Date()),
-              membershipStartDate: Timestamp.fromDate(new Date()),
-              // membershipEndDate:
-            };
-
-            alert("Successfully Renewal");
-          } catch (error) {
-            console.log("🚀 ~ button.onclick=async ~ error:", error);
-          }
+        button.onclick = () => {
+          navigate(value + "/renewal-subscription");
         };
         td.appendChild(button);
         return td;
       },
-    },
-  ];
+    });
+  }
   return (
-    <div className="main-container" style={{ height: "92vh" }}>
+    <div className="main-container " style={{ height: "92vh" }}>
       <div className="mt-4 py-3">
         <div className="text-2xl font-bold pb-3 flex items-center space-x-3">
           {userDetails.selectedDashboard === "staff" && (
@@ -349,14 +309,14 @@ function Services() {
               ₹ {totalAmount}
             </div>
           </div>
-          <div className="rounded-lg p-5 bg-white shadow ">
+          {/* <div className="rounded-lg p-5 bg-white shadow ">
             <div className="text-lg"> Paid Amount</div>
             <div className="text-3xl text-emerald-600 font-bold p-2">
               {" "}
               ₹ {paidAmount}
             </div>
-          </div>
-          <div className="rounded-lg p-5 bg-white shadow ">
+          </div> */}
+          {/* <div className="rounded-lg p-5 bg-white shadow ">
             <div className="text-lg"> Pending Amount</div>
             <div className="text-3xl text-orange-600 font-bold p-2">
               ₹ {pendingAmount}
@@ -367,10 +327,9 @@ function Services() {
             <div className="text-3xl text-red-600 font-bold p-2">
               ₹ {totalAmount - paidAmount}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
-
       <div className="container">
         <nav className="flex items-center mb-4 px-5">
           <div className="space-x-4 w-full flex items-center">
@@ -408,7 +367,7 @@ function Services() {
             {(userDetails.selectedDashboard === "" || role?.create) && (
               <Link
                 className="bg-[#442799] text-white text-center px-5 py-3 font-semibold rounded-md"
-                to="create-service"
+                to="create-subscription"
               >
                 + Create Service
               </Link>
@@ -438,7 +397,7 @@ function Services() {
                     {(userDetails.selectedDashboard === "" || role?.create) && (
                       <Link
                         className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-                        to="create-service"
+                        to="create-subscription"
                       >
                         + Create service
                       </Link>

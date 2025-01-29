@@ -145,7 +145,7 @@ const VendorDashboard = () => {
                     <div>
                       <div className="text-[16px]">Received Amount</div>
                       <div className="text-[24px] font-bold">
-                        Rs {amount.received}
+                        Rs {amount.received.toFixed(1)}
                       </div>
                     </div>
                   </div>
@@ -154,7 +154,7 @@ const VendorDashboard = () => {
                       <div>
                         <div className="text-[16px]">Pending Amount</div>
                         <div className="text-[24px] font-bold">
-                          Rs {amount.pending}
+                          Rs {amount.pending.toFixed(1)}
                         </div>
                       </div>
                     </div>
@@ -162,7 +162,7 @@ const VendorDashboard = () => {
                   <div className="w-full">
                     <div className="text-[16px]">Total Amount</div>
                     <div className="text-[24px] font-bold">
-                      Rs {amount.received + amount.pending}
+                      Rs {(amount.received + amount.pending).toFixed(1)}
                     </div>
                   </div>
                 </div>
@@ -177,9 +177,7 @@ const VendorDashboard = () => {
                 >
                   <img
                     src={item.img}
-                    width="70px"
-                    height="70px"
-                    className="bg-[#F0F4F8] p-3 rounded-2xl"
+                    className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-cover w-[70px] h-[70px]"
                   />
                   <div className="ps-5">
                     <div className="text-lg font-semibold">{item.name}</div>

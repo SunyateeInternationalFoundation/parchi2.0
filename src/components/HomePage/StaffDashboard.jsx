@@ -146,7 +146,7 @@ const StaffDashboard = ({ checkPermission }) => {
     {
       name: "Service",
       role: "services",
-      link: "subscriptions/create-service",
+      link: "subscriptions/create-subscription",
     },
     {
       name: "Credit Note",
@@ -368,9 +368,7 @@ const StaffDashboard = ({ checkPermission }) => {
                   <div className="border rounded-full w-[89px] h-[89px] shadow flex items-center justify-center">
                     <img
                       src={man}
-                      width="89px"
-                      height="89px"
-                      className="rounded-full"
+                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-cover w-[89px] h-[89px]"
                     />
                   </div>
                   <div className="space-y-2">
@@ -480,9 +478,7 @@ const StaffDashboard = ({ checkPermission }) => {
                   <div className="flex items-center justify-center">
                     <img
                       src={item.img}
-                      width="60px"
-                      height="60px"
-                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow"
+                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-cover w-[60px] h-[60px]"
                     />
                   </div>
                   <div className="text-center font-inria-sans text-[16px] py-2">
@@ -503,9 +499,7 @@ const StaffDashboard = ({ checkPermission }) => {
                   <div className="flex items-center justify-center">
                     <img
                       src={item.img}
-                      width="60px"
-                      height="60px"
-                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow"
+                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-cover w-[60px] h-[60px]"
                     />
                   </div>
                   <div className="text-center">{item.name}</div>

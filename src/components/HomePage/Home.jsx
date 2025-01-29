@@ -54,6 +54,7 @@ import PurchaseViewHome from "../Purchase/PurchaseView/PurchaseViewHome";
 import SetPurchase from "../Purchase/SetPurchase/SetPurchase";
 import SetQuotation from "../Quotation/SetQuotation/SetQuotation";
 import Reminder from "../Reminder/Reminder";
+import RenewalService from "../Services/CreateService/RenewalService";
 import SetService from "../Services/CreateService/SetService";
 import ServiceView from "../Services/ServicesView/ServiceView";
 import CompanyProfile from "../Settings/CompanyProfile";
@@ -77,7 +78,7 @@ const Home = () => {
     "/vendors/:id",
     "/staff-payout/staff/:id",
     "/create-po",
-    "/subscriptions/create-service",
+    "/subscriptions/create-subscription",
   ];
   const match = [
     "/settings",
@@ -234,12 +235,16 @@ const Home = () => {
 
             <Route path="/subscriptions" element={<Services />}></Route>
             <Route
-              path="/subscriptions/create-service"
+              path="/subscriptions/create-subscription"
               element={<SetService />}
             ></Route>
             <Route
-              path="/subscriptions/:id/edit-service"
+              path="/subscriptions/:id/edit-subscription"
               element={<SetService />}
+            ></Route>
+            <Route
+              path="/subscriptions/:id/renewal-subscription"
+              element={<RenewalService />}
             ></Route>
             <Route path="/po" element={<PO />}></Route>
 

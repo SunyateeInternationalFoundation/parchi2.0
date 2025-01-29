@@ -1,13 +1,11 @@
 import {
   addDoc,
-  arrayUnion,
   collection,
   doc,
   getDoc,
   getDocs,
   query,
   Timestamp,
-  updateDoc,
   where,
 } from "firebase/firestore";
 import { CalendarIcon } from "lucide-react";
@@ -15,10 +13,8 @@ import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import addItem from "../../../assets/addItem.png";
 import { db } from "../../../firebase";
 import { cn, formatDate } from "../../../lib/utils";
-import CreateCustomer from "../../Customers/CreateCustomer";
 import { Calendar } from "../../UI/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../../UI/popover";
 import {
@@ -28,9 +24,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../UI/select";
-import SideBarAddServices from "./SideBarAddServices";
 
-function SetService() {
+function RenewalService() {
   const { id } = useParams();
 
   const userDetails = useSelector((state) => state.users);
@@ -43,9 +38,7 @@ function SetService() {
     companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   }
   const phoneNo = userDetails.phone;
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [prefix, setPrefix] = useState("");
-  const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const [membershipPeriod, setMembershipPeriod] = useState("");
   const [membershipEndDate, setMembershipEndDate] = useState("");
   const [membershipStartDate, setMembershipStartDate] = useState(
@@ -85,13 +78,9 @@ function SetService() {
   const [servicesList, setServicesList] = useState([]);
   const [selectedServicesList, setSelectedServicesList] = useState([]);
 
-  const [customersData, setCustomersData] = useState([]);
   const [selectedCustomerData, setSelectedCustomerData] = useState({
     name: "",
   });
-
-  const [suggestions, setSuggestions] = useState([]);
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
   useEffect(() => {
     function addSelectedService() {
@@ -120,9 +109,7 @@ function SetService() {
       calculationService(service);
     }
     addSelectedService();
-    if (id) {
-      fetchServicesNumbers();
-    }
+    fetchServicesNumbers();
   }, [formData.servicesList]);
 
   const fetchServicesNumbers = async () => {
@@ -132,15 +119,11 @@ function SetService() {
       );
 
       const noList = querySnapshot.docs.map((doc) => doc.data().serviceNo);
-      if (id) {
-        setPreServicesList(noList.filter((ele) => ele !== formData.serviceNo));
-      } else {
-        setPreServicesList(noList);
-        setFormData((val) => ({
-          ...val,
-          serviceNo: String(noList.length + 1).padStart(4, 0),
-        }));
-      }
+      setPreServicesList(noList);
+      setFormData((val) => ({
+        ...val,
+        serviceNo: String(noList.length + 1).padStart(4, 0),
+      }));
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -175,6 +158,7 @@ function SetService() {
           id
         );
         const getData = (await getDoc(docRef)).data();
+        console.log("🚀 ~ fetchServiceData ~ getData:", getData);
 
         const customerData = (
           await getDoc(getData.customerDetails.customerRef)
@@ -183,10 +167,12 @@ function SetService() {
           customerId: getData.customerDetails.customerRef.id,
           ...customerData,
         });
-        setMembershipStartDate(getData.membershipStartDate);
-        setMembershipEndDate(getData.membershipEndDate);
         setMembershipPeriod(getData.typeOfEndMembership);
-        setFormData(getData);
+        setFormData({
+          ...getData,
+          date: Timestamp.fromDate(new Date()),
+          membershipStartDate: Timestamp.fromDate(new Date()),
+        });
       } catch (error) {
         console.log("🚀 ~ fetchInvoiceData ~ error:", error);
       }
@@ -206,18 +192,6 @@ function SetService() {
             isAddDescription: false,
           };
 
-          // let discount = +data.discount || 0;
-
-          // if (data.discountType) {
-          //   discount = (+data.sellingPrice / 100) * data.discount;
-          // }
-          // const netAmount = +data.sellingPrice - discount;
-          // const taxRate = data.tax || 0;
-          // const sgst = taxRate / 2;
-          // const cgst = taxRate / 2;
-          // const taxAmount = netAmount * (taxRate / 100);
-          // const sgstAmount = netAmount * (sgst / 100);
-          // const cgstAmount = netAmount * (cgst / 100);
           return ModifiedServiceData(temp);
         });
         setServicesList(serviceData);
@@ -225,58 +199,18 @@ function SetService() {
         console.error("Error fetching services:", error);
       }
     };
-    async function customerDetails() {
-      try {
-        const customersRef = collection(db, "customers");
-        const companyRef = doc(db, "companies", companyDetails.companyId);
-        const q = query(customersRef, where("companyRef", "==", companyRef));
-        const company = await getDocs(q);
-        const customerData = company.docs.map((doc) => ({
-          customerId: doc.id,
-          ...doc.data(),
-        }));
-        setCustomersData(customerData);
-        setSuggestions(customerData);
-      } catch (error) {
-        console.log("🚀 ~ customerDetails ~ error:", error);
-      }
-    }
-    if (!id) {
-      fetchServicesNumbers();
-    }
+
     fetchPrefix();
     fetchServiceData();
-    customerDetails();
     fetchServices();
   }, [companyDetails, userDetails.selectedDashboard]);
 
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    setSelectedCustomerData({ name: e.target.value });
-    if (value) {
-      const filteredSuggestions = customersData.filter((item) =>
-        item.name.toLowerCase().includes(value.toLowerCase())
-      );
-      setSuggestions(filteredSuggestions);
-      setIsDropdownVisible(true);
-    } else {
-      setSuggestions(customersData);
-    }
-  };
-
   const handleSelectCustomer = (item) => {
     setSelectedCustomerData(item);
-    setIsDropdownVisible(false);
   };
 
   async function onSetService() {
     try {
-      if (selectedServicesList.length == 0) {
-        return;
-      }
-      if (!selectedCustomerData?.customerId) {
-        return alert("select Customer");
-      }
       const customerRef = doc(db, "customers", selectedCustomerData.customerId);
       const companyRef = doc(db, "companies", companyDetails.companyId);
 
@@ -317,30 +251,19 @@ function SetService() {
           zipCode: selectedCustomerData.zipCode ?? "",
           phone: selectedCustomerData.phone ?? "",
           name: selectedCustomerData.name,
-          //   who: formData.createdBy.who,
         },
         servicesList: serviceListPayload,
         membershipStartDate: membershipStartDate,
         membershipEndDate,
         typeOfEndMembership: membershipPeriod,
       };
-      if (id) {
-        await updateDoc(
-          doc(db, "companies", companyDetails.companyId, "services", id),
-          payload
-        );
-      } else {
-        await addDoc(
-          collection(db, "companies", companyDetails.companyId, "services"),
-          payload
-        );
-      }
-      if (formData.membershipId) {
-        await updateDoc(customerRef, {
-          memberships: arrayUnion(formData.membershipId),
-        });
-      }
-      alert(`successfully ${id ? "Updated" : "Created"}  Service`);
+
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "services"),
+        payload
+      );
+
+      alert(`successfully Created Service`);
       navigate(
         userDetails.selectedDashboard === "staff"
           ? "/staff/subscriptions"
@@ -349,25 +272,6 @@ function SetService() {
     } catch (err) {
       console.error(err);
     }
-  }
-
-  function DateFormate(timestamp) {
-    if (!timestamp.seconds || !timestamp.nanoseconds) {
-      return;
-    }
-    const milliseconds =
-      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
-    const date = new Date(milliseconds);
-    const getDate = String(date.getDate()).padStart(2, "0");
-    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
-    const getFullYear = date.getFullYear();
-
-    return `${getFullYear}-${getMonth}-${getDate}`;
-  }
-
-  function onSelectService(data) {
-    setSelectedServicesList(data);
-    calculationService(data);
   }
 
   useEffect(() => {
@@ -517,59 +421,19 @@ function SetService() {
           <Link className="flex items-center" to={"./../"}>
             <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500  text-gray-500" />
           </Link>
-          <h1 className="text-2xl font-bold">
-            {id ? "Edit" : "Create"} Subscription
-          </h1>
+          <h1 className="text-2xl font-bold">Renewal Subscription</h1>
         </header>
         <div className="bg-white p-6 rounded-lg shadow-lg ">
           <div className="flex gap-8 mb-6">
             <div className="flex-1">
               <h2 className="font-semibold mb-2">Customer Details</h2>
               <div className="border p-3 rounded-lg">
-                <label className="text-sm text-gray-600">
-                  Select Customer <span className="text-red-500">*</span>
-                </label>
+                <label className="text-sm text-gray-600">Customer Name</label>
                 <div className=" flex">
                   <div className="relative w-full">
-                    <input
-                      type="text"
-                      placeholder="Search your Customers, Company Name, GSTIN..."
-                      className="text-base text-gray-900 font-semibold border  rounded-s-md w-full mt-1 px-5  py-2"
-                      value={selectedCustomerData?.name ?? ""}
-                      onChange={handleInputChange}
-                      onFocus={() => {
-                        setIsDropdownVisible(true);
-                        setSuggestions(customersData || []);
-                      }}
-                      onBlur={() => {
-                        if (!selectedCustomerData?.name) {
-                          setSelectedCustomerData({ name: "" });
-                        }
-                        setIsDropdownVisible(false);
-                      }}
-                      required
-                    />
-                    {isDropdownVisible && suggestions.length > 0 && (
-                      <div className="absolute z-10  bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto w-full">
-                        {suggestions.map((item) => (
-                          <div
-                            key={item.customerId}
-                            onMouseDown={() => handleSelectCustomer(item)}
-                            className="text-sm text-gray-700 px-4 py-2 cursor-pointer hover:bg-blue-100"
-                          >
-                            Name :{item.name} Phone No. :{item.phone}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <div className="w-1/4">
-                    <button
-                      className="text-base text-gray-500 font-semibold border  rounded-e-md w-full mt-1 px-5  py-2"
-                      onClick={() => setIsModalOpen(true)}
-                    >
-                      + New
-                    </button>
+                    <div className="text-base text-gray-900 font-semibold border  rounded-md w-full mt-1 px-5  py-2 bg-gray-100 cursor-not-allowed">
+                      {selectedCustomerData?.name ?? ""}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -579,7 +443,7 @@ function SetService() {
               <div className="grid grid-cols-3 gap-4 bg-blue-50 p-3 rounded-lg">
                 <div>
                   <label className="text-sm text-gray-600">
-                    Subscription Date <span className="text-red-500">*</span>
+                    Subscription Date
                   </label>
                   <div>
                     <Popover>
@@ -627,15 +491,13 @@ function SetService() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-600">
-                    Due Date <span className="text-red-500">*</span>
-                  </label>
+                  <label className="text-sm text-gray-600">Due Date</label>
                   <div>
                     <Popover>
                       <PopoverTrigger asChild>
                         <button
                           className={cn(
-                            "w-full flex justify-between items-center input-tag ",
+                            "w-full flex justify-between items-center input-tag bg-gray-100 cursor-not-allowed",
                             !formData.dueDate?.seconds &&
                               "text-muted-foreground"
                           )}
@@ -656,25 +518,6 @@ function SetService() {
                           <CalendarIcon className="h-4 w-4 " />
                         </button>
                       </PopoverTrigger>
-                      <PopoverContent className="">
-                        <Calendar
-                          mode="single"
-                          selected={
-                            new Date(
-                              formData.dueDate?.seconds * 1000 +
-                                formData.dueDate?.nanoseconds / 1000000
-                            )
-                          }
-                          onSelect={(val) => {
-                            setFormData((prevFormData) => ({
-                              ...prevFormData,
-                              dueDate: Timestamp.fromDate(new Date(val)),
-                            }));
-                          }}
-                          initialFocus
-                          required
-                        />
-                      </PopoverContent>
                     </Popover>
                   </div>
                 </div>
@@ -715,15 +558,6 @@ function SetService() {
             </div>
           </div>
           <div className="bg-violet-50 p-4 rounded-lg mb-6">
-            <div className="flex justify-between items-center mb-2">
-              <h2 className="font-semibold">Subscriptions</h2>
-              <button
-                className="bg-[#442799] text-white text-center w-48  px-5 py-4 font-semibold rounded-md"
-                onClick={() => setIsSideBarOpen(true)}
-              >
-                + Add Subscriptions
-              </button>
-            </div>
             <div className="bg-white border-2 rounded-md overflow-hidden">
               <div className="mb-4 rounded-md">
                 <table className="min-w-full text-center text-gray-500 font-semibold">
@@ -748,107 +582,86 @@ function SetService() {
                   </thead>
 
                   <tbody>
-                    {selectedServicesList.length ? (
-                      selectedServicesList.map((service) => (
-                        <tr key={service.id}>
-                          <td className="px-4 py-2 text-start space-y-2">
-                            <div>{service.serviceName}</div>
-                            <div className="text-xs text-gray-400">
-                              {!service.isAddDescription ? (
-                                <button
-                                  className="border-2 rounded-md px-2 py-1"
-                                  onClick={() => {
+                    {selectedServicesList.map((service) => (
+                      <tr key={service.id}>
+                        <td className="px-4 py-2 text-start space-y-2">
+                          <div>{service.serviceName}</div>
+                          <div className="text-xs text-gray-400">
+                            {!service.isAddDescription ? (
+                              <button
+                                className="border-2 rounded-md px-2 py-1"
+                                onClick={() => {
+                                  const updatedServices =
+                                    selectedServicesList.map((ele) => {
+                                      if (ele.id == service.id) {
+                                        ele.isAddDescription = true;
+                                      }
+                                      return ele;
+                                    });
+                                  setSelectedServicesList(updatedServices);
+                                }}
+                              >
+                                + Add Description
+                              </button>
+                            ) : (
+                              <div>
+                                <input
+                                  type="text"
+                                  defaultValue={service.description}
+                                  className="border rounded-md px-2 py-1"
+                                  onBlur={(e) => {
                                     const updatedServices =
                                       selectedServicesList.map((ele) => {
                                         if (ele.id == service.id) {
-                                          ele.isAddDescription = true;
+                                          ele.description = e.target.value;
                                         }
                                         return ele;
                                       });
                                     setSelectedServicesList(updatedServices);
                                   }}
-                                >
-                                  + Add Description
-                                </button>
-                              ) : (
-                                <div>
-                                  <input
-                                    type="text"
-                                    value={service.description || ""}
-                                    className="border rounded-md px-2 py-1"
-                                    onBlur={(e) => {
-                                      const updatedServices =
-                                        selectedServicesList.map((ele) => {
-                                          if (ele.id == service.id) {
-                                            ele.description = e.target.value;
-                                          }
-                                          return ele;
-                                        });
-                                      setSelectedServicesList(updatedServices);
-                                    }}
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-4 py-2">₹{service.sellingPrice}</td>
-                          <td className="w-32">
-                            <div className="flex items-center">
-                              <input
-                                type="number"
-                                value={service.discount.toFixed(2) || 0}
-                                className="border w-full rounded-s-md p-2"
-                                onChange={(e) =>
-                                  onChangeDiscount(
-                                    +e.target.value,
-                                    "discount",
-                                    service.id
-                                  )
-                                }
-                              />
-                              <select
-                                className="border w-fit rounded-e-md p-2"
-                                name="discountType"
-                                value={service.discountType}
-                                onChange={(e) =>
-                                  onChangeDiscount(
-                                    e.target.value === "true" ? true : false,
-                                    "discountType",
-                                    service.id
-                                  )
-                                }
-                              >
-                                <option value="true">%</option>
-                                <option value="false">₹</option>
-                              </select>
-                            </div>
-                          </td>
-                          <td className="px-2 py-2">
-                            {service.sellingPriceTaxType ? "Yes" : "No"}
-                          </td>
-                          <td className="px-4 py-2">₹{service.totalAmount} </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="5" className="py-10 text-center">
-                          <div className="w-full flex justify-center">
-                            <img
-                              src={addItem}
-                              alt="add Item"
-                              className="w-24 h-24"
-                            />
+                                />
+                              </div>
+                            )}
                           </div>
-                          <div>No Subscription Selected </div>
-                          <button
-                            className=" bg-[#442799] text-white text-center w-48  px-3 py-2 pt-1 font-semibold rounded-md"
-                            onClick={() => setIsSideBarOpen(true)}
-                          >
-                            <div>Choose Subscription</div>
-                          </button>
                         </td>
+                        <td className="px-4 py-2">₹{service.sellingPrice}</td>
+                        <td className="w-32">
+                          <div className="flex items-center">
+                            <input
+                              type="number"
+                              defaultValue={service.discount.toFixed(2)}
+                              className="border w-full rounded-s-md p-2"
+                              onChange={(e) =>
+                                onChangeDiscount(
+                                  +e.target.value,
+                                  "discount",
+                                  service.id
+                                )
+                              }
+                            />
+                            <select
+                              className="border w-fit rounded-e-md p-2"
+                              name="discountType"
+                              value={service.discountType}
+                              onChange={(e) =>
+                                onChangeDiscount(
+                                  e.target.value === "true" ? true : false,
+                                  "discountType",
+                                  service.id
+                                )
+                              }
+                            >
+                              <option value="true">%</option>
+                              <option value="false">₹</option>
+                            </select>
+                          </div>
+                        </td>
+                        <td className="px-2 py-2">
+                          {service.sellingPriceTaxType ? "Yes" : "No"}
+                        </td>
+                        <td className="px-4 py-2">₹{service.totalAmount} </td>
                       </tr>
-                    )}
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -859,23 +672,12 @@ function SetService() {
               <div className="w-full grid grid-cols-3 gap-4">
                 <div className="w-full ">
                   <div>MemberShip</div>
-                  <input
-                    type="text"
-                    placeholder="Membership Id"
-                    className="border p-2 rounded w-full"
-                    value={formData?.membershipId || ""}
-                    onChange={(e) => {
-                      setFormData((val) => ({
-                        ...val,
-                        membershipId: e.target.value,
-                      }));
-                    }}
-                  />
+                  <div className="input-tag w-full bg-gray-100 cursor-not-allowed">
+                    {formData?.membershipId || "N/A"}
+                  </div>
                 </div>
-
                 <div className="w-full ">
                   <div>Start Date</div>
-
                   <div>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -923,83 +725,10 @@ function SetService() {
                 </div>
                 <div className="w-full ">
                   <div>Membership Period</div>
-                  <div className="w-full input-tag">
+                  <div className="w-full input-tag bg-gray-100 cursor-not-allowed">
                     {membershipPeriod} Month
                   </div>
-                  {/* <Select
-                    value={membershipPeriod}
-                    onValueChange={(value) => setMembershipPeriod(value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={" Membership Period"} />
-                    </SelectTrigger>
-                    <SelectContent className=" h-26">
-                      <SelectItem value="free">
-                        Free trial for 15 day
-                      </SelectItem>
-                      <SelectItem value="1">1 Months</SelectItem>
-                      <SelectItem value="3">3 Months</SelectItem>
-                      <SelectItem value="6">6 Months</SelectItem>
-                      <SelectItem value="9">9 Months</SelectItem>
-                      <SelectItem value="12">12 Months</SelectItem>
-                      <SelectItem value="custom">custom Months</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  {membershipPeriod === "custom" && (
-                    <div>
-                      <div>Select Custom Date</div>
-
-                      <div>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <button
-                              className={cn(
-                                "w-full flex justify-between items-center input-tag ",
-                                !membershipEndDate?.seconds &&
-                                  "text-muted-foreground"
-                              )}
-                            >
-                              {membershipEndDate?.seconds ? (
-                                formatDate(
-                                  new Date(
-                                    membershipEndDate?.seconds * 1000 +
-                                      membershipEndDate?.nanoseconds / 1000000
-                                  ),
-                                  "PPP"
-                                )
-                              ) : (
-                                <span className="text-gray-600">
-                                  Pick a date
-                                </span>
-                              )}
-                              <CalendarIcon className="h-4 w-4 " />
-                            </button>
-                          </PopoverTrigger>
-                          <PopoverContent className="">
-                            <Calendar
-                              mode="single"
-                              selected={
-                                new Date(
-                                  membershipEndDate?.seconds * 1000 +
-                                    membershipEndDate?.nanoseconds / 1000000
-                                )
-                              }
-                              onSelect={(val) => {
-                                setMembershipEndDate(
-                                  Timestamp.fromDate(new Date(val))
-                                );
-                              }}
-                              initialFocus
-                              required
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      </div>
-                    </div>
-                  )} */}
                 </div>
-
                 <div className="w-full ">
                   <div>Sign</div>
                   <Select>
@@ -1176,24 +905,10 @@ function SetService() {
           className="rounded-lg  bg-[#442799] text-white text-center   px-5 py-3 pt-2 font-semibold rounded-md"
           onClick={onSetService}
         >
-          <span className="text-lg">+</span> {id ? "Edit" : "Create"}{" "}
-          subscription
+          <span className="text-lg">+</span> Renewal
         </button>
       </div>
-      <SideBarAddServices
-        isOpen={isSideBarOpen}
-        onClose={() => setIsSideBarOpen(false)}
-        servicesList={servicesList}
-        onSubmitService={onSelectService}
-        setMembershipPeriod={setMembershipPeriod}
-      />
-      <CreateCustomer
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-        }}
-      />
     </div>
   );
 }
-export default SetService;
+export default RenewalService;
