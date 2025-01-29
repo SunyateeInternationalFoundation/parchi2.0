@@ -175,7 +175,7 @@ function QuickAddSideBar({ isOpen, onClose, isMaterialAdd }) {
             </div>
             <div className="space-y-1">
               <label className="text-sm text-gray-600">Description</label>
-              <input
+              <textarea
                 type="text"
                 name="ItemName"
                 className="w-full input-tag"

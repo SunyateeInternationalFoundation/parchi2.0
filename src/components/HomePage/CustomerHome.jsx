@@ -78,7 +78,6 @@ function CustomerHome() {
               projectRef,
               where("customerRef", "array-contains-any", asCustomersList)
             );
-
             const getData = await getDocs(q);
             count += getData.size;
             console.log("🚀 ~ fetchCountData ~ count:", count);
@@ -100,10 +99,10 @@ function CustomerHome() {
           );
           const getData = await getDocs(q);
 
-          if (icon.name == "Invoice") {
+          if (icon.name == "Invoice" || icon.name == "Subscriptions") {
             getData.docs.forEach((doc) => {
               const { paymentStatus, total } = doc.data();
-              if (paymentStatus == "Paid") {
+              if (paymentStatus == "Paid" || icon.name == "Subscriptions") {
                 amount.paid += total;
               } else if (paymentStatus == "UnPaid") {
                 amount.unPaid += total;
@@ -112,6 +111,7 @@ function CustomerHome() {
               }
             });
           }
+
           if (dataSetList[icon.collectionName]) {
             const getAllData = getData.docs.map((doc) => {
               const data = doc.data();

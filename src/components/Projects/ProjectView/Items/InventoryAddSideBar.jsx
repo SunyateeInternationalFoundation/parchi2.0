@@ -210,7 +210,7 @@ function InventoryAddSideBar({ projectId, isOpen, onClose, isMaterialAdd }) {
               <label className="text-sm text-gray-600 " htmlFor="description">
                 Description
               </label>
-              <input
+              <textarea
                 type="text"
                 id="description"
                 value={description}
