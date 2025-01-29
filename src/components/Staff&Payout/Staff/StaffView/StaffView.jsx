@@ -117,7 +117,7 @@ function StaffView({ staffCompanyId }) {
         </Link>
         <h1 className="text-2xl font-bold">{staffData.name}</h1>
         <div>
-          <nav className="flex space-x-4">
+          <nav className="flex space-x-6  font-semibold text-lg text-gray-500">
             <button
               className={
                 "px-4 py-3" +

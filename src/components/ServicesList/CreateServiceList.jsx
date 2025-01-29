@@ -130,8 +130,8 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
             </div>
             <div className="space-y-1">
               <label className="text-sm text-gray-600">Description</label>
-              <input
-                type="text"
+              <textarea
+                type="text area"
                 name="description"
                 className="w-full  input-tag"
                 placeholder="Description"
