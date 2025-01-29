@@ -64,14 +64,15 @@ table tbody tr:hover {
     border-bottom: 1px solid #e5e7eb !important;
     padding-top: 14px;
     padding-bottom: 14px;
-    padding-left: 12px;
+    padding-left: 20px;
 }
 
 .handsontable table thead th:first-child {
     padding-left: 30px !important;
 }
 
-.handsontable table thead th:last-child {
+.handsontable table thead th:last-child,
+.handsontable table thead td:last-child {
     padding-right: 30px !important;
 }
 

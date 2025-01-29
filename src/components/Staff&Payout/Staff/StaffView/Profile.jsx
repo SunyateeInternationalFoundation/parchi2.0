@@ -1,7 +1,7 @@
 import { doc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { useEffect, useState } from "react";
-import { FaArrowDown, FaArrowUp, FaUserEdit } from "react-icons/fa";
+import { FaUserEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { db, storage } from "../../../../firebase";
 import CreateStaff from "../CreateStaff";
@@ -135,7 +135,7 @@ const Profile = ({ staffData, refresh }) => {
                 )}
               </div>
               <div className="w-full flex space-x-3">
-                <div className="bg-green-50 rounded-lg p-5 w-full flex items-center space-x-3">
+                {/*  <div className="bg-green-50 rounded-lg p-5 w-full flex items-center space-x-3">
                   <div className="text-green-500 p-3 bg-sky-100 rounded-lg text-xl">
                     <FaArrowDown />
                   </div>
@@ -152,7 +152,7 @@ const Profile = ({ staffData, refresh }) => {
                     <div className="text-lg">Expenses</div>
                     <div className="text-3xl text-red-600 font-bold">0</div>
                   </div>
-                </div>
+                </div>*/}
               </div>
             </div>
 

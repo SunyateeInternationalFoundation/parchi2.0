@@ -1,9 +1,11 @@
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   orderBy,
   query,
+  Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -72,6 +74,8 @@ function Services() {
             status: data.status,
             mode: data.mode,
             createdBy: data.createdBy.who,
+            startDate: DateTimeFormate(data.membershipStartDate),
+            expireDate: DateTimeFormate(data.membershipEndDate),
           };
         });
         setServices(serviceData);
@@ -169,7 +173,6 @@ function Services() {
         return td;
       },
     },
-
     {
       title: "Amount",
       type: "numeric",
@@ -232,6 +235,97 @@ function Services() {
       editor: false,
       readOnly: true,
       width: 90,
+    },
+    {
+      title: "Start Date",
+      data: "startDate",
+      editor: false,
+      readOnly: true,
+      width: 100,
+      renderer: (instance, td, row, col, prop, value, cellProperties) => {
+        const time = paginationData[cellProperties.row]?.startDate?.time;
+        const combinedValue = `${value.date} <br/><span style="color: gray; font-size:14px">${time}</small>`;
+        td.innerHTML = combinedValue;
+        return td;
+      },
+    },
+    {
+      title: "Expire Date",
+      type: "text",
+      data: "expireDate",
+      editor: false,
+      readOnly: true,
+      width: 100,
+      renderer: (instance, td, row, col, prop, value, cellProperties) => {
+        const time = paginationData[cellProperties.row]?.expireDate?.time;
+        const combinedValue = `${value.date} <br/><span style="color: gray; font-size:14px">${time}</small>`;
+        td.innerHTML = combinedValue;
+        return td;
+      },
+    },
+    {
+      title: "Renewal",
+      type: "text",
+      editor: false,
+      width: 90,
+      data: "id",
+      className: "updateStatus",
+      renderer: (instance, td, row, col, prop, value, cellProperties) => {
+        const button = document.createElement("button");
+        td.innerHTML = "";
+        td.className = "updateStatus";
+        button.innerText = "Renew";
+        button.className =
+          "px-3 py-1 rounded-md bg-blue-500 text-white cursor-pointer";
+        button.onclick = async () => {
+          try {
+            const serviceDoc = doc(
+              db,
+              "companies",
+              companyId,
+              "services",
+              value
+            );
+            const getData = (await getDoc(serviceDoc)).data();
+            console.log("🚀 ~ button.onclick= ~ getData:", getData);
+            if (getData.typeOfEndMembership == "free") {
+              return;
+            }
+            //   const membershipStartDate= Timestamp.fromDate(new Date())
+            //   const milliseconds =
+            //   membershipStartDate.seconds * 1000 +
+            //   membershipStartDate.nanoseconds / 1000000;
+            // const inputDate = new Date(milliseconds);
+            // let endDate = new Date();
+            // if (membershipPeriod === "free") {
+            //   endDate = new Date(inputDate.setDate(inputDate.getDate() + 15));
+            // } else if (membershipPeriod !== "custom") {
+            //   endDate = new Date(
+            //     inputDate.setMonth(inputDate.getMonth() + +membershipPeriod)
+            //   );
+            // }
+            // setMembershipEndDate(Timestamp.fromDate(endDate));
+            const payload = {
+              ...getData,
+              createdBy: {
+                ...getData.createdBy,
+                who:
+                  userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+              },
+              date: Timestamp.fromDate(new Date()),
+              dueDate: Timestamp.fromDate(new Date()),
+              membershipStartDate: Timestamp.fromDate(new Date()),
+              // membershipEndDate:
+            };
+
+            alert("Successfully Renewal");
+          } catch (error) {
+            console.log("🚀 ~ button.onclick=async ~ error:", error);
+          }
+        };
+        td.appendChild(button);
+        return td;
+      },
     },
   ];
   return (

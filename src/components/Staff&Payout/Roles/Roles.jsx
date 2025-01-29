@@ -88,7 +88,8 @@ const Roles = () => {
 
   const rolesList = [
     "invoice",
-    "services",
+    "subscription",
+    "plan",
     "quotation",
     "purchase",
     "customers",

@@ -130,19 +130,32 @@ const Navbar = () => {
               onClick={() => setIsCompanyOpen(!isCompanyOpen)}
             >
               {/* Company Initials Circle */}
-              <div className="bg-orange-400 text-white font-bold w-10 h-10 flex items-center justify-center rounded-full border border-gray-500 shadow-lg group-hover:shadow-gray-500/50 transition-shadow duration-300">
+              <div className="bg-orange-400 text-white font-bold w-10 h-10 flex items-center justify-center rounded-full border hover:shadow">
                 {companyName?.slice(0, 2).toUpperCase() || "YB"}
               </div>
 
-              <div>
+              <div className="flex items-center space-x-3">
                 <span className="font-bold text-gray-800 text-sm group-hover:text-gray-500 transition-colors duration-300">
                   {companyName}
                 </span>
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
               </div>
             </div>
 
             <div
-              className="relative group cursor-pointer text-black px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              className="relative group cursor-pointer text-black px-4 py-2 rounded-lg  transition-all duration-300"
               onClick={() => setIsDashboardOpen(!isDashboardOpen)}
             >
               <div className="flex items-center space-x-2">
@@ -201,7 +214,7 @@ const Navbar = () => {
           onClick={() => setIsDashboardOpen(false)}
         >
           <div
-            className="w-96 bg-white shadow-2xl rounded-2xl ml-40"
+            className="w-96 bg-white shadow-2xl rounded-2xl ml-72"
             style={{ marginTop: "8vh" }}
             onClick={(e) => e.stopPropagation()}
           >

@@ -15,6 +15,7 @@ import ProductLogs from "./ProductLogs";
 import ProductReturns from "./ProductReturns";
 import ProductView from "./ProductView";
 import Stocks from "./Stocks";
+import Transfers from "./Transfers";
 
 function ProductViewHome() {
   const [activeTab, setActiveTab] = useState("Product");
@@ -25,51 +26,60 @@ function ProductViewHome() {
   const [product, setProduct] = useState(null);
   const [returns, setReturns] = useState(null);
   const [logs, setLogs] = useState(null);
+  const [transfers, setTransfers] = useState(null);
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const productRef = doc(
-          db,
-          "companies",
-          companyDetails.companyId,
-          "products",
-          productId
+  const fetchProduct = async () => {
+    try {
+      const productRef = doc(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "products",
+        productId
+      );
+      const productDoc = await getDoc(productRef);
+
+      if (productDoc.exists()) {
+        setProduct({ id: productDoc.id, ...productDoc.data() });
+        const q = query(
+          collection(productRef, "logs"),
+          orderBy("date", "desc")
         );
-        const productDoc = await getDoc(productRef);
-
-        if (productDoc.exists()) {
-          setProduct({ id: productDoc.id, ...productDoc.data() });
-          const q = query(
-            collection(productRef, "logs"),
-            orderBy("date", "desc")
-          );
-          const logsDocs = await getDocs(q);
-          let returnsData = [];
-          const logsData = logsDocs.docs.map((doc) => {
-            const data = doc.data();
-            if (data.status == "return") {
-              returnsData.push({
-                id: doc.id,
-                ...data,
-              });
-            }
-            return {
+        const logsDocs = await getDocs(q);
+        let returnsData = [];
+        const logsData = logsDocs.docs.map((doc) => {
+          const data = doc.data();
+          if (data.status == "return") {
+            returnsData.push({
               id: doc.id,
               ...data,
-            };
-          });
-          setLogs(logsData);
-          setReturns(returnsData);
-          console.log("🚀 ~ fetchProduct ~ logsData:", logsData);
-        } else {
-          console.error("No Product Found!");
-        }
-      } catch (error) {
-        console.error("Error fetching product:", error);
+            });
+          }
+          return {
+            id: doc.id,
+            ...data,
+          };
+        });
+        const transferQuery = query(
+          collection(productRef, "transfers"),
+          orderBy("date", "desc")
+        );
+        const transferDocs = await getDocs(transferQuery);
+        const transferData = transferDocs.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setTransfers(transferData);
+        setLogs(logsData);
+        setReturns(returnsData);
+      } else {
+        console.error("No Product Found!");
       }
-    };
-
+    } catch (error) {
+      console.error("Error fetching product:", error);
+    }
+  };
+  useEffect(() => {
     fetchProduct();
   }, [productId, companyDetails.companyId]);
 
@@ -78,6 +88,16 @@ function ProductViewHome() {
     { name: "Logs", component: <ProductLogs logs={logs} /> },
     { name: "Returns", component: <ProductReturns returns={returns} /> },
     { name: "Stocks", component: <Stocks stocks={[]} /> },
+    {
+      name: "Transfers",
+      component: (
+        <Transfers
+          transfersData={transfers}
+          productDetails={product}
+          refreshTransfersData={(data) => setTransfers((val) => [data, ...val])}
+        />
+      ),
+    },
   ];
 
   return (

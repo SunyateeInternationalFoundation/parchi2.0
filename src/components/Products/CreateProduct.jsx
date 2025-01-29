@@ -157,7 +157,7 @@ function CreateProduct() {
         const { id, ...rest } = formData;
         const payload = {
           ...rest,
-          hsn: selectedHSN,
+          hsn: selectedHSN | "",
           imageUrl: productImageUrl,
         };
         await updateDoc(productDocRef, payload); // Update product
@@ -184,7 +184,7 @@ function CreateProduct() {
 
         const payload = {
           ...formData,
-          hsn: selectedHSN,
+          hsn: selectedHSN || "",
           imageUrl: productImageUrl,
           createdAt: Timestamp.fromDate(new Date()),
           companyRef,

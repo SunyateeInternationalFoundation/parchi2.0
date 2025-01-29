@@ -114,21 +114,21 @@ const VendorDashboard = () => {
               <div className="flex items-center justify-between border px-6 py-4 rounded-2xl shadow">
                 <div className="flex items-center w-3/4 space-x-4">
                   <div className="border rounded-full w-[89px] h-[89px] shadow flex items-center justify-center">
-                    {userDetails.companyLogo ? (
+                    {/* {userDetails.companyLogo ? (
                       <img
                         src={userDetails.companyLogo}
                         width="89px"
                         height="89px"
                         className="rounded-full"
                       />
-                    ) : (
-                      <img
-                        src={man}
-                        width="89px"
-                        height="89px"
-                        className="rounded-full"
-                      />
-                    )}
+                    ) : ( */}
+                    <img
+                      src={man}
+                      width="89px"
+                      height="89px"
+                      className="rounded-full"
+                    />
+                    {/* )} */}
                   </div>
                   <div className="space-y-2">
                     <div>
@@ -136,6 +136,7 @@ const VendorDashboard = () => {
                         {userDetails.name}
                       </div>
                       <div className="text-[16px]">{userDetails.address}</div>
+                      <div className="text-[16px]">{userDetails.phone}</div>
                     </div>
                   </div>
                 </div>

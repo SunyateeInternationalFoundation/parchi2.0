@@ -4,36 +4,6 @@ import man from "../../assets/dashboard/man.png";
 
 const CustomerDashboard = ({ amount, icons }) => {
   const navigate = useNavigate();
-  // const [icons, setIcons] = useState([
-  //   {
-  //     name: "Estimate",
-  //     img: Estimate,
-  //     link: "quotation",
-  //     total: 0,
-  //     collectionName: "quotations",
-  //   },
-  //   {
-  //     name: "Invoice",
-  //     img: Invoice,
-  //     link: "invoice",
-  //     total: 0,
-  //     collectionName: "invoices",
-  //   },
-  //   {
-  //     name: "Subscriptions",
-  //     img: Subscriptions,
-  //     link: "/subscriptions",
-  //     total: 0,
-  //     collectionName: "services",
-  //   },
-  //   {
-  //     name: "Projects",
-  //     img: Projects,
-  //     link: "projects",
-  //     total: 0,
-  //     collectionName: "projects",
-  //   },
-  // ]);
   const userDetails = useSelector((state) => state.users);
 
   return (
@@ -45,21 +15,21 @@ const CustomerDashboard = ({ amount, icons }) => {
               <div className="flex items-center justify-between border px-6 py-4 rounded-2xl shadow">
                 <div className="flex items-center w-3/4 space-x-4">
                   <div className="border rounded-full w-[89px] h-[89px] shadow flex items-center justify-center">
-                    {userDetails.companyLogo ? (
+                    {/* {userDetails.companyLogo ? (
                       <img
                         src={userDetails.companyLogo}
                         width="89px"
                         height="89px"
                         className="rounded-full"
                       />
-                    ) : (
-                      <img
-                        src={man}
-                        width="89px"
-                        height="89px"
-                        className="rounded-full"
-                      />
-                    )}
+                    ) : ( */}
+                    <img
+                      src={man}
+                      width="89px"
+                      height="89px"
+                      className="rounded-full"
+                    />
+                    {/* )} */}
                   </div>
                   <div className="space-y-2">
                     <div>
@@ -67,6 +37,7 @@ const CustomerDashboard = ({ amount, icons }) => {
                         {userDetails.name}
                       </div>
                       <div className="text-[16px]">{userDetails.address}</div>
+                      <div className="text-[16px]">{userDetails.phone}</div>
                     </div>
                   </div>
                 </div>

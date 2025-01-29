@@ -1,5 +1,6 @@
 import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { FaRegFilePdf } from "react-icons/fa";
 import {
   LuChevronLeft,
   LuChevronRight,
@@ -18,15 +19,6 @@ const Approval = () => {
   const [approvals, setApprovals] = useState([]);
   const [filter, setFilter] = useState("All");
   const userDetails = useSelector((state) => state.users);
-  let companyId;
-  if (userDetails.selectedDashboard === "staff") {
-    companyId =
-      userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
-        .companyDetails.companyId;
-  } else {
-    companyId =
-      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  }
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.approvals;
@@ -46,9 +38,10 @@ const Approval = () => {
       ...doc.data(),
     }));
 
+    console.log("🚀 ~ approvalsData ~ approvalsData:", approvalsData);
     setApprovals(approvalsData);
-    setTotalPages(Math.ceil(approvalsData.length / 10)); // Set total pages based on the data length
-    setPaginationData(approvalsData.slice(0, 10)); // Set initial pagination data
+    setTotalPages(Math.ceil(approvalsData.length / 10));
+    setPaginationData(approvalsData.slice(0, 10));
   };
   useEffect(() => {
     fetchApprovals();
@@ -66,7 +59,10 @@ const Approval = () => {
   }, [approvals, currentPage, filter]);
 
   return (
-    <div className="main-container mt-8" style={{ height: "81vh" }}>
+    <div
+      className="main-container"
+      style={{ height: "81vh", paddingTop: "32px" }}
+    >
       <div className="bg-white rounded-lg ">
         {/* Filter Buttons */}
         <div className="flex justify-between p-5 ">
@@ -98,7 +94,7 @@ const Approval = () => {
         {/* Approval Cards */}
         <div
           className="bg-white rounded-lg   overflow-hidden"
-          style={{ minHeight: "82vh" }}
+          style={{ minHeight: "80vh" }}
         >
           <table className="w-full border-collapse text-start  ">
             <thead className=" bg-white">
@@ -124,23 +120,38 @@ const Approval = () => {
                 <td className="px-5 py-1 text-gray-400 font-semibold text-start">
                   Priority
                 </td>
+                <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                  Who
+                </td>
               </tr>
             </thead>
             <tbody>
               {paginationData.length > 0 ? (
                 paginationData.map((approval) => (
-                  <tr key={approval.id} className="border-b-2 border-gray-200 ">
+                  <tr
+                    key={approval.id}
+                    className="border-b-2 border-gray-200 cursor-pointer"
+                    onClick={() => {
+                      const fileUrl =
+                        approval.typeOfFile == "Image"
+                          ? approval.file.image
+                          : approval.file.pdfUrl;
+                      window.open(fileUrl, "_blank");
+                    }}
+                  >
                     <td className="px-8 py-3 text-start ">
                       <FormatTimestamp timestamp={approval.createdAt} />
                     </td>
                     <td className="px-5 py-3 text-start flex items-center">
-                      <img
-                        src={
-                          approval.imageUrl || "https://via.placeholder.com/50"
-                        }
-                        alt={approval.name}
-                        className="w-12 h-12 rounded-full mr-4"
-                      />
+                      {approval.typeOfFile == "Image" ? (
+                        <img
+                          src={approval.file.image}
+                          alt={approval.name}
+                          className="w-12 h-12 rounded-full mr-4"
+                        />
+                      ) : (
+                        <FaRegFilePdf />
+                      )}
                       {approval.name}
                     </td>
                     <td className="px-5 py-3 text-start">
@@ -156,11 +167,12 @@ const Approval = () => {
                     <td className="px-5 py-3 text-start">
                       {approval.priority}
                     </td>
+                    <td className="px-5 py-3 text-start">{approval.who}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="h-24 text-center py-4 ">
+                  <td colSpan="8" className="h-24 text-center py-4 ">
                     No Item Found
                   </td>
                 </tr>

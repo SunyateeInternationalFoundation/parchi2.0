@@ -111,11 +111,11 @@ function CreateApproval({ isOpen, projectId, onClose, newApprovalAdded }) {
       const fileField = typeOfFile === "Image" ? "image" : "pdfUrl";
       const payload = {
         ...approvalForm,
-
         approvalBelongsTo: filter,
         categories: filter,
         createdAt: Timestamp.fromDate(new Date()),
         typeOfFile: typeOfFile,
+        who: userDetails.selectedDashboard === "staff" ? "Staff" : "Owner",
       };
       payload.file[fileField] = fileURL;
       const approvalsRef = collection(db, `projects/${projectId}/approvals`);
@@ -293,7 +293,7 @@ function CreateApproval({ isOpen, projectId, onClose, newApprovalAdded }) {
                   }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={`Select ${filter}`} />
+                    <SelectValue placeholder={`Select Priority`} />
                   </SelectTrigger>
                   <SelectContent className="h-18">
                     <SelectItem value={"High"}>High</SelectItem>

@@ -38,6 +38,7 @@ import QuotationViewHome from "../Quotation/QuotationView/QuotationViewHome";
 import SetQuotation from "../Quotation/SetQuotation/SetQuotation";
 import SetService from "../Services/CreateService/SetService";
 import Services from "../Services/Services";
+import ServicesList from "../ServicesList/ServicesList";
 import StaffView from "../Staff&Payout/Staff/StaffView/StaffView";
 import Navbar from "../UI/Navbar";
 import VendorList from "../Vendors/VendorList";
@@ -240,20 +241,23 @@ const StaffHome = () => {
             {checkPermission("po", "edit") && (
               <Route path="/po/:poId/edit-po" element={<SetPO />}></Route>
             )}
-            {checkPermission("services", "view") && (
+            {checkPermission("subscription", "view") && (
               <Route path="/subscriptions" element={<Services />}></Route>
             )}
-            {checkPermission("services", "create") && (
+            {checkPermission("subscription", "create") && (
               <Route
                 path="/subscriptions/create-service"
                 element={<SetService />}
               ></Route>
             )}
-            {checkPermission("services", "edit") && (
+            {checkPermission("subscription", "edit") && (
               <Route
                 path="/subscriptions/:id/edit-service"
                 element={<SetService />}
               ></Route>
+            )}
+            {checkPermission("subscription", "view") && (
+              <Route path="/plan-list" element={<ServicesList />}></Route>
             )}
             {checkPermission("deliveryChallan", "view") && (
               <Route

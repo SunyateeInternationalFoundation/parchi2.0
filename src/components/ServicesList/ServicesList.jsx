@@ -33,7 +33,9 @@ const ServicesList = () => {
   const navigate = useNavigate();
   const companyDetails =
     userDetails.companies[userDetails.selectedCompanyIndex];
-
+  let role =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+      ?.plan;
   const fetchServices = async () => {
     try {
       setLoading(true);
@@ -85,7 +87,7 @@ const ServicesList = () => {
 
   return (
     <div className="main-container" style={{ height: "92vh" }}>
-      <div className="text-2xl font-bold pb-3 flex items-center space-x-3">
+      <div className="text-2xl font-bold  flex items-center space-x-3 mt-8">
         {userDetails.selectedDashboard === "staff" && (
           <AiOutlineHome
             size={24}
@@ -99,12 +101,14 @@ const ServicesList = () => {
       <div className="container">
         <div className="flex justify-between items-center px-5">
           <h1 className="text-2xl font-bold">Plan List</h1>
-          <button
-            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-            onClick={() => setIsSideBarOpen(true)}
-          >
-            + Create Plan
-          </button>
+          {(userDetails.selectedDashboard === "" || role?.create) && (
+            <button
+              className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+              onClick={() => setIsSideBarOpen(true)}
+            >
+              + Create Plan
+            </button>
+          )}
         </div>
         {loading ? (
           <div className="text-center" style={{ height: "62hv" }}>

@@ -145,7 +145,8 @@ function SideBar() {
     let updatedSidebarData = {};
     const rolesList = [
       "invoice",
-      "services",
+      "subscription",
+      "plan",
       "quotation",
       "purchase",
       "customers",

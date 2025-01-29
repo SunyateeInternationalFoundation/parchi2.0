@@ -7,11 +7,10 @@ import Customers from "../../assets/dashboard/Customers.png";
 import Debit from "../../assets/dashboard/Debit.png";
 import Delivery from "../../assets/dashboard/Delivery.png";
 import Estimate from "../../assets/dashboard/Estimate.png";
-import expenseArrow from "../../assets/dashboard/expenseArrow.png";
 import hello from "../../assets/dashboard/hello.png";
-import incomeArrow from "../../assets/dashboard/incomeArrow.png";
 import Invoice from "../../assets/dashboard/Invoice.png";
 import man from "../../assets/dashboard/man.png";
+import Plans from "../../assets/dashboard/Plans.png";
 import Po from "../../assets/dashboard/Po.png";
 import Point from "../../assets/dashboard/Point.png";
 import ProForma from "../../assets/dashboard/ProForma.png";
@@ -85,11 +84,12 @@ const StaffDashboard = ({ checkPermission }) => {
         role: "services",
         link: "subscriptions",
       },
-      // {
-      //   name: "Plans",
-      //   img: Plans,
-      //   link: "plan-list",
-      // },
+      {
+        name: "Plans",
+        img: Plans,
+        role: "plan",
+        link: "plan-list",
+      },
       {
         name: "Point-Of-Sale",
         img: Point,
@@ -366,34 +366,24 @@ const StaffDashboard = ({ checkPermission }) => {
               <div className="flex items-center justify-between border px-6 py-2 rounded-t-2xl">
                 <div className="flex items-center w-3/4 space-x-4">
                   <div className="border rounded-full w-[89px] h-[89px] shadow flex items-center justify-center">
-                    {companyDetails.companyLogo ? (
-                      <img
-                        src={companyDetails.companyLogo}
-                        width="89px"
-                        height="89px"
-                        className="rounded-full"
-                      />
-                    ) : (
-                      <img
-                        src={man}
-                        width="89px"
-                        height="89px"
-                        className="rounded-full"
-                      />
-                    )}
+                    <img
+                      src={man}
+                      width="89px"
+                      height="89px"
+                      className="rounded-full"
+                    />
                   </div>
                   <div className="space-y-2">
                     <div>
                       <div className="text-[24px] font-semibold">
-                        {companyDetails.name}
+                        {userDetails.name}
                       </div>
-                      <div className="text-[16px]">
-                        {companyDetails.address}
-                      </div>
+                      <div className="text-[16px]">{userDetails.address}</div>
+                      <div className="text-[16px]">{userDetails.phone}</div>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-around w-full space-x-3">
+                {/* <div className="flex items-center justify-around w-full space-x-3">
                   <div className="border-r w-full flex justify-between pe-2">
                     <div>
                       <div className="text-[16px]">Expense</div>
@@ -424,7 +414,7 @@ const StaffDashboard = ({ checkPermission }) => {
                       Rs {expenseAmount.balance}
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
               <div className="flex bg-gradient-to-r from-[#2788FF] via-[#0059D5] to-[#0570F3] px-6 py-2 rounded-b-2xl h-[87px]">
                 <div className="flex items-center justify-between text-center w-full text-white font-bold">

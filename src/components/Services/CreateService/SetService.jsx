@@ -45,7 +45,7 @@ function SetService() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [prefix, setPrefix] = useState("");
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
-  const [membershipPeriod, setMembershipPeriod] = useState("");
+  const [membershipPeriod, setMembershipPeriod] = useState("free");
   const [membershipEndDate, setMembershipEndDate] = useState("");
   const [membershipStartDate, setMembershipStartDate] = useState(
     Timestamp.fromDate(new Date())
@@ -65,6 +65,7 @@ function SetService() {
     total: 0,
     tax: 0,
     terms: "",
+    mode: "Cash",
   });
 
   const [totalAmounts, setTotalAmounts] = useState({
