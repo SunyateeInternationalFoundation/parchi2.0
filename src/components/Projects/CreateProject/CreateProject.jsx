@@ -155,10 +155,7 @@ function CreateProject() {
   }, [id]);
 
   return (
-    <div
-      className="p-8 pt-3 bg-gray-100"
-      style={{ width: "100%", height: "92vh" }}
-    >
+    <div className="main-container" style={{ width: "100%", height: "92vh" }}>
       <header className="items-center my-2">
         <div className="flex space-x-3">
           <Link className="flex items-center " to={"./../"}>
@@ -328,9 +325,9 @@ function CreateProject() {
                   onValueChange={(value) => onSelectBook(value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={"Select Filter"} />
+                    <SelectValue placeholder={"Select Bank Book"} />
                   </SelectTrigger>
-                  <SelectContent className=" h-26">
+                  <SelectContent className="min-h-48">
                     {books.length > 0 &&
                       books.map((book, index) => (
                         <SelectItem value={book.id} key={index}>

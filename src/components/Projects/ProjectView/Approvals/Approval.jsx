@@ -150,7 +150,7 @@ const Approval = () => {
                           className="w-12 h-12 rounded-full mr-4"
                         />
                       ) : (
-                        <FaRegFilePdf />
+                        <FaRegFilePdf size={36} className="mr-4" />
                       )}
                       {approval.name}
                     </td>
