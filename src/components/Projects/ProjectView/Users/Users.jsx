@@ -111,7 +111,7 @@ function Users() {
   }, [activeNav, projectDetails, searchTerm, currentPage]);
 
   return (
-    <div className="main-container" style={{ height: "82vh" }}>
+    <div className="main-container" style={{ height: "80vh" }}>
       <div className="container">
         <nav className="flex mb-4 px-5">
           <div className="flex items-center space-x-4 w-full">

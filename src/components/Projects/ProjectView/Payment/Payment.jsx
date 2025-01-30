@@ -167,7 +167,7 @@ const Payment = ({ projectDetails }) => {
     }
   }
   return (
-    <div className="main-container" style={{ height: "82vh" }}>
+    <div className="main-container" style={{ height: "80vh" }}>
       <div className=" mt-4 py-3">
         <div className="grid grid-cols-4 gap-8 ">
           <div className="rounded-lg p-5 bg-white shadow  ">
