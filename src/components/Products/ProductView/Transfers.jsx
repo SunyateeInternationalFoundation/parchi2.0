@@ -8,7 +8,7 @@ function Transfers({ transfersData, refreshTransfersData, productDetails }) {
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
   return (
-    <div className="main-container" style={{ height: "82vh" }}>
+    <div className="main-container" style={{ height: "80vh" }}>
       <div className="container">
         <div>
           <div
