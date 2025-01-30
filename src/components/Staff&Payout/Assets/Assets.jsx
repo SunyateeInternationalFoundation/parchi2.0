@@ -215,7 +215,7 @@ const Assets = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="4" className="h-24 text-center py-4">
+                      <td colSpan="6" className="h-24 text-center py-4">
                         No Asset Found
                       </td>
                     </tr>

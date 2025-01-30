@@ -22,8 +22,6 @@ import {
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isSideBarOpen, setIsSideBarOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
   const [searchTerms, setSearchTerms] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [categoryList, setCategoryList] = useState([]);
@@ -89,11 +87,6 @@ const ProductList = () => {
     } catch (error) {
       console.error("Error deleting product:", error);
     }
-  };
-
-  const handleEdit = (product) => {
-    setEditingProduct(product);
-    setIsSideBarOpen(true);
   };
 
   const navigate = useNavigate();
@@ -182,8 +175,6 @@ const ProductList = () => {
           <button
             className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
             onClick={() => {
-              setIsSideBarOpen(true);
-              setEditingProduct(null);
               navigate("create-product");
             }}
           >
@@ -195,7 +186,7 @@ const ProductList = () => {
             <p className="text-gray-500">Loading products...</p>
           </div>
         ) : (
-          <div className="overflow-hidden" style={{ minHeight: "92vh" }}>
+          <div className="overflow-hidden pt-8" style={{ minHeight: "92vh" }}>
             <table className="w-full border-collapse ">
               <thead className="bg-white">
                 <tr className="border-b">
@@ -316,8 +307,7 @@ const ProductList = () => {
                         <button
                           className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
                           onClick={() => {
-                            setIsSideBarOpen(true);
-                            setEditingProduct(null);
+                            navigate("create-product");
                           }}
                         >
                           + Create Product

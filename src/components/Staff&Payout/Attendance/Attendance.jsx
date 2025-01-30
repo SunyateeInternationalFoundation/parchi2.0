@@ -197,7 +197,7 @@ function Attendance() {
   }, [currentPage, staffAttendance, selectedMonth]);
 
   return (
-    <div className="main-container" style={{ height: "82vh" }}>
+    <div className="main-container overflow-y-auto" style={{ height: "82vh" }}>
       <div className=" mt-4 py-3">
         <h1 className="text-2xl font-bold pb-3 ">Attendance Overview</h1>
         <div className="grid grid-cols-2 gap-8  ">
@@ -238,7 +238,7 @@ function Attendance() {
           {loading ? (
             <div className="text-center">Loading...</div>
           ) : paginationData.length > 0 ? (
-            <div className="py-3" style={{ height: "92vh" }}>
+            <div className="py-3" style={{ minHeight: "92vh" }}>
               <table className="w-full border-collapse text-start">
                 <thead className="bg-white">
                   <tr className="border-b">

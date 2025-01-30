@@ -586,7 +586,6 @@ function CreateProduct() {
                         setIsHsnDropdownVisible(false);
                       }, 200);
                     }}
-                    required
                   />
                   {isHsnDropdownVisible && hsnSuggestions.length > 0 && (
                     <div className="absolute z-20 bg-white border border-gray-300 rounded-lg shadow-md max-h-60 overflow-y-auto w-full">

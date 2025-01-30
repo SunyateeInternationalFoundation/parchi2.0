@@ -76,19 +76,8 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
     "Fixed Assets",
     "Others",
   ];
-  function DateFormate(timestamp) {
-    const milliseconds =
-      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
-    const date = new Date(milliseconds);
-    const getDate = String(date.getDate()).padStart(2, "0");
-    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
-    const getFullYear = date.getFullYear();
 
-    return `${getFullYear}-${getMonth}-${getDate}`;
-  }
-
-  function onHandleSelectUser(e) {
-    const { value } = e.target;
+  function onHandleSelectUser(value) {
     let data = {};
     let userRef = {};
     if (formData.toWhom.userType === "Vendor") {

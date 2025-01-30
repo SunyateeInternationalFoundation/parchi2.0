@@ -95,8 +95,8 @@ const ProductView = ({ productData }) => {
   }
 
   return (
-    <div className="px-3 py-6 overflow-y-auto" style={{ height: "76vh" }}>
-      <div className=" bg-white rounded-lg shadow-md">
+    <div className="main-container" style={{ height: "80vh" }}>
+      <div className=" container">
         <div className="p-6">
           {progress > 0 && (
             <div className="w-full bg-gray-200 rounded-full h-2">
