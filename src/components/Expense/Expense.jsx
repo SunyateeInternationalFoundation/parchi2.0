@@ -4,6 +4,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  orderBy,
   query,
   where,
 } from "firebase/firestore";
@@ -71,7 +72,11 @@ function Expense() {
       const expensesRef = collection(db, "companies", companyId, "expenses");
       const bookRef = doc(db, "companies", companyId, "books", id);
 
-      const q = query(expensesRef, where("bookRef", "==", bookRef));
+      const q = query(
+        expensesRef,
+        where("bookRef", "==", bookRef),
+        orderBy("date", "desc")
+      );
       const querySnapshot = await getDocs(q);
       const totalAmountData = {
         total: 0,

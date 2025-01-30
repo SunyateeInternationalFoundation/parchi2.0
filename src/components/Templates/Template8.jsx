@@ -33,35 +33,35 @@ const Template8 = forwardRef((props, ref) => {
                 <p className="font-bold uppercase">
                   {dataSet?.createdBy?.name}
                 </p>
-                <p>{dataSet.createdBy.address}</p>
-                <p>{dataSet.createdBy.city}</p>
-                <p>{dataSet.createdBy.zipCode}</p>
-                <p>Mobile: {dataSet.createdBy.phoneNo}</p>
+                <p>{dataSet?.createdBy.address}</p>
+                <p>{dataSet?.createdBy.city}</p>
+                <p>{dataSet?.createdBy.zipCode}</p>
+                <p>Mobile: {dataSet?.createdBy.phoneNo}</p>
               </p>
             </div>
           </div>
-          {/* {dataSet.type} Details */}
+          {/* {dataSet?.type} Details */}
           <div className="grid grid-cols-2 px-2 gap-4 border-b border-black">
             <div className="border-r border-black">
               <h3 className="font-bold text-gray-800">User Details:</h3>
-              <p>{dataSet.userTo.name} </p>
-              <p>{dataSet.userTo.address} </p>
-              <p>{dataSet.userTo.city} </p>
-              <p>{dataSet.userTo.zipCode} </p>
+              <p>{dataSet?.userTo.name} </p>
+              <p>{dataSet?.userTo.address} </p>
+              <p>{dataSet?.userTo.city} </p>
+              <p>{dataSet?.userTo.zipCode} </p>
             </div>
             <div>
               <h3 className="font-bold text-gray-800">
-                {dataSet.type} Details:
+                {dataSet?.type} Details:
               </h3>
               <div className="grid grid-cols-2">
-                <div>{dataSet.type} #:</div>
-                <div> {dataSet.no}</div>
-                <div>{dataSet.type} Date:</div>
-                <div> {DateFormate(dataSet.date)}</div>
+                <div>{dataSet?.type} #:</div>
+                <div> {dataSet?.no}</div>
+                <div>{dataSet?.type} Date:</div>
+                <div> {DateFormate(dataSet?.date)}</div>
                 <div>Due Date:</div>
-                <div>{DateFormate(dataSet.dueDate)}</div>
+                <div>{DateFormate(dataSet?.dueDate)}</div>
                 <div>Place of Supply:</div>
-                <div> {dataSet.userTo.city}</div>
+                <div> {dataSet?.userTo.city}</div>
               </div>
             </div>
           </div>
@@ -97,7 +97,7 @@ const Template8 = forwardRef((props, ref) => {
                 </tr>
               </thead>
               <tbody>
-                {dataSet.items.map((item, index) => (
+                {dataSet?.items.map((item, index) => (
                   <tr key={index}>
                     <td className="text-left border-r border-black  pl-1">
                       {index + 1}
@@ -122,7 +122,7 @@ const Template8 = forwardRef((props, ref) => {
                     </td>
 
                     <td className="text-right pl-1">
-                      {item.totalAmount.toFixed(2)}
+                      {item.totalAmount?.toFixed(2)}
                     </td>
                   </tr>
                 ))}
@@ -146,16 +146,16 @@ const Template8 = forwardRef((props, ref) => {
                   <td className="text-center border-r border-black  pl-1"></td>
                   <td className="text-right border-r border-black  pl-1"></td>
                   <td className="text-right   pl-1">
-                    <p>{dataSet.totalSgstAmount_2_5.toFixed(2)}%</p>
-                    <p>{dataSet.totalCgstAmount_2_5.toFixed(2)}%</p>
-                    <p>{dataSet.totalSgstAmount_6.toFixed(2)}%</p>
-                    <p>{dataSet.totalCgstAmount_6.toFixed(2)}%</p>
-                    <p>{dataSet.totalSgstAmount_9.toFixed(2)}%</p>
-                    <p>{dataSet.totalCgstAmount_9.toFixed(2)}%</p>
-                    <p>{dataSet?.tds.tds_amount.toFixed(2) || 0}%</p>
-                    <p>{dataSet?.tcs.tcs_amount.toFixed(2) || 0}%</p>
-                    <p>{dataSet.shippingCharges}</p>
-                    <p>{dataSet.packagingCharges}</p>
+                    <p>{dataSet?.totalSgstAmount_2_5?.toFixed(2)}%</p>
+                    <p>{dataSet?.totalCgstAmount_2_5?.toFixed(2)}%</p>
+                    <p>{dataSet?.totalSgstAmount_6?.toFixed(2)}%</p>
+                    <p>{dataSet?.totalCgstAmount_6?.toFixed(2)}%</p>
+                    <p>{dataSet?.totalSgstAmount_9?.toFixed(2)}%</p>
+                    <p>{dataSet?.totalCgstAmount_9?.toFixed(2)}%</p>
+                    <p>{dataSet?.tds.tds_amount?.toFixed(2) || 0}%</p>
+                    <p>{dataSet?.tcs.tcs_amount?.toFixed(2) || 0}%</p>
+                    <p>{dataSet?.shippingCharges}</p>
+                    <p>{dataSet?.packagingCharges}</p>
                   </td>
                 </tr>
                 <tr className="border-t-2 border-black">
@@ -169,7 +169,7 @@ const Template8 = forwardRef((props, ref) => {
                   <td className="text-center border-r border-black  pl-1"></td>
                   <td className="text-right border-r border-black  pl-1"></td>
                   <td className="text-right   pl-1">
-                    ₹{+dataSet.total?.toFixed(2)}
+                    ₹{+dataSet?.total?.toFixed(2)}
                   </td>
                 </tr>
                 {/* Repeat rows for more items */}
@@ -189,11 +189,11 @@ const Template8 = forwardRef((props, ref) => {
               </div>
               <div className="text-sm text-gray-600 w-3/4 px-2">
                 <div className="font-bold text-gray-800">Note:</div>
-                <div>{dataSet.notes || "No Notes"}</div>
+                <div>{dataSet?.notes || "No Notes"}</div>
                 <div className="font-bold text-gray-800">
                   Terms and Conditions:
                 </div>
-                <p>{dataSet.terms || "No Terms & Conditions"}</p>
+                <p>{dataSet?.terms || "No Terms & Conditions"}</p>
               </div>
             </div>
           )}

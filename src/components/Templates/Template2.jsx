@@ -172,7 +172,13 @@ const Template2 = forwardRef(function Template2(props, ref) {
             <div>Note:</div>
             <div>{dataSet?.notes || "No Notes"}</div>
           </div>
-          <div>Authorized Person</div>
+          <div>
+            <img
+              src={dataSet.sign}
+              className="w-36 h-14 mix-blend-multiply object-contain"
+            />
+            <div>Authorized Person</div>
+          </div>
         </div>
 
         {/* Footer */}

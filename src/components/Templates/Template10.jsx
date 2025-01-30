@@ -159,8 +159,11 @@ const Template10 = forwardRef((props, ref) => {
           </div>
         </div>
         <div className="text-end py-2">
-          <div className="text-3xl text-blue-600  font-bold text-primary-600">
-            {dataSet?.createdBy?.name}
+          <div className="flex justify-end">
+            <img
+              src={dataSet.sign}
+              className="w-36 h-14 mix-blend-multiply object-contain"
+            />
           </div>
           <div className="text-gray-600 ">Thanks You!</div>
         </div>

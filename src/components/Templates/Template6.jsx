@@ -128,12 +128,18 @@ const Template6 = forwardRef((props, ref) => {
             ))}
           </tbody>
         </table>
-        <div className="flex justify-between border-x border-black border-b">
+        <div className="flex justify-between border-x border-black border-b px-2">
           <div className="font-bold">Total:</div>
           <div className="text-right">₹{+dataSet?.total?.toFixed(2)}</div>
         </div>
-        <div className="text-end border-x font-bold border-black border-b">
+        <div className="text-end border-x font-bold border-black border-b p-2">
           <div>For {dataSet?.createdBy.name}:</div>
+          <div className="flex justify-end">
+            <img
+              src={dataSet.sign}
+              className="w-36 h-14 mix-blend-multiply object-contain"
+            />
+          </div>
           <div>Authorized Signatory</div>
         </div>
 

@@ -186,7 +186,13 @@ const Template4 = forwardRef((props, ref) => {
             </div>
             <div className="w-3/4 text-end py-2">
               <p className=" px-3">For,{dataSet?.createdBy?.name}</p>
-              <p className="mt-8  px-3">(Authorised Signatory)</p>
+              <div className="flex justify-end">
+                <img
+                  src={dataSet.sign}
+                  className="w-36 h-14 mix-blend-multiply object-contain"
+                />
+              </div>
+              <p className="px-3">(Authorised Signatory)</p>
             </div>
           </div>
         </div>

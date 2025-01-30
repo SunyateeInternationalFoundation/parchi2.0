@@ -1,13 +1,21 @@
 import {
+  addDoc,
   collection,
+  deleteDoc,
   doc,
   getDocs,
+  orderBy,
   query,
   Timestamp,
   where,
 } from "firebase/firestore";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 import { CalendarIcon } from "lucide-react";
-import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
@@ -29,7 +37,7 @@ import {
   SelectValue,
 } from "../components/UI/select";
 import CreateVendor from "../components/Vendors/CreateVendor";
-import { db } from "../firebase";
+import { db, storage } from "../firebase";
 import { cn, formatDate } from "../lib/utils";
 import SelectProductSide from "./SelectProductSide";
 import tcsData from "./tcsData";
@@ -52,7 +60,6 @@ function SetForm(props) {
     selectedPersonData,
     isVendor,
   } = props;
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isPersonDropdownVisible, setIsPersonDropdownVisible] = useState(false);
@@ -61,7 +68,6 @@ function SetForm(props) {
   const [productSearch, setProductSearch] = useState("");
   const [isProductDropdownVisible, setIsProductDropdownVisible] =
     useState(false);
-
   const purchaseList = ["Purchase", "PO", "DebitNote"];
   const [products, setProducts] = useState([]);
   const [attachFiles, setAttachFiles] = useState(formData.attachments || []);
@@ -69,10 +75,7 @@ function SetForm(props) {
   const [categories, setCategories] = useState([]);
   const [isProductSelected, setIsProductSelected] = useState(false);
   const [books, setBooks] = useState([]);
-  const [taxTypeOptions, setTaxTypeOptions] = useState({
-    tds: [],
-    tcs: [],
-  });
+
   const [taxSelect, setTaxSelect] = useState("");
   const [total_Tax_Amount, setTotal_Tax_Amount] = useState(0);
   const [warehouses, setWarehouses] = useState([]);
@@ -87,15 +90,8 @@ function SetForm(props) {
     totalCgstAmount_9: 0,
     totalAmount: 0,
   });
-  function onSelect_TDS_TCS(index) {
-    let taxDetails = tcsData[index];
-    if (taxSelect === "tds") {
-      taxDetails = tdsData[index];
-    } else {
-      taxDetails = tcsData[index];
-    }
-    setSelectedTaxDetails(taxDetails);
-  }
+  const [SignImagesList, setSignImagesList] = useState([]);
+  const [isSignOpen, setIsSignOpen] = useState(false);
 
   const handlePersonInputChange = (e) => {
     const value = e.target.value.trim();
@@ -173,36 +169,14 @@ function SetForm(props) {
     setProducts(productData);
     calculateProduct(productData);
   }
-  useEffect(() => {
-    addActionQty();
-  }, [formData.products]);
-
-  useEffect(() => {
-    if (selectedCategory === "all" && productSearch === "") {
-      setProductSuggestions(products);
-      return;
-    }
-    const filteredSuggestions = products.filter((item) => {
-      return (
-        item.name.toLowerCase().includes(productSearch.toLowerCase()) &&
-        item.category === selectedCategory
-      );
-    });
-    setProductSuggestions(filteredSuggestions);
-  }, [productSearch, selectedCategory]);
 
   function total_TCS_TDS_Amount() {
-    const totalQty = products.reduce((acc, cur) => {
-      return acc + cur.actionQty;
-    }, 0);
-    if (taxSelect === "" || !selectedTaxDetails.id || totalQty === 0) {
+    const totalQty = calculateTotal();
+    if (taxSelect === "" || !selectedTaxDetails.rate || totalQty === 0) {
       return;
     }
 
-    const amount =
-      taxSelect === "tcs"
-        ? selectedTaxDetails.tax_value
-        : selectedTaxDetails.percentageValue;
+    const amount = selectedTaxDetails.rate;
     const totalTaxAmount = amount * totalQty;
     setTotal_Tax_Amount(totalTaxAmount);
   }
@@ -331,40 +305,6 @@ function SetForm(props) {
     }));
   }
 
-  async function fetchTax() {
-    try {
-      const tdsRef = collection(db, "tds");
-      const tdsQuerySnapshot = await getDocs(tdsRef);
-      const tdsData = tdsQuerySnapshot.docs.map((doc) => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          natureOfPayment: data.payment_nature,
-          percentage: data.percentage,
-          percentageValue: data.percentage_value,
-          tdsSection: data.tds_section,
-        };
-      });
-      const tcsRef = collection(db, "tcs_tax");
-      const tcsQuerySnapshot = await getDocs(tcsRef);
-      const tcsData = tcsQuerySnapshot.docs.map((doc) => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          tax: data.tax,
-          tax_value: data.tax_value,
-          type_of_goods: data.type_of_goods,
-        };
-      });
-
-      setTaxTypeOptions({
-        tds: tdsData,
-        tcs: tcsData,
-      });
-    } catch (error) {
-      console.log("🚀 ~ fetchTDC ~ error:", error);
-    }
-  }
   async function fetchBooks() {
     try {
       const bookRef = collection(
@@ -456,17 +396,6 @@ function SetForm(props) {
 
     setCategories(categoriesData);
   };
-  useEffect(() => {
-    fetchCategories();
-    fetchProducts();
-    fetchBooks();
-    fetchWarehouse();
-    fetchTax();
-  }, [companyDetails.companyId, userDetails.selectedDashboard]);
-
-  useEffect(() => {
-    total_TCS_TDS_Amount();
-  }, [products, selectedTaxDetails]);
 
   function customActionQty(value, productId, isDelete = false) {
     if (!value && !isDelete) {
@@ -509,6 +438,83 @@ function SetForm(props) {
       totalAmount,
     };
   }
+
+  async function fetchSign() {
+    try {
+      const signRef = collection(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "signs"
+      );
+      const q = query(signRef, orderBy("createdAt", "desc"));
+      const getDocsList = await getDocs(q);
+      const signData = getDocsList.docs.map((doc) => {
+        const { name, url } = doc.data();
+        return { id: doc.id, name, url };
+      });
+      setSignImagesList(signData);
+    } catch (error) {
+      console.log("🚀 ~ fetchSign ~ error:", error);
+    }
+  }
+
+  async function uploadSign(e) {
+    e.preventDefault();
+    const file = e.target.files[0];
+    if (!file.name) {
+      return;
+    }
+    try {
+      const storageRef = ref(storage, `signImages/${file.name}`);
+      await uploadBytes(storageRef, file);
+      const productImageUrl = await getDownloadURL(storageRef);
+      const payload = {
+        name: file.name,
+        url: productImageUrl,
+        createdAt: Timestamp.fromDate(new Date()),
+        who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+      };
+
+      const signRef = collection(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "signs"
+      );
+
+      const newSign = await addDoc(signRef, payload);
+      setSignImagesList((val) => [
+        { id: newSign.id, name: payload.name, url: payload.url },
+        ...val,
+      ]);
+    } catch (error) {
+      console.log("🚀 ~ fetchSign ~ error:", error);
+    }
+  }
+  async function deleteSign(signId, signUrl) {
+    try {
+      if (!confirm("Are you sure want to delete?")) {
+        return;
+      }
+      const storageRef = ref(storage, signUrl);
+      await deleteObject(storageRef);
+
+      const signRef = doc(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "signs",
+        signId
+      );
+      await deleteDoc(signRef);
+
+      setSignImagesList((prev) => prev.filter((sign) => sign.id !== signId));
+    } catch (error) {
+      console.log("🚀 ~ deleteSign ~ error:", error);
+    }
+  }
+
   function onSubmit(isPrint = false) {
     // const tcs = {
     //   isTcsApplicable: Boolean(taxSelect === "tcs"),
@@ -544,6 +550,42 @@ function SetForm(props) {
     }
     onSetForm(payload);
   }
+  useEffect(() => {
+    calculateTotal();
+  }, [formData.extraDiscountType]);
+
+  useEffect(() => {
+    fetchSign();
+    fetchCategories();
+    fetchProducts();
+    fetchBooks();
+    fetchWarehouse();
+  }, [companyDetails.companyId, userDetails.selectedDashboard]);
+
+  useEffect(() => {
+    setAttachFiles(formData.attachments);
+    setPersonSuggestions(personDetails);
+    addActionQty();
+  }, [personDetails, formData.attachments, formData.products]);
+
+  useEffect(() => {
+    total_TCS_TDS_Amount();
+  }, [products, selectedTaxDetails]);
+
+  useEffect(() => {
+    if (selectedCategory === "all" && productSearch === "") {
+      setProductSuggestions(products);
+      return;
+    }
+    const filteredSuggestions = products.filter((item) => {
+      return (
+        item.name.toLowerCase().includes(productSearch.toLowerCase()) &&
+        item.category === selectedCategory
+      );
+    });
+    setProductSuggestions(filteredSuggestions);
+  }, [productSearch, selectedCategory]);
+
   return (
     <div className="bg-gray-100 overflow-y-auto" style={{ height: "92vh" }}>
       <div className="px-5 pb-5">
@@ -1018,7 +1060,10 @@ function SetForm(props) {
                           )
                       )
                     ) : (
-                      <tr>
+                      <tr
+                        style={{ border: "none" }}
+                        className="hover:bg-transparent"
+                      >
                         <td
                           colSpan="8"
                           className="py-10 text-center space-y-3  w-full"
@@ -1093,19 +1138,92 @@ function SetForm(props) {
                 </div>
                 <div className="w-full text-gray-500 space-y-2">
                   <div>Sign</div>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder=" Select Sign" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {/* {books.map((book) => (
-                                  <SelectItem value={book.id} key={book.id}>
-                                    {`${book.name} - ${book.bankName} - ${book.branch}`}
-                                  </SelectItem>
-                                  ))} */}
-                    </SelectContent>
-                  </Select>
+                  <div className="  relative">
+                    <div
+                      className="border h-12 rounded-md cursor-pointer"
+                      onClick={() => {
+                        setIsSignOpen((val) => !val);
+                      }}
+                    >
+                      {formData.sign ? (
+                        <div className="flex items-center">
+                          <img
+                            src={formData.sign}
+                            className="w-full h-12 mix-blend-multiply object-contain"
+                          />
+                          <div
+                            className="hover:text-red-500 text-2xl pe-4 "
+                            onClick={() => {
+                              setFormData((val) => ({ ...val, sign: "" }));
+                            }}
+                          >
+                            <IoClose />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="px-5 py-3">Select Sign</div>
+                      )}
+                    </div>
+                    {isSignOpen && (
+                      <div className="absolute w-full border-2 left-0 top-14 bg-white rounded-md auto-focus shadow">
+                        <div className="border-b  minH-96 overflow-y-auto">
+                          {SignImagesList.length > 0 &&
+                            SignImagesList.map((item) => (
+                              <div
+                                className="flex items-center cursor-pointer hover:bg-blue-100 rounded-md"
+                                key={item.id}
+                              >
+                                <div
+                                  className="w-full h-14 overflow-hidden"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setFormData((val) => ({
+                                      ...val,
+                                      sign: item.url,
+                                    }));
+                                    setIsSignOpen(false);
+                                  }}
+                                >
+                                  <img
+                                    src={item.url}
+                                    className="w-full h-14 mix-blend-multiply object-contain"
+                                  />
+                                </div>
+                                <div
+                                  className="hover:text-red-500 text-2xl pe-4"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    deleteSign(item.id, item.url);
+                                  }}
+                                >
+                                  <IoClose />
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+                        <div className="p-3 flex justify-center">
+                          <label
+                            htmlFor="file"
+                            className="cursor-pointer p-2 rounded-md border-2 "
+                          >
+                            <div>
+                              <span className="py-1 px-4">+ ADD</span>
+                            </div>
+                            <input
+                              id="file"
+                              type="file"
+                              className="hidden"
+                              accept="image/*"
+                              multiple
+                              onChange={uploadSign}
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
+
                 <div className="w-full text-gray-500 space-y-2 grid">
                   <div>
                     Attach Files{" "}
@@ -1273,8 +1391,10 @@ function SetForm(props) {
               <div>
                 <div className="w-full flex ">
                   {taxSelect === "tds" && (
-                    // <Select onValueChange={onSelect_TDS_TCS}>
-                    <Select>
+                    <Select
+                      // onValueChange={(data) => setSelectedTaxDetails(data)}
+                      value={selectedTaxDetails?.rate ? selectedTaxDetails : ""}
+                    >
                       <SelectTrigger>
                         <SelectValue
                           placeholder={`Select ${taxSelect.toUpperCase()} Option`}
@@ -1282,7 +1402,7 @@ function SetForm(props) {
                       </SelectTrigger>
                       <SelectContent>
                         {tdsData.map((ele, index) => (
-                          <SelectItem key={index} value={index}>
+                          <SelectItem key={index} value={ele}>
                             <span className="font-semibold">
                               {ele.rate}% - {ele.code}
                             </span>
@@ -1293,7 +1413,7 @@ function SetForm(props) {
                     </Select>
                   )}
                   {taxSelect === "tcs" && (
-                    // <Select onValueChange={onSelect_TDS_TCS}>
+                    // <Select onValueChange={(data) => setSelectedTaxDetails(data)}>
                     <Select>
                       <SelectTrigger>
                         <SelectValue
@@ -1528,19 +1648,4 @@ function SetForm(props) {
     </div>
   );
 }
-SetForm.propTypes = {
-  formId: PropTypes.string,
-  formName: PropTypes.string,
-  formData: PropTypes.object,
-  personDetails: PropTypes.array,
-  setSelectedPersonData: PropTypes.func,
-  setFormData: PropTypes.func,
-  prefix: PropTypes.string,
-  preFormList: PropTypes.array,
-  onSetForm: PropTypes.func,
-  companyDetails: PropTypes.object,
-  userDetails: PropTypes.object,
-  selectedPersonData: PropTypes.object,
-  isVendor: PropTypes.bool,
-};
 export default SetForm;

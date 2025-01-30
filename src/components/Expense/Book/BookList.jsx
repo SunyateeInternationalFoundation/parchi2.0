@@ -102,7 +102,7 @@ const BookList = () => {
           {loading ? (
             <div className="text-center py-6">Loading ...</div>
           ) : (
-            <div className="overflow-y-auto" style={{ height: "96vh" }}>
+            <div className="overflow-y-auto" style={{ minHeight: "96vh" }}>
               <table className="w-full border-collapse text-start">
                 <thead className=" bg-white">
                   <tr className="border-b">

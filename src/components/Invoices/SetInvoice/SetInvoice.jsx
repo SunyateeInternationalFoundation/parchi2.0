@@ -203,6 +203,7 @@ const SetInvoice = () => {
       console.error("Error uploading file:", error);
     }
   };
+
   async function onSetInvoice(data) {
     try {
       const { no, ...restForm } = formData;
@@ -246,6 +247,7 @@ const SetInvoice = () => {
         zipCode: companyDetails.zipCode ?? "",
         phoneNo: phoneNo,
       };
+
       const createdBy = invoiceId
         ? { ...baseCreatedBy, who: formData.createdBy.who }
         : {
