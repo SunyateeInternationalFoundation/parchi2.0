@@ -10,11 +10,12 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import SetForm from "../../../constants/SetForm";
-import { db } from "../../../firebase";
+import { db, storage } from "../../../firebase";
 import { setAllCustomersDetails } from "../../../store/CustomerSlice";
 
 const SetInvoice = () => {
@@ -100,7 +101,6 @@ const SetInvoice = () => {
           }));
         }
       }
-      console.log("🚀 ~ fetchInvoiceNumbers ~ noList:", noList);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -181,10 +181,32 @@ const SetInvoice = () => {
     customerDetails();
   }, [companyDetails.companyId, userDetails.selectedDashboard]);
 
+  const handleFileChange = async (files) => {
+    const payload = [];
+    if (files.length <= 0) {
+      return [];
+    }
+
+    try {
+      for (let file of files) {
+        if (file?.url) {
+          payload.push(file);
+        } else {
+          const storageRef = ref(storage, `productImages/${file.name}`);
+          await uploadBytes(storageRef, file);
+          const productImageUrl = await getDownloadURL(storageRef);
+          payload.push({ name: file.name, url: productImageUrl });
+        }
+      }
+      return payload;
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
   async function onSetInvoice(data) {
     try {
       const { no, ...restForm } = formData;
-      const { products, isPrint, ...rest } = data;
+      const { products, isPrint, attachFiles, ...rest } = data;
       const customerRef = doc(db, "customers", selectedCustomerData.id);
       const companyRef = doc(db, "companies", companyDetails.companyId);
       let subTotal = 0;
@@ -230,9 +252,11 @@ const SetInvoice = () => {
             ...baseCreatedBy,
             who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
           };
+
       const payload = {
         ...restForm,
         ...rest,
+        attachments: await handleFileChange(attachFiles),
         invoiceNo: no,
         prefix,
         createdBy,
@@ -248,7 +272,9 @@ const SetInvoice = () => {
           name: selectedCustomerData.name,
         },
       };
+
       let invoiceRef = "";
+
       if (invoiceId) {
         invoiceRef = doc(
           db,

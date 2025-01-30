@@ -10,6 +10,7 @@ import { CalendarIcon } from "lucide-react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { IoClose } from "react-icons/io5";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import addItem from "../assets/addItem.png";
@@ -63,6 +64,7 @@ function SetForm(props) {
 
   const purchaseList = ["Purchase", "PO", "DebitNote"];
   const [products, setProducts] = useState([]);
+  const [attachFiles, setAttachFiles] = useState(formData.attachments || []);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [categories, setCategories] = useState([]);
   const [isProductSelected, setIsProductSelected] = useState(false);
@@ -93,17 +95,6 @@ function SetForm(props) {
       taxDetails = tcsData[index];
     }
     setSelectedTaxDetails(taxDetails);
-  }
-
-  function DateFormate(timestamp) {
-    const milliseconds =
-      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
-    const date = new Date(milliseconds);
-    const getDate = String(date.getDate()).padStart(2, "0");
-    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
-    const getFullYear = date.getFullYear();
-
-    return `${getFullYear}-${getMonth}-${getDate}`;
   }
 
   const handlePersonInputChange = (e) => {
@@ -152,8 +143,9 @@ function SetForm(props) {
   };
 
   useEffect(() => {
+    setAttachFiles(formData.attachments);
     setPersonSuggestions(personDetails);
-  }, [personDetails]);
+  }, [personDetails, formData.attachments]);
 
   function addActionQty() {
     if (formData?.products?.length === 0 || products.length === 0 || !formId) {
@@ -391,6 +383,7 @@ function SetForm(props) {
       console.log("🚀 ~ fetchBooks ~ error:", error);
     }
   }
+
   async function fetchWarehouse() {
     try {
       const bookRef = collection(
@@ -443,13 +436,13 @@ function SetForm(props) {
         };
         return ModifiedProductData(temp);
       });
-      console.log("🚀 ~ productList:", productsData);
 
       setProducts(productsData);
     } catch (error) {
       console.error("Error fetching forms:", error);
     }
   };
+
   const fetchCategories = async () => {
     const categoriesRef = collection(
       db,
@@ -542,6 +535,7 @@ function SetForm(props) {
       // tcs,
       products,
       isPrint,
+      attachFiles,
       total: +calculateTotal(),
     };
     if (!selectedPersonData.id) {
@@ -1105,22 +1099,79 @@ function SetForm(props) {
                     </SelectTrigger>
                     <SelectContent>
                       {/* {books.map((book) => (
-                        <SelectItem value={book.id} key={book.id}>
-                          {`${book.name} - ${book.bankName} - ${book.branch}`}
-                        </SelectItem>
-                      ))} */}
+                                  <SelectItem value={book.id} key={book.id}>
+                                    {`${book.name} - ${book.bankName} - ${book.branch}`}
+                                  </SelectItem>
+                                  ))} */}
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="w-full text-gray-500 space-y-2 ">
-                  <div>Attach Files</div>
-                  <input
-                    type="file"
-                    className="flex h-12  w-full rounded-md border border-input
-                bg-white px-3 py-3 text-sm text-gray-400 file:border-0
-                file:bg-transparent file:text-gray-600 file:text-sm
-                file:font-medium"
-                  />
+                <div className="w-full text-gray-500 space-y-2 grid">
+                  <div>
+                    Attach Files{" "}
+                    <small>(Each file must be less than 2 MB.)</small>
+                  </div>
+                  <label
+                    htmlFor="file"
+                    className="cursor-pointer p-2 rounded-md border-2  border"
+                  >
+                    <div>
+                      {attachFiles.length > 0 ? (
+                        <div className="grid grid-cols-2 gap-3">
+                          {attachFiles.map((file, index) => (
+                            <div
+                              className="py-1 px-4 w-full border rounded-md flex items-center"
+                              key={index}
+                            >
+                              <div className="w-full text-nowrap text-ellipsis overflow-hidden">
+                                {file.name}
+                              </div>
+                              <div
+                                className="hover:text-red-500 text-lg"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  const filterFiles = attachFiles.filter(
+                                    (_, i) => i !== index
+                                  );
+                                  setAttachFiles(filterFiles);
+                                }}
+                              >
+                                <IoClose />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <>
+                          <span className="py-1 px-4">Upload Pdf</span>
+                        </>
+                      )}
+                    </div>
+                    <input
+                      id="file"
+                      type="file"
+                      className="hidden"
+                      accept="application/pdf"
+                      multiple
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files);
+                        if (attachFiles.length + files.length > 2) {
+                          alert("You can only upload a maximum of 2 files.");
+                          e.target.value = null;
+                        } else {
+                          const invalidFiles = files.filter(
+                            (file) => file.size > 2 * 1024 * 1024
+                          );
+                          if (invalidFiles.length > 0) {
+                            alert("Each file must be less than 2 MB.");
+                            e.target.value = null;
+                          } else {
+                            setAttachFiles((val) => [...val, ...files]);
+                          }
+                        }
+                      }}
+                    />
+                  </label>
                 </div>
                 <div className="w-full text-gray-500 space-y-2 ">
                   <div>Shipping Charges</div>
