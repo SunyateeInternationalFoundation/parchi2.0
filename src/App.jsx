@@ -20,11 +20,10 @@ function App() {
       isAuthenticated &&
       isCompanyProfileDone &&
       usersDetails.selectedDashboard !== "" &&
-      location.pathname == ""
+      location.pathname == "/"
     ) {
-      navigate("/" + usersDetails.selectedDashboard);
-    }
-    if (!isAuthenticated || !isCompanyProfileDone) {
+      navigate(usersDetails.selectedDashboard);
+    } else if (!isAuthenticated || !isCompanyProfileDone) {
       navigate("/");
     }
   }, [usersDetails.selectedDashboard]);
