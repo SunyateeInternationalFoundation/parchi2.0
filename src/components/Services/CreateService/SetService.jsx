@@ -209,19 +209,6 @@ function SetService() {
           isSelected: false,
           isAddDescription: false,
         };
-
-        // let discount = +data.discount || 0;
-
-        // if (data.discountType) {
-        //   discount = (+data.sellingPrice / 100) * data.discount;
-        // }
-        // const netAmount = +data.sellingPrice - discount;
-        // const taxRate = data.tax || 0;
-        // const sgst = taxRate / 2;
-        // const cgst = taxRate / 2;
-        // const taxAmount = netAmount * (taxRate / 100);
-        // const sgstAmount = netAmount * (sgst / 100);
-        // const cgstAmount = netAmount * (cgst / 100);
         return ModifiedServiceData(temp);
       });
       setServicesList(serviceData);
@@ -370,6 +357,7 @@ function SetService() {
     setSelectedServicesList(data);
     calculationService(data);
   }
+
   function calculationService(data) {
     const totalWithoutTaxableAmount = data.reduce((sum, service) => {
       return (sum += service.netAmount);
@@ -432,6 +420,7 @@ function SetService() {
       totalAmount,
     });
   }
+
   function ModifiedServiceData(data) {
     let discount = +data.discount || 0;
 

@@ -4,6 +4,7 @@ import {
   doc,
   getDocs,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -19,6 +20,13 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import addItem from "../../../assets/addItem.png";
 import { db } from "../../../firebase";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../UI/select";
 import CreateStaff from "./CreateStaff";
 
 function Staff() {
@@ -93,6 +101,20 @@ function Staff() {
     }
   };
 
+  const handleStatusChange = async (staffId, newStatus) => {
+    try {
+      const invoiceDoc = doc(db, "staff", staffId);
+      await updateDoc(invoiceDoc, { status: newStatus });
+      setStaffData((prevData) =>
+        prevData.map((staff) =>
+          staff.id === staffId ? { ...staff, status: newStatus } : staff
+        )
+      );
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
+
   return (
     <div className="main-container" style={{ height: "82vh" }}>
       <div className="container">
@@ -135,6 +157,9 @@ function Staff() {
                     Payment Details
                   </td>
                   <td className="px-5 py-1 text-gray-400 font-semibold text-center">
+                    Status
+                  </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-center">
                     Actions
                   </td>
                 </tr>
@@ -167,6 +192,37 @@ function Staff() {
                         <span className="text-xs text-gray-600">
                           {staff.isDailyWages ? " (perDay)" : " (perMonth)"}
                         </span>
+                      </td>
+                      <td
+                        className="px-5 py-3 w-32"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div
+                          className={` text-center flex justify-center items-center h-8 overflow-hidden w-28  rounded-lg text-xs  ${
+                            staff.status === "Active"
+                              ? "bg-green-100"
+                              : "bg-red-100"
+                          }`}
+                        >
+                          <Select
+                            value={staff.status}
+                            onValueChange={(value) =>
+                              handleStatusChange(staff.id, value)
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder={"Select Status"} />
+                            </SelectTrigger>
+                            <SelectContent className="w-10 h-26">
+                              <SelectItem value="Active" className="h-8">
+                                Active
+                              </SelectItem>
+                              <SelectItem value="InActive" className="h-8">
+                                InActive
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </td>
                       <td className="px-5 py-3">
                         <div

@@ -179,12 +179,8 @@ function RenewalService() {
   }
 
   function calculationService(data) {
-    const totalTaxableAmount = data.reduce((sum, service) => {
-      const cal = sum + (service.totalAmount - service.taxAmount);
-      if (!service.sellingPriceTaxType) {
-        return sum + service.totalAmount;
-      }
-      return cal;
+    const totalWithoutTaxableAmount = data.reduce((sum, service) => {
+      return (sum += service.netAmount);
     }, 0);
 
     const totalSgstAmount_2_5 = data.reduce(
@@ -215,7 +211,7 @@ function RenewalService() {
     );
 
     const subTotalAmount =
-      totalTaxableAmount +
+      totalWithoutTaxableAmount +
       totalSgstAmount_2_5 +
       totalCgstAmount_2_5 +
       totalSgstAmount_6 +
@@ -230,7 +226,7 @@ function RenewalService() {
     const totalAmount = +subTotalAmount - discountAmount;
     // Set state with the new values
     setTotalAmounts({
-      totalTaxableAmount,
+      totalTaxableAmount: totalWithoutTaxableAmount,
       totalSgstAmount_2_5,
       totalCgstAmount_2_5,
       totalSgstAmount_6,
@@ -248,24 +244,36 @@ function RenewalService() {
     if (data.discountType) {
       discount = (+data.sellingPrice / 100) * data.discount;
     }
-    const netAmount = +data.sellingPrice - discount;
+    let netAmount = +data.sellingPrice - discount;
     const taxRate = data.tax || 0;
-
     const sgst = taxRate / 2;
     const cgst = taxRate / 2;
-    const taxAmount = netAmount * (taxRate / 100);
-    const sgstAmount = netAmount * (sgst / 100);
-    const cgstAmount = netAmount * (cgst / 100);
+
+    let taxAmount = netAmount - netAmount * (100 / (100 + taxRate));
+    if (!data.sellingPriceTaxType) {
+      taxAmount = (netAmount * taxRate) / 100;
+    }
+
+    const sgstAmount = taxAmount / 2;
+    const cgstAmount = taxAmount / 2;
+
+    let totalAmount = netAmount;
+
+    if (data.sellingPriceTaxType) {
+      netAmount = netAmount - taxAmount;
+    } else {
+      totalAmount = netAmount + taxAmount;
+    }
 
     return {
       ...data,
-      netAmount: netAmount,
+      netAmount,
       sgst,
       cgst,
       sgstAmount,
       cgstAmount,
       taxAmount,
-      totalAmount: +netAmount,
+      totalAmount,
     };
   }
 
@@ -367,7 +375,6 @@ function RenewalService() {
         id
       );
       const getData = (await getDoc(docRef)).data();
-      console.log("🚀 ~ fetchServiceData ~ getData:", getData);
 
       const customerData = (
         await getDoc(getData.customerDetails.customerRef)
@@ -643,7 +650,10 @@ function RenewalService() {
                         Discount
                       </th>
                       <th className="px-2 py-3 text-gray-500 font-semibold ">
-                        Is Tax Included
+                        Net Amount
+                      </th>
+                      <th className="px-2 py-3 text-gray-500 font-semibold ">
+                        Tax
                       </th>
                       <th className="px-4 py-3 text-gray-500 font-semibold ">
                         Total Amount
@@ -726,8 +736,16 @@ function RenewalService() {
                             </select>
                           </div>
                         </td>
+                        <td className="px-4 py-2">
+                          ₹{service.netAmount.toFixed(2)}
+                        </td>
+
                         <td className="px-2 py-2">
-                          {service.sellingPriceTaxType ? "Yes" : "No"}
+                          {service.tax}%
+                          <span className="text-xs">
+                            ({service.sellingPriceTaxType ? "In: " : "Ex: "}
+                            {service.taxAmount.toFixed(2)})
+                          </span>
                         </td>
                         <td className="px-4 py-2">₹{service.totalAmount} </td>
                       </tr>

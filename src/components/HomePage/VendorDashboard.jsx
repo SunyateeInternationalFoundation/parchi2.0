@@ -106,11 +106,11 @@ const VendorDashboard = () => {
   }, []);
 
   return (
-    <div className="flex bg-white h-full">
+    <div className="flex bg-gray-100 h-full">
       <main className="flex w-full overflow-y-auto">
         <div className="w-full">
           <div className="px-6 py-8">
-            <div className=" border rounded-2xl">
+            <div className=" border rounded-2xl bg-white">
               <div className="flex items-center justify-between border px-6 py-4 rounded-2xl shadow">
                 <div className="flex items-center w-3/4 space-x-4">
                   <div className="border rounded-full w-[89px] h-[89px] shadow flex items-center justify-center">
@@ -172,16 +172,20 @@ const VendorDashboard = () => {
               {icons.map((item) => (
                 <div
                   key={item.name}
-                  className="cursor-pointer space-y-1 flex border rounded-lg p-5 hover:shadow"
+                  className="cursor-pointer space-y-1 flex border rounded-lg p-5 hover:shadow-md  bg-white shadow "
                   onClick={() => navigate(item.link)}
                 >
-                  <img
-                    src={item.img}
-                    className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-cover w-[70px] h-[70px]"
-                  />
+                  <div className="flex items-center">
+                    <img
+                      src={item.img}
+                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-cover w-[70px] h-[70px] "
+                    />
+                  </div>
                   <div className="ps-5">
-                    <div className="text-lg font-semibold">{item.name}</div>
-                    <div className="text-gray-500">Total: {item.total}</div>
+                    <div className="text-lg">{item.name}</div>
+                    <div className="text-2xl  font-bold ">
+                      Total: {item.total}
+                    </div>
                   </div>
                 </div>
               ))}
