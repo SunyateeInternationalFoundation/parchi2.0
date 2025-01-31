@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
 
 const ProductView = ({ productData }) => {
-  const { id: productId } = useParams();
-  const userDetails = useSelector((state) => state.users);
-  const companyDetails =
-    userDetails.companies[userDetails.selectedCompanyIndex];
-  const [isEdit, setIsEdit] = useState(false);
   const [product, setProduct] = useState(productData);
-  const [progress, setProgress] = useState(0);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
