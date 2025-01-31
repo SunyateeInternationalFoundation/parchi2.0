@@ -207,8 +207,8 @@ const Template1 = forwardRef((props, ref) => {
           <h3>Total : ₹ {+dataSet?.total?.toFixed(2)}</h3>
         </div>
 
-        {bankDetails && (
-          <div className=" flex justify-between">
+        <div className=" flex justify-between">
+          {bankDetails && (
             <div>
               <div>
                 <strong>Bank Details</strong>
@@ -230,15 +230,18 @@ const Template1 = forwardRef((props, ref) => {
                 <span className="font-bold">{bankDetails?.branch}</span>
               </div>
             </div>
-            <div className="mt-24">
+          )}
+          <div className="mt-24">
+            {dataSet.sign && (
               <img
                 src={dataSet.sign}
+                alt={dataSet?.createdBy?.name}
                 className="w-36 h-14 mix-blend-multiply object-contain"
               />
-              <div>Authorized Signatory</div>
-            </div>
+            )}
+            <div>Authorized Signatory</div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

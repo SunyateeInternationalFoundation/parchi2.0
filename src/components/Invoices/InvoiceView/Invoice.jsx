@@ -528,7 +528,7 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
                   <div className="mb-3 text-end flex justify-end ">
                     <span className="  text-gray-600 ">Total :</span>
                     <span className="   text-end w-[100px] md:w-[160px] block  font-bold">
-                      {invoice.total}
+                      {invoice.total?.toFixed(2)}
                     </span>
                   </div>
                 </div>

@@ -135,10 +135,13 @@ const Template6 = forwardRef((props, ref) => {
         <div className="text-end border-x font-bold border-black border-b p-2">
           <div>For {dataSet?.createdBy.name}:</div>
           <div className="flex justify-end">
-            <img
-              src={dataSet.sign}
-              className="w-36 h-14 mix-blend-multiply object-contain"
-            />
+            {dataSet.sign && (
+              <img
+                src={dataSet.sign}
+                alt={dataSet?.createdBy?.name}
+                className="w-36 h-14 mix-blend-multiply object-contain"
+              />
+            )}
           </div>
           <div>Authorized Signatory</div>
         </div>

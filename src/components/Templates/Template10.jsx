@@ -134,7 +134,7 @@ const Template10 = forwardRef((props, ref) => {
           <div className="flex justify-end bg-blue-50 border font-bold text-gray-800">
             <div className="w-1/3 flex justify-between px-1 py-1">
               <span>Tax :</span>
-              <span> ₹{+dataSet?.tax?.toFixed(2)}</span>
+              <span> ₹{(+dataSet?.tax)?.toFixed(2)}</span>
             </div>
           </div>
           <div className="flex justify-end bg-blue-50 border font-bold text-gray-800">
@@ -160,10 +160,13 @@ const Template10 = forwardRef((props, ref) => {
         </div>
         <div className="text-end py-2">
           <div className="flex justify-end">
-            <img
-              src={dataSet.sign}
-              className="w-36 h-14 mix-blend-multiply object-contain"
-            />
+            {dataSet.sign && (
+              <img
+                src={dataSet.sign}
+                alt={dataSet?.createdBy?.name}
+                className="w-36 h-14 mix-blend-multiply object-contain"
+              />
+            )}
           </div>
           <div className="text-gray-600 ">Thanks You!</div>
         </div>

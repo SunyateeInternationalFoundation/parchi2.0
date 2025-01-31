@@ -102,7 +102,7 @@ const Template4 = forwardRef((props, ref) => {
               <strong>Bill Amount:</strong> ₹{+dataSet?.total?.toFixed(2)} Onlys
             </div>
             <div className="w-3/4">
-              {dataSet?.tcs.isTcsApplicable && (
+              {dataSet?.tcs?.isTcsApplicable && (
                 <div>
                   TCS :
                   <span className="ml-5">
@@ -110,7 +110,7 @@ const Template4 = forwardRef((props, ref) => {
                   </span>
                 </div>
               )}
-              {dataSet?.tds.isTdsApplicable && (
+              {dataSet?.tds?.isTdsApplicable && (
                 <div>
                   TDS :
                   <span className="ml-5">
@@ -174,10 +174,10 @@ const Template4 = forwardRef((props, ref) => {
               <span className="font-bold">Note: </span>
               <span>{dataSet?.notes || "No notes"}</span>
             </div>
-            <div className="w-3/4 flex justify-between font-bold py-2 ">
+            {/* <div className="w-3/4 flex justify-between font-bold py-2 ">
               <div className="px-2">Grand Total:</div>
               <div className="px-2">$285.55</div>
-            </div>
+            </div> */}
           </div>
           <div className="flex justify-between border-b border-black  ">
             <div className="w-full border-e border-black py-2 px-3">
@@ -187,10 +187,13 @@ const Template4 = forwardRef((props, ref) => {
             <div className="w-3/4 text-end py-2">
               <p className=" px-3">For,{dataSet?.createdBy?.name}</p>
               <div className="flex justify-end">
-                <img
-                  src={dataSet.sign}
-                  className="w-36 h-14 mix-blend-multiply object-contain"
-                />
+                {dataSet.sign && (
+                  <img
+                    src={dataSet.sign}
+                    alt={dataSet?.createdBy?.name}
+                    className="w-36 h-14 mix-blend-multiply object-contain"
+                  />
+                )}
               </div>
               <p className="px-3">(Authorised Signatory)</p>
             </div>

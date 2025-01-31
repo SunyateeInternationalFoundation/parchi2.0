@@ -166,18 +166,30 @@ function CreateProduct({ isOpen, onClose, setProductsData, from }) {
       );
       const productRef = await addDoc(productDocRef, payload);
       let discount = +payload.discount || 0;
+
       if (payload.discountType) {
         discount = (+payload.sellingPrice / 100) * payload.discount;
       }
-      const netAmount = +payload.sellingPrice - discount;
+      let netAmount = +payload.sellingPrice - discount;
       const taxRate = payload.tax || 0;
-
       const sgst = taxRate / 2;
       const cgst = taxRate / 2;
-      const taxAmount = netAmount * (taxRate / 100);
-      const sgstAmount = netAmount * (sgst / 100);
-      const cgstAmount = netAmount * (cgst / 100);
-      const totalAmount = payload.actionQty * netAmount;
+
+      let taxAmount = netAmount - netAmount * (100 / (100 + taxRate));
+      if (!payload.sellingPriceTaxType) {
+        taxAmount = (netAmount * taxRate) / 100;
+      }
+
+      const sgstAmount = taxAmount / 2;
+      const cgstAmount = taxAmount / 2;
+
+      let totalAmount = payload.actionQty * netAmount;
+
+      if (payload.sellingPriceTaxType) {
+        netAmount = netAmount - taxAmount;
+      } else {
+        totalAmount = payload.actionQty * (netAmount + taxAmount);
+      }
       const newProduct = {
         id: productRef.id,
         category: payload.category,
@@ -193,7 +205,7 @@ function CreateProduct({ isOpen, onClose, setProductsData, from }) {
         isAddDescription: false,
         actionQty: 0,
         tax: payload.tax,
-        netAmount: netAmount,
+        netAmount,
         sgst,
         cgst,
         sgstAmount,

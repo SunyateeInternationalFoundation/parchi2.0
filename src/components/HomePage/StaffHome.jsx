@@ -56,7 +56,7 @@ const StaffHome = () => {
     if (userDetails.asAStaffCompanies.length == 0) {
       fetchCompanyDetails();
     }
-  }, []);
+  }, [userDetails]);
 
   const fetchCompanyDetails = async () => {
     try {
@@ -83,6 +83,7 @@ const StaffHome = () => {
           })
         );
         setStaffDetails(staffDoc);
+
         dispatch(
           setAsAStaffCompanies({
             asAStaffCompanies: staffDoc,
@@ -102,6 +103,7 @@ const StaffHome = () => {
 
     return isTrue && (isTrue[subField] ?? false);
   }
+
   return (
     <div>
       <div style={{ height: "8vh" }}>
@@ -110,11 +112,20 @@ const StaffHome = () => {
       <div className="flex" style={{ height: "92vh" }}>
         <div style={{ width: "100%", height: "92vh" }} className="bg-gray-100">
           <Routes>
-            <Route
-              path="/"
-              element={<StaffDashboard checkPermission={checkPermission} />}
-            ></Route>
-            <Route path="/profile/:id" element={<StaffView />}></Route>
+            {staffDetails?.length > 0 && (
+              <Route
+                path="/"
+                element={
+                  <StaffDashboard
+                    checkPermission={checkPermission}
+                    staffDetails={staffDetails[selectedStaffCompanyIndex]}
+                  />
+                }
+              ></Route>
+            )}
+            {userDetails.asAStaffCompanies.length > 0 && (
+              <Route path="/profile/:id" element={<StaffView />}></Route>
+            )}
 
             {checkPermission("invoice", "view") && (
               <Route path="/invoice" element={<InvoiceList />}></Route>

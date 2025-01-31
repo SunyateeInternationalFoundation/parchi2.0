@@ -18,7 +18,7 @@ import Profile from "./Profile";
 import Projects from "./Projects";
 import StaffDocuments from "./StaffDocuments";
 
-function StaffView({ staffCompanyId }) {
+function StaffView() {
   const { id } = useParams();
   const userDetails = useSelector((state) => state.users);
   let companyId;
@@ -29,9 +29,6 @@ function StaffView({ staffCompanyId }) {
   } else {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  }
-  if (staffCompanyId) {
-    companyId = staffCompanyId;
   }
 
   const [activeTab, setActiveTab] = useState("Profile");
