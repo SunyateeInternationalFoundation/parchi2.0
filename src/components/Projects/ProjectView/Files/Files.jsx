@@ -194,7 +194,7 @@ const Files = () => {
   return (
     <div
       className="bg-white-500 p-8 overflow-y-auto"
-      style={{ height: "82vh" }}
+      style={{ height: "80vh" }}
     >
       <div className="bg-white rounded-lg">
         <div className="flex items-center justify-between p-5">

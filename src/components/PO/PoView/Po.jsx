@@ -5,12 +5,17 @@ import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
-import { IoDocumentTextOutline, IoDownloadOutline } from "react-icons/io5";
+import {
+  IoDocumentTextOutline,
+  IoDownloadOutline,
+  IoPrintOutline,
+} from "react-icons/io5";
 import { LiaTrashAltSolid } from "react-icons/lia";
 import { MdOutlineMarkEmailRead } from "react-icons/md";
 import { TbEdit } from "react-icons/tb";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useReactToPrint } from "react-to-print";
 import { db, storage } from "../../../firebase";
 import Template1 from "../../Templates/Template1";
 import Template10 from "../../Templates/Template10";
@@ -26,6 +31,9 @@ import Template9 from "../../Templates/Template9";
 
 function Po({ Po, bankDetails, selectTemplate }) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const print = searchParams.get("print");
   const userDetails = useSelector((state) => state.users);
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
@@ -43,6 +51,9 @@ function Po({ Po, bankDetails, selectTemplate }) {
   const [totalTax, setTotalTax] = useState(0);
   const [totalDiscount, setTotalDiscount] = useState(0);
   const poRef = useRef();
+  const reactToPrintFn = useReactToPrint({
+    contentRef: poRef,
+  });
 
   useEffect(() => {
     if (Po.products) {
@@ -55,7 +66,10 @@ function Po({ Po, bankDetails, selectTemplate }) {
       setTotalTax(tax);
       setTotalDiscount(discount);
     }
-  }, [Po]);
+    if (print === "true") {
+      reactToPrintFn();
+    }
+  }, [Po, print]);
 
   const handleDownloadPdf = () => {
     if (!Po.id) {
@@ -289,6 +303,12 @@ function Po({ Po, bankDetails, selectTemplate }) {
           </button>
           <button className="px-4 py-1 text-gray-600 rounded-md flex items-center  border hover:bg-black hover:text-white">
             <MdOutlineMarkEmailRead /> &nbsp; Share via Email
+          </button>
+          <button
+            className="px-4 py-1 text-gray-600 rounded-md flex items-center  border hover:bg-black hover:text-white"
+            onClick={() => reactToPrintFn()}
+          >
+            <IoPrintOutline /> &nbsp; Print
           </button>
         </div>
         <div className="flex items-center">

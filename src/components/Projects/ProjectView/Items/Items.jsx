@@ -89,7 +89,7 @@ function Items() {
     <div className="w-full">
       <div
         className="px-8 pt-5 bg-gray-100 overflow-y-auto"
-        style={{ width: "100%", height: "82vh" }}
+        style={{ width: "100%", height: "80vh" }}
       >
         <header className="flex space-x-3 ">
           <h1 className="text-2xl font-bold">Project Material</h1>

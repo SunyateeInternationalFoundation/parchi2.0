@@ -61,7 +61,7 @@ const Approval = () => {
   return (
     <div
       className="main-container"
-      style={{ height: "81vh", paddingTop: "32px" }}
+      style={{ height: "80vh", paddingTop: "32px" }}
     >
       <div className="bg-white rounded-lg ">
         {/* Filter Buttons */}

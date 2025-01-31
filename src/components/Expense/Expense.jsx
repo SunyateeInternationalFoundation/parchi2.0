@@ -210,218 +210,219 @@ function Expense() {
             </div>
           </div>
         </div>
-
-        <div className="container">
-          <nav className="flex items-center  mb-4 px-5">
-            <div className="space-x-4 w-full flex items-center">
-              <div className="flex items-center space-x-4  border px-5  py-3 rounded-md w-full">
-                <input
-                  type="text"
-                  placeholder="Search ..."
-                  className=" w-full focus:outline-none"
-                  value={searchTerm}
-                  onChange={handleSearch}
-                />
-                <IoSearch />
-              </div>
-              <Select
-                defaultValue={"All"}
-                onValueChange={(val) => {
-                  setFilterUser(val);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder=" Select PurchasePriceTaxType" />
-                </SelectTrigger>
-                <SelectContent className="h-18">
-                  <SelectItem value="All"> All</SelectItem>
-                  <SelectItem value="Customer">Customer</SelectItem>
-                  <SelectItem value="Vendors">Vendors</SelectItem>
-                  <SelectItem value="Staff">Staff</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="w-full">
-              <div className=" flex justify-end items-center space-x-4">
-                <button
-                  className="bg-red-500 flex items-center justify-center text-white space-x-2  px-5 py-3 font-semibold rounded-md"
-                  onClick={() =>
-                    setIsModalOpen({
-                      isOpen: true,
-                      type: "expense",
-                    })
-                  }
+        <div className="flex justify-center items-center">
+          <div className="container">
+            <nav className="flex items-center  mb-4 px-5">
+              <div className="space-x-4 w-full flex items-center">
+                <div className="flex items-center space-x-4  border px-5  py-3 rounded-md w-full">
+                  <input
+                    type="text"
+                    placeholder="Search ..."
+                    className=" w-full focus:outline-none"
+                    value={searchTerm}
+                    onChange={handleSearch}
+                  />
+                  <IoSearch />
+                </div>
+                <Select
+                  defaultValue={"All"}
+                  onValueChange={(val) => {
+                    setFilterUser(val);
+                  }}
                 >
-                  <FaArrowUp />
-                  <div>Expense</div>
-                </button>
-                <button
-                  className="bg-green-700 flex items-center  text-white text-center space-x-2 px-5  py-3 font-semibold rounded-md"
-                  onClick={() =>
-                    setIsModalOpen({
-                      isOpen: true,
-                      type: "income",
-                    })
-                  }
-                >
-                  <FaArrowDown /> <div>Income</div>
-                </button>
+                  <SelectTrigger>
+                    <SelectValue placeholder=" Select PurchasePriceTaxType" />
+                  </SelectTrigger>
+                  <SelectContent className="h-18">
+                    <SelectItem value="All"> All</SelectItem>
+                    <SelectItem value="Customer">Customer</SelectItem>
+                    <SelectItem value="Vendors">Vendors</SelectItem>
+                    <SelectItem value="Staff">Staff</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </div>
-          </nav>
+              <div className="w-full">
+                <div className=" flex justify-end items-center space-x-4">
+                  <button
+                    className="bg-red-500 flex items-center justify-center text-white space-x-2  px-5 py-3 font-semibold rounded-md"
+                    onClick={() =>
+                      setIsModalOpen({
+                        isOpen: true,
+                        type: "expense",
+                      })
+                    }
+                  >
+                    <FaArrowUp />
+                    <div>Expense</div>
+                  </button>
+                  <button
+                    className="bg-green-700 flex items-center  text-white text-center space-x-2 px-5  py-3 font-semibold rounded-md"
+                    onClick={() =>
+                      setIsModalOpen({
+                        isOpen: true,
+                        type: "income",
+                      })
+                    }
+                  >
+                    <FaArrowDown /> <div>Income</div>
+                  </button>
+                </div>
+              </div>
+            </nav>
 
-          {loading ? (
-            <div className="text-center py-6">Loading Expenses...</div>
-          ) : (
-            <div className="overflow-y-auto" style={{ height: "96vh" }}>
-              <table className="w-full border-collapse text-start">
-                <thead className=" bg-white">
-                  <tr className="border-b">
-                    <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
-                      Type
-                    </td>
-                    <td className="px-5 py-1 text-gray-400 font-semibold text-start">
-                      Date
-                    </td>
-                    <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
-                      ToWhom
-                    </td>
-                    <td className="px-5 py-1 text-gray-400 font-semibold  text-center">
-                      Amount
-                    </td>
-                    <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
-                      Mode
-                    </td>
-                    <td className="px-5 py-1 text-gray-400 font-semibold text-start">
-                      Category
-                    </td>
-                    <td className="px-5 py-1 text-gray-400 font-semibold text-start">
-                      IsProject
-                    </td>
-                    <td className="px-5 py-1 text-gray-400 font-semibold text-center">
-                      Delete
-                    </td>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginationData.length > 0 ? (
-                    paginationData.map((expense) => (
-                      <tr
-                        key={expense.id}
-                        className="border-b border-gray-200 text-center cursor-pointer"
-                        onClick={() =>
-                          setIsModalOpen({
-                            isOpen: true,
-                            type: expense.transactionType,
-                            updateData: expense,
-                          })
-                        }
-                      >
-                        <td className="px-8 py-3 text-start w-24">
-                          {expense.transactionType === "income" ? (
-                            <div className="text-green-500 p-3 bg-sky-100 rounded-lg ">
-                              <FaArrowDown />
-                            </div>
-                          ) : (
-                            <div className="text-red-500 p-3 bg-red-100 rounded-lg">
-                              <FaArrowUp />
-                            </div>
-                          )}
-                        </td>
-                        <td className="px-5 py-3 text-start">
-                          <FormatTimestamp timestamp={expense.date} />
-                        </td>
-                        <td className="px-5 py-3 text-start">
-                          {expense.toWhom.name} <br />
-                          <span className="text-gray-500 text-sm">
-                            Ph.No {expense.toWhom.phoneNumber}
-                          </span>
-                        </td>
-                        <td className="px-5 py-3 font-bold">
-                          ₹ {expense.amount}
-                        </td>
-                        <td className="px-5 py-3  text-start">
-                          {expense.paymentMode}
-                        </td>
-                        <td className="px-5 py-3  text-start">
-                          {expense.category}
-                        </td>
-                        <td className="px-5 py-3  text-start">
-                          {expense?.projectRef?.id ? "Yes" : "No"}
-                        </td>
-                        <td
-                          className="px-5 py-3   text-center"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onDeleteExpense(expense.id);
-                          }}
-                        >
-                          <div className=" flex items-center justify-center">
-                            <LiaTrashAltSolid className=" text-red-500 text-xl " />
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="8" className="h-96 text-center py-4">
-                        <div className="w-full flex justify-center">
-                          <img
-                            src={addItem}
-                            alt="add Item"
-                            className="w-24 h-24"
-                          />
-                        </div>
-                        <div> No Expenses Found</div>
+            {loading ? (
+              <div className="text-center py-6">Loading Expenses...</div>
+            ) : (
+              <div className="overflow-y-auto" style={{ height: "96vh" }}>
+                <table className="w-full border-collapse text-start">
+                  <thead className=" bg-white">
+                    <tr className="border-b">
+                      <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
+                        Type
+                      </td>
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                        Date
+                      </td>
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                        ToWhom
+                      </td>
+                      <td className="px-5 py-1 text-gray-400 font-semibold  text-center">
+                        Amount
+                      </td>
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start ">
+                        Mode
+                      </td>
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                        Category
+                      </td>
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                        IsProject
+                      </td>
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-center">
+                        Delete
                       </td>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-          <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
-            <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
-              {currentPage + 1} of {totalPages || 1} row(s) selected.
-            </div>
-            <div className="flex flex-wrap items-center gap-6">
-              <div className="flex items-center gap-2">
-                <button
-                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                  onClick={() => setCurrentPage(0)}
-                  disabled={currentPage <= 0}
-                >
-                  <div className="flex justify-center">
-                    <LuChevronsLeft className="text-sm" />
-                  </div>
-                </button>
-                <button
-                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                  onClick={() => setCurrentPage((val) => val - 1)}
-                  disabled={currentPage <= 0}
-                >
-                  <div className="flex justify-center">
-                    <LuChevronLeft className="text-sm" />
-                  </div>
-                </button>
-                <button
-                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                  onClick={() => setCurrentPage((val) => val + 1)}
-                  disabled={currentPage + 1 >= totalPages}
-                >
-                  <div className="flex justify-center">
-                    <LuChevronRight className="text-sm" />
-                  </div>
-                </button>
-                <button
-                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                  onClick={() => setCurrentPage(totalPages - 1)}
-                  disabled={currentPage + 1 >= totalPages}
-                >
-                  <div className="flex justify-center">
-                    <LuChevronsRight />
-                  </div>
-                </button>
+                  </thead>
+                  <tbody>
+                    {paginationData.length > 0 ? (
+                      paginationData.map((expense) => (
+                        <tr
+                          key={expense.id}
+                          className="border-b border-gray-200 text-center cursor-pointer"
+                          onClick={() =>
+                            setIsModalOpen({
+                              isOpen: true,
+                              type: expense.transactionType,
+                              updateData: expense,
+                            })
+                          }
+                        >
+                          <td className="px-8 py-3 text-start w-24">
+                            {expense.transactionType === "income" ? (
+                              <div className="text-green-500 p-3 bg-sky-100 rounded-lg ">
+                                <FaArrowDown />
+                              </div>
+                            ) : (
+                              <div className="text-red-500 p-3 bg-red-100 rounded-lg">
+                                <FaArrowUp />
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-5 py-3 text-start">
+                            <FormatTimestamp timestamp={expense.date} />
+                          </td>
+                          <td className="px-5 py-3 text-start">
+                            {expense.toWhom.name} <br />
+                            <span className="text-gray-500 text-sm">
+                              Ph.No {expense.toWhom.phoneNumber}
+                            </span>
+                          </td>
+                          <td className="px-5 py-3 font-bold">
+                            ₹ {expense.amount}
+                          </td>
+                          <td className="px-5 py-3  text-start">
+                            {expense.paymentMode}
+                          </td>
+                          <td className="px-5 py-3  text-start">
+                            {expense.category}
+                          </td>
+                          <td className="px-5 py-3  text-start">
+                            {expense?.projectRef?.id ? "Yes" : "No"}
+                          </td>
+                          <td
+                            className="px-5 py-3   text-center"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDeleteExpense(expense.id);
+                            }}
+                          >
+                            <div className=" flex items-center justify-center">
+                              <LiaTrashAltSolid className=" text-red-500 text-xl " />
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="8" className="h-96 text-center py-4">
+                          <div className="w-full flex justify-center">
+                            <img
+                              src={addItem}
+                              alt="add Item"
+                              className="w-24 h-24"
+                            />
+                          </div>
+                          <div> No Expenses Found</div>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
+              <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+                {currentPage + 1} of {totalPages || 1} row(s) selected.
+              </div>
+              <div className="flex flex-wrap items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <button
+                    className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                    onClick={() => setCurrentPage(0)}
+                    disabled={currentPage <= 0}
+                  >
+                    <div className="flex justify-center">
+                      <LuChevronsLeft className="text-sm" />
+                    </div>
+                  </button>
+                  <button
+                    className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                    onClick={() => setCurrentPage((val) => val - 1)}
+                    disabled={currentPage <= 0}
+                  >
+                    <div className="flex justify-center">
+                      <LuChevronLeft className="text-sm" />
+                    </div>
+                  </button>
+                  <button
+                    className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                    onClick={() => setCurrentPage((val) => val + 1)}
+                    disabled={currentPage + 1 >= totalPages}
+                  >
+                    <div className="flex justify-center">
+                      <LuChevronRight className="text-sm" />
+                    </div>
+                  </button>
+                  <button
+                    className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                    onClick={() => setCurrentPage(totalPages - 1)}
+                    disabled={currentPage + 1 >= totalPages}
+                  >
+                    <div className="flex justify-center">
+                      <LuChevronsRight />
+                    </div>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

@@ -167,7 +167,7 @@ const SetDeliveryChallan = () => {
   async function onSetDeliveryChallan(data) {
     try {
       const { no, ...restForm } = formData;
-      const { products, ...rest } = data;
+      const { products, isPrint, ...rest } = data;
       const customerRef = doc(db, "customers", selectedCustomerData.id);
       const companyRef = doc(db, "companies", companyDetails.companyId);
       let subTotal = 0;
@@ -233,9 +233,9 @@ const SetDeliveryChallan = () => {
           name: selectedCustomerData.name,
         },
       };
-
+      let deliveryChallanRef;
       if (deliverychallanId) {
-        await updateDoc(
+        deliveryChallanRef = await updateDoc(
           doc(
             db,
             "companies",
@@ -246,7 +246,7 @@ const SetDeliveryChallan = () => {
           payload
         );
       } else {
-        await addDoc(
+        deliveryChallanRef = await addDoc(
           collection(
             db,
             "companies",
@@ -281,6 +281,7 @@ const SetDeliveryChallan = () => {
           (deliverychallanId ? "Updated" : "Created") +
           " the DeliveryChallan"
       );
+
       navigate(
         userDetails.selectedDashboard === "staff"
           ? "/staff/delivery-challan"

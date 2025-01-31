@@ -1,19 +1,8 @@
-import { doc, updateDoc } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { useEffect, useState } from "react";
-import { FaUserEdit } from "react-icons/fa";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { db, storage } from "../../../firebase";
 
 const ProductView = ({ productData }) => {
-  const { id: productId } = useParams();
-  const userDetails = useSelector((state) => state.users);
-  const companyDetails =
-    userDetails.companies[userDetails.selectedCompanyIndex];
-  const [isEdit, setIsEdit] = useState(false);
   const [product, setProduct] = useState(productData);
-  const [progress, setProgress] = useState(0);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,66 +10,7 @@ const ProductView = ({ productData }) => {
     setProduct(productData);
     setLoading(false);
   }, [productData]);
-
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      try {
-        const storageRef = ref(storage, `productImages/${file.name}`);
-        const uploadTask = uploadBytesResumable(storageRef, file);
-        uploadTask.on(
-          "state_changed",
-          (snapshot) => {
-            const progressPercent =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            setProgress(progressPercent);
-          },
-          (error) => {
-            console.error("Upload failed:", error);
-          },
-          async () => {
-            const downloadURL = await getDownloadURL(storageRef);
-            const productRef = doc(
-              db,
-              "companies",
-              companyDetails.companyId,
-              "products",
-              productId
-            );
-            await updateDoc(productRef, { imageUrl: downloadURL });
-            setProduct((prev) => ({ ...prev, imageUrl: downloadURL }));
-            alert("Product image updated successfully");
-            setProgress(0);
-          }
-        );
-      } catch (error) {
-        console.error("Error uploading file:", error);
-      }
-    }
-  };
-
-  const onUpdateProduct = async () => {
-    try {
-      const productRef = doc(
-        db,
-        "companies",
-        companyDetails.companyId,
-        "products",
-        productId
-      );
-      const { id, ...rest } = product;
-      await updateDoc(productRef, rest);
-      alert("Product updated successfully");
-      setIsEdit(false);
-    } catch (error) {
-      console.log("🚀 ~ onUpdateProduct ~ error:", error);
-    }
-  };
-
-  const onCancelEdit = () => {
-    setProduct(productData);
-    setIsEdit(false);
-  };
+  console.log("produt", productData);
 
   const subTotal = product?.sellingPrice * product?.stock;
   const taxAmount = (subTotal * product?.tax) / 100;
@@ -96,208 +26,195 @@ const ProductView = ({ productData }) => {
 
   return (
     <div className="main-container" style={{ height: "80vh" }}>
-      <div className=" container">
-        <div className="p-6">
-          {progress > 0 && (
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-orange-500 h-2 rounded-full"
-                style={{ width: `${progress}%` }}
-              ></div>
-            </div>
-          )}
-          <div className="flex items-center space-x-6 mb-6">
-            {product?.imageUrl ? (
-              <img
-                src={product?.imageUrl}
-                alt="Product"
-                className="w-20 h-20 rounded-full object-cover shadow-md"
-              />
-            ) : (
-              <span className="bg-purple-500 text-white w-20 h-20 flex items-center justify-center rounded-full text-2xl shadow-md">
-                {product?.name?.charAt(0).toUpperCase()}
-              </span>
-            )}
-            <div className="flex-1">
-              <div className="text-2xl font-semibold">
-                {isEdit ? (
-                  <input
-                    type="text"
-                    value={product?.name}
-                    className="border border-gray-300 p-2 rounded-md w-full focus:outline-none focus:ring focus:ring-purple-200"
-                    onChange={(e) =>
-                      setProduct((val) => ({
-                        ...val,
-                        name: e.target.value,
-                      }))
-                    }
-                  />
-                ) : (
-                  product?.name || "N/A"
-                )}
+      <div className="container">
+        <div>
+          <div className="border-b space-y-3 ">
+            <div className="border-b py-3 px-5 space-y-2">
+              <div className="">Product Information</div>
+              <div className="space-y-1">
+                <label className="  text-gray-600">Item Name</label>
+                <p type="text" name="name" className="input-tag w-full ">
+                  {product?.name || ""}{" "}
+                </p>
               </div>
-              {!isEdit && (
-                <button
-                  className="flex items-center space-x-2 text-purple-600 hover:text-purple-800 mt-2"
-                  onClick={() => setIsEdit(true)}
-                >
-                  <FaUserEdit />
-                  <span>Edit Product</span>
-                </button>
-              )}
-              {isEdit && (
-                <input
-                  type="file"
-                  className="flex mt-3 h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-400 file:border-0 file:bg-transparent file:text-gray-600 file:text-sm file:font-medium"
-                  onChange={handleFileChange}
-                />
-              )}
-            </div>
-          </div>
+              <div className="space-y-1">
+                <label className="  text-gray-600">Category</label>
+                <div className="flex justify-center items-center">
+                  <p className="input-tag w-full">{product?.category || ""} </p>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="  text-gray-600">Selling Price</label>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-gray-700 font-medium mb-2">Product Info</h3>
-              <div className="space-y-3">
-                <div>
-                  <label className="text-sm text-gray-500">Quantity</label>
-                  <input
-                    type="text"
-                    value={product?.stock || (isEdit ? "" : "N/A")}
-                    className={`block w-full border-gray-300 p-2 rounded-md focus:ring focus:ring-purple-200 ${
-                      isEdit ? "border" : "bg-gray-100"
-                    }`}
-                    onChange={(e) =>
-                      setProduct((val) => ({
-                        ...val,
-                        stock: e.target.value,
-                      }))
-                    }
-                    readOnly={!isEdit}
-                  />
+                <div className="flex items-center justify-center">
+                  <p
+                    className="w-1/2 input-tag "
+                    style={{
+                      borderTopRightRadius: "0px",
+                      borderBottomRightRadius: "0px",
+                    }}
+                  >
+                    {" "}
+                    ₹ {product?.sellingPrice || ""}{" "}
+                  </p>{" "}
+                  <p
+                    className="w-1/2 input-tag"
+                    style={{
+                      borderTopRightRadius: "0px",
+                      borderBottomRightRadius: "0px",
+                    }}
+                  >
+                    {product?.sellingPriceTaxType
+                      ? "Tax Included"
+                      : "Tax not Included"}{" "}
+                  </p>
                 </div>
-                <div>
-                  <label className="text-sm text-gray-500">Discount</label>
-                  <input
-                    type="text"
-                    value={product?.discount || (isEdit ? "" : "N/A")}
-                    className={`block w-full border-gray-300 p-2 rounded-md focus:ring focus:ring-purple-200 ${
-                      isEdit ? "border" : "bg-gray-100"
-                    }`}
-                    onChange={(e) =>
-                      setProduct((val) => ({
-                        ...val,
-                        discount: e.target.value,
-                      }))
-                    }
-                    readOnly={!isEdit}
-                  />
+              </div>
+              <div className="space-y-1">
+                <label className="  text-gray-600">Purchase Price</label>
+
+                <div className="flex items-center justify-center">
+                  <p
+                    className="w-1/2 input-tag"
+                    style={{
+                      borderTopRightRadius: "0px",
+                      borderBottomRightRadius: "0px",
+                    }}
+                  >
+                    {" "}
+                    ₹ {product?.purchasePrice ?? ""}{" "}
+                  </p>{" "}
+                  <p
+                    className="w-1/2 input-tag"
+                    style={{
+                      borderTopRightRadius: "0px",
+                      borderBottomRightRadius: "0px",
+                    }}
+                  >
+                    {product?.purchasePriceTaxType
+                      ? "Tax Included"
+                      : "Tax not Included"}{" "}
+                  </p>
                 </div>
-                <div>
-                  <label className="text-sm text-gray-500">GST Tax</label>
-                  <input
-                    type="text"
-                    value={product?.tax || (isEdit ? "" : "N/A")}
-                    className={`block w-full border-gray-300 p-2 rounded-md focus:ring focus:ring-purple-200 ${
-                      isEdit ? "border" : "bg-gray-100"
-                    }`}
-                    onChange={(e) =>
-                      setProduct((val) => ({
-                        ...val,
-                        tax: e.target.value,
-                      }))
-                    }
-                    readOnly={!isEdit}
-                  />
+              </div>
+              <div className="space-y-1">
+                <label className="  text-gray-600">Discount</label>
+
+                <div className="flex items-center justify-center ">
+                  <p
+                    className="w-full input-tag"
+                    style={{
+                      borderTopRightRadius: "0px",
+                      borderBottomRightRadius: "0px",
+                    }}
+                  >
+                    {" "}
+                    {product?.discountType
+                      ? `${product?.discount}%`
+                      : `₹ ${product?.discount}`}
+                  </p>
                 </div>
               </div>
             </div>
+            <div className="border-b py-3 px-5 space-y-2">
+              <div>Product Media</div>
+              <div className="space-y-1">
+                <div className="grid w-full mb-2 items-center gap-1.5">
+                  <label className=" text-gray-600">Product Image</label>
 
-            <div>
-              <h3 className="text-gray-700 font-medium mb-2">Pricing Info</h3>
-              <div className="space-y-3">
-                <div>
-                  <label className="text-sm text-gray-500">Unit Price</label>
-                  <input
-                    type="text"
-                    value={product?.sellingPrice || (isEdit ? "" : "N/A")}
-                    className={`block w-full border-gray-300 p-2 rounded-md focus:ring focus:ring-purple-200 ${
-                      isEdit ? "border" : "bg-gray-100"
-                    }`}
-                    onChange={(e) =>
-                      setProduct((val) => ({
-                        ...val,
-                        sellingPrice: e.target.value,
-                      }))
-                    }
-                    readOnly={!isEdit}
-                  />
+                  {product?.imageUrl ? (
+                    <img
+                      src={product.imageUrl}
+                      alt={product?.name || "Product"}
+                      className="w-32 h-32 rounded-md object-cover"
+                    />
+                  ) : (
+                    <div className="bg-red-400 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold">
+                      {product?.name?.toUpperCase()}
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <label className="text-sm text-gray-500">
-                    Purchase Price
-                  </label>
-                  <input
-                    type="text"
-                    value={product?.purchasePrice || (isEdit ? "" : "N/A")}
-                    className={`block w-full border-gray-300 p-2 rounded-md focus:ring focus:ring-purple-200 ${
-                      isEdit ? "border" : "bg-gray-100"
-                    }`}
-                    onChange={(e) =>
-                      setProduct((val) => ({
-                        ...val,
-                        purchasePrice: e.target.value,
-                      }))
-                    }
-                    readOnly={!isEdit}
-                  />
+              </div>
+            </div>
+            <div className="border-b py-3 px-5 space-y-2">
+              <div className="">Inventory</div>
+              <div className="flex space-x-3">
+                <div className="space-y-1 w-full">
+                  <label className="  text-gray-600">SKU ID</label>
+                  <p className="w-full input-tag">{product?.skuId || ""} </p>
                 </div>
-                <div>
-                  <label className="text-sm text-gray-500">Includes Tax</label>
-                  <input
-                    type="text"
-                    value={product?.sellingPriceTaxType ? "Yes" : "No"}
-                    className={`block w-full border-gray-300 p-2 rounded-md focus:ring focus:ring-purple-200 ${
-                      isEdit ? "border" : "bg-gray-100"
-                    }`}
-                    readOnly
-                  />
+                <div className="space-y-1 w-full">
+                  <label className="  text-gray-600">Stock</label>
+                  <p className="w-full input-tag"> {product?.stock || ""} </p>
                 </div>
+              </div>
+            </div>
+            <div className="border-b py-3 px-5 space-y-2">
+              <div className="">Shipping & Tax</div>
+              <div className="space-y-1">
+                <label className="  text-gray-600">Units</label>
+                <p className="w-full input-tag"> {product?.units || ""} </p>
+              </div>
+              <div className="flex-1">
+                <label className="  text-gray-600">HSN Code</label>
+                <div className="relative w-full">
+                  <p className="w-full input-tag">{product?.hsn ?? ""} </p>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className=" text-gray-600">GST Tax</label>
+                <div className="flex items-center justify-center">
+                  <p className="w-full input-tag">{product?.tax ?? ""} </p>
+                </div>
+              </div>
+            </div>
+            <div className="border-b py-3 px-5 space-y-2">
+              <div className="space-y-1">
+                <label className="  text-gray-600 ">Barcode</label>
+                <p className="w-full input-tag"> {product?.barcode} </p>
+              </div>
+              <div className="space-y-1">
+                <label className="  text-gray-600">Warehouse</label>
+                <div className="flex justify-center items-center">
+                  <p className="w-full input-tag"> {product?.warehouse} </p>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="  text-gray-600">Description </label>
+                <p className="w-full input-tag">
+                  {product?.description || ""}{" "}
+                </p>
               </div>
             </div>
           </div>
-
-          {isEdit && (
-            <div className="mt-6 flex justify-end space-x-4">
-              <button
-                className="bg-gray-500 text-white px-4 py-2 rounded-md"
-                onClick={onCancelEdit}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
-                onClick={onUpdateProduct}
-              >
-                Save Changes
-              </button>
+        </div>
+      </div>
+      <div className="container bg-white p-5 mt-10">
+        <div className="flex justify-between">
+          <div className="flex flex-col">
+            <div className="flex justify-between mb-2">
+              <p className="font-medium mr-4">Sub Total:</p>
+              <p className="font-medium">₹{subTotal.toFixed(2)}</p>
             </div>
-          )}
-
-          <div className="p-5 border-t mt-5">
-            <div className="flex justify-between text-gray-800">
-              <div>
-                <p className="font-medium">Sub Total:</p>
-                <p className="font-medium">TAX Amount:</p>
-                <p className="font-medium">Purchase Total:</p>
-                <p className="font-medium">Total:</p>
-              </div>
-              <div className="text-right">
-                <p>₹{subTotal.toFixed(2)}</p>
-                <p>₹{taxAmount.toFixed(2)}</p>
-                <p>₹{(product?.purchasePrice * product?.stock).toFixed(2)}</p>
-                <p className="font-semibold">₹{total.toFixed(2)}</p>
-              </div>
+            <div className="flex justify-between">
+              <p className="font-medium mr-4">TAX Amount:</p>
+              <p className="font-medium">₹{taxAmount.toFixed(2)}</p>
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <div className="flex justify-between mb-2">
+              <p className="font-medium mr-4">Purchase Total:</p>
+              <p className="font-medium">
+                ₹
+                {product
+                  ? (product.purchasePrice * product.stock).toFixed(2)
+                  : "0.00"}
+              </p>
+            </div>
+            <div className="flex justify-between">
+              <p className="font-medium mr-4">Total:</p>
+              <p className="font-medium">₹{total.toFixed(2)}</p>
             </div>
           </div>
         </div>
