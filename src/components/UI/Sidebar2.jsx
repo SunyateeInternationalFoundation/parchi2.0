@@ -39,7 +39,10 @@ function Sidebar2() {
       className="relative w-[120px] 
    bg-[#182238] border-r border-[#D9D9D9] text-white font-inter text-xs font-normal leading-4 text-left underline-offset-auto decoration-slice"
     >
-      <div className="space-y-3 mt-3" onClick={() => navigate("/")}>
+      <div
+        className="space-y-3 mt-3 cursor-pointer"
+        onClick={() => navigate("/")}
+      >
         <div className="flex items-center justify-center">
           <AiOutlineHome size={35} />
         </div>

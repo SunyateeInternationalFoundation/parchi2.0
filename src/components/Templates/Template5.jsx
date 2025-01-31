@@ -176,6 +176,13 @@ const Template5 = forwardRef((props, ref) => {
             </div>
           </div>
         </div>
+        <div className="">
+          <img
+            src={dataSet.sign}
+            className="w-36 h-14 mix-blend-multiply object-contain"
+          />
+          <div className="px-4">Authorized Person</div>
+        </div>
       </div>
     </div>
   );

@@ -186,6 +186,13 @@ const Template8 = forwardRef((props, ref) => {
                 <p>Account #: {bankDetails?.accountNo}</p>
                 <p>IFSC: {bankDetails?.ifscCode}</p>
                 <p>Branch: {bankDetails?.branch}</p>
+                <div className="">
+                  <img
+                    src={dataSet.sign}
+                    className="w-36 h-14 mix-blend-multiply object-contain"
+                  />
+                  <div className="px-4">Authorized Person</div>
+                </div>
               </div>
               <div className="text-sm text-gray-600 w-3/4 px-2">
                 <div className="font-bold text-gray-800">Note:</div>
