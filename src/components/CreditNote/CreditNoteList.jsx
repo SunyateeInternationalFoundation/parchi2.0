@@ -304,127 +304,129 @@ const CreditNoteList = () => {
           </div>
         </div>
       </div>
-
-      <div className="container">
-        <nav className="flex items-center mb-4 px-5">
-          <div className="space-x-4 w-full flex items-center">
-            <div
-              className="flex items-center space-x-4  border
+      <div className="flex justify-center items-center">
+        <div className="container">
+          <nav className="flex items-center mb-4 px-5">
+            <div className="space-x-4 w-full flex items-center">
+              <div
+                className="flex items-center space-x-4  border
       px-5  py-3 rounded-md w-full"
-            >
-              <input
-                type="text"
-                placeholder="Search by Credit Note #..."
-                className=" w-full focus:outline-none"
-                value={searchTerm}
-                onChange={handleSearch}
-              />
-              <IoSearch />
-            </div>
-            <div className="w-1/2">
-              <Select
-                value={filterStatus || "All"}
-                onValueChange={(value) => setFilterStatus(value)}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder={"Select Filter"} />
-                </SelectTrigger>
-                <SelectContent className=" h-26">
-                  <SelectItem value="All"> All </SelectItem>
-                  <SelectItem value="Pending">Pending</SelectItem>
-                  <SelectItem value="Paid">Paid</SelectItem>
-                  <SelectItem value="UnPaid">UnPaid</SelectItem>
-                </SelectContent>
-              </Select>
+                <input
+                  type="text"
+                  placeholder="Search by Credit Note #..."
+                  className=" w-full focus:outline-none"
+                  value={searchTerm}
+                  onChange={handleSearch}
+                />
+                <IoSearch />
+              </div>
+              <div className="w-1/2">
+                <Select
+                  value={filterStatus || "All"}
+                  onValueChange={(value) => setFilterStatus(value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={"Select Filter"} />
+                  </SelectTrigger>
+                  <SelectContent className=" h-26">
+                    <SelectItem value="All"> All </SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="Paid">Paid</SelectItem>
+                    <SelectItem value="UnPaid">UnPaid</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
-          <div className="w-full text-end ">
-            {(userDetails.selectedDashboard === "" || role?.create) && (
-              <Link
-                className="bg-[#442799] text-white text-center px-5 py-3 font-semibold rounded-md"
-                to="create-creditnote"
-              >
-                + Create Credit Note
-              </Link>
-            )}
-          </div>
-        </nav>
-
-        {loading ? (
-          <div className="text-center py-6" style={{ height: "92vh" }}>
-            Loading Credit Notes...
-          </div>
-        ) : (
-          <div
-            style={{ minHeight: "92vh", width: "100%" }}
-            className="overflow-hidden"
-          >
-            <div className="py-2">
-              {paginationData.length > 0 ? (
-                <Handsontable columns={columns} data={paginationData} />
-              ) : (
-                <div className="my-10">
-                  <div className="w-full flex justify-center">
-                    <img src={addItem} alt="add Item" className="w-24 h-24" />
-                  </div>
-                  <div className="my-6 text-center">No CreditNote Found</div>
-                  <div className="w-full flex justify-center">
-                    {(userDetails.selectedDashboard === "" || role?.create) && (
-                      <Link
-                        className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-                        to="create-creditnote"
-                      >
-                        + Create CreditNote
-                      </Link>
-                    )}
-                  </div>
-                </div>
+            <div className="w-full text-end ">
+              {(userDetails.selectedDashboard === "" || role?.create) && (
+                <Link
+                  className="bg-[#442799] text-white text-center px-5 py-3 font-semibold rounded-md"
+                  to="create-creditnote"
+                >
+                  + Create Credit Note
+                </Link>
               )}
             </div>
-          </div>
-        )}
-        <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
-          <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
-            {currentPage + 1} of {totalPages || 1} row(s) selected.
-          </div>
-          <div className="flex flex-wrap items-center gap-6">
-            <div className="flex items-center gap-2">
-              <button
-                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                onClick={() => setCurrentPage(0)}
-                disabled={currentPage <= 0}
-              >
-                <div className="flex justify-center">
-                  <LuChevronsLeft className="text-sm" />
-                </div>
-              </button>
-              <button
-                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                onClick={() => setCurrentPage((val) => val - 1)}
-                disabled={currentPage <= 0}
-              >
-                <div className="flex justify-center">
-                  <LuChevronLeft className="text-sm" />
-                </div>
-              </button>
-              <button
-                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                onClick={() => setCurrentPage((val) => val + 1)}
-                disabled={currentPage + 1 >= totalPages}
-              >
-                <div className="flex justify-center">
-                  <LuChevronRight className="text-sm" />
-                </div>
-              </button>
-              <button
-                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                onClick={() => setCurrentPage(totalPages - 1)}
-                disabled={currentPage + 1 >= totalPages}
-              >
-                <div className="flex justify-center">
-                  <LuChevronsRight />
-                </div>
-              </button>
+          </nav>
+
+          {loading ? (
+            <div className="text-center py-6" style={{ height: "92vh" }}>
+              Loading Credit Notes...
+            </div>
+          ) : (
+            <div
+              style={{ minHeight: "92vh", width: "100%" }}
+              className="overflow-hidden"
+            >
+              <div className="py-2">
+                {paginationData.length > 0 ? (
+                  <Handsontable columns={columns} data={paginationData} />
+                ) : (
+                  <div className="my-10">
+                    <div className="w-full flex justify-center">
+                      <img src={addItem} alt="add Item" className="w-24 h-24" />
+                    </div>
+                    <div className="my-6 text-center">No CreditNote Found</div>
+                    <div className="w-full flex justify-center">
+                      {(userDetails.selectedDashboard === "" ||
+                        role?.create) && (
+                        <Link
+                          className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                          to="create-creditnote"
+                        >
+                          + Create CreditNote
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
+            <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+              {currentPage + 1} of {totalPages || 1} row(s) selected.
+            </div>
+            <div className="flex flex-wrap items-center gap-6">
+              <div className="flex items-center gap-2">
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage(0)}
+                  disabled={currentPage <= 0}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronsLeft className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage((val) => val - 1)}
+                  disabled={currentPage <= 0}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronLeft className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage((val) => val + 1)}
+                  disabled={currentPage + 1 >= totalPages}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronRight className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage(totalPages - 1)}
+                  disabled={currentPage + 1 >= totalPages}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronsRight />
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
         </div>

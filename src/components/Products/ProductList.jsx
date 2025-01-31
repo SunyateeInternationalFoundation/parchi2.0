@@ -135,233 +135,237 @@ const ProductList = () => {
 
   return (
     <div className="main-container" style={{ height: "81vh" }}>
-      <div className="container">
-        <div className="flex justify-between items-center px-5 ">
-          <div className="flex justify-between items-center space-x-5 w-1/2">
-            <div
-              className="flex items-center space-x-4  w-full border
+      <div className="flex justify-center items-center">
+        <div className="container">
+          <div className="flex justify-between items-center px-5 ">
+            <div className="flex justify-between items-center space-x-5 w-1/2">
+              <div
+                className="flex items-center space-x-4  w-full border
                 px-5  py-3 rounded-md "
-            >
-              <input
-                type="text"
-                placeholder="Search..."
-                className=" w-full"
-                onChange={(e) => setSearchTerms(e.target.value)}
-              />
-              <IoSearch />
+              >
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  className=" w-full"
+                  onChange={(e) => setSearchTerms(e.target.value)}
+                />
+                <IoSearch />
+              </div>
+
+              <Select
+                value={selectedCategory || "All"}
+                onValueChange={(val) => {
+                  setSelectedCategory(val);
+                }}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All</SelectItem>
+
+                  {categoryList.map((ele, index) => (
+                    <SelectItem value={ele} key={index}>
+                      {ele}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-
-            <Select
-              value={selectedCategory || "All"}
-              onValueChange={(val) => {
-                setSelectedCategory(val);
+            <button
+              className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+              onClick={() => {
+                navigate("create-product");
               }}
-              required
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Select Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All</SelectItem>
-
-                {categoryList.map((ele, index) => (
-                  <SelectItem value={ele} key={index}>
-                    {ele}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              + Create Product
+            </button>
           </div>
-          <button
-            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-            onClick={() => {
-              navigate("create-product");
-            }}
-          >
-            + Create Product
-          </button>
-        </div>
-        {loading ? (
-          <div className="text-center py-10">
-            <p className="text-gray-500">Loading products...</p>
-          </div>
-        ) : (
-          <div className="overflow-hidden pt-8" style={{ minHeight: "92vh" }}>
-            <table className="w-full border-collapse ">
-              <thead className="bg-white">
-                <tr className="border-b">
-                  <th className="px-8 py-1 text-gray-400 font-semibold text-start">
-                    Image
-                  </th>
-                  <th className="px-5 py-1 text-gray-400 font-semibold text-start">
-                    Name
-                  </th>
-                  <th className="px-5 py-1 text-gray-400 font-semibold text-start">
-                    Description
-                  </th>
-                  <th className="px-5 py-1 text-gray-400 font-semibold ">
-                    Unit Price
-                  </th>
-                  <th className="px-5 py-1 text-gray-400 font-semibold ">
-                    Discount
-                  </th>
-                  <th className="px-5 py-1 text-gray-400 font-semibold ">
-                    GST Tax
-                  </th>
-                  <th className="px-5 py-1 text-gray-400 font-semibold ">
-                    Purchase Price
-                  </th>
-                  <th className="px-5 py-1 text-gray-400 font-semibold text-start">
-                    Including Tax
-                  </th>
-                  <th className="px-5 py-1 text-gray-400 font-semibold ">
-                    Quantity
-                  </th>
-                  <th className="px-5 py-1 text-gray-400 font-semibold text-start">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginationData.length > 0 ? (
-                  paginationData.map((product) => (
-                    <tr
-                      key={product.id}
-                      className="hover:bg-gray-100 cursor-pointer text-gray-600"
-                      onClick={() => handleProductClick(product.id)}
-                    >
-                      <td className="px-8 py-3 text-start">
-                        {product?.imageUrl ? (
-                          <img
-                            src={product.imageUrl}
-                            alt={product.name || "Product"}
-                            className="w-12 h-12 rounded-full object-cover"
-                          />
-                        ) : (
-                          <div className="bg-red-400 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold">
-                            {product.name?.[0]?.toUpperCase() || "N"}
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-5 py-3 text-start">{product.name}</td>
-                      <td className="px-5 py-3 text-start">
-                        {product.description}
-                      </td>
-                      <td className="px-5 py-3 text-center">
-                        ₹{product.unitPrice}
-                      </td>
-                      <td className="px-5 py-3 text-center">
-                        {product.discountType
-                          ? `${product.discount}%`
-                          : `₹${product.discount}`}
-                      </td>
-                      <td className="px-5 py-3 text-center">{product.tax}%</td>
-                      <td className="px-5 py-3 text-center">
-                        ₹{product.purchasePrice}
-                      </td>
-                      <td className="px-5 py-3 text-start">
-                        {product.includingTax ? "Yes" : "No"}
-                      </td>
-                      <td className="px-5 py-3 ">{product.stock}</td>
-                      <td
-                        className="px-5 py-3 text-start"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                        }}
+          {loading ? (
+            <div className="text-center py-10">
+              <p className="text-gray-500">Loading products...</p>
+            </div>
+          ) : (
+            <div className="overflow-hidden pt-8" style={{ minHeight: "92vh" }}>
+              <table className="w-full border-collapse ">
+                <thead className="bg-white">
+                  <tr className="border-b">
+                    <th className="px-8 py-1 text-gray-400 font-semibold text-start">
+                      Image
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold text-start">
+                      Name
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold text-start">
+                      Description
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold ">
+                      Unit Price
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold ">
+                      Discount
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold ">
+                      GST Tax
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold ">
+                      Purchase Price
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold text-start">
+                      Including Tax
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold ">
+                      Quantity
+                    </th>
+                    <th className="px-5 py-1 text-gray-400 font-semibold text-start">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginationData.length > 0 ? (
+                    paginationData.map((product) => (
+                      <tr
+                        key={product.id}
+                        className="hover:bg-gray-100 cursor-pointer text-gray-600"
+                        onClick={() => handleProductClick(product.id)}
                       >
-                        <div className="flex justify-center items-center space-x-4">
+                        <td className="px-8 py-3 text-start">
+                          {product?.imageUrl ? (
+                            <img
+                              src={product.imageUrl}
+                              alt={product.name || "Product"}
+                              className="w-12 h-12 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="bg-red-400 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold">
+                              {product.name?.[0]?.toUpperCase() || "N"}
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-5 py-3 text-start">{product.name}</td>
+                        <td className="px-5 py-3 text-start">
+                          {product.description}
+                        </td>
+                        <td className="px-5 py-3 text-center">
+                          ₹{product.unitPrice}
+                        </td>
+                        <td className="px-5 py-3 text-center">
+                          {product.discountType
+                            ? `${product.discount}%`
+                            : `₹${product.discount}`}
+                        </td>
+                        <td className="px-5 py-3 text-center">
+                          {product.tax}%
+                        </td>
+                        <td className="px-5 py-3 text-center">
+                          ₹{product.purchasePrice}
+                        </td>
+                        <td className="px-5 py-3 text-start">
+                          {product.includingTax ? "Yes" : "No"}
+                        </td>
+                        <td className="px-5 py-3 ">{product.stock}</td>
+                        <td
+                          className="px-5 py-3 text-start"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
+                          <div className="flex justify-center items-center space-x-4">
+                            <button
+                              className="text-blue-500 hover:text-blue-700"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate("edit-product/" + product.id);
+                              }}
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              className="text-red-500 hover:text-red-700"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(product.id);
+                              }}
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="10" className="h-96 text-center py-4">
+                        <div className="w-full flex justify-center">
+                          <img
+                            src={addItem}
+                            alt="add Item"
+                            className="w-24 h-24"
+                          />
+                        </div>
+                        <div className="mb-6">No Product Created</div>
+                        <div className="">
                           <button
-                            className="text-blue-500 hover:text-blue-700"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate("edit-product/" + product.id);
+                            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                            onClick={() => {
+                              navigate("create-product");
                             }}
                           >
-                            ✏️
-                          </button>
-                          <button
-                            className="text-red-500 hover:text-red-700"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDelete(product.id);
-                            }}
-                          >
-                            🗑️
+                            + Create Product
                           </button>
                         </div>
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="10" className="h-96 text-center py-4">
-                      <div className="w-full flex justify-center">
-                        <img
-                          src={addItem}
-                          alt="add Item"
-                          className="w-24 h-24"
-                        />
-                      </div>
-                      <div className="mb-6">No Product Created</div>
-                      <div className="">
-                        <button
-                          className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-                          onClick={() => {
-                            navigate("create-product");
-                          }}
-                        >
-                          + Create Product
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
-        <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
-          <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
-            {currentPage + 1} of {totalPages || 1} row(s) selected.
-          </div>
-          <div className="flex flex-wrap items-center gap-6">
-            <div className="flex items-center gap-2">
-              <button
-                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                onClick={() => setCurrentPage(0)}
-                disabled={currentPage <= 0}
-              >
-                <div className="flex justify-center">
-                  <LuChevronsLeft className="text-sm" />
-                </div>
-              </button>
-              <button
-                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                onClick={() => setCurrentPage((val) => val - 1)}
-                disabled={currentPage <= 0}
-              >
-                <div className="flex justify-center">
-                  <LuChevronLeft className="text-sm" />
-                </div>
-              </button>
-              <button
-                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                onClick={() => setCurrentPage((val) => val + 1)}
-                disabled={currentPage + 1 >= totalPages}
-              >
-                <div className="flex justify-center">
-                  <LuChevronRight className="text-sm" />
-                </div>
-              </button>
-              <button
-                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                onClick={() => setCurrentPage(totalPages - 1)}
-                disabled={currentPage + 1 >= totalPages}
-              >
-                <div className="flex justify-center">
-                  <LuChevronsRight />
-                </div>
-              </button>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+          <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
+            <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+              {currentPage + 1} of {totalPages || 1} row(s) selected.
+            </div>
+            <div className="flex flex-wrap items-center gap-6">
+              <div className="flex items-center gap-2">
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage(0)}
+                  disabled={currentPage <= 0}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronsLeft className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage((val) => val - 1)}
+                  disabled={currentPage <= 0}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronLeft className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage((val) => val + 1)}
+                  disabled={currentPage + 1 >= totalPages}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronRight className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage(totalPages - 1)}
+                  disabled={currentPage + 1 >= totalPages}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronsRight />
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
         </div>
