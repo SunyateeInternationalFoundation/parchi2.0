@@ -233,6 +233,7 @@ const Home = () => {
               path="/staff-payout/designations/:id"
               element={<DesignationView />}
             ></Route>
+            {/* <Route path="/staff-payout/holidays" element={<Holidays />}></Route> */}
             {/* <Route path="/staff-payout/roles" element={<Roles />}></Route>
             <Route path="/staff-payout/assets" element={<Assets />}></Route>
             <Route path="/staff-payout/weekOff" element={<WeekOff />}></Route>
