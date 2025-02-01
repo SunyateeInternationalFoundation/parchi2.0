@@ -92,6 +92,12 @@ const Template11 = forwardRef((props, ref) => {
                   QTY/HR Rate
                 </th>
                 <th className="bg-blue-100  me-2 p-2 text-left text-sm font-bold text-gray-600">
+                  CGST
+                </th>
+                <th className="bg-blue-100  me-2 p-2 text-left text-sm font-bold text-gray-600">
+                  SGST
+                </th>
+                <th className="bg-blue-100  me-2 p-2 text-left text-sm font-bold text-gray-600">
                   Amount
                 </th>
               </tr>
@@ -107,6 +113,12 @@ const Template11 = forwardRef((props, ref) => {
                   </td>
                   <td className="bg-blue-100 p-2 text-sm text-gray-700">
                     {item.quantity}
+                  </td>
+                  <td className="bg-blue-100 p-2 text-sm text-gray-700">
+                    {item.cgstAmount.toFixed(2)} 
+                  </td>
+                  <td className="bg-blue-100 p-2 text-sm text-gray-700">
+                    {item.sgstAmount.toFixed(2)} 
                   </td>
                   <td className="bg-blue-100 p-2 text-sm text-gray-700">
                     {item.totalAmount.toFixed(2)}

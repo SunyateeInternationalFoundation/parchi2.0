@@ -22,7 +22,7 @@ const Template1 = forwardRef((props, ref) => {
   return (
     <div
       className=" bg-white border border-gray-300 rounded-md shadow-md overflow-y-auto"
-      style={{ height: "90vh", width: "700px" }}
+      style={{ height: "80vh", width: "600px" }}
     >
       <div ref={ref} style={{ minWidth: "595px", padding: "20px" }}>
         <div className="flex justify-between">
@@ -74,8 +74,8 @@ const Template1 = forwardRef((props, ref) => {
                 ) && <th className="border border-black pb-2">Qty</th>}
                 <th className="border border-black pb-2">Net Amount</th>
                 <th className="border border-black pb-2">Tax Rate</th>
-                <th className="border border-black pb-2">Tax Type</th>
-                <th className="border border-black pb-2">Tax Amount</th>
+                <th className="border border-black pb-2">CGST</th>
+                <th className="border border-black pb-2">SGST</th>
                 <th className="border border-black pb-2">Total Amount</th>
               </tr>
             </thead>
@@ -108,10 +108,10 @@ const Template1 = forwardRef((props, ref) => {
                     {item.tax}%
                   </td>
                   <td className="border border-black pt-2 pb-2 pl-1">
-                    CGST SGST
+                    {item.cgstAmount.toFixed(2)} {/* Assuming cgstAmount is available in item */}
                   </td>
                   <td className="border border-black pt-2 pb-2 pl-1">
-                    {item.taxAmount.toFixed(2)}
+                    {item.sgstAmount.toFixed(2)} {/* Assuming sgstAmount is available in item */}
                   </td>
                   <td className="border border-black pt-2 pb-2 pl-1">
                     {item.totalAmount.toFixed(2)}
