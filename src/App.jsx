@@ -7,6 +7,7 @@ import Home from "./components/HomePage/Home";
 import StaffHome from "./components/HomePage/StaffHome";
 import VendorHome from "./components/HomePage/VendorHome";
 import LandingPage from "./components/LandingPage/LandingPage";
+import TemplateView from "./components/Templates/TemplateView";
 
 function App() {
   const usersDetails = useSelector((state) => state.users);
@@ -34,7 +35,10 @@ function App() {
           <Route path="/" element={<LandingPage />}></Route>
         )}
         {isAuthenticated && usersDetails.selectedDashboard === "" && (
-          <Route path="/*" element={<Home />}></Route>
+          <>
+            <Route path="/*" element={<Home />}></Route>
+            <Route path="/template/:templateId" element={<TemplateView />} />
+          </>
         )}
         {isAuthenticated && usersDetails.selectedDashboard === "customer" && (
           <Route path="/customer/*" element={<CustomerHome />}></Route>

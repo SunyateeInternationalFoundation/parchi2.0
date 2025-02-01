@@ -197,27 +197,21 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
     }
 
     try {
-      // Generate the PDF in-memory
       const doc = new jsPDF("p", "pt", "a4");
       doc.html(invoiceRef.current, {
         callback: async function (doc) {
           const pdfBlob = doc.output("blob");
 
-          // Create a reference to the file in Firebase Storage
           const fileName = `invoices/${invoice.id}.pdf`;
           const fileRef = ref(storage, fileName);
 
-          // Upload the file to Firebase Storage
           await uploadBytes(fileRef, pdfBlob);
 
-          // Generate a public download URL
           const downloadURL = await getDownloadURL(fileRef);
 
-          // Construct the email subject and body
           const subject = `Invoice for ${invoice.userTo.name}`;
           const body = `Hi ${invoice.userTo.name},%0D%0A%0D%0AHere is your invoice for the recent purchase.%0D%0A%0D%0AYou can download it here: ${downloadURL}`;
 
-          // Open the default email client with pre-filled subject and body
           window.location.href = `mailto:?subject=${subject}&body=${body}`;
         },
         x: 0,
@@ -327,12 +321,16 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
     const serializableInvoice = JSON.parse(JSON.stringify(invoice));
     const serializableBankDetails = JSON.parse(JSON.stringify(bankDetails));
 
-    navigate(`/invoice-template/${invoice.id}/${selectTemplate}`, {
-      state: {
-        invoice: serializableInvoice,
-        bankDetails: serializableBankDetails,
-      },
-    });
+    const state = {
+      invoice: serializableInvoice,
+      bankDetails: serializableBankDetails,
+    };
+
+    const encodedState = btoa(JSON.stringify(state));
+
+    const url = `/template/${selectTemplate}?state=${encodedState}`;
+
+    window.open(url, "_blank");
   };
   return (
     <div className="px-8 pt-4  bg-gray-100">
@@ -595,11 +593,6 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
                     </div>
                   </div>
                   {templatesComponents[selectTemplate]}
-                  {/* <Template7
-                  ref={invoiceRef}
-                  invoiceData={invoice}
-                  bankDetails={bankDetails}
-                /> */}
                 </div>
               </div>
             </div>

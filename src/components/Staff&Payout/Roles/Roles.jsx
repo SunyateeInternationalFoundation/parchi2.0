@@ -11,12 +11,16 @@ import { FaAngleDown } from "react-icons/fa6";
 import { TbEdit } from "react-icons/tb";
 import { useSelector } from "react-redux";
 import { db } from "../../../firebase";
+import { LuChevronLeft, LuChevronRight, LuChevronsLeft, LuChevronsRight } from "react-icons/lu";
 
 const Roles = () => {
   const [loading, setLoading] = useState(true);
   const userDetails = useSelector((state) => state.users);
   const [staffData, setStaffData] = useState([]);
   const [tempRoles, setTempRoles] = useState({});
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
 
   const companyDetails =
     userDetails.companies[userDetails.selectedCompanyIndex];
@@ -48,11 +52,26 @@ const Roles = () => {
         return acc;
       }, {});
       setTempRoles(initialTempRoles);
+      
+      // Set total pages for pagination
+      setTotalPages(Math.ceil(staffData.length / 10));
+      setPaginationData(staffData.slice(0, 10)); // Get the first page data
     } catch (error) {
       console.log("🚀 ~ fetchStaffData ~ error:", error);
     }
     setLoading(false);
   }
+
+  useEffect(() => {
+    fetchStaffData();
+  }, [companyDetails.companyId]);
+
+  useEffect(() => {
+    // Update pagination data when staffData or currentPage changes
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setPaginationData(staffData.slice(startIndex, endIndex));
+  }, [currentPage, staffData]);
 
   async function handleUpdateRoles(staff) {
     try {
@@ -83,10 +102,6 @@ const Roles = () => {
     }));
   }
 
-  useEffect(() => {
-    fetchStaffData();
-  }, [companyDetails.companyId]);
-
   const rolesList = [
     "invoice",
     "subscription",
@@ -116,13 +131,13 @@ const Roles = () => {
         </header>
         {loading ? (
           <div className="text-center py-6">Loading Roles...</div>
-        ) : staffData.length > 0 ? (
-          staffData.map((staff) => (
+        ) : paginationData.length > 0 ? (
+          paginationData.map((staff) => (
             <div key={staff.id} className="border-t py-3">
               <div
                 className="flex justify-between items-center py-3 px-5 cursor-pointer"
                 onClick={() =>
-                  setStaffData((prevData) =>
+                  setPaginationData((prevData) =>
                     prevData.map((pre) => {
                       if (staff.id === pre.id) {
                         return { ...pre, isExpand: !pre.isExpand };
@@ -250,6 +265,53 @@ const Roles = () => {
         ) : (
           <div className="text-center text-gray-500">No Staff Found</div>
         )}
+        
+        {/* Pagination Controls */}
+        <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
+            <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+              {currentPage + 1} of {totalPages || 1} row(s) selected.
+            </div>
+            <div className="flex flex-wrap items-center gap-6">
+              <div className="flex items-center gap-2">
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage(0)}
+                  disabled={currentPage <= 0}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronsLeft className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage((val) => val - 1)}
+                  disabled={currentPage <= 0}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronLeft className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage((val) => val + 1)}
+                  disabled={currentPage + 1 >= totalPages}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronRight className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage(totalPages - 1)}
+                  disabled={currentPage + 1 >= totalPages}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronsRight />
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
       </div>
     </div>
   );
