@@ -64,7 +64,7 @@ function Staff() {
       setLoading(false);
     }
   }
-
+  console.log("staffData", staffData);
   useEffect(() => {
     fetchStaffData();
   }, [companyId]);

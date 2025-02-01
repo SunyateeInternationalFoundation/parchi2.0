@@ -271,7 +271,7 @@ function SetService() {
     setIsDropdownVisible(false);
   };
 
-  async function onSetService() {
+  async function onSetService(isPrint = false) {
     try {
       if (selectedServicesList.length == 0) {
         return;
@@ -326,13 +326,18 @@ function SetService() {
         membershipEndDate,
         typeOfEndMembership: membershipPeriod,
       };
+      let serviceRef;
       if (id) {
-        await updateDoc(
-          doc(db, "companies", companyDetails.companyId, "services", id),
-          payload
-        );
+        (serviceRef = doc(
+          db,
+          "companies",
+          companyDetails.companyId,
+          "services",
+          id
+        )),
+          await updateDoc(serviceRef, payload);
       } else {
-        await addDoc(
+        serviceRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "services"),
           payload
         );
@@ -343,11 +348,16 @@ function SetService() {
         });
       }
       alert(`successfully ${id ? "Updated" : "Created"}  Service`);
-      navigate(
-        userDetails.selectedDashboard === "staff"
-          ? "/staff/subscriptions"
-          : "/subscriptions"
-      );
+      const redirect =
+        (userDetails.selectedDashboard === "staff"
+          ? "/staff/subscriptions/"
+          : "/subscriptions/") + serviceRef.id;
+
+      if (isPrint) {
+        navigate(redirect + "?print=true");
+      } else {
+        navigate(redirect);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -1332,15 +1342,30 @@ function SetService() {
           </div>
         </div>
       </div>
-      <div className="flex justify-end sticky bottom-0 bg-white p-2 pe-10 border-t mt-5">
+      <div className="flex justify-end sticky bottom-0 space-x-4 bg-white p-2 pe-10 border-t mt-5">
+        <button
+          className="btn-outline-black "
+          onClick={() => {
+            navigate("./../");
+          }}
+        >
+          Cancel
+        </button>
+        <button
+          className=" bg-[#442799] text-white text-center   px-5 py-3 pt-2 font-semibold rounded-md"
+          onClick={() => onSetService(true)}
+        >
+          <span className="text-lg">+</span> {id ? "Edit " : "Create "}& Print
+        </button>
         <button
           className="rounded-lg  bg-[#442799] text-white text-center   px-5 py-3 pt-2 font-semibold rounded-md"
-          onClick={onSetService}
+          onClick={() => onSetService()}
         >
           <span className="text-lg">+</span> {id ? "Edit" : "Create"}{" "}
           subscription
         </button>
       </div>
+
       <SideBarAddServices
         isOpen={isSideBarOpen}
         onClose={() => setIsSideBarOpen(false)}
@@ -1357,4 +1382,5 @@ function SetService() {
     </div>
   );
 }
+
 export default SetService;

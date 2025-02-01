@@ -229,6 +229,21 @@ function ProForma({ proForma, bankDetails, selectTemplate }) {
       label: "PRICE",
     },
   ];
+  const handleViewTemplate = () => {
+    const serializableInvoice = JSON.parse(JSON.stringify(proForma));
+    const serializableBankDetails = JSON.parse(JSON.stringify(bankDetails));
+
+    const state = {
+      invoice: serializableInvoice,
+      bankDetails: serializableBankDetails,
+    };
+
+    const encodedState = btoa(JSON.stringify(state));
+
+    const url = `/template/${selectTemplate}?state=${encodedState}`;
+
+    window.open(url, "_blank");
+  };
   return (
     <div className="bg-white mt-3 rounded-lg shadow-md overflow-hidden">
       <div className=" flex justify-between bg-white mt-3 border-b rounded-t-lg px-5 py-4">
@@ -237,7 +252,7 @@ function ProForma({ proForma, bankDetails, selectTemplate }) {
             className={
               "px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white"
             }
-            onClick={() => setIsProFormaOpen(true)}
+            onClick={handleViewTemplate}
           >
             <IoDocumentTextOutline /> &nbsp; View
           </button>

@@ -67,7 +67,7 @@ const Profile = ({ staffData, refresh }) => {
     setUpdatedData(staffData);
     setIsEdit(false);
   }
-
+  console.log("staffdata", staffData);
   return (
     <div className="main-container">
       {!UpdatedData.id ? (

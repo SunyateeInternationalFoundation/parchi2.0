@@ -167,7 +167,7 @@ const SetPos = () => {
   async function onSetPos(data) {
     try {
       const { no, ...restForm } = formData;
-      const { products, ...rest } = data;
+      const { products, isPrint, ...rest } = data;
       const customerRef = doc(db, "customers", selectedCustomerData.id);
       const companyRef = doc(db, "companies", companyDetails.companyId);
       let subTotal = 0;
@@ -232,8 +232,7 @@ const SetPos = () => {
           name: selectedCustomerData.name,
         },
       };
-
-      let posRef="";
+      let posRef;
 
       if (posId) {
         posRef = doc(db, "companies", companyDetails.companyId, "pos", posId);
@@ -265,9 +264,15 @@ const SetPos = () => {
       }
 
       alert("Successfully " + (posId ? "Updated" : "Created") + " the Pos");
+      const redirect =
+        (userDetails.selectedDashboard === "staff" ? "/staff/pos/" : "/pos/") +
+        posRef.id;
 
-      // Navigate to the POS detail page after creation or update
-      navigate(`/pos/${posRef.id || posId}`);
+      if (isPrint) {
+        navigate(redirect + "?print=true");
+      } else {
+        navigate(redirect);
+      }
     } catch (err) {
       console.error(err);
     }

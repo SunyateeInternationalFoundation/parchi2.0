@@ -105,7 +105,7 @@ function StaffView() {
     fetchStaffData();
     fetchProjectList();
   }, []);
-
+  console.log("staff", staffData);
   return (
     <div className="bg-gray-100" style={{ width: "100%" }}>
       <header className="flex items-center  space-x-3 px-3 bg-white">

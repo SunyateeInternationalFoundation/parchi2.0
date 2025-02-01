@@ -40,7 +40,6 @@ import DeliveryChallanList from "../DeliveryChallan/DeliveryChallanList";
 import DeliveryChallanView from "../DeliveryChallan/DeliveryChallanView/DeliveryChallanView";
 import SetDeliveryChallan from "../DeliveryChallan/SetDeliveryChallan/SetDeliveryChallan";
 import Documents from "../Documents/Documents";
-import InvoiceTemplateView from "../Invoices/InvoiceView/InvoiceTemplateView";
 import SetInvoice from "../Invoices/SetInvoice/SetInvoice";
 import PoView from "../PO/PoView/PoView";
 import SetPO from "../PO/SetPO/SetPO";
@@ -317,10 +316,6 @@ const Home = () => {
             ></Route>
             <Route path="/settings/prefix" element={<Prefix />}></Route>
             <Route path="/business-card" element={<BusinessCard />}></Route>
-            <Route
-              path="/invoice-template/:invoiceId/:templateId"
-              element={<InvoiceTemplateView />}
-            />
           </Routes>
           <Outlet />
         </div>
