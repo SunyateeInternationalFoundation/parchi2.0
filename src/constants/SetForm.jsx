@@ -152,11 +152,7 @@ function SetForm(props) {
     if (!formData?.products?.length || !products.length || !formId) {
       return;
     }
-    console.log(
-      "🚀 ~ addActionQty ~ formData?.products:",
-      formData?.products,
-      products
-    );
+
     setIsProductSelected(true);
     let productData = products;
     for (let ele of formData.products) {
