@@ -235,19 +235,19 @@ const SetProFormaInvoice = () => {
         },
       };
 
+      let proFormaRef = "";
+
       if (proFormaId) {
-        await updateDoc(
-          doc(
+        proFormaRef = doc(
             db,
             "companies",
             companyDetails.companyId,
             "proFormaInvoice",
             proFormaId
-          ),
-          payload
         );
+        await updateDoc(proFormaRef, payload);
       } else {
-        await addDoc(
+        proFormaRef = await addDoc(
           collection(
             db,
             "companies",
@@ -282,11 +282,9 @@ const SetProFormaInvoice = () => {
           (proFormaId ? "Updated" : "Created") +
           " the ProForma Invoice"
       );
-      navigate(
-        userDetails.selectedDashboard === "staff"
-          ? "/staff/pro-forma-invoice"
-          : "/pro-forma-invoice"
-      );
+
+      // Navigate to the pro forma invoice detail page after creation or update
+      navigate(`/pro-forma-invoice/${proFormaRef.id || proFormaId}`);
     } catch (err) {
       console.error(err);
     }

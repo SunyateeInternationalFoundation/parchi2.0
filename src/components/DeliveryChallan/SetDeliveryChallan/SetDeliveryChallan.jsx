@@ -242,9 +242,8 @@ const SetDeliveryChallan = () => {
             companyDetails.companyId,
             "deliveryChallan",
             deliverychallanId
-          ),
-          payload
-        );
+        ));
+        await updateDoc(deliveryChallanRef, payload);
       } else {
         deliveryChallanRef = await addDoc(
           collection(

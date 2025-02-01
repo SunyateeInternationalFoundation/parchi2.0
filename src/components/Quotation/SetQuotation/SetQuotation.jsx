@@ -236,19 +236,19 @@ const SetQuotation = () => {
         },
       };
 
+      let quotationRef="";
+
       if (quotationId) {
-        await updateDoc(
-          doc(
+        quotationRef = doc(
             db,
             "companies",
             companyDetails.companyId,
             "quotations",
             quotationId
-          ),
-          payload
         );
+        await updateDoc(quotationRef, payload);
       } else {
-        await addDoc(
+        quotationRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "quotations"),
           payload
         );
@@ -278,11 +278,9 @@ const SetQuotation = () => {
           (quotationId ? "Updated" : "Created") +
           " the quotation"
       );
-      navigate(
-        userDetails.selectedDashboard === "staff"
-          ? "/staff/quotation"
-          : "/quotation"
-      );
+
+      // Navigate to the quotation detail page after creation or update
+      navigate(`/quotation/${quotationRef.id || quotationId}`);
     } catch (err) {
       console.error(err);
     }

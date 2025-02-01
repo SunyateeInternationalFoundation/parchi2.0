@@ -233,13 +233,13 @@ const SetPos = () => {
         },
       };
 
+      let posRef="";
+
       if (posId) {
-        await updateDoc(
-          doc(db, "companies", companyDetails.companyId, "pos", posId),
-          payload
-        );
+        posRef = doc(db, "companies", companyDetails.companyId, "pos", posId);
+        await updateDoc(posRef, payload);
       } else {
-        await addDoc(
+        posRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "pos"),
           payload
         );
@@ -265,9 +265,9 @@ const SetPos = () => {
       }
 
       alert("Successfully " + (posId ? "Updated" : "Created") + " the Pos");
-      navigate(
-        userDetails.selectedDashboard === "staff" ? "/staff/pos" : "/pos"
-      );
+
+      // Navigate to the POS detail page after creation or update
+      navigate(`/pos/${posRef.id || posId}`);
     } catch (err) {
       console.error(err);
     }
