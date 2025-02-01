@@ -168,7 +168,7 @@ const SetProFormaInvoice = () => {
   async function OnSetProForma(data) {
     try {
       const { no, ...restForm } = formData;
-      const { products, ...rest } = data;
+      const { products, isPrint, ...rest } = data;
       const customerRef = doc(db, "customers", selectedCustomerData.id);
       const companyRef = doc(db, "companies", companyDetails.companyId);
       let subTotal = 0;
@@ -234,20 +234,18 @@ const SetProFormaInvoice = () => {
           name: selectedCustomerData.name,
         },
       };
-
+      let proFormaRef;
       if (proFormaId) {
-        await updateDoc(
-          doc(
-            db,
-            "companies",
-            companyDetails.companyId,
-            "proFormaInvoice",
-            proFormaId
-          ),
-          payload
-        );
+        (proFormaRef = doc(
+          db,
+          "companies",
+          companyDetails.companyId,
+          "proFormaInvoice",
+          proFormaId
+        )),
+          await updateDoc(proFormaRef, payload);
       } else {
-        await addDoc(
+        proFormaRef = await addDoc(
           collection(
             db,
             "companies",
@@ -282,11 +280,16 @@ const SetProFormaInvoice = () => {
           (proFormaId ? "Updated" : "Created") +
           " the ProForma Invoice"
       );
-      navigate(
-        userDetails.selectedDashboard === "staff"
-          ? "/staff/pro-forma-invoice"
-          : "/pro-forma-invoice"
-      );
+      const redirect =
+        (userDetails.selectedDashboard === "staff"
+          ? "/staff/pro-forma-invoice/"
+          : "/pro-forma-invoice/") + proFormaRef.id;
+
+      if (isPrint) {
+        navigate(redirect + "?print=true");
+      } else {
+        navigate(redirect);
+      }
     } catch (err) {
       console.error(err);
     }

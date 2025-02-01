@@ -149,9 +149,14 @@ function SetForm(props) {
   }, [personDetails, formData.attachments]);
 
   function addActionQty() {
-    if (formData?.products?.length === 0 || products.length === 0 || !formId) {
+    if (!formData?.products?.length || !products.length || !formId) {
       return;
     }
+    console.log(
+      "🚀 ~ addActionQty ~ formData?.products:",
+      formData?.products,
+      products
+    );
     setIsProductSelected(true);
     let productData = products;
     for (let ele of formData.products) {

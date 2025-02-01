@@ -265,7 +265,7 @@ const SetPos = () => {
 
       alert("Successfully " + (posId ? "Updated" : "Created") + " the Pos");
       const redirect =
-        (userDetails.selectedDashboard === "staff" ? "/staff/po/" : "/po/") +
+        (userDetails.selectedDashboard === "staff" ? "/staff/pos/" : "/pos/") +
         posRef.id;
 
       if (isPrint) {
@@ -273,9 +273,6 @@ const SetPos = () => {
       } else {
         navigate(redirect);
       }
-      // navigate(
-      //   userDetails.selectedDashboard === "staff" ? "/staff/pos" : "/pos"
-      // );
     } catch (err) {
       console.error(err);
     }
