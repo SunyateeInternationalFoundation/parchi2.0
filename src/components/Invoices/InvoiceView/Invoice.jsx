@@ -332,6 +332,7 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
 
     window.open(url, "_blank");
   };
+
   return (
     <div className="px-8 pt-4  bg-gray-100">
       <div className="bg-white  rounded-lg shadow-md overflow-hidden ">

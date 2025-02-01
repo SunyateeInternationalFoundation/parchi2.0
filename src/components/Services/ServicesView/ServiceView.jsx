@@ -318,7 +318,19 @@ function ServiceView() {
       label: "PRICE",
     },
   ];
+  const handleViewTemplate = () => {
+    const serializableInvoice = JSON.parse(JSON.stringify(service));
 
+    const state = {
+      invoice: serializableInvoice,
+    };
+
+    const encodedState = btoa(JSON.stringify(state));
+
+    const url = `/template/${selectTemplate}?state=${encodedState}`;
+
+    window.open(url, "_blank");
+  };
   return (
     <div>
       <div className="pb-5 bg-gray-100" style={{ width: "100%" }}>
@@ -349,7 +361,7 @@ function ServiceView() {
               className={
                 "px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white"
               }
-              onClick={() => setIsServiceOpen(true)}
+              onClick={handleViewTemplate}
             >
               <IoDocumentTextOutline /> &nbsp; View
             </button>
