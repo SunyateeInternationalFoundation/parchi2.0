@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PrintBarcode from "./Barcode/PrintBarcode";
 import Categories from "./Categories/Categories";
 import ProductList from "./ProductList";
 import Stock from "./Stock";
@@ -56,6 +57,15 @@ const ProductHome = () => {
           >
             Stock
           </button>
+          <button
+            className={
+              "p-4 font-semibold text-gray-500 " +
+              (activeTab === "Barcode" ? " border-b-4 border-blue-500 " : "")
+            }
+            onClick={() => setActiveTab("Barcode")}
+          >
+            Print Barcode
+          </button>
         </nav>
       </div>
       <hr />
@@ -80,6 +90,12 @@ const ProductHome = () => {
         {activeTab === "Stock" && (
           <div>
             <Stock />
+          </div>
+        )}
+
+        {activeTab === "Barcode" && (
+          <div>
+            <PrintBarcode />
           </div>
         )}
       </div>

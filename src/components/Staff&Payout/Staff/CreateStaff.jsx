@@ -41,10 +41,12 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
     panNumber: "",
     paymentDetails: 0,
     phone: "",
+    branch: "",
   });
   const [designations, setDesignations] = useState([]);
   const [phoneExists, setPhoneExists] = useState(false);
   const [idExists, setIdExists] = useState(false);
+  const [branches, setBranches] = useState([]);
 
   const handlePhoneNumberChange = async (event) => {
     try {
@@ -100,8 +102,28 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
     }
   };
 
+  const fetchBranch = async () => {
+    try {
+      const companyRef = doc(db, "companies", companyId);
+
+      const designationRef = collection(db, "branches");
+
+      const q = query(designationRef, where("companyRef", "==", companyRef));
+      const querySnapshot = await getDocs(q);
+
+      const branchData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setBranches(branchData);
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+    }
+  };
   useEffect(() => {
     fetchDesignation();
+    fetchBranch();
   }, [companyId]);
 
   useEffect(() => {
@@ -131,7 +153,8 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
       console.log("🚀 ~ onSubmit ~ error:", error);
     }
   }
-
+  console.log("formData", formData);
+  console.log("staffData", staffData);
   return (
     <div
       className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
@@ -337,10 +360,38 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
               />
             </div>
             <div className="space-y-1">
+              <label className="text-sm text-gray-600 ">Branch</label>
+
+              <Select
+                value={formData?.branch || ""}
+                onValueChange={(value) => {
+                  setFormData((pre) => ({
+                    ...pre,
+                    branch: value,
+                  }));
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={"Select " + formData?.branch} />
+                </SelectTrigger>
+                <SelectContent>
+                  {branches.length > 0 &&
+                    branches.map((branch) => (
+                      <SelectItem
+                        key={branch.branchName}
+                        value={branch.branchName}
+                      >
+                        {branch.branchName}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
               <label className="text-sm text-gray-600 ">Designation</label>
 
               <Select
-                value={formData.designation || ""}
+                value={formData?.designation || ""}
                 onValueChange={(value) => {
                   setFormData((pre) => ({
                     ...pre,
@@ -349,7 +400,9 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={"Select " + formData.designation} />
+                  <SelectValue
+                    placeholder={"Select " + formData?.designation}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {designations.length > 0 &&

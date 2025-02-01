@@ -1,17 +1,24 @@
 import {
+  addDoc,
   collection,
   doc,
   getDocs,
   query,
+  serverTimestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { FaAngleDown } from "react-icons/fa6";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 import { TbEdit } from "react-icons/tb";
 import { useSelector } from "react-redux";
 import { db } from "../../../firebase";
-import { LuChevronLeft, LuChevronRight, LuChevronsLeft, LuChevronsRight } from "react-icons/lu";
 
 const Roles = () => {
   const [loading, setLoading] = useState(true);
@@ -21,7 +28,7 @@ const Roles = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
-
+  const [currentRoles, setCurrentRoles] = useState({});
   const companyDetails =
     userDetails.companies[userDetails.selectedCompanyIndex];
 
@@ -52,7 +59,7 @@ const Roles = () => {
         return acc;
       }, {});
       setTempRoles(initialTempRoles);
-      
+
       // Set total pages for pagination
       setTotalPages(Math.ceil(staffData.length / 10));
       setPaginationData(staffData.slice(0, 10)); // Get the first page data
@@ -78,11 +85,19 @@ const Roles = () => {
       const staffRef = doc(db, "staff", staff.id);
       const updatedRoles = tempRoles[staff.id];
       await updateDoc(staffRef, { roles: updatedRoles });
+      await addDoc(collection(db, "roleLogs"), {
+        date: serverTimestamp(),
+        name: staff.name,
+        access: currentRoles,
+        staffRef,
+      });
+
       setStaffData((prevData) =>
         prevData.map((item) =>
           item.id === staff.id ? { ...item, roles: updatedRoles } : item
         )
       );
+      setCurrentRoles({});
       alert("successfully Updated");
     } catch (error) {
       console.log("Error in handleUpdateRoles:", error);
@@ -98,6 +113,13 @@ const Roles = () => {
           ...prevRoles[staffId][roleName],
           [action]: isChecked,
         },
+      },
+    }));
+    setCurrentRoles((prevRoles) => ({
+      ...prevRoles,
+      [roleName]: {
+        ...prevRoles[roleName],
+        [action]: isChecked,
       },
     }));
   }
@@ -122,7 +144,7 @@ const Roles = () => {
   const projectsList = ["users", "milestones", "tasks", "files", "approvals"];
 
   const actions = ["view", "create", "edit", "delete"];
-
+  console.log("temp roles", tempRoles);
   return (
     <div className="main-container" style={{ height: "82vh" }}>
       <div className="container">
@@ -265,53 +287,53 @@ const Roles = () => {
         ) : (
           <div className="text-center text-gray-500">No Staff Found</div>
         )}
-        
+
         {/* Pagination Controls */}
         <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
-            <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
-              {currentPage + 1} of {totalPages || 1} row(s) selected.
-            </div>
-            <div className="flex flex-wrap items-center gap-6">
-              <div className="flex items-center gap-2">
-                <button
-                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                  onClick={() => setCurrentPage(0)}
-                  disabled={currentPage <= 0}
-                >
-                  <div className="flex justify-center">
-                    <LuChevronsLeft className="text-sm" />
-                  </div>
-                </button>
-                <button
-                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                  onClick={() => setCurrentPage((val) => val - 1)}
-                  disabled={currentPage <= 0}
-                >
-                  <div className="flex justify-center">
-                    <LuChevronLeft className="text-sm" />
-                  </div>
-                </button>
-                <button
-                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                  onClick={() => setCurrentPage((val) => val + 1)}
-                  disabled={currentPage + 1 >= totalPages}
-                >
-                  <div className="flex justify-center">
-                    <LuChevronRight className="text-sm" />
-                  </div>
-                </button>
-                <button
-                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                  onClick={() => setCurrentPage(totalPages - 1)}
-                  disabled={currentPage + 1 >= totalPages}
-                >
-                  <div className="flex justify-center">
-                    <LuChevronsRight />
-                  </div>
-                </button>
-              </div>
+          <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+            {currentPage + 1} of {totalPages || 1} row(s) selected.
+          </div>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2">
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(0)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val - 1)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val + 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronRight className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(totalPages - 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsRight />
+                </div>
+              </button>
             </div>
           </div>
+        </div>
       </div>
     </div>
   );

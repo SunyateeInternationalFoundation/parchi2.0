@@ -6,6 +6,7 @@ import {
   getDocs,
   query,
   Timestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -35,7 +36,7 @@ const Branches = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
-
+  const [selectedEditBranch, setSelectedEditBranch] = useState({});
   const userDetails = useSelector((state) => state.users);
   const companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
@@ -92,7 +93,15 @@ const Branches = () => {
       total: prev.total + 1,
     }));
   };
-
+  const handleEditBranch = (updatedbranch) => {
+    setBranches((prev) =>
+      prev.map((branch) =>
+        branch.id === updatedbranch.id
+          ? { ...branch, ...updatedbranch }
+          : branch
+      )
+    );
+  };
   async function OnDeleteBranch(e, branchId) {
     e.stopPropagation();
     try {
@@ -176,6 +185,10 @@ const Branches = () => {
                       <tr
                         key={branch.id}
                         className="border-b border-gray-200 text-center cursor-pointer"
+                        onClick={() => {
+                          setIsModalOpen(true);
+                          setSelectedEditBranch(branch);
+                        }}
                       >
                         <td className="px-8 py-3 text-start">
                           <FormatTimestamp timestamp={branch.createdAt} />
@@ -264,23 +277,35 @@ const Branches = () => {
       {isModalOpen && (
         <AddBranchModal
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedEditBranch({});
+          }}
           onAddBranch={handleAddBranch}
           companyId={companyId}
+          editBranch={selectedEditBranch}
+          handleEditBranch={handleEditBranch}
         />
       )}
     </div>
   );
 };
 
-const AddBranchModal = ({ isOpen, onClose, onAddBranch, companyId }) => {
+const AddBranchModal = ({
+  isOpen,
+  onClose,
+  onAddBranch,
+  companyId,
+  editBranch,
+  handleEditBranch,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    branchName: "",
+    branchName: editBranch.branchName || "",
     address: {
-      address: "",
-      city: "",
-      zip_code: "",
+      address: editBranch?.address?.address || "",
+      city: editBranch?.address?.city || "",
+      zip_code: editBranch?.address?.zip_code || "",
     },
   });
 
@@ -301,10 +326,27 @@ const AddBranchModal = ({ isOpen, onClose, onAddBranch, companyId }) => {
       const payload = {
         ...formData,
         companyRef: companyRef,
-        createdAt: Timestamp.fromDate(new Date()),
       };
-      const branchRef = await addDoc(collection(db, "branches"), payload);
-      onAddBranch({ id: branchRef.id, ...payload });
+      let branchRef;
+      if (editBranch?.id) {
+        branchRef = doc(db, "branches", editBranch.id);
+
+        await updateDoc(branchRef, {
+          updatedAt: Timestamp.fromDate(new Date()),
+          ...payload,
+        });
+        handleEditBranch({ id: branchRef.id, ...payload });
+      } else {
+        branchRef = await addDoc(collection(db, "branches"), {
+          createdAt: Timestamp.fromDate(new Date()),
+          ...payload,
+        });
+        onAddBranch({
+          id: branchRef.id,
+          createdAt: Timestamp.fromDate(new Date()),
+          ...payload,
+        });
+      }
       alert("Branch successfully created!");
       setFormData({
         branchName: "",
@@ -417,7 +459,13 @@ const AddBranchModal = ({ isOpen, onClose, onAddBranch, companyId }) => {
             style={{ height: "6vh" }}
           >
             <button type="submit" className="w-full btn-add">
-              {isLoading ? "Adding..." : "Add Branch"}
+              {isLoading
+                ? !editBranch?.id
+                  ? "Adding..."
+                  : "Editing"
+                : !editBranch?.id
+                ? "Add Branch"
+                : "Edit Branch"}
             </button>
           </div>
         </form>

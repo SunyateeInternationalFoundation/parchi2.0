@@ -5,12 +5,22 @@ import { useEffect, useRef, useState } from "react";
 import { CiSettings } from "react-icons/ci";
 import { FaWhatsapp } from "react-icons/fa";
 import { IoMdArrowRoundBack, IoMdClose } from "react-icons/io";
-import { IoDocumentTextOutline, IoDownloadOutline } from "react-icons/io5";
+import {
+  IoDocumentTextOutline,
+  IoDownloadOutline,
+  IoPrintOutline,
+} from "react-icons/io5";
 import { LiaTrashAltSolid } from "react-icons/lia";
 import { MdOutlineMarkEmailRead } from "react-icons/md";
 import { TbEdit } from "react-icons/tb";
 import { useSelector } from "react-redux";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
+import { useReactToPrint } from "react-to-print";
 import { db, storage } from "../../../firebase";
 import SelectTemplateSideBar from "../../Templates/SelectTemplateSideBar";
 import Template1 from "../../Templates/Template1";
@@ -27,6 +37,9 @@ import Template9 from "../../Templates/Template9";
 
 function ServiceView() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+
+  const print = searchParams.get("print");
   const [service, setService] = useState({});
   const navigate = useNavigate();
   const userDetails = useSelector((state) => state.users);
@@ -49,6 +62,9 @@ function ServiceView() {
   const [isSelectTemplateOpen, setIsSelectTemplateOpen] = useState(false);
   const [totalTax, setTotalTax] = useState(0);
   const ServiceRef = useRef();
+  const reactToPrintFn = useReactToPrint({
+    contentRef: ServiceRef,
+  });
   const [selectTemplate, setSelectTemplate] = useState("template1");
 
   const fetchServices = async () => {
@@ -150,7 +166,10 @@ function ServiceView() {
       }, 0);
       setTotalTax(tax);
     }
-  }, [service]);
+    if (print === "true") {
+      reactToPrintFn();
+    }
+  }, [service, print]);
 
   const handleDownloadPdf = () => {
     if (!id) {
@@ -299,7 +318,19 @@ function ServiceView() {
       label: "PRICE",
     },
   ];
+  const handleViewTemplate = () => {
+    const serializableInvoice = JSON.parse(JSON.stringify(service));
 
+    const state = {
+      invoice: serializableInvoice,
+    };
+
+    const encodedState = btoa(JSON.stringify(state));
+
+    const url = `/template/${selectTemplate}?state=${encodedState}`;
+
+    window.open(url, "_blank");
+  };
   return (
     <div>
       <div className="pb-5 bg-gray-100" style={{ width: "100%" }}>
@@ -330,7 +361,7 @@ function ServiceView() {
               className={
                 "px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white"
               }
-              onClick={() => setIsServiceOpen(true)}
+              onClick={handleViewTemplate}
             >
               <IoDocumentTextOutline /> &nbsp; View
             </button>
@@ -363,6 +394,12 @@ function ServiceView() {
               onClick={handleEmailShare}
             >
               <MdOutlineMarkEmailRead /> &nbsp; Share via Email
+            </button>
+            <button
+              className="px-4 py-1 text-gray-600 rounded-md flex items-center  border hover:bg-black hover:text-white"
+              onClick={() => reactToPrintFn()}
+            >
+              <IoPrintOutline /> &nbsp; Print
             </button>
           </div>
           <div className="flex items-center">

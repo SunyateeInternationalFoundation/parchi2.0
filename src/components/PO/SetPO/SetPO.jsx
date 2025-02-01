@@ -163,7 +163,7 @@ const SetPO = () => {
   async function onSetPo(data) {
     try {
       const { no, ...restForm } = formData;
-      const { products, ...rest } = data;
+      const { products, isPrint, ...rest } = data;
 
       const vendorRef = doc(db, "vendors", selectedVendorData.id);
       const companyRef = doc(db, "companies", companyDetails.companyId);
@@ -262,8 +262,15 @@ const SetPO = () => {
 
       alert("Successfully " + (poId ? "Updated" : "Created") + " the PO");
 
-      // Navigate to the PO detail page after creation or update
-      navigate(`/po/${poRef.id || poId}`);
+      const redirect =
+        (userDetails.selectedDashboard === "staff" ? "/staff/po/" : "/po/") +
+        poRef.id;
+
+      if (isPrint) {
+        navigate(redirect + "?print=true");
+      } else {
+        navigate(redirect);
+      }
     } catch (err) {
       console.error(err);
     }

@@ -1,4 +1,4 @@
-import { addDoc, collection, updateDoc } from "firebase/firestore";
+import { addDoc, collection, Timestamp, updateDoc } from "firebase/firestore";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import { FaIndustry, FaSchool, FaTruck, FaUser } from "react-icons/fa";
@@ -44,6 +44,8 @@ const CompanyForm = ({ userRef }) => {
       formData.name = "Your Company";
       formData.nature = "Others";
     }
+    formData.status = "Active";
+    formData.createdAt = Timestamp.fromDate(new Date());
     e.preventDefault();
     try {
       const companyRef = await addDoc(collection(db, "companies"), {

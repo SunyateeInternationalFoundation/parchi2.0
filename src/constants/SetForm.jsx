@@ -627,7 +627,7 @@ function SetForm(props) {
     const filteredSuggestions = products.filter((item) => {
       return (
         item.name.toLowerCase().includes(productSearch.toLowerCase()) &&
-        item.category === selectedCategory
+        (selectedCategory == "all" ? true : item.category === selectedCategory)
       );
     });
     setProductSuggestions(filteredSuggestions);
@@ -890,7 +890,11 @@ function SetForm(props) {
                     onFocus={() => {
                       setIsProductDropdownVisible(true);
                       setProductSuggestions((val) =>
-                        val.length > 0 ? val : products
+                        val.length > 0
+                          ? val
+                          : selectedCategory == "all"
+                          ? products
+                          : []
                       );
                     }}
                     onBlur={() => {

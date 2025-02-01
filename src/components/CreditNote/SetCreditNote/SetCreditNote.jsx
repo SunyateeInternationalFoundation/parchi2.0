@@ -286,18 +286,16 @@ const SetCreditNote = () => {
           (creditNoteId ? "Updated" : "Created") +
           " the CreditNote"
       );
+
+      const redirect =
+        (userDetails.selectedDashboard === "staff"
+          ? "/staff/credit-note/"
+          : "/credit-note/") + creditNoteRef.id;
+
       if (isPrint) {
-        navigate(
-          userDetails.selectedDashboard === "staff"
-            ? "/staff/credit-note/" + creditNoteRef.id + "?print=true"
-            : "/credit-note/" + creditNoteRef.id + "?print=true"
-        );
+        navigate(redirect + "?print=true");
       } else {
-        navigate(
-          userDetails.selectedDashboard === "staff"
-            ? "/staff/credit-note/" + creditNoteRef.id
-            : "/credit-note/" + creditNoteRef.id
-        );
+        navigate(redirect);
       }
     } catch (err) {
       console.error(err);
