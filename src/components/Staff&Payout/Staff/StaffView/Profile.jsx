@@ -5,75 +5,24 @@ import { FaUserEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { db, storage } from "../../../../firebase";
 import CreateStaff from "../CreateStaff";
+import { FaPhoneAlt } from "react-icons/fa";
+import { FaEnvelope } from "react-icons/fa";
+import dummy from "../../../../assets/dummy.jpeg";
+import { FaPen } from "react-icons/fa";
 
 const Profile = ({ staffData, refresh }) => {
   const [isEdit, setIsEdit] = useState(false);
-  const [UpdatedData, setUpdatedData] = useState(staffData);
   const [progress, setProgress] = useState(0);
   const userDetails = useSelector((state) => state.users);
   const selectedDashboardUser = userDetails.selectedDashboard;
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
-  useEffect(() => {
-    setUpdatedData(staffData);
-  }, [staffData]);
-
-  async function onUpdateProfile() {
-    try {
-      const staffsRef = doc(db, "staff", staffData.id);
-      const { id, ...rest } = UpdatedData;
-      await updateDoc(staffsRef, rest);
-      refresh();
-      alert("Profile updated successfully");
-      setIsEdit(false);
-    } catch (error) {
-      console.log("🚀 ~ onUpdateProfile ~ error:", error);
-    }
-  }
-
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      try {
-        const storageRef = ref(storage, `profileImages/${file.name}`);
-        const uploadTask = uploadBytesResumable(storageRef, file);
-
-        uploadTask.on(
-          "state_changed",
-          (snapshot) => {
-            const progressPercent =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            setProgress(progressPercent);
-          },
-          (error) => {
-            console.error("Upload failed:", error);
-          },
-          async () => {
-            const downloadURL = await getDownloadURL(storageRef);
-            const staffsRef = doc(db, "staff", staffData.id);
-            await updateDoc(staffsRef, { profileImage: downloadURL });
-            refresh();
-            alert("Profile image updated successfully");
-            setProgress(0);
-          }
-        );
-      } catch (error) {
-        console.error("Error uploading file:", error);
-      }
-    }
-  };
-
-  function onCancelProfile() {
-    setUpdatedData(staffData);
-    setIsEdit(false);
-  }
-
   return (
     <div className="main-container">
-      {!UpdatedData.id ? (
+      {!staffData.id ? (
         <div className="text-gray-500 text-center">Loading staff...</div>
       ) : (
-        <div className="container p-5">
+        <div className="container p-6">
           {progress > 0 && (
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
@@ -82,205 +31,164 @@ const Profile = ({ staffData, refresh }) => {
               ></div>
             </div>
           )}
-          <div className="">
-            {/* Profile Section */}
-            <div className="flex items-center space-x-6 mb-6">
-              <div className="w-1/5">
-                {UpdatedData.profileImage ? (
+          <div className="flex items-center justify-end space-x-4">
+            <span
+              className={`text-xs px-3 py-1.5 rounded-lg font-medium shadow-sm border flex items-center justify-center ${
+                staffData.status === "Active"
+                  ? "bg-green-100 text-green-600 border-green-300"
+                  : "bg-red-100 text-red-600 border-red-300"
+              }`}
+            >
+              {staffData.status === "Active" ? "Active" : "Inactive"}
+            </span>
+            <button
+              className="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-lg  hover:bg-gray-100 transition border border-gray-300"
+              onClick={() => setIsSideBarOpen(true)}
+            >
+              <FaPen className="text-purple-600 text-sm" />
+              <span className="text-sm text-gray-700 font-medium">Edit</span>
+            </button>
+          </div>
+
+          {/* Profile Section */}
+          <div className="bg-white text-gray-900 p-4 border-b mb-6 ">
+            <div className="flex items-center space-x-10">
+              {/* Profile Image with Edit Icon */}
+              <div className="relative w-40 h-36 border rounded-lg overflow-hidden">
+                {staffData.profileImage ? (
                   <img
-                    src={UpdatedData.profileImage}
+                    src={staffData.profileImage}
                     alt="Profile"
-                    className="w-20 h-20 rounded-full object-cover shadow-md"
+                    className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="bg-purple-500 text-white w-20 h-20 flex items-center justify-center rounded-full text-2xl shadow-md">
-                    {UpdatedData.name.charAt(0)}
+                  <span className="bg-white text-purple-600 w-full h-full flex items-center justify-center text-4xl font-bold">
+                    <img src={dummy} alt="Default" className="w-full h-full " />
                   </span>
                 )}
               </div>
+
+              {/* Name, Designation, Phone, Email */}
               <div className="w-full">
-                <div className="text-xl font-semibold">
-                  {isEdit ? (
-                    <input
-                      type="text"
-                      value={UpdatedData.name}
-                      className="border border-gray-300 p-2 rounded-md w-full focus:outline-none focus:ring focus:ring-purple-200"
-                      onChange={(e) =>
-                        setUpdatedData((val) => ({
-                          ...val,
-                          name: e.target.value,
-                        }))
-                      }
-                    />
-                  ) : (
-                    UpdatedData.name || "N/A"
-                  )}
+                <div className="flex items-center space-x-3 ">
+                  <h2 className="text-2xl font-semibold mb-2.5 break-words max-w-[200px]">
+                    {staffData.name
+                      ? staffData.name
+                          .split(" ")
+                          .map(
+                            (word) =>
+                              word.charAt(0).toUpperCase() +
+                              word.slice(1).toLowerCase()
+                          )
+                          .join(" ")
+                      : "N/A"}
+                  </h2>
+                  <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium shadow-sm flex items-center justify-center">
+                    {staffData.designation || "N/A"}
+                  </span>
                 </div>
-                {!isEdit && selectedDashboardUser != "staff" && (
-                  <button
-                    className="flex items-center space-x-2 text-purple-600 hover:text-purple-800 mt-2"
-                    // onClick={() => setIsEdit(true)}
-                    onClick={() => setIsSideBarOpen(true)}
-                  >
-                    <FaUserEdit />
-                    <span>Edit Profile</span>
-                  </button>
-                )}
-                {isEdit && (
-                  <input
-                    type="file"
-                    className="flex h-10 mt-3 w-full rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-400 file:border-0 file:bg-transparent file:text-gray-600 file:text-sm file:font-medium"
-                    onChange={handleFileChange}
-                  />
-                )}
-              </div>
-              <div className="w-full flex space-x-3">
-                {/*  <div className="bg-green-50 rounded-lg p-5 w-full flex items-center space-x-3">
-                  <div className="text-green-500 p-3 bg-sky-100 rounded-lg text-xl">
-                    <FaArrowDown />
-                  </div>
-                  <div>
-                    <div className="text-lg">Income</div>
-                    <div className="text-3xl text-green-600 font-bold">0</div>
-                  </div>
-                </div>
-                <div className="bg-red-50 rounded-lg p-5 w-full flex items-center space-x-3 text-xl">
-                  <div className="text-red-500 p-3 bg-sky-100 rounded-lg">
-                    <FaArrowUp />
-                  </div>
-                  <div>
-                    <div className="text-lg">Expenses</div>
-                    <div className="text-3xl text-red-600 font-bold">0</div>
-                  </div>
-                </div>*/}
+                <p className="mt-2 flex items-center space-x-2">
+                  <FaPhoneAlt className="text-gray-700" />
+                  <span>{staffData.phone || "N/A"}</span>
+                </p>
+                <p className="flex items-center space-x-2">
+                  <FaEnvelope className="text-gray-700" />
+                  <span>{staffData.emailId || "N/A"}</span>
+                </p>
               </div>
             </div>
+          </div>
 
-            {/* Information Section */}
+          {/* Single Container for Columns */}
+          <div className="bg-white px-4 rounded-xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Left Column: Personal Info */}
               <div>
-                <h3 className="text-gray-700 font-medium mb-2">Contact Info</h3>
+                <h3 className="text-gray-700 font-medium mb-2">
+                  Personal Info
+                </h3>
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm text-gray-500">Phone</label>
+                    <label className="text-sm text-gray-500">ID</label>
                     <input
-                      type="text"
-                      value={UpdatedData.phone || (isEdit ? "" : "N/A")}
-                      className={`block w-full border-gray-300 p-2 rounded-md focus:ring focus:ring-purple-200 ${
-                        isEdit ? "border" : "bg-gray-100"
-                      }`}
-                      onChange={(e) =>
-                        setUpdatedData((val) => ({
-                          ...val,
-                          phone: e.target.value,
-                        }))
-                      }
-                      readOnly={!isEdit}
+                      value={staffData.idNo || ""}
+                      className="block w-full border border-gray-300 p-2 rounded-md bg-white focus:ring focus:ring-purple-200"
+                      disabled={!isEdit}
                     />
                   </div>
                   <div>
-                    <label className="text-sm text-gray-500">Email</label>
+                    <label className="text-sm text-gray-500">
+                      Joining Date
+                    </label>
                     <input
-                      type="email"
-                      value={UpdatedData.emailId || (isEdit ? "" : "N/A")}
-                      className={`block w-full border-gray-300 p-2 rounded-md focus:ring focus:ring-purple-200 ${
-                        isEdit ? "border" : "bg-gray-100"
+                      value={staffData.joiningDate || ""}
+                      className="block w-full border border-gray-300 p-2 rounded-md bg-white focus:ring focus:ring-purple-200"
+                      disabled={!isEdit}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500">PAN</label>
+                    <input
+                      value={staffData.panNumber || ""}
+                      className="block w-full border border-gray-300 p-2 rounded-md bg-white focus:ring focus:ring-purple-200"
+                      disabled={!isEdit}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500">
+                      Payment Details
+                    </label>
+                    <input
+                      value={`${staffData.paymentDetails || "0"} / ${
+                        staffData.isDailyWages ? "Daily Pay" : "Monthly Pay"
                       }`}
-                      onChange={(e) =>
-                        setUpdatedData((val) => ({
-                          ...val,
-                          emailId: e.target.value,
-                        }))
-                      }
-                      readOnly={!isEdit}
+                      className="block w-full border border-gray-300 p-2 rounded-md bg-white focus:ring focus:ring-purple-200"
+                      disabled={!isEdit}
                     />
                   </div>
                 </div>
               </div>
 
+              {/* Right Column: Address */}
               <div>
                 <h3 className="text-gray-700 font-medium mb-2">Address</h3>
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm text-gray-500">Street</label>
+                    <label className="text-sm text-gray-500">Address</label>
                     <input
-                      type="text"
-                      value={UpdatedData.address || (isEdit ? "" : "N/A")}
-                      className={`block w-full border-gray-300 p-2 rounded-md focus:ring focus:ring-purple-200 ${
-                        isEdit ? "border" : "bg-gray-100"
-                      }`}
-                      onChange={(e) =>
-                        setUpdatedData((val) => ({
-                          ...val,
-                          address: e.target.value,
-                        }))
-                      }
-                      readOnly={!isEdit}
+                      value={staffData.address || "N/A"}
+                      className="block w-full border border-gray-300 p-2 rounded-md bg-white focus:ring focus:ring-purple-200"
+                      disabled={!isEdit}
                     />
                   </div>
                   <div>
                     <label className="text-sm text-gray-500">City</label>
                     <input
-                      type="text"
-                      value={UpdatedData.city || (isEdit ? "" : "N/A")}
-                      className={`block w-full border-gray-300 p-2 rounded-md focus:ring focus:ring-purple-200 ${
-                        isEdit ? "border" : "bg-gray-100"
-                      }`}
-                      onChange={(e) =>
-                        setUpdatedData((val) => ({
-                          ...val,
-                          city: e.target.value,
-                        }))
-                      }
-                      readOnly={!isEdit}
+                      value={staffData.city || "N/A"}
+                      className="block w-full border border-gray-300 p-2 rounded-md bg-white focus:ring focus:ring-purple-200"
+                      disabled={!isEdit}
                     />
                   </div>
                   <div>
                     <label className="text-sm text-gray-500">Pincode</label>
                     <input
-                      type="text"
-                      value={UpdatedData.zipCode || (isEdit ? "" : "N/A")}
-                      className={`block w-full border-gray-300 p-2 rounded-md focus:ring focus:ring-purple-200 ${
-                        isEdit ? "border" : "bg-gray-100"
-                      }`}
-                      onChange={(e) =>
-                        setUpdatedData((val) => ({
-                          ...val,
-                          zipCode: e.target.value,
-                        }))
-                      }
-                      readOnly={!isEdit}
+                      value={staffData.zipCode || "N/A"}
+                      className="block w-full border border-gray-300 p-2 rounded-md bg-white focus:ring focus:ring-purple-200"
+                      disabled={!isEdit}
                     />
                   </div>
                 </div>
               </div>
             </div>
-
-            {isEdit && (
-              <div className="mt-6 flex justify-end space-x-4">
-                <button
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md"
-                  onClick={onCancelProfile}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
-                  onClick={onUpdateProfile}
-                >
-                  Save Changes
-                </button>
-              </div>
-            )}
           </div>
         </div>
       )}
+
+      {/* Sidebar for Editing */}
       {isSideBarOpen && (
         <CreateStaff
           isOpen={isSideBarOpen}
-          onClose={() => {
-            setIsSideBarOpen(false);
-          }}
+          onClose={() => setIsSideBarOpen(false)}
           staffAdded={refresh}
           staffData={staffData}
         />
