@@ -19,7 +19,7 @@ const Template11 = forwardRef((props, ref) => {
   return (
     <div
       className=" border border-gray-300 rounded-md shadow-md overflow-y-auto"
-      style={{ height: "80vh", width: "600px" }}
+      style={{ height: "90vh", width: "700px" }}
     >
       <div ref={ref} style={{ width: "595px" }}>
         <div className="bg-white" style={{ padding: "20px" }}>
@@ -92,6 +92,12 @@ const Template11 = forwardRef((props, ref) => {
                   QTY/HR Rate
                 </th>
                 <th className="bg-blue-100  me-2 p-2 text-left text-sm font-bold text-gray-600">
+                  CGST
+                </th>
+                <th className="bg-blue-100  me-2 p-2 text-left text-sm font-bold text-gray-600">
+                  SGST
+                </th>
+                <th className="bg-blue-100  me-2 p-2 text-left text-sm font-bold text-gray-600">
                   Amount
                 </th>
               </tr>
@@ -107,6 +113,12 @@ const Template11 = forwardRef((props, ref) => {
                   </td>
                   <td className="bg-blue-100 p-2 text-sm text-gray-700">
                     {item.quantity}
+                  </td>
+                  <td className="bg-blue-100 p-2 text-sm text-gray-700">
+                    {item.cgstAmount.toFixed(2)} 
+                  </td>
+                  <td className="bg-blue-100 p-2 text-sm text-gray-700">
+                    {item.sgstAmount.toFixed(2)} 
                   </td>
                   <td className="bg-blue-100 p-2 text-sm text-gray-700">
                     {item.totalAmount.toFixed(2)}

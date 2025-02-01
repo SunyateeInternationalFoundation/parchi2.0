@@ -10,6 +10,12 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { db } from "../../../firebase";
 import { updateCompanyDetails } from "../../../store/UserSlice";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 
 const WeekOff = () => {
   const [selectedWeekDays, setSelectedWeekDays] = useState([]);
@@ -18,6 +24,9 @@ const WeekOff = () => {
   const [isCalendarMonth, setIsCalendarMonth] = useState(true);
   const [staffList, setStaffList] = useState([]);
   const [tempStaff, setTempStaff] = useState({});
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [paginationData, setPaginationData] = useState([]);
   const weekDays = [
     "Sunday",
     "Monday",
@@ -58,6 +67,8 @@ const WeekOff = () => {
         });
         setTempStaff(tempData);
         setStaffList(staffData);
+        setTotalPages(Math.ceil(staffData.length / 10));
+        setPaginationData(staffData.slice(0, 10));
       } catch (error) {
         console.error("Error fetching staff data:", error);
       }
@@ -81,7 +92,7 @@ const WeekOff = () => {
   async function onSubmitCompanyWeekOff() {
     try {
       const payload = { weekOff: selectedWeekDays };
-      updateDoc(doc(db, "companies", companyDetails.companyId), payload);
+      await updateDoc(doc(db, "companies", companyDetails.companyId), payload);
       dispatch(
         updateCompanyDetails({ ...companyDetails, weekOff: selectedWeekDays })
       );
@@ -95,7 +106,7 @@ const WeekOff = () => {
     if (array1?.length === undefined || array2?.length === undefined) {
       return false;
     }
-    if (array1?.length != array2?.length) {
+    if (array1?.length !== array2?.length) {
       return true;
     }
     for (const day of array2) {
@@ -119,8 +130,16 @@ const WeekOff = () => {
       console.log("🚀 ~ onChangeIsCalendarMonth ~ error:", error);
     }
   }
+
+  useEffect(() => {
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setPaginationData(staffList.slice(startIndex, endIndex));
+    setTotalPages(Math.ceil(staffList.length / 10));
+  }, [currentPage, staffList]);
+
   return (
-    <div className="main-container">
+    <div className="main-container" style={{ height: "80vh" }}>
       <header className="flex justify-between items-center my-2">
         <div className="flex items-center">
           <h1 className="text-2xl font-bold">Week Off Preferences</h1>
@@ -178,7 +197,7 @@ const WeekOff = () => {
               <h3 className="text-lg font-bold mb-4">Staff Members</h3>
             </div>
             <div className="space-y-2">
-              {staffList.map((staff) => (
+              {paginationData.map((staff) => (
                 <div
                   key={staff.id}
                   className="px-3 bg-white border rounded-lg shadow-sm hover:bg-gray-100 cursor-pointer"
@@ -269,6 +288,51 @@ const WeekOff = () => {
                 </div>
               ))}
             </div>
+            <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
+            <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+              {currentPage + 1} of {totalPages || 1} row(s) selected.
+            </div>
+            <div className="flex flex-wrap items-center gap-6">
+              <div className="flex items-center gap-2">
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage(0)}
+                  disabled={currentPage <= 0}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronsLeft className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage((val) => val - 1)}
+                  disabled={currentPage <= 0}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronLeft className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage((val) => val + 1)}
+                  disabled={currentPage + 1 >= totalPages}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronRight className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage(totalPages - 1)}
+                  disabled={currentPage + 1 >= totalPages}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronsRight />
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
           </div>
         )}
 

@@ -161,7 +161,7 @@ const SetPurchase = () => {
   async function onSetPurchase(data) {
     try {
       const { no, ...restForm } = formData;
-      const { products, ...rest } = data;
+      const { products, isPrint, ...rest } = data;
 
       const vendorRef = doc(db, "vendors", selectedVendorData.id);
       const companyRef = doc(db, "companies", companyDetails.companyId);
@@ -227,20 +227,18 @@ const SetPurchase = () => {
           name: selectedVendorData.name,
         },
       };
-
+      let purchaseRef;
       if (purchaseId) {
-        await updateDoc(
-          doc(
-            db,
-            "companies",
-            companyDetails.companyId,
-            "purchases",
-            purchaseId
-          ),
-          payload
-        );
+        (purchaseRef = doc(
+          db,
+          "companies",
+          companyDetails.companyId,
+          "purchases",
+          purchaseId
+        )),
+          await updateDoc(purchaseRef, payload);
       } else {
-        await addDoc(
+        purchaseRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "purchases"),
           payload
         );
@@ -249,11 +247,16 @@ const SetPurchase = () => {
       alert(
         "Successfully " + (purchaseId ? "Updated" : "Created") + " the Purchase"
       );
-      navigate(
-        userDetails.selectedDashboard === "staff"
-          ? "/staff/purchase"
-          : "/purchase"
-      );
+      const redirect =
+        (userDetails.selectedDashboard === "staff"
+          ? "/staff/purchase/"
+          : "/purchase/") + purchaseRef.id;
+
+      if (isPrint) {
+        navigate(redirect + "?print=true");
+      } else {
+        navigate(redirect);
+      }
     } catch (err) {
       console.error(err);
     }

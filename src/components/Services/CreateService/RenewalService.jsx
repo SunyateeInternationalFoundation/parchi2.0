@@ -113,7 +113,7 @@ function RenewalService() {
     setSelectedCustomerData(item);
   };
 
-  async function onSetService() {
+  async function onSetService(isPrint = false) {
     try {
       const customerRef = doc(db, "customers", selectedCustomerData.customerId);
       const companyRef = doc(db, "companies", companyDetails.companyId);
@@ -162,17 +162,22 @@ function RenewalService() {
         typeOfEndMembership: membershipPeriod,
       };
 
-      await addDoc(
+      const serviceRef = await addDoc(
         collection(db, "companies", companyDetails.companyId, "services"),
         payload
       );
 
       alert(`successfully Created Service`);
-      navigate(
-        userDetails.selectedDashboard === "staff"
-          ? "/staff/subscriptions"
-          : "/subscriptions"
-      );
+      const redirect =
+        (userDetails.selectedDashboard === "staff"
+          ? "/staff/subscriptions/"
+          : "/subscriptions/") + serviceRef.id;
+
+      if (isPrint) {
+        navigate(redirect + "?print=true");
+      } else {
+        navigate(redirect);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -1066,12 +1071,29 @@ function RenewalService() {
         </div>
       </div>
       <div className="flex justify-end sticky bottom-0 bg-white p-2 pe-10 border-t mt-5">
-        <button
-          className="rounded-lg  bg-[#442799] text-white text-center   px-5 py-3 pt-2 font-semibold rounded-md"
-          onClick={onSetService}
-        >
-          <span className="text-lg">+</span> Renewal
-        </button>
+        <div className="flex justify-end sticky bottom-0 space-x-4 bg-white p-2 pe-10 border-t mt-5">
+          <button
+            className="btn-outline-black "
+            onClick={() => {
+              navigate("./../");
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            className=" bg-[#442799] text-white text-center px-5 py-3 pt-2 font-semibold rounded-md"
+            onClick={() => onSetService(true)}
+          >
+            <span className="text-lg">+</span> Renewal & Print
+          </button>
+          <button
+            className="rounded-lg  bg-[#442799] text-white text-center   px-5 py-3 pt-2 font-semibold rounded-md"
+            onClick={() => onSetService()}
+          >
+            <span className="text-lg">+</span>
+            Renewal
+          </button>
+        </div>
       </div>
     </div>
   );

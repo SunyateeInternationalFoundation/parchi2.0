@@ -19,7 +19,7 @@ const Template9 = forwardRef((props, ref) => {
   return (
     <div
       className=" bg-white border border-gray-300 rounded-md shadow-md overflow-y-auto"
-      style={{ height: "80vh", width: "600px" }}
+      style={{ height: "90vh", width: "700px" }}
     >
       <div ref={ref} style={{ minWidth: "595px", padding: "20px" }}>
         {/* Header */}
@@ -68,20 +68,24 @@ const Template9 = forwardRef((props, ref) => {
         <div className="mt-6">
           <table className="w-full mt-5 border">
             <thead>
-              <tr className="bg-blue-50  text-start ">
-                <th className=" text-start pl-1 pb-2">Item</th>
-                <th className=" text-start pl-1 pb-2">Description</th>
-                <th className=" text-start pl-1 pb-2">Qty</th>
-                <th className=" text-end pr-1 pb-2">Amount</th>
+              <tr className="bg-blue-50 text-start ">
+                <th className="text-start pl-1 pb-2">Item</th>
+                <th className="text-start pl-1 pb-2">Description</th>
+                <th className="text-start pl-1 pb-2">Qty</th>
+                <th className="text-start pl-1 pb-2">CGST</th>
+                <th className="text-start pl-1 pb-2">SGST</th>
+                <th className="text-end pr-1 pb-2">Amount</th>
               </tr>
             </thead>
             <tbody>
               {dataSet?.items.map((item, index) => (
                 <tr key={index} className="border-t-2">
-                  <td className=" pt-2 pb-2 pl-1">{item.name}</td>
-                  <td className=" pt-2 pb-2 pl-1">{item.description}</td>
-                  <td className=" pt-2 pb-2 pl-1">{item.quantity}</td>
-                  <td className="text-end  pt-2 pb-2 pr-1">
+                  <td className="pt-2 pb-2 pl-1">{item.name}</td>
+                  <td className="pt-2 pb-2 pl-1">{item.description}</td>
+                  <td className="pt-2 pb-2 pl-1">{item.quantity}</td>
+                  <td className="pt-2 pb-2 pl-1">{item.cgstAmount.toFixed(2)}</td> {/* Assuming cgstAmount is available in item */}
+                  <td className="pt-2 pb-2 pl-1">{item.sgstAmount.toFixed(2)}</td> {/* Assuming sgstAmount is available in item */}
+                  <td className="text-end pt-2 pb-2 pr-1">
                     {item.totalAmount.toFixed(2)}
                   </td>
                 </tr>

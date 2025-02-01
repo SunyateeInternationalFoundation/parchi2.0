@@ -19,7 +19,7 @@ const Template10 = forwardRef((props, ref) => {
   return (
     <div
       className=" bg-white border border-gray-300 rounded-md shadow-md overflow-y-auto"
-      style={{ height: "80vh", width: "600px" }}
+      style={{ height: "90vh", width: "700px" }}
     >
       <div ref={ref} style={{ minWidth: "595px", padding: "20px" }}>
         {/* Header */}
@@ -96,6 +96,8 @@ const Template10 = forwardRef((props, ref) => {
                 <th className=" text-start pl-1 pb-2">QTY</th>
                 <th className=" text-end pr-1 pb-2">Price</th>
                 <th className=" text-end pr-1 pb-2">Discount</th>
+                <th className=" text-end pr-1 pb-2">CGST</th>
+                <th className=" text-end pr-1 pb-2">SGST</th>
                 <th className=" text-end pr-1 pb-2">Total</th>
               </tr>
             </thead>
@@ -117,6 +119,12 @@ const Template10 = forwardRef((props, ref) => {
                     {item.discount.toFixed(1)}
                     {item.discountType && "%"}
                   </td>
+                  <td className="text-end pt-2 pb-2 pr-1">
+                    {item.cgstAmount.toFixed(2)} 
+                  </td>
+                  <td className="text-end pt-2 pb-2 pr-1">
+                    {item.sgstAmount.toFixed(2)} 
+                  </td>
                   <td className="text-end    pt-2 pb-2 pr-1">
                     {item.totalAmount.toFixed(2)}
                   </td>
@@ -127,14 +135,14 @@ const Template10 = forwardRef((props, ref) => {
 
           <div className="flex justify-end bg-blue-50 border font-bold text-gray-800">
             <div className="w-1/3 flex justify-between px-1 py-1">
-              <span>SUb Total :</span>
+              <span>Sub Total :</span>
               <span> ₹{+dataSet?.subTotal?.toFixed(2)}</span>
             </div>
           </div>
           <div className="flex justify-end bg-blue-50 border font-bold text-gray-800">
             <div className="w-1/3 flex justify-between px-1 py-1">
               <span>Tax :</span>
-              <span> ₹{(+dataSet?.tax)?.toFixed(2)}</span>
+              <span>{dataSet?.tax}%</span>
             </div>
           </div>
           <div className="flex justify-end bg-blue-50 border font-bold text-gray-800">
@@ -168,7 +176,7 @@ const Template10 = forwardRef((props, ref) => {
               />
             )}
           </div>
-          <div className="text-gray-600 ">Thanks You!</div>
+          <div className="text-gray-600 ">Thank You!</div>
         </div>
       </div>
     </div>

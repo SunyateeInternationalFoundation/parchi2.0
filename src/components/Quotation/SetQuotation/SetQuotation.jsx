@@ -170,7 +170,7 @@ const SetQuotation = () => {
   async function OnSetQuotation(data) {
     try {
       const { no, ...restForm } = formData;
-      const { products, ...rest } = data;
+      const { products, isPrint, ...rest } = data;
       const customerRef = doc(db, "customers", selectedCustomerData.id);
       const companyRef = doc(db, "companies", companyDetails.companyId);
       let subTotal = 0;
@@ -235,20 +235,18 @@ const SetQuotation = () => {
           name: selectedCustomerData.name,
         },
       };
-
+      let quotationRef;
       if (quotationId) {
-        await updateDoc(
-          doc(
-            db,
-            "companies",
-            companyDetails.companyId,
-            "quotations",
-            quotationId
-          ),
-          payload
-        );
+        (quotationRef = doc(
+          db,
+          "companies",
+          companyDetails.companyId,
+          "quotations",
+          quotationId
+        )),
+          await updateDoc(quotationRef, payload);
       } else {
-        await addDoc(
+        quotationRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "quotations"),
           payload
         );
@@ -278,11 +276,16 @@ const SetQuotation = () => {
           (quotationId ? "Updated" : "Created") +
           " the quotation"
       );
-      navigate(
-        userDetails.selectedDashboard === "staff"
-          ? "/staff/quotation"
-          : "/quotation"
-      );
+      const redirect =
+        (userDetails.selectedDashboard === "staff"
+          ? "/staff/quotation/"
+          : "/quotation/") + quotationRef.id;
+
+      if (isPrint) {
+        navigate(redirect + "?print=true");
+      } else {
+        navigate(redirect);
+      }
     } catch (err) {
       console.error(err);
     }

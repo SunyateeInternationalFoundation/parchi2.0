@@ -6,6 +6,7 @@ import {
   getDocs,
   query,
   Timestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -18,6 +19,7 @@ import {
   LuChevronsRight,
 } from "react-icons/lu";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { TbEdit } from "react-icons/tb";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import FormatTimestamp from "../../../constants/FormatTimestamp";
@@ -34,7 +36,7 @@ const Designation = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
-
+  const [selectedEditDes, setSelectedEditDes] = useState({});
   const userDetails = useSelector((state) => state.users);
   const companyDetails =
     userDetails.companies[userDetails.selectedCompanyIndex];
@@ -80,7 +82,13 @@ const Designation = () => {
       total: prev.total + 1,
     }));
   };
-
+  const handleEditDesignation = (updatedDes) => {
+    setDesignation((prev) =>
+      prev.map((des) =>
+        des.id === updatedDes.id ? { ...des, ...updatedDes } : des
+      )
+    );
+  };
   const navigate = useNavigate();
 
   async function OnDeleteDesignation(designationId) {
@@ -164,7 +172,7 @@ const Designation = () => {
                       Name
                     </td>
                     <td className="px-8 py-1 text-gray-400 font-semibold text-end">
-                      Delete
+                      Action
                     </td>
                   </tr>
                 </thead>
@@ -186,13 +194,22 @@ const Designation = () => {
                         <td className="px-5 py-3 text-start">
                           {designation.designationName}
                         </td>
-                        <td className="px-12 py-3 ">
-                          <div className="text-red-500 flex items-center justify-end ">
+                        <td className="px-8 py-3 ">
+                          <div className="flex items-center justify-end space-x-4">
+                            <TbEdit
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedEditDes(designation);
+                                setIsModalOpen(true);
+                              }}
+                              className="text-green-500"
+                            />
                             <RiDeleteBin6Line
                               onClick={(e) => {
                                 e.preventDefault();
                                 OnDeleteDesignation(designation.id);
                               }}
+                              className="text-red-500 "
                             />
                           </div>
                         </td>
@@ -258,8 +275,13 @@ const Designation = () => {
 
         {isModalOpen && (
           <AddDesignationModal
-            onClose={() => setIsModalOpen(false)}
+            onClose={() => {
+              setIsModalOpen(false);
+              setSelectedEditDes({});
+            }}
             onAddDesignation={handleAddDesignation}
+            editDes={selectedEditDes}
+            handleEditDesignation={handleEditDesignation}
           />
         )}
       </div>
@@ -267,14 +289,21 @@ const Designation = () => {
   );
 };
 
-const AddDesignationModal = ({ onClose, onAddDesignation }) => {
+const AddDesignationModal = ({
+  onClose,
+  onAddDesignation,
+  editDes,
+  handleEditDesignation,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [designationName, setDesignationName] = useState("");
+  const [designationName, setDesignationName] = useState(
+    editDes?.designationName || ""
+  );
   const userDetails = useSelector((state) => state.users);
   const companyDetails =
     userDetails.companies[userDetails.selectedCompanyIndex];
 
-  const handleAddDesignation = async () => {
+  const handleDesignation = async () => {
     if (!designationName.trim()) {
       alert("Designation name is required");
       return;
@@ -291,11 +320,42 @@ const AddDesignationModal = ({ onClose, onAddDesignation }) => {
       const payload = {
         ...newDesignation,
         companyRef: companyRef,
-        createdAt: Timestamp.fromDate(new Date()),
       };
-      const docRef = await addDoc(collection(db, "designations"), payload);
+      let docRef;
 
-      onAddDesignation({ id: docRef.id, ...payload });
+      const q = query(
+        collection(db, "staff"),
+        where("companyRef", "==", companyRef),
+        where("designation", "==", editDes.designationName)
+      );
+
+      const getData = await getDocs(q);
+      const staffData = getData.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      if (editDes) {
+        docRef = doc(db, "designations", editDes.id);
+
+        await updateDoc(docRef, {
+          updatedAt: Timestamp.fromDate(new Date()),
+          ...payload,
+        });
+
+        for (const staff of staffData) {
+          const staffRef = doc(db, "staff", staff.id);
+          await updateDoc(staffRef, { designation: designationName });
+        }
+        handleEditDesignation({ id: docRef.id, ...payload });
+      } else {
+        docRef = await addDoc(collection(db, "designations"), {
+          createdAt: Timestamp.fromDate(new Date()),
+          payload,
+        });
+        onAddDesignation({ id: docRef.id, ...payload });
+      }
+
       onClose();
     } catch (error) {
       console.error("Error adding Designation:", error);
@@ -346,11 +406,17 @@ const AddDesignationModal = ({ onClose, onAddDesignation }) => {
           style={{ height: "6vh" }}
         >
           <button
-            onClick={handleAddDesignation}
+            onClick={handleDesignation}
             className="btn-add w-full"
             disabled={isLoading}
           >
-            {isLoading ? "Adding..." : "Add Designation"}
+            {isLoading
+              ? !editDes.id
+                ? "Adding..."
+                : "Editing"
+              : !editDes.id
+              ? "Add Designation"
+              : "Edit Designation"}
           </button>
         </div>
       </div>

@@ -235,16 +235,14 @@ const SetDeliveryChallan = () => {
       };
       let deliveryChallanRef;
       if (deliverychallanId) {
-        deliveryChallanRef = await updateDoc(
-          doc(
-            db,
-            "companies",
-            companyDetails.companyId,
-            "deliveryChallan",
-            deliverychallanId
-          ),
-          payload
+        deliveryChallanRef = doc(
+          db,
+          "companies",
+          companyDetails.companyId,
+          "deliveryChallan",
+          deliverychallanId
         );
+        await updateDoc(deliveryChallanRef, payload);
       } else {
         deliveryChallanRef = await addDoc(
           collection(
@@ -281,12 +279,16 @@ const SetDeliveryChallan = () => {
           (deliverychallanId ? "Updated" : "Created") +
           " the DeliveryChallan"
       );
+      const redirect =
+        (userDetails.selectedDashboard === "staff"
+          ? "/staff/delivery-challan/"
+          : "/delivery-challan/") + deliveryChallanRef.id;
 
-      navigate(
-        userDetails.selectedDashboard === "staff"
-          ? "/staff/delivery-challan"
-          : "/delivery-challan"
-      );
+      if (isPrint) {
+        navigate(redirect + "?print=true");
+      } else {
+        navigate(redirect);
+      }
     } catch (err) {
       console.error(err);
     }

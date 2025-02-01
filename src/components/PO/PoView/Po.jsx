@@ -14,7 +14,7 @@ import { LiaTrashAltSolid } from "react-icons/lia";
 import { MdOutlineMarkEmailRead } from "react-icons/md";
 import { TbEdit } from "react-icons/tb";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 import { db, storage } from "../../../firebase";
 import Template1 from "../../Templates/Template1";
@@ -267,6 +267,21 @@ function Po({ Po, bankDetails, selectTemplate }) {
     },
   ];
 
+  const handleViewTemplate = () => {
+    const serializableInvoice = JSON.parse(JSON.stringify(Po));
+    const serializableBankDetails = JSON.parse(JSON.stringify(bankDetails));
+
+    const state = {
+      invoice: serializableInvoice,
+      bankDetails: serializableBankDetails,
+    };
+
+    const encodedState = btoa(JSON.stringify(state));
+
+    const url = `/template/${selectTemplate}?state=${encodedState}`;
+
+    window.open(url, "_blank");
+  };
   return (
     <div className="bg-white mt-3 rounded-lg shadow-md overflow-hidden">
       <div className=" flex justify-between bg-white mt-3 border-b rounded-t-lg px-5 py-4">
@@ -275,7 +290,7 @@ function Po({ Po, bankDetails, selectTemplate }) {
             className={
               "px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white"
             }
-            onClick={() => setIsPoOpen(true)}
+            onClick={handleViewTemplate}
           >
             <IoDocumentTextOutline /> &nbsp; View
           </button>

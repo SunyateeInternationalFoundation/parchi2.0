@@ -1,23 +1,24 @@
 import { useRef } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import Template1 from "../../Templates/Template1";
-import Template10 from "../../Templates/Template10";
-import Template11 from "../../Templates/Template11";
-import Template2 from "../../Templates/Template2";
-import Template3 from "../../Templates/Template3";
-import Template4 from "../../Templates/Template4";
-import Template5 from "../../Templates/Template5";
-import Template6 from "../../Templates/Template6";
-import Template7 from "../../Templates/Template7";
-import Template8 from "../../Templates/Template8";
-import Template9 from "../../Templates/Template9";
+import Template1 from "./Template1";
+import Template10 from "./Template10";
+import Template11 from "./Template11";
+import Template2 from "./Template2";
+import Template3 from "./Template3";
+import Template4 from "./Template4";
+import Template5 from "./Template5";
+import Template6 from "./Template6";
+import Template7 from "./Template7";
+import Template8 from "./Template8";
+import Template9 from "./Template9";
 
-function InvoiceTemplateView() {
+function TemplateView() {
   const { templateId } = useParams();
-  const location = useLocation();
-  const { invoice, bankDetails } = location.state;
-  console.log("invoice", invoice);
-  console.log("bank", bankDetails);
+  const query = new URLSearchParams(useLocation().search);
+  const encodedState = query.get("state");
+  const decodedState = atob(encodedState);
+  const { invoice, bankDetails } = JSON.parse(decodedState);
+
   const invoiceRef = useRef();
   const templatesComponents = {
     template1: (
@@ -73,4 +74,4 @@ function InvoiceTemplateView() {
   );
 }
 
-export default InvoiceTemplateView;
+export default TemplateView;

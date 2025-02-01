@@ -19,7 +19,7 @@ const Template3 = forwardRef((props, ref) => {
   return (
     <div
       className=" bg-white border border-gray-300 rounded-md shadow-md overflow-y-auto"
-      style={{ height: "80vh", width: "600px" }}
+      style={{ height: "90vh", width: "700px" }}
     >
       <div ref={ref} style={{ minWidth: "595px", padding: "20px" }}>
         {/* Header */}
@@ -74,11 +74,13 @@ const Template3 = forwardRef((props, ref) => {
           <thead>
             <tr className="bg-gray-100">
               <th className="text-left py-2 pl-1">#</th>
-              <th className=" text-left py-2 pl-1">Product</th>
-              <th className=" text-left py-2 pl-1">Quantity</th>
-              <th className=" text-left py-2 pl-1">MRP</th>
-              <th className=" text-left py-2 pl-1">Unit Price</th>
-              <th className=" text-left py-2 pl-1">Total</th>
+              <th className="text-left py-2 pl-1">Product</th>
+              <th className="text-left py-2 pl-1">Quantity</th>
+              <th className="text-left py-2 pl-1">MRP</th>
+              <th className="text-left py-2 pl-1">Unit Price</th>
+              <th className="text-left py-2 pl-1">CGST</th>
+              <th className="text-left py-2 pl-1">SGST</th>
+              <th className="text-left py-2 pl-1">Total</th>
             </tr>
           </thead>
           <tbody>
@@ -89,6 +91,12 @@ const Template3 = forwardRef((props, ref) => {
                 <td className="py-2 pl-1">{item.quantity}</td>
                 <td className="py-2 pl-1">{item.sellingPrice.toFixed(1)}</td>
                 <td className="py-2 pl-1">{item.netAmount.toFixed(2)}</td>
+                <td className="py-2 pl-1">
+                  {item.cgstAmount.toFixed(2)} {/* Assuming cgstAmount is available in item */}
+                </td>
+                <td className="py-2 pl-1">
+                  {item.sgstAmount.toFixed(2)} {/* Assuming sgstAmount is available in item */}
+                </td>
                 <td className="py-2 pl-1">{item.totalAmount.toFixed(2)}</td>
               </tr>
             ))}

@@ -19,7 +19,7 @@ const Template4 = forwardRef((props, ref) => {
   return (
     <div
       className=" bg-white border border-gray-300 rounded-md shadow-md overflow-y-auto"
-      style={{ height: "80vh", width: "600px" }}
+      style={{ height: "90vh", width: "700px" }}
     >
       <div ref={ref} style={{ minWidth: "595px", padding: "20px" }}>
         <div className="border border-black ">
@@ -174,10 +174,10 @@ const Template4 = forwardRef((props, ref) => {
               <span className="font-bold">Note: </span>
               <span>{dataSet?.notes || "No notes"}</span>
             </div>
-            {/* <div className="w-3/4 flex justify-between font-bold py-2 ">
+            <div className="w-3/4 flex justify-between font-bold py-2 ">
               <div className="px-2">Grand Total:</div>
-              <div className="px-2">$285.55</div>
-            </div> */}
+              <div className="px-2">₹{+dataSet?.total?.toFixed(2)}</div>
+            </div>
           </div>
           <div className="flex justify-between border-b border-black  ">
             <div className="w-full border-e border-black py-2 px-3">

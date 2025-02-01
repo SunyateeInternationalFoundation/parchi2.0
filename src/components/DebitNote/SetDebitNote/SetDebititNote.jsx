@@ -66,7 +66,7 @@ const SetDebitNote = () => {
     if (debitNoteId) {
       fetchDebitNoteNumbers();
     }
-  }, [formData.products]);
+  }, [formData]);
 
   const fetchDebitNoteNumbers = async () => {
     try {
@@ -275,24 +275,17 @@ const SetDebitNote = () => {
           (debitNoteId ? "Updated" : "Created") +
           " the DebitNote"
       );
+
+      const redirect =
+        (userDetails.selectedDashboard === "staff"
+          ? "/staff/debit-note/"
+          : "/debit-note/") + debitNoteRef.id;
+
       if (isPrint) {
-        navigate(
-          userDetails.selectedDashboard === "staff"
-            ? "/staff/debit-note/" + debitNoteRef.id + "?print=true"
-            : "/debit-note/" + debitNoteRef.id + "?print=true"
-        );
+        navigate(redirect + "?print=true");
       } else {
-        navigate(
-          userDetails.selectedDashboard === "staff"
-            ? "/staff/debit-note/" + debitNoteRef.id
-            : "/debit-note/" + debitNoteRef.id
-        );
+        navigate(redirect);
       }
-      // navigate(
-      //   userDetails.selectedDashboard === "staff"
-      //     ? "/staff/debit-note"
-      //     : "/debit-note"
-      // );
     } catch (err) {
       console.error(err);
     }
