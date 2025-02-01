@@ -1,5 +1,6 @@
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
+import Barcode from "react-barcode";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
 import { useReactToPrint } from "react-to-print";
@@ -34,11 +35,6 @@ function PrintBarcode() {
   const sheets = [
     {
       id: 1,
-      itemsPerSheet: 40,
-      dimensions: [1.799, 1.003],
-    },
-    {
-      id: 2,
       itemsPerSheet: 40,
       dimensions: [1.799, 1.003],
     },
@@ -350,10 +346,32 @@ function PrintBarcode() {
         {/* Options */}
         <div className="flex items-center gap-4 my-4">
           <label className="flex items-center gap-2">
-            <input type="checkbox" className="w-4 h-4" /> Select Name
+            <input
+              checked={selectSheetDetails.isName}
+              type="checkbox"
+              className="w-4 h-4"
+              onChange={(e) => {
+                setSelectSheetDetails((val) => ({
+                  ...val,
+                  isName: e.target.checked,
+                }));
+              }}
+            />{" "}
+            Select Name
           </label>
           <label className="flex items-center gap-2">
-            <input type="checkbox" className="w-4 h-4" /> Select Price
+            <input
+              checked={selectSheetDetails.isPrice}
+              type="checkbox"
+              className="w-4 h-4"
+              onChange={(e) => {
+                setSelectSheetDetails((val) => ({
+                  ...val,
+                  isPrice: e.target.checked,
+                }));
+              }}
+            />{" "}
+            Select Price
           </label>
         </div>
 
@@ -375,14 +393,28 @@ function PrintBarcode() {
               {sheets.map((ele) => (
                 <SelectItem key={ele.id} value={ele.id}>
                   {ele.itemsPerSheet} per sheet (
-                  {ele.dimensions[0] + " * " + ele.dimensions[0]})
+                  {ele.dimensions[0] + " * " + ele.dimensions[1]})
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
         <div className="flex gap-4 mb-4">
-          <button className="bg-red-500 text-white px-4 py-2 rounded">
+          <button
+            className="bg-red-500 text-white px-4 py-2 rounded"
+            onClick={() => {
+              setSelectProduct([]);
+              setSelectSheetDetails({
+                sheetData: {
+                  id: 1,
+                  itemsPerSheet: 40,
+                  dimensions: [1.799, 1.003],
+                },
+                isName: false,
+                isPrice: false,
+              });
+            }}
+          >
             Reset
           </button>
           <button
@@ -395,30 +427,48 @@ function PrintBarcode() {
 
         {/* Barcode Display */}
         <div
-          className="grid grid-cols-5 gap-4 p-4 border rounded bg-white"
+          className="border rounded bg-white"
           ref={barcodeRef}
           style={{
             height: "10.3in",
             width: "8.45in",
-            display: "block",
             margin: "10px auto",
-            breakAfter: "page",
             paddingTop: "0.1in",
           }}
         >
-          {selectProduct.map((product) =>
-            Array.from({ length: product.quantity }).map((_, i) => (
-              <div
-                key={`${product.id}-${i}`}
-                className="text-center flex text-sm"
-              >
-                <div className="border p-2">
-                  <div className="bg-black w-full h-[56px] w-[110px]"></div>
-                  <p>{product.barcode}</p>
+          <div className="flex flex-wrap gap-4 ps-4 mt-5" ref={barcodeRef}>
+            {selectProduct.map((product) =>
+              Array.from({ length: product.quantity }).map((_, i) => (
+                <div
+                  key={`${product.id}-${i}`}
+                  className="  text-center "
+                  style={{
+                    height:
+                      selectSheetDetails.sheetData.dimensions[1] + 0.1 + "in",
+                    lineHeight: "14px",
+                    paddingTop: "0.05in",
+                    width: selectSheetDetails.sheetData.dimensions[0] + "in",
+                    border: "1px dotted rgb(204, 204, 204)",
+                    overflow: "hidden",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {selectSheetDetails.isName && <div>{product.name}</div>}
+                  {selectSheetDetails.isPrice && (
+                    <div className="">₹{product.sellingPrice}</div>
+                  )}
+                  <div className="flex justify-center  ">
+                    <Barcode
+                      value={product.barcode}
+                      height={"32px"}
+                      marginTop={"0px"}
+                      paddingTop={"0px"}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
       </div>
 
