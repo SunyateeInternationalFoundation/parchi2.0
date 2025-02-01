@@ -286,11 +286,9 @@ const SetCreditNote = () => {
           (creditNoteId ? "Updated" : "Created") +
           " the CreditNote"
       );
-      navigate(
-        userDetails.selectedDashboard === "staff"
-          ? "/staff/credit-note"
-          : "/credit-note"
-      );
+
+      // Navigate to the credit note detail page after creation or update
+      navigate(`/credit-note/${creditNoteRef.id || creditNoteId}`);
     } catch (err) {
       console.error(err);
     }

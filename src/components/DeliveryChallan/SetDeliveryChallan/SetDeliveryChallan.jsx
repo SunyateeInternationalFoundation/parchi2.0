@@ -234,19 +234,19 @@ const SetDeliveryChallan = () => {
         },
       };
 
+      let deliveryChallanRef="";
+
       if (deliverychallanId) {
-        await updateDoc(
-          doc(
+        deliveryChallanRef = doc(
             db,
             "companies",
             companyDetails.companyId,
             "deliveryChallan",
             deliverychallanId
-          ),
-          payload
         );
+        await updateDoc(deliveryChallanRef, payload);
       } else {
-        await addDoc(
+        deliveryChallanRef = await addDoc(
           collection(
             db,
             "companies",
@@ -281,11 +281,9 @@ const SetDeliveryChallan = () => {
           (deliverychallanId ? "Updated" : "Created") +
           " the DeliveryChallan"
       );
-      navigate(
-        userDetails.selectedDashboard === "staff"
-          ? "/staff/delivery-challan"
-          : "/delivery-challan"
-      );
+
+      // Navigate to the delivery challan detail page after creation or update
+      navigate(`/delivery-challan/${deliveryChallanRef.id || deliverychallanId}`);
     } catch (err) {
       console.error(err);
     }

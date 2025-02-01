@@ -261,7 +261,9 @@ const SetPO = () => {
       }
 
       alert("Successfully " + (poId ? "Updated" : "Created") + " the PO");
-      navigate(userDetails.selectedDashboard === "staff" ? "/staff/po" : "/po");
+
+      // Navigate to the PO detail page after creation or update
+      navigate(`/po/${poRef.id || poId}`);
     } catch (err) {
       console.error(err);
     }

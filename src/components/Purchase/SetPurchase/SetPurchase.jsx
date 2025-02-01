@@ -228,19 +228,18 @@ const SetPurchase = () => {
         },
       };
 
+      let purchaseRef;
       if (purchaseId) {
-        await updateDoc(
-          doc(
+        purchaseRef = doc(
             db,
             "companies",
             companyDetails.companyId,
             "purchases",
             purchaseId
-          ),
-          payload
         );
+        await updateDoc(purchaseRef, payload);
       } else {
-        await addDoc(
+        purchaseRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "purchases"),
           payload
         );
@@ -249,11 +248,9 @@ const SetPurchase = () => {
       alert(
         "Successfully " + (purchaseId ? "Updated" : "Created") + " the Purchase"
       );
-      navigate(
-        userDetails.selectedDashboard === "staff"
-          ? "/staff/purchase"
-          : "/purchase"
-      );
+
+      // Navigate to the Purchase detail page after creation or update
+      navigate(`/purchase/${purchaseRef.id || purchaseId}`);
     } catch (err) {
       console.error(err);
     }
