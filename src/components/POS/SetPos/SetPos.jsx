@@ -167,7 +167,7 @@ const SetPos = () => {
   async function onSetPos(data) {
     try {
       const { no, ...restForm } = formData;
-      const { products, ...rest } = data;
+      const { products, isPrint, ...rest } = data;
       const customerRef = doc(db, "customers", selectedCustomerData.id);
       const companyRef = doc(db, "companies", companyDetails.companyId);
       let subTotal = 0;
@@ -232,14 +232,13 @@ const SetPos = () => {
           name: selectedCustomerData.name,
         },
       };
+      let posRef;
 
       if (posId) {
-        await updateDoc(
-          doc(db, "companies", companyDetails.companyId, "pos", posId),
-          payload
-        );
+        posRef = doc(db, "companies", companyDetails.companyId, "pos", posId);
+        await updateDoc(posRef, payload);
       } else {
-        await addDoc(
+        posRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "pos"),
           payload
         );
@@ -265,9 +264,18 @@ const SetPos = () => {
       }
 
       alert("Successfully " + (posId ? "Updated" : "Created") + " the Pos");
-      navigate(
-        userDetails.selectedDashboard === "staff" ? "/staff/pos" : "/pos"
-      );
+      const redirect =
+        (userDetails.selectedDashboard === "staff" ? "/staff/po/" : "/po/") +
+        posRef.id;
+
+      if (isPrint) {
+        navigate(redirect + "?print=true");
+      } else {
+        navigate(redirect);
+      }
+      // navigate(
+      //   userDetails.selectedDashboard === "staff" ? "/staff/pos" : "/pos"
+      // );
     } catch (err) {
       console.error(err);
     }

@@ -356,7 +356,7 @@ function DebitNote({ debitNote, bankDetails, selectTemplate }) {
               className={
                 "px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white"
               }
-              onClick={() => navigate("edit-debitNote")}
+              onClick={() => navigate("edit-debitnote")}
             >
               <TbEdit /> &nbsp; Edit
             </button>
