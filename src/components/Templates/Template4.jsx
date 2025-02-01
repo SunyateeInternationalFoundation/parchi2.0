@@ -174,10 +174,10 @@ const Template4 = forwardRef((props, ref) => {
               <span className="font-bold">Note: </span>
               <span>{dataSet?.notes || "No notes"}</span>
             </div>
-            {/* <div className="w-3/4 flex justify-between font-bold py-2 ">
+            <div className="w-3/4 flex justify-between font-bold py-2 ">
               <div className="px-2">Grand Total:</div>
-              <div className="px-2">$285.55</div>
-            </div> */}
+              <div className="px-2">₹{+dataSet?.total?.toFixed(2)}</div>
+            </div>
           </div>
           <div className="flex justify-between border-b border-black  ">
             <div className="w-full border-e border-black py-2 px-3">
