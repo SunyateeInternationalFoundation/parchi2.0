@@ -7,6 +7,7 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { FaAngleDown } from "react-icons/fa6";
 import { TbEdit } from "react-icons/tb";
 import { useSelector } from "react-redux";
 import { db } from "../../../firebase";
@@ -134,7 +135,7 @@ const Roles = () => {
           paginationData.map((staff) => (
             <div key={staff.id} className="border-t py-3">
               <div
-                className="flex justify-between items-center mb-4 px-5 cursor-pointer"
+                className="flex justify-between items-center py-3 px-5 cursor-pointer"
                 onClick={() =>
                   setPaginationData((prevData) =>
                     prevData.map((pre) => {
@@ -147,7 +148,7 @@ const Roles = () => {
                 }
               >
                 <h2 className="text-xl">{staff.name}</h2>
-                {staff.isExpand && (
+                {staff.isExpand ? (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -158,6 +159,10 @@ const Roles = () => {
                     <TbEdit className="inline mr-2" />
                     Update Roles
                   </button>
+                ) : (
+                  <div className="flex items-center text-lg">
+                    <FaAngleDown />
+                  </div>
                 )}
               </div>
               {staff.isExpand && (

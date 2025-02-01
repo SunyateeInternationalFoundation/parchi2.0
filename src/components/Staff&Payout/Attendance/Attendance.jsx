@@ -167,15 +167,10 @@ function Attendance() {
   }, [staffData, staffAttendance]);
 
   function markedAttendance(AttendanceId, data) {
-    const removedAlreadyAddAttendance = staffAttendance.filter((ele) => {
-      if (ele.id === AttendanceId) {
-        return false;
-      }
-      if (onUpdateAttendance.id && ele.id !== onUpdateAttendance.id) {
-        return false;
-      }
-      return true;
-    });
+    const removedAlreadyAddAttendance = staffAttendance.filter(
+      (ele) => ele.id !== AttendanceId
+    );
+
     removedAlreadyAddAttendance.push(data);
 
     const sortedData = removedAlreadyAddAttendance.sort((a, b) =>

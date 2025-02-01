@@ -186,17 +186,14 @@ const Designation = () => {
                         <td className="px-5 py-3 text-start">
                           {designation.designationName}
                         </td>
-                        <td
-                          className="px-12 py-3"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                          }}
-                        >
-                          <div
-                            className="text-red-500 flex items-center justify-end"
-                            onClick={() => OnDeleteDesignation(designation.id)}
-                          >
-                            <RiDeleteBin6Line />
+                        <td className="px-12 py-3 ">
+                          <div className="text-red-500 flex items-center justify-end ">
+                            <RiDeleteBin6Line
+                              onClick={(e) => {
+                                e.preventDefault();
+                                OnDeleteDesignation(designation.id);
+                              }}
+                            />
                           </div>
                         </td>
                       </tr>

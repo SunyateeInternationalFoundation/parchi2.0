@@ -198,7 +198,7 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
                 />
 
                 <Select
-                  defaultValue={formData.discountType ? "true" : "false"}
+                  value={formData.discountType ? "true" : "false"}
                   onValueChange={(val) => {
                     setFormData((pre) => ({
                       ...pre,
@@ -220,31 +220,30 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
             <div className="space-y-1">
               <label className="text-sm text-gray-600">GST Tax</label>
               <Select
-                defaultValue={formData.tax}
+                value={String(formData.tax) || "0"}
                 onValueChange={(val) => {
                   setFormData((pre) => ({
                     ...pre,
-                    tax: val,
+                    tax: +val,
                   }));
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder=" Select SellingPriceTaxType" />
+                  <SelectValue placeholder=" Select GST Tax" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={0}>0 %</SelectItem>
-                  <SelectItem value={5}>5 %</SelectItem>
-                  <SelectItem value={12}>12 %</SelectItem>
-                  <SelectItem value={18}>18 %</SelectItem>
-                  <SelectItem value={28}>28 %</SelectItem>
+                  <SelectItem value={"0"}>0 %</SelectItem>
+                  <SelectItem value={"5"}>5 %</SelectItem>
+                  <SelectItem value={"12"}>12 %</SelectItem>
+                  <SelectItem value={"18"}>18 %</SelectItem>
+                  <SelectItem value={"28"}>28 %</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1">
               <label className="text-sm text-gray-600">Month Duration</label>
-
               <Select
-                defaultValue={formData.monthDuration}
+                value={String(formData.monthDuration) || "1"}
                 onValueChange={(val) => {
                   setFormData((pre) => ({
                     ...pre,
@@ -253,13 +252,13 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder=" Select SellingPriceTaxType" />
+                  <SelectValue placeholder="Select Month Duration" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">1 Month</SelectItem>
-                  <SelectItem value="3">3 Months</SelectItem>
-                  <SelectItem value="6">6 Months</SelectItem>
-                  <SelectItem value="12">12 Months</SelectItem>
+                  <SelectItem value={"1"}>1 Month</SelectItem>
+                  <SelectItem value={"3"}>3 Months</SelectItem>
+                  <SelectItem value={"6"}>6 Months</SelectItem>
+                  <SelectItem value={"12"}>12 Months</SelectItem>
                 </SelectContent>
               </Select>
             </div>

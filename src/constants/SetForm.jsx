@@ -60,27 +60,34 @@ function SetForm(props) {
     selectedPersonData,
     isVendor,
   } = props;
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isPersonDropdownVisible, setIsPersonDropdownVisible] = useState(false);
-  const [personSuggestions, setPersonSuggestions] = useState(personDetails);
-  const [productSuggestions, setProductSuggestions] = useState([]);
   const [productSearch, setProductSearch] = useState("");
   const [isProductDropdownVisible, setIsProductDropdownVisible] =
     useState(false);
+  const [isSignOpen, setIsSignOpen] = useState(false);
+  const [isProductSelected, setIsProductSelected] = useState(false);
+
   const purchaseList = ["Purchase", "PO", "DebitNote"];
+
+  const [productSuggestions, setProductSuggestions] = useState([]);
+  const [personSuggestions, setPersonSuggestions] = useState(personDetails);
+
   const [products, setProducts] = useState([]);
   const [attachFiles, setAttachFiles] = useState(formData.attachments || []);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [categories, setCategories] = useState([]);
-  const [isProductSelected, setIsProductSelected] = useState(false);
   const [books, setBooks] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
+  const [totalAmount, setTotalAmount] = useState(0);
 
   const [taxSelect, setTaxSelect] = useState("");
   const [total_Tax_Amount, setTotal_Tax_Amount] = useState(0);
-  const [warehouses, setWarehouses] = useState([]);
   const [selectedTaxDetails, setSelectedTaxDetails] = useState({});
-  const [totalAmounts, setTotalAmounts] = useState({
+
+  const [totalGSTAmounts, setTotalGSTAmounts] = useState({
     totalTaxableAmount: 0,
     totalSgstAmount_2_5: 0,
     totalCgstAmount_2_5: 0,
@@ -90,8 +97,8 @@ function SetForm(props) {
     totalCgstAmount_9: 0,
     totalAmount: 0,
   });
+
   const [SignImagesList, setSignImagesList] = useState([]);
-  const [isSignOpen, setIsSignOpen] = useState(false);
 
   const handlePersonInputChange = (e) => {
     const value = e.target.value.trim();
@@ -125,17 +132,15 @@ function SetForm(props) {
 
   const calculateTotal = () => {
     const discountAmount = formData.extraDiscountType
-      ? (+totalAmounts.totalAmount * formData.extraDiscount) / 100
+      ? (+totalGSTAmounts.totalAmount * formData.extraDiscount) / 100
       : formData.extraDiscount || 0;
 
     const total =
-      totalAmounts.totalAmount +
+      totalGSTAmounts.totalAmount +
       formData.shippingCharges +
-      formData.packagingCharges +
-      total_Tax_Amount -
+      formData.packagingCharges -
       (isProductSelected ? discountAmount : 0);
-
-    return total.toFixed(2);
+    setTotalAmount(total);
   };
 
   useEffect(() => {
@@ -144,9 +149,14 @@ function SetForm(props) {
   }, [personDetails, formData.attachments]);
 
   function addActionQty() {
-    if (formData?.products?.length === 0 || products.length === 0 || !formId) {
+    if (!formData?.products?.length || !products.length || !formId) {
       return;
     }
+    console.log(
+      "🚀 ~ addActionQty ~ formData?.products:",
+      formData?.products,
+      products
+    );
     setIsProductSelected(true);
     let productData = products;
     for (let ele of formData.products) {
@@ -161,7 +171,7 @@ function SetForm(props) {
             pro.quantity += ele.quantity;
           }
 
-          pro.totalAmount = ele.quantity * pro.netAmount;
+          pro.totalAmount = (pro.netAmount + pro.taxAmount) * ele.quantity;
         }
         return pro;
       });
@@ -171,13 +181,25 @@ function SetForm(props) {
   }
 
   function total_TCS_TDS_Amount() {
-    const totalQty = calculateTotal();
-    if (taxSelect === "" || !selectedTaxDetails.rate || totalQty === 0) {
+    if (taxSelect === "" || !selectedTaxDetails.rate || totalAmount === 0) {
       return;
     }
 
-    const amount = selectedTaxDetails.rate;
-    const totalTaxAmount = amount * totalQty;
+    const rate = selectedTaxDetails.rate;
+    let amount = totalAmount;
+    if (taxSelect == "tcs" && !selectedTaxDetails?.isTotalAmount) {
+      const discountAmount = formData.extraDiscountType
+        ? (+totalGSTAmounts.totalAmount * formData.extraDiscount) / 100
+        : formData.extraDiscount || 0;
+
+      amount =
+        totalGSTAmounts?.totalTaxableAmount +
+        discountAmount +
+        (formData?.shippingCharges || 0) +
+        (formData?.packagingCharges || 0);
+    }
+
+    const totalTaxAmount = (rate / 100) * amount;
     setTotal_Tax_Amount(totalTaxAmount);
   }
 
@@ -199,7 +221,8 @@ function SetForm(props) {
         }
         product.actionQty = Math.max(product.actionQty, 0); // Prevent negative quantity
         // Calculate total amount for each product based on quantity
-        product.totalAmount = product.netAmount * product.actionQty;
+        product.totalAmount =
+          (product.netAmount + product.taxAmount) * product.actionQty;
       }
       if (product.actionQty !== 0) ++countOfSelect;
       return product;
@@ -221,13 +244,8 @@ function SetForm(props) {
   }
 
   function calculateProduct(products) {
-    const totalTaxableAmount = products.reduce((sum, product) => {
-      const cal =
-        sum + (product.netAmount - product.taxAmount) * product.actionQty;
-      if (!product.sellingPriceTaxType) {
-        return sum + product.netAmount * product.actionQty;
-      }
-      return cal;
+    const totalWithoutTaxableAmount = products.reduce((sum, product) => {
+      return (sum += product.netAmount * product.actionQty);
     }, 0);
 
     const totalSgstAmount_2_5 = products.reduce(
@@ -269,7 +287,7 @@ function SetForm(props) {
     );
 
     const totalAmount =
-      totalTaxableAmount +
+      totalWithoutTaxableAmount +
       totalSgstAmount_2_5 +
       totalCgstAmount_2_5 +
       totalSgstAmount_6 +
@@ -278,8 +296,8 @@ function SetForm(props) {
       totalCgstAmount_9;
 
     setProducts(products);
-    setTotalAmounts({
-      totalTaxableAmount,
+    setTotalGSTAmounts({
+      totalTaxableAmount: totalWithoutTaxableAmount,
       totalSgstAmount_2_5,
       totalCgstAmount_2_5,
       totalSgstAmount_6,
@@ -406,30 +424,44 @@ function SetForm(props) {
         if (product.quantity >= value || purchaseList.includes(formName)) {
           product.actionQty = value;
         }
-        product.totalAmount = product.netAmount * product.actionQty;
+        product.totalAmount =
+          (product.netAmount + product.taxAmount) * product.actionQty;
       }
       return product;
     });
     calculateProduct(updatedProducts);
   }
+
   function ModifiedProductData(data) {
     let discount = +data.discount || 0;
 
     if (data.discountType) {
       discount = (+data.sellingPrice / 100) * data.discount;
     }
-    const netAmount = +data.sellingPrice - discount;
+    let netAmount = +data.sellingPrice - discount;
     const taxRate = data.tax || 0;
-
     const sgst = taxRate / 2;
     const cgst = taxRate / 2;
-    const taxAmount = netAmount * (taxRate / 100);
-    const sgstAmount = netAmount * (sgst / 100);
-    const cgstAmount = netAmount * (cgst / 100);
-    const totalAmount = data.actionQty * netAmount;
+
+    let taxAmount = netAmount - netAmount * (100 / (100 + taxRate));
+    if (!data.sellingPriceTaxType) {
+      taxAmount = (netAmount * taxRate) / 100;
+    }
+
+    const sgstAmount = taxAmount / 2;
+    const cgstAmount = taxAmount / 2;
+
+    let totalAmount = data.actionQty * netAmount;
+
+    if (data.sellingPriceTaxType) {
+      netAmount = netAmount - taxAmount;
+    } else {
+      totalAmount = data.actionQty * (netAmount + taxAmount);
+    }
+
     return {
       ...data,
-      netAmount: netAmount,
+      netAmount,
       sgst,
       cgst,
       sgstAmount,
@@ -492,6 +524,7 @@ function SetForm(props) {
       console.log("🚀 ~ fetchSign ~ error:", error);
     }
   }
+
   async function deleteSign(signId, signUrl) {
     try {
       if (!confirm("Are you sure want to delete?")) {
@@ -515,44 +548,62 @@ function SetForm(props) {
     }
   }
 
-  function onSubmit(isPrint = false) {
-    // const tcs = {
-    //   isTcsApplicable: Boolean(taxSelect === "tcs"),
-    //   tax: taxSelect === "tcs" ? selectedTaxDetails.tax : "",
-    //   tax_value: taxSelect === "tcs" ? selectedTaxDetails.tax_value : 0,
-    //   type_of_goods:
-    //     taxSelect === "tcs" ? selectedTaxDetails.type_of_goods : "",
-    //   tcs_amount: taxSelect === "tcs" ? total_Tax_Amount : 0,
-    // };
+  const handleFileChange = async (files) => {
+    const payload = [];
+    if (files.length <= 0) {
+      return [];
+    }
 
-    // const tds = {
-    //   isTdsApplicable: Boolean(taxSelect === "tds"),
-    //   natureOfPayment:
-    //     taxSelect === "tds" ? selectedTaxDetails.natureOfPayment : "",
-    //   percentage: taxSelect === "tds" ? selectedTaxDetails.percentage : 0,
-    //   percentageValue:
-    //     taxSelect === "tds" ? selectedTaxDetails.percentageValue : "",
-    //   tdsSection: taxSelect === "tds" ? selectedTaxDetails.tdsSection : "",
-    //   tds_amount: taxSelect === "tds" ? total_Tax_Amount : 0,
-    // };
+    try {
+      for (let file of files) {
+        if (file?.url) {
+          payload.push(file);
+        } else {
+          const storageRef = ref(storage, `productImages/${file.name}`);
+          await uploadBytes(storageRef, file);
+          const productImageUrl = await getDownloadURL(storageRef);
+          payload.push({ name: file.name, url: productImageUrl });
+        }
+      }
+      return payload;
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
 
-    const payload = {
-      // tds,
-      // tcs,
-      products,
-      isPrint,
-      attachFiles,
-      total: +calculateTotal(),
-    };
+  async function onSubmit(isPrint = false) {
     if (!selectedPersonData.id) {
       alert("Please select a Person");
       return;
     }
+    const t_sTaxDetails =
+      (taxSelect !== "") &
+      {
+        [taxSelect]: {
+          isTcsApplicable: true,
+          ...selectedTaxDetails,
+        },
+      };
+
+    const payload = {
+      tds: { isTcsApplicable: false },
+      tcs: { isTcsApplicable: false },
+      ...t_sTaxDetails,
+      products,
+      isPrint,
+      attachments: await handleFileChange(attachFiles),
+      withoutT_SAmount: +totalAmount,
+      total:
+        totalAmount +
+        (taxSelect === "tds" ? -total_Tax_Amount : total_Tax_Amount),
+    };
+
     onSetForm(payload);
   }
+
   useEffect(() => {
     calculateTotal();
-  }, [formData.extraDiscountType]);
+  }, [formData, products]);
 
   useEffect(() => {
     fetchSign();
@@ -570,7 +621,7 @@ function SetForm(props) {
 
   useEffect(() => {
     total_TCS_TDS_Amount();
-  }, [products, selectedTaxDetails]);
+  }, [totalAmount, selectedTaxDetails]);
 
   useEffect(() => {
     if (selectedCategory === "all" && productSearch === "") {
@@ -1005,10 +1056,13 @@ function SetForm(props) {
                                 ₹{product.netAmount.toFixed(2)}
                               </td>
                               <td className="px-2 py-2">
-                                {/* {product.sellingPriceTaxType ? "Yes" : "No"} */}
                                 {product.tax}%
                                 <span className="text-xs">
-                                  ({product.taxAmount.toFixed(2)})
+                                  (
+                                  {product.sellingPriceTaxType
+                                    ? "In: "
+                                    : "Ex: "}
+                                  {product.taxAmount.toFixed(2)})
                                 </span>
                               </td>
                               <td className="px-4 py-2">
@@ -1214,7 +1268,6 @@ function SetForm(props) {
                               type="file"
                               className="hidden"
                               accept="image/*"
-                              multiple
                               onChange={uploadSign}
                             />
                           </label>
@@ -1353,7 +1406,9 @@ function SetForm(props) {
                         checked={taxSelect === "tcs"}
                         onChange={(e) => {
                           setTaxSelect((val) => (val === "tcs" ? "" : "tcs"));
-                          setSelectedTaxDetails({});
+                          setSelectedTaxDetails({
+                            isTotalAmount: true,
+                          });
                           setTotal_Tax_Amount(0);
                         }}
                       />
@@ -1389,11 +1444,15 @@ function SetForm(props) {
                 </div>
               </div>
               <div>
-                <div className="w-full flex ">
+                <div className="w-full flex pt-3">
                   {taxSelect === "tds" && (
                     <Select
-                      // onValueChange={(data) => setSelectedTaxDetails(data)}
-                      value={selectedTaxDetails?.rate ? selectedTaxDetails : ""}
+                      onValueChange={(data) => {
+                        setSelectedTaxDetails(
+                          tdsData.find((ele) => ele.id == data)
+                        );
+                      }}
+                      value={selectedTaxDetails?.id || ""}
                     >
                       <SelectTrigger>
                         <SelectValue
@@ -1401,8 +1460,8 @@ function SetForm(props) {
                         />
                       </SelectTrigger>
                       <SelectContent>
-                        {tdsData.map((ele, index) => (
-                          <SelectItem key={index} value={ele}>
+                        {tdsData.map((ele) => (
+                          <SelectItem key={ele.id} value={ele.id}>
                             <span className="font-semibold">
                               {ele.rate}% - {ele.code}
                             </span>
@@ -1413,16 +1472,31 @@ function SetForm(props) {
                     </Select>
                   )}
                   {taxSelect === "tcs" && (
-                    // <Select onValueChange={(data) => setSelectedTaxDetails(data)}>
-                    <Select>
-                      <SelectTrigger>
+                    <Select
+                      onValueChange={(data) => {
+                        const selectData = tcsData.find(
+                          (ele) => ele.id == data
+                        );
+                        setSelectedTaxDetails((val) => ({
+                          ...val,
+                          ...selectData,
+                        }));
+                      }}
+                      value={selectedTaxDetails?.id || ""}
+                    >
+                      <SelectTrigger
+                        style={{
+                          borderTopRightRadius: "0px",
+                          borderBottomRightRadius: "0px",
+                        }}
+                      >
                         <SelectValue
                           placeholder={`Select ${taxSelect.toUpperCase()} Option`}
                         />
                       </SelectTrigger>
                       <SelectContent>
-                        {tcsData.map((ele, index) => (
-                          <SelectItem key={index} value={index}>
+                        {tcsData.map((ele) => (
+                          <SelectItem key={ele.id} value={ele.id}>
                             <span className="font-semibold">
                               {ele.rate}% - {ele.code}
                             </span>
@@ -1432,9 +1506,45 @@ function SetForm(props) {
                       </SelectContent>
                     </Select>
                   )}
+                  {taxSelect === "tcs" && (
+                    <Select
+                      onValueChange={(data) => {
+                        setSelectedTaxDetails((val) => ({
+                          ...val,
+                          isTotalAmount: data == "true" ? true : false,
+                        }));
+                      }}
+                      value={
+                        selectedTaxDetails?.isTotalAmount == false
+                          ? "false"
+                          : "true"
+                      }
+                    >
+                      <SelectTrigger
+                        style={{
+                          borderRadius: "0px",
+                          width: "300px",
+                        }}
+                      >
+                        <SelectValue
+                          placeholder={`Select ${taxSelect.toUpperCase()} Option`}
+                        />
+                      </SelectTrigger>
+                      <SelectContent className="h-24">
+                        {[
+                          { name: "Net Amount", value: "false" },
+                          { name: "Total Amount", value: "true" },
+                        ].map((ele, index) => (
+                          <SelectItem key={index} value={ele.value}>
+                            {ele.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                   {(taxSelect === "tds" || taxSelect === "tcs") && (
-                    <div className="border p-2 rounded w-1/5">
-                      ₹ {total_Tax_Amount}
+                    <div className="border p-3 rounded-e-md w-1/5">
+                      ₹ {total_Tax_Amount.toFixed(2)}
                     </div>
                   )}
                 </div>
@@ -1490,53 +1600,61 @@ function SetForm(props) {
                     <span>₹ {formData.packagingCharges.toFixed(2)}</span>
                   </div>
                 )}
-                {taxSelect !== "" && (
-                  <div className="flex justify-between text-gray-700 mb-2">
-                    <span>{taxSelect.toUpperCase()}</span>
-                    <span>₹ {total_Tax_Amount.toFixed(2)}</span>
-                  </div>
-                )}
 
-                {totalAmounts.totalTaxableAmount > 0 && (
+                {totalGSTAmounts.totalTaxableAmount > 0 && (
                   <div className="flex justify-between text-gray-700 mb-2">
                     <span>Taxable Amount</span>
-                    <span>₹ {totalAmounts.totalTaxableAmount.toFixed(2)}</span>
+                    <span>
+                      ₹ {totalGSTAmounts.totalTaxableAmount.toFixed(2)}
+                    </span>
                   </div>
                 )}
-                {totalAmounts.totalSgstAmount_2_5 > 0 && (
+                {totalGSTAmounts.totalSgstAmount_2_5 > 0 && (
                   <div className="flex justify-between text-gray-700 mb-2">
                     <span>SGST(2.5%)</span>
-                    <span>₹ {totalAmounts.totalSgstAmount_2_5.toFixed(2)}</span>
+                    <span>
+                      ₹ {totalGSTAmounts.totalSgstAmount_2_5.toFixed(2)}
+                    </span>
                   </div>
                 )}
-                {totalAmounts.totalCgstAmount_2_5 > 0 && (
+                {totalGSTAmounts.totalCgstAmount_2_5 > 0 && (
                   <div className="flex justify-between text-gray-700 mb-2">
                     <span>CGST(2.5%)</span>
-                    <span>₹ {totalAmounts.totalCgstAmount_2_5.toFixed(2)}</span>
+                    <span>
+                      ₹ {totalGSTAmounts.totalCgstAmount_2_5.toFixed(2)}
+                    </span>
                   </div>
                 )}
-                {totalAmounts.totalSgstAmount_6 > 0 && (
+                {totalGSTAmounts.totalSgstAmount_6 > 0 && (
                   <div className="flex justify-between text-gray-700 mb-2">
                     <span>SGST(6%)</span>
-                    <span>₹ {totalAmounts.totalSgstAmount_6.toFixed(2)}</span>
+                    <span>
+                      ₹ {totalGSTAmounts.totalSgstAmount_6.toFixed(2)}
+                    </span>
                   </div>
                 )}
-                {totalAmounts.totalCgstAmount_6 > 0 && (
+                {totalGSTAmounts.totalCgstAmount_6 > 0 && (
                   <div className="flex justify-between text-gray-700 mb-2">
                     <span>CGST(6%)</span>
-                    <span>₹ {totalAmounts.totalCgstAmount_6.toFixed(2)}</span>
+                    <span>
+                      ₹ {totalGSTAmounts.totalCgstAmount_6.toFixed(2)}
+                    </span>
                   </div>
                 )}
-                {totalAmounts.totalSgstAmount_9 > 0 && (
+                {totalGSTAmounts.totalSgstAmount_9 > 0 && (
                   <div className="flex justify-between text-gray-700 mb-2">
                     <span>SGST(9%)</span>
-                    <span>₹ {totalAmounts.totalSgstAmount_9.toFixed(2)}</span>
+                    <span>
+                      ₹ {totalGSTAmounts.totalSgstAmount_9.toFixed(2)}
+                    </span>
                   </div>
                 )}
-                {totalAmounts.totalCgstAmount_9 > 0 && (
+                {totalGSTAmounts.totalCgstAmount_9 > 0 && (
                   <div className="flex justify-between text-gray-700 mb-2">
                     <span>CGST(9%)</span>
-                    <span>₹ {totalAmounts.totalCgstAmount_9.toFixed(2)}</span>
+                    <span>
+                      ₹ {totalGSTAmounts.totalCgstAmount_9.toFixed(2)}
+                    </span>
                   </div>
                 )}
                 {/* {formData?.extraDiscount > 0 && isProductSelected && ( */}
@@ -1570,10 +1688,27 @@ function SetForm(props) {
                     </select>
                   </div>
                 </div>
+                {taxSelect !== "" && (
+                  <div className="flex justify-between text-gray-700 mb-2">
+                    <span>{taxSelect.toUpperCase()}</span>
+                    <span>
+                      {taxSelect === "tds" && "-"} ₹
+                      {total_Tax_Amount.toFixed(2)}
+                    </span>
+                  </div>
+                )}
                 {/* )} */}
                 <div className="flex justify-between font-bold text-xl mb-2 border-t pt-2">
                   <span>Total Amount</span>
-                  <span>₹ {calculateTotal()}</span>
+                  <span>
+                    ₹{" "}
+                    {(
+                      totalAmount +
+                      (taxSelect === "tds"
+                        ? -total_Tax_Amount
+                        : total_Tax_Amount)
+                    )?.toFixed(2)}
+                  </span>
                 </div>
               </div>
             </div>
@@ -1623,7 +1758,7 @@ function SetForm(props) {
           onClose={() => setIsSidebarOpen(false)}
           productList={products}
           handleActionQty={handleActionQty}
-          totalAmount={+totalAmounts.totalAmount}
+          totalAmount={+totalGSTAmounts.totalAmount}
           customActionQty={customActionQty}
           categories={categories}
           setProductsData={setProducts}

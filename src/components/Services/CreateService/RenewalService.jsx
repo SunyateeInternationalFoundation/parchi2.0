@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -8,12 +9,19 @@ import {
   Timestamp,
   where,
 } from "firebase/firestore";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 import { CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { IoClose } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { db } from "../../../firebase";
+import { db, storage } from "../../../firebase";
 import { cn, formatDate } from "../../../lib/utils";
 import { Calendar } from "../../UI/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../../UI/popover";
@@ -44,6 +52,8 @@ function RenewalService() {
   const [membershipStartDate, setMembershipStartDate] = useState(
     Timestamp.fromDate(new Date())
   );
+  const [isSignOpen, setIsSignOpen] = useState(false);
+  const [SignImagesList, setSignImagesList] = useState([]);
 
   const navigate = useNavigate();
 
@@ -82,36 +92,6 @@ function RenewalService() {
     name: "",
   });
 
-  useEffect(() => {
-    function addSelectedService() {
-      if (
-        formData?.servicesList?.length === 0 ||
-        servicesList.length === 0 ||
-        !id
-      ) {
-        return;
-      }
-      let serviceData = [];
-
-      for (let ele of formData.servicesList) {
-        serviceData.push(
-          ...servicesList.filter((ser) => {
-            return ser.id === ele.serviceRef.id;
-          })
-        );
-      }
-
-      const service = serviceData.map((ele) => {
-        ele.isSelected = true;
-        return ele;
-      });
-      setSelectedServicesList(service);
-      calculationService(service);
-    }
-    addSelectedService();
-    fetchServicesNumbers();
-  }, [formData.servicesList]);
-
   const fetchServicesNumbers = async () => {
     try {
       const querySnapshot = await getDocs(
@@ -128,82 +108,6 @@ function RenewalService() {
       console.error("Error fetching data:", error);
     }
   };
-
-  useEffect(() => {
-    const fetchPrefix = async () => {
-      try {
-        const companyDocRef = doc(db, "companies", companyDetails.companyId);
-        const companySnapshot = await getDoc(companyDocRef);
-
-        if (companySnapshot.exists()) {
-          const companyData = companySnapshot.data();
-          setPrefix(companyData.prefix.service || "SRE");
-        } else {
-          console.error("No company document found.");
-        }
-      } catch (error) {
-        console.error("Error fetching company details:", error);
-      }
-    };
-    async function fetchServiceData() {
-      if (!id) {
-        return;
-      }
-      try {
-        const docRef = doc(
-          db,
-          "companies",
-          companyDetails.companyId,
-          "services",
-          id
-        );
-        const getData = (await getDoc(docRef)).data();
-        console.log("🚀 ~ fetchServiceData ~ getData:", getData);
-
-        const customerData = (
-          await getDoc(getData.customerDetails.customerRef)
-        ).data();
-        handleSelectCustomer({
-          customerId: getData.customerDetails.customerRef.id,
-          ...customerData,
-        });
-        setMembershipPeriod(getData.typeOfEndMembership);
-        setFormData({
-          ...getData,
-          date: Timestamp.fromDate(new Date()),
-          membershipStartDate: Timestamp.fromDate(new Date()),
-        });
-      } catch (error) {
-        console.log("🚀 ~ fetchInvoiceData ~ error:", error);
-      }
-    }
-    const fetchServices = async () => {
-      try {
-        const companyRef = doc(db, "companies", companyDetails.companyId);
-        const serviceRef = collection(db, "services");
-        const q = query(serviceRef, where("companyRef", "==", companyRef));
-        const getData = await getDocs(q);
-        const serviceData = getData.docs.map((doc) => {
-          const data = doc.data();
-          const temp = {
-            id: doc.id,
-            ...data,
-            isSelected: false,
-            isAddDescription: false,
-          };
-
-          return ModifiedServiceData(temp);
-        });
-        setServicesList(serviceData);
-      } catch (error) {
-        console.error("Error fetching services:", error);
-      }
-    };
-
-    fetchPrefix();
-    fetchServiceData();
-    fetchServices();
-  }, [companyDetails, userDetails.selectedDashboard]);
 
   const handleSelectCustomer = (item) => {
     setSelectedCustomerData(item);
@@ -274,19 +178,9 @@ function RenewalService() {
     }
   }
 
-  useEffect(() => {
-    if (selectedServicesList.length > 0) {
-      calculationService(selectedServicesList);
-    }
-  }, [selectedServicesList]);
-
   function calculationService(data) {
-    const totalTaxableAmount = data.reduce((sum, service) => {
-      const cal = sum + (service.totalAmount - service.taxAmount);
-      if (!service.sellingPriceTaxType) {
-        return sum + service.totalAmount;
-      }
-      return cal;
+    const totalWithoutTaxableAmount = data.reduce((sum, service) => {
+      return (sum += service.netAmount);
     }, 0);
 
     const totalSgstAmount_2_5 = data.reduce(
@@ -317,7 +211,7 @@ function RenewalService() {
     );
 
     const subTotalAmount =
-      totalTaxableAmount +
+      totalWithoutTaxableAmount +
       totalSgstAmount_2_5 +
       totalCgstAmount_2_5 +
       totalSgstAmount_6 +
@@ -332,7 +226,7 @@ function RenewalService() {
     const totalAmount = +subTotalAmount - discountAmount;
     // Set state with the new values
     setTotalAmounts({
-      totalTaxableAmount,
+      totalTaxableAmount: totalWithoutTaxableAmount,
       totalSgstAmount_2_5,
       totalCgstAmount_2_5,
       totalSgstAmount_6,
@@ -343,6 +237,228 @@ function RenewalService() {
       totalAmount,
     });
   }
+
+  function ModifiedServiceData(data) {
+    let discount = +data.discount || 0;
+
+    if (data.discountType) {
+      discount = (+data.sellingPrice / 100) * data.discount;
+    }
+    let netAmount = +data.sellingPrice - discount;
+    const taxRate = data.tax || 0;
+    const sgst = taxRate / 2;
+    const cgst = taxRate / 2;
+
+    let taxAmount = netAmount - netAmount * (100 / (100 + taxRate));
+    if (!data.sellingPriceTaxType) {
+      taxAmount = (netAmount * taxRate) / 100;
+    }
+
+    const sgstAmount = taxAmount / 2;
+    const cgstAmount = taxAmount / 2;
+
+    let totalAmount = netAmount;
+
+    if (data.sellingPriceTaxType) {
+      netAmount = netAmount - taxAmount;
+    } else {
+      totalAmount = netAmount + taxAmount;
+    }
+
+    return {
+      ...data,
+      netAmount,
+      sgst,
+      cgst,
+      sgstAmount,
+      cgstAmount,
+      taxAmount,
+      totalAmount,
+    };
+  }
+
+  function onChangeDiscount(value, name, id) {
+    const updatedServices = selectedServicesList.map((service) => {
+      if (service.id === id) {
+        service[name] = value;
+        return ModifiedServiceData(service);
+      }
+      return service;
+    });
+    setSelectedServicesList(updatedServices);
+    calculationService(updatedServices);
+  }
+
+  async function uploadSign(e) {
+    e.preventDefault();
+    const file = e.target.files[0];
+    if (!file.name) {
+      return;
+    }
+    try {
+      const storageRef = ref(storage, `signImages/${file.name}`);
+      await uploadBytes(storageRef, file);
+      const productImageUrl = await getDownloadURL(storageRef);
+      const payload = {
+        name: file.name,
+        url: productImageUrl,
+        createdAt: Timestamp.fromDate(new Date()),
+        who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+      };
+
+      const signRef = collection(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "signs"
+      );
+
+      const newSign = await addDoc(signRef, payload);
+      setSignImagesList((val) => [
+        { id: newSign.id, name: payload.name, url: payload.url },
+        ...val,
+      ]);
+    } catch (error) {
+      console.log("🚀 ~ fetchSign ~ error:", error);
+    }
+  }
+
+  async function deleteSign(signId, signUrl) {
+    try {
+      if (!confirm("Are you sure want to delete?")) {
+        return;
+      }
+      const storageRef = ref(storage, signUrl);
+      await deleteObject(storageRef);
+
+      const signRef = doc(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "signs",
+        signId
+      );
+      await deleteDoc(signRef);
+
+      setSignImagesList((prev) => prev.filter((sign) => sign.id !== signId));
+    } catch (error) {
+      console.log("🚀 ~ deleteSign ~ error:", error);
+    }
+  }
+
+  const fetchPrefix = async () => {
+    try {
+      const companyDocRef = doc(db, "companies", companyDetails.companyId);
+      const companySnapshot = await getDoc(companyDocRef);
+
+      if (companySnapshot.exists()) {
+        const companyData = companySnapshot.data();
+        setPrefix(companyData.prefix.service || "SRE");
+      } else {
+        console.error("No company document found.");
+      }
+    } catch (error) {
+      console.error("Error fetching company details:", error);
+    }
+  };
+
+  async function fetchServiceData() {
+    if (!id) {
+      return;
+    }
+    try {
+      const docRef = doc(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "services",
+        id
+      );
+      const getData = (await getDoc(docRef)).data();
+
+      const customerData = (
+        await getDoc(getData.customerDetails.customerRef)
+      ).data();
+      handleSelectCustomer({
+        customerId: getData.customerDetails.customerRef.id,
+        ...customerData,
+      });
+      setMembershipPeriod(getData.typeOfEndMembership);
+      setFormData({
+        ...getData,
+        date: Timestamp.fromDate(new Date()),
+        membershipStartDate: Timestamp.fromDate(new Date()),
+      });
+    } catch (error) {
+      console.log("🚀 ~ fetchInvoiceData ~ error:", error);
+    }
+  }
+
+  const fetchServices = async () => {
+    try {
+      const companyRef = doc(db, "companies", companyDetails.companyId);
+      const serviceRef = collection(db, "services");
+      const q = query(serviceRef, where("companyRef", "==", companyRef));
+      const getData = await getDocs(q);
+      const serviceData = getData.docs.map((doc) => {
+        const data = doc.data();
+        const temp = {
+          id: doc.id,
+          ...data,
+          isSelected: false,
+          isAddDescription: false,
+        };
+
+        return ModifiedServiceData(temp);
+      });
+      setServicesList(serviceData);
+    } catch (error) {
+      console.error("Error fetching services:", error);
+    }
+  };
+
+  function addSelectedService() {
+    if (
+      formData?.servicesList?.length === 0 ||
+      servicesList.length === 0 ||
+      !id
+    ) {
+      return;
+    }
+    let serviceData = [];
+
+    for (let ele of formData.servicesList) {
+      serviceData.push(
+        ...servicesList.filter((ser) => {
+          return ser.id === ele.serviceRef.id;
+        })
+      );
+    }
+
+    const service = serviceData.map((ele) => {
+      ele.isSelected = true;
+      return ele;
+    });
+    setSelectedServicesList(service);
+    calculationService(service);
+  }
+
+  useEffect(() => {
+    addSelectedService();
+    fetchServicesNumbers();
+  }, [formData.servicesList]);
+
+  useEffect(() => {
+    fetchPrefix();
+    fetchServiceData();
+    fetchServices();
+  }, [companyDetails, userDetails.selectedDashboard]);
+
+  useEffect(() => {
+    if (selectedServicesList.length > 0) {
+      calculationService(selectedServicesList);
+    }
+  }, [selectedServicesList]);
 
   useEffect(() => {
     let discountAmount = formData.extraDiscount || 0;
@@ -374,45 +490,6 @@ function RenewalService() {
     }
     setMembershipDate();
   }, [membershipStartDate, membershipPeriod]);
-
-  function ModifiedServiceData(data) {
-    let discount = +data.discount || 0;
-
-    if (data.discountType) {
-      discount = (+data.sellingPrice / 100) * data.discount;
-    }
-    const netAmount = +data.sellingPrice - discount;
-    const taxRate = data.tax || 0;
-
-    const sgst = taxRate / 2;
-    const cgst = taxRate / 2;
-    const taxAmount = netAmount * (taxRate / 100);
-    const sgstAmount = netAmount * (sgst / 100);
-    const cgstAmount = netAmount * (cgst / 100);
-
-    return {
-      ...data,
-      netAmount: netAmount,
-      sgst,
-      cgst,
-      sgstAmount,
-      cgstAmount,
-      taxAmount,
-      totalAmount: +netAmount,
-    };
-  }
-
-  function onChangeDiscount(value, name, id) {
-    const updatedServices = selectedServicesList.map((service) => {
-      if (service.id === id) {
-        service[name] = value;
-        return ModifiedServiceData(service);
-      }
-      return service;
-    });
-    setSelectedServicesList(updatedServices);
-    calculationService(updatedServices);
-  }
 
   return (
     <div className="bg-gray-100 overflow-y-auto" style={{ height: "92vh" }}>
@@ -573,7 +650,10 @@ function RenewalService() {
                         Discount
                       </th>
                       <th className="px-2 py-3 text-gray-500 font-semibold ">
-                        Is Tax Included
+                        Net Amount
+                      </th>
+                      <th className="px-2 py-3 text-gray-500 font-semibold ">
+                        Tax
                       </th>
                       <th className="px-4 py-3 text-gray-500 font-semibold ">
                         Total Amount
@@ -656,8 +736,16 @@ function RenewalService() {
                             </select>
                           </div>
                         </td>
+                        <td className="px-4 py-2">
+                          ₹{service.netAmount.toFixed(2)}
+                        </td>
+
                         <td className="px-2 py-2">
-                          {service.sellingPriceTaxType ? "Yes" : "No"}
+                          {service.tax}%
+                          <span className="text-xs">
+                            ({service.sellingPriceTaxType ? "In: " : "Ex: "}
+                            {service.taxAmount.toFixed(2)})
+                          </span>
                         </td>
                         <td className="px-4 py-2">₹{service.totalAmount} </td>
                       </tr>
@@ -731,12 +819,89 @@ function RenewalService() {
                 </div>
                 <div className="w-full ">
                   <div>Sign</div>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder={"Select Sign"} />
-                    </SelectTrigger>
-                    <SelectContent className=" h-26"></SelectContent>
-                  </Select>
+                  <div className="  relative">
+                    <div
+                      className="border h-12 rounded-md cursor-pointer"
+                      onClick={() => {
+                        setIsSignOpen((val) => !val);
+                      }}
+                    >
+                      {formData.sign ? (
+                        <div className="flex items-center">
+                          <img
+                            src={formData.sign}
+                            className="w-full h-12 mix-blend-multiply object-contain"
+                          />
+                          <div
+                            className="hover:text-red-500 text-2xl pe-4 "
+                            onClick={() => {
+                              setFormData((val) => ({ ...val, sign: "" }));
+                            }}
+                          >
+                            <IoClose />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="px-5 py-3">Select Sign</div>
+                      )}
+                    </div>
+                    {isSignOpen && (
+                      <div className="absolute w-full border-2 left-0 top-14 bg-white rounded-md auto-focus shadow">
+                        <div className="border-b  minH-96 overflow-y-auto">
+                          {SignImagesList.length > 0 &&
+                            SignImagesList.map((item) => (
+                              <div
+                                className="flex items-center cursor-pointer hover:bg-blue-100 rounded-md"
+                                key={item.id}
+                              >
+                                <div
+                                  className="w-full h-14 overflow-hidden"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setFormData((val) => ({
+                                      ...val,
+                                      sign: item.url,
+                                    }));
+                                    setIsSignOpen(false);
+                                  }}
+                                >
+                                  <img
+                                    src={item.url}
+                                    className="w-full h-14 mix-blend-multiply object-contain"
+                                  />
+                                </div>
+                                <div
+                                  className="hover:text-red-500 text-2xl pe-4"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    deleteSign(item.id, item.url);
+                                  }}
+                                >
+                                  <IoClose />
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+                        <div className="p-3 flex justify-center">
+                          <label
+                            htmlFor="file"
+                            className="cursor-pointer p-2 rounded-md border-2 "
+                          >
+                            <div>
+                              <span className="py-1 px-4">+ ADD</span>
+                            </div>
+                            <input
+                              id="file"
+                              type="file"
+                              className="hidden"
+                              accept="image/*"
+                              onChange={uploadSign}
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="w-full ">
                   <div>Payment Mode</div>

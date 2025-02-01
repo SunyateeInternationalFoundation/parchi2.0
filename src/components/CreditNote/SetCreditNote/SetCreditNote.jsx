@@ -168,7 +168,7 @@ const SetCreditNote = () => {
   async function onSetCreditNote(data) {
     try {
       const { no, ...restForm } = formData;
-      const { products, ...rest } = data;
+      const { products, isPrint, ...rest } = data;
 
       const customerRef = doc(db, "customers", selectedCustomerData.id);
       const companyRef = doc(db, "companies", companyDetails.companyId);
@@ -286,9 +286,19 @@ const SetCreditNote = () => {
           (creditNoteId ? "Updated" : "Created") +
           " the CreditNote"
       );
-
-      // Navigate to the credit note detail page after creation or update
-      navigate(`/credit-note/${creditNoteRef.id || creditNoteId}`);
+      if (isPrint) {
+        navigate(
+          userDetails.selectedDashboard === "staff"
+            ? "/staff/credit-note/" + creditNoteRef.id + "?print=true"
+            : "/credit-note/" + creditNoteRef.id + "?print=true"
+        );
+      } else {
+        navigate(
+          userDetails.selectedDashboard === "staff"
+            ? "/staff/credit-note/" + creditNoteRef.id
+            : "/credit-note/" + creditNoteRef.id
+        );
+      }
     } catch (err) {
       console.error(err);
     }

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { GrDocumentUser } from "react-icons/gr";
 import { HiOutlineClipboardList } from "react-icons/hi";
 import { IoMdTime } from "react-icons/io";
+import { IoCalendarOutline } from "react-icons/io5";
 import {
   RiShieldUserLine,
   RiUserAddLine,
@@ -13,6 +14,7 @@ import Assets from "./Assets/Assets";
 import Attendance from "./Attendance/Attendance";
 import Branches from "./Branches/Branches";
 import Designation from "./Designation/Designation";
+import Holidays from "./Hoildays/Holidays";
 import Roles from "./Roles/Roles";
 import Staff from "./Staff/Staff";
 import WeekOff from "./WeekOff/WeekOff";
@@ -89,12 +91,15 @@ function StaffPayout() {
     //   totalLabelName: "Total Projects",
     //   onClick: () => {},
     // },
-    // {
-    //   icon: <MdDateRange />,
-    //   name: "Holidays",
-    //   totalLabelName: "Total Staff",
-    //   onClick: () => {},
-    // },
+    {
+      icon: <IoCalendarOutline />,
+      name: "Holidays",
+      totalLabelName: "Total Staff",
+      component: <Holidays />,
+      // onClick: () => {
+      //   navigate("holidays");
+      // },
+    },
     {
       icon: <HiOutlineClipboardList />,
       name: "Assets",

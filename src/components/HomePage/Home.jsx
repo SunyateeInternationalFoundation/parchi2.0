@@ -40,6 +40,7 @@ import DeliveryChallanList from "../DeliveryChallan/DeliveryChallanList";
 import DeliveryChallanView from "../DeliveryChallan/DeliveryChallanView/DeliveryChallanView";
 import SetDeliveryChallan from "../DeliveryChallan/SetDeliveryChallan/SetDeliveryChallan";
 import Documents from "../Documents/Documents";
+import InvoiceTemplateView from "../Invoices/InvoiceView/InvoiceTemplateView";
 import SetInvoice from "../Invoices/SetInvoice/SetInvoice";
 import PoView from "../PO/PoView/PoView";
 import SetPO from "../PO/SetPO/SetPO";
@@ -87,19 +88,26 @@ const Home = () => {
     "/settings/prefix",
     "/settings/subscription-plan",
   ];
-
+  const noMatch = ["/invoice-template/:invoiceId/:templateId"];
   const noSideBarPagesList = match.find((path) =>
+    matchPath({ path }, location.pathname)
+  );
+  const noSideBarNavbar = noMatch.find((path) =>
     matchPath({ path }, location.pathname)
   );
 
   return (
     <div>
-      <div style={{ height: "8vh" }}>
-        {/* {location.pathname !== "/home" && <Navbar />} */}
-        <Navbar />
-      </div>
+      {!noSideBarNavbar && (
+        <div style={{ height: "8vh" }}>
+          {/* {location.pathname !== "/home" && <Navbar />} */}
+
+          <Navbar />
+        </div>
+      )}
       <div className="flex" style={{ height: "92vh" }}>
-        <Sidebar2 />
+        {!noSideBarNavbar && <Sidebar2 />}
+        {/* <Sidebar2 /> */}
         {/* {!noSideBarPagesList ? (
           location.pathname !== "/" && (
             <div>
@@ -108,7 +116,7 @@ const Home = () => {
           )
         ) : (
         )} */}
-        {noSideBarPagesList && (
+        {!noSideBarNavbar && noSideBarPagesList && (
           <div className="w-1/5">
             <SettingView />
           </div>
@@ -225,6 +233,7 @@ const Home = () => {
               path="/staff-payout/designations/:id"
               element={<DesignationView />}
             ></Route>
+            {/* <Route path="/staff-payout/holidays" element={<Holidays />}></Route> */}
             {/* <Route path="/staff-payout/roles" element={<Roles />}></Route>
             <Route path="/staff-payout/assets" element={<Assets />}></Route>
             <Route path="/staff-payout/weekOff" element={<WeekOff />}></Route>
@@ -308,6 +317,10 @@ const Home = () => {
             ></Route>
             <Route path="/settings/prefix" element={<Prefix />}></Route>
             <Route path="/business-card" element={<BusinessCard />}></Route>
+            <Route
+              path="/invoice-template/:invoiceId/:templateId"
+              element={<InvoiceTemplateView />}
+            />
           </Routes>
           <Outlet />
         </div>

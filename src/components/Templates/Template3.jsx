@@ -94,16 +94,16 @@ const Template3 = forwardRef((props, ref) => {
             ))}
           </tbody>
         </table>
-        {dataSet?.tcs.isTcsApplicable && (
+        {dataSet?.tcs?.isTcsApplicable && (
           <div className="py-2 pe-3 text-end border-x-2 border-b-2 bg-gray-100">
             <span className="font-bold">TCS :</span>
-            <span className="ml-5">{dataSet?.tcs.tcs_amount.toFixed(2)}</span>
+            <span className="ml-5">{dataSet?.tcs?.tcs_amount.toFixed(2)}</span>
           </div>
         )}
-        {dataSet?.tds.isTdsApplicable && (
+        {dataSet?.tds?.isTdsApplicable && (
           <div className="py-2 pe-3 text-end border-x-2 border-b-2 bg-gray-100">
             <span className="font-bold">TDS :</span>
-            <span className="ml-5">{dataSet?.tds.tds_amount.toFixed(2)}</span>
+            <span className="ml-5">{dataSet?.tds?.tds_amount.toFixed(2)}</span>
           </div>
         )}
 
@@ -133,6 +133,18 @@ const Template3 = forwardRef((props, ref) => {
               <span className="font-bold">Terms & Conditions: </span>
               {dataSet?.terms || "No Terms & Conditions"}
             </p>
+          </div>
+          <div className="flex justify-end ">
+            <div className="">
+              {dataSet.sign && (
+                <img
+                  src={dataSet.sign}
+                  alt={dataSet?.createdBy?.name}
+                  className="w-36 h-14 mix-blend-multiply object-contain"
+                />
+              )}
+              <div className="text-end px-4">Authorized Person</div>
+            </div>
           </div>
         </footer>
       </div>

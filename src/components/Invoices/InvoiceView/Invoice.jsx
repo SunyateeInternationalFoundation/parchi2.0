@@ -323,6 +323,17 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
     },
   ];
 
+  const handleViewTemplate = () => {
+    const serializableInvoice = JSON.parse(JSON.stringify(invoice));
+    const serializableBankDetails = JSON.parse(JSON.stringify(bankDetails));
+
+    navigate(`/invoice-template/${invoice.id}/${selectTemplate}`, {
+      state: {
+        invoice: serializableInvoice,
+        bankDetails: serializableBankDetails,
+      },
+    });
+  };
   return (
     <div className="px-8 pt-4  bg-gray-100">
       <div className="bg-white  rounded-lg shadow-md overflow-hidden ">
@@ -332,7 +343,8 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
               className={
                 "px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white"
               }
-              onClick={() => setIsInvoiceOpen(true)}
+              // onClick={() => setIsInvoiceOpen(true)}
+              onClick={handleViewTemplate}
             >
               <IoDocumentTextOutline /> &nbsp; View
             </button>
@@ -528,7 +540,7 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
                   <div className="mb-3 text-end flex justify-end ">
                     <span className="  text-gray-600 ">Total :</span>
                     <span className="   text-end w-[100px] md:w-[160px] block  font-bold">
-                      {invoice.total}
+                      {invoice.total?.toFixed(2)}
                     </span>
                   </div>
                 </div>

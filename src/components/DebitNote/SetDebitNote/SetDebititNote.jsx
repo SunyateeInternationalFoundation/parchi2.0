@@ -166,7 +166,7 @@ const SetDebitNote = () => {
   async function onSetDebitNote(data) {
     try {
       const { no, ...restForm } = formData;
-      const { products, ...rest } = data;
+      const { products, isPrint, ...rest } = data;
       const vendorRef = doc(db, "vendors", selectedVendorData.id);
       const companyRef = doc(db, "companies", companyDetails.companyId);
       let subTotal = 0;
@@ -275,11 +275,24 @@ const SetDebitNote = () => {
           (debitNoteId ? "Updated" : "Created") +
           " the DebitNote"
       );
-      navigate(
-        userDetails.selectedDashboard === "staff"
-          ? "/staff/debit-note"
-          : "/debit-note"
-      );
+      if (isPrint) {
+        navigate(
+          userDetails.selectedDashboard === "staff"
+            ? "/staff/debit-note/" + debitNoteRef.id + "?print=true"
+            : "/debit-note/" + debitNoteRef.id + "?print=true"
+        );
+      } else {
+        navigate(
+          userDetails.selectedDashboard === "staff"
+            ? "/staff/debit-note/" + debitNoteRef.id
+            : "/debit-note/" + debitNoteRef.id
+        );
+      }
+      // navigate(
+      //   userDetails.selectedDashboard === "staff"
+      //     ? "/staff/debit-note"
+      //     : "/debit-note"
+      // );
     } catch (err) {
       console.error(err);
     }

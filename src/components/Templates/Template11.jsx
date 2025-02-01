@@ -159,6 +159,18 @@ const Template11 = forwardRef((props, ref) => {
                 {dataSet?.terms || "No Terms & Conditions"}
               </p>
             </div>
+            <div className="flex justify-end ">
+              <div className="">
+                {dataSet.sign && (
+                  <img
+                    src={dataSet.sign}
+                    alt={dataSet?.createdBy?.name}
+                    className="w-36 h-14 mix-blend-multiply object-contain"
+                  />
+                )}
+                <div className="text-end px-4">Authorized Person</div>
+              </div>
+            </div>
           </footer>
         </div>
       </div>

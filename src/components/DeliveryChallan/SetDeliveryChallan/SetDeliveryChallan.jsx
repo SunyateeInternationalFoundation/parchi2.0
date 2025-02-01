@@ -167,7 +167,7 @@ const SetDeliveryChallan = () => {
   async function onSetDeliveryChallan(data) {
     try {
       const { no, ...restForm } = formData;
-      const { products, ...rest } = data;
+      const { products, isPrint, ...rest } = data;
       const customerRef = doc(db, "customers", selectedCustomerData.id);
       const companyRef = doc(db, "companies", companyDetails.companyId);
       let subTotal = 0;
@@ -233,17 +233,16 @@ const SetDeliveryChallan = () => {
           name: selectedCustomerData.name,
         },
       };
-
-      let deliveryChallanRef="";
-
+      let deliveryChallanRef;
       if (deliverychallanId) {
-        deliveryChallanRef = doc(
+        deliveryChallanRef = await updateDoc(
+          doc(
             db,
             "companies",
             companyDetails.companyId,
             "deliveryChallan",
             deliverychallanId
-        );
+        ));
         await updateDoc(deliveryChallanRef, payload);
       } else {
         deliveryChallanRef = await addDoc(
@@ -282,8 +281,11 @@ const SetDeliveryChallan = () => {
           " the DeliveryChallan"
       );
 
-      // Navigate to the delivery challan detail page after creation or update
-      navigate(`/delivery-challan/${deliveryChallanRef.id || deliverychallanId}`);
+      navigate(
+        userDetails.selectedDashboard === "staff"
+          ? "/staff/delivery-challan"
+          : "/delivery-challan"
+      );
     } catch (err) {
       console.error(err);
     }

@@ -100,19 +100,6 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
     }
   };
 
-  function DateFormate(timestamp) {
-    if (!timestamp) {
-      return;
-    }
-    const milliseconds =
-      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
-    const date = new Date(milliseconds);
-    const getDate = String(date.getDate()).padStart(2, "0");
-    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
-    const getFullYear = date.getFullYear();
-
-    return `${getFullYear}-${getMonth}-${getDate}`;
-  }
   useEffect(() => {
     fetchDesignation();
   }, [companyId]);
@@ -133,7 +120,7 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
         await updateDoc(staffsRef, rest);
       } else {
         const companyRef = doc(db, "companies", companyId);
-        const payload = { ...formData, companyRef };
+        const payload = { ...formData, companyRef, status: "Active" };
         await addDoc(collection(db, "staff"), payload);
         alert("Successfully Created Staff");
       }

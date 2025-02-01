@@ -100,202 +100,208 @@ const Stock = () => {
 
   return (
     <div className="main-container" style={{ height: "81vh" }}>
-      <div className="container">
-        <div className="flex space-x-4 px-5 pb-3 border-b">
-          <button
-            onClick={() => setSelectedFilter("lowStock")}
-            className={`px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white ${
-              selectedFilter === "lowStock" && "bg-black text-white"
-            } `}
-          >
-            Low Stock
-          </button>
-          <button
-            onClick={() => setSelectedFilter("noStock")}
-            className={`px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white ${
-              selectedFilter === "noStock" && "bg-black text-white"
-            } `}
-          >
-            No Stock
-          </button>
-          <button
-            onClick={() => {
-              setSelectedFilter("returns");
-              fetchReturns();
-            }}
-            className={`px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white ${
-              selectedFilter === "returns" && "bg-black text-white"
-            } `}
-          >
-            Returns
-          </button>
+      <div className="flex justify-center items-center">
+        <div className="container">
+          <div className="flex space-x-4 px-5 pb-3 border-b">
+            <button
+              onClick={() => setSelectedFilter("lowStock")}
+              className={`px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white ${
+                selectedFilter === "lowStock" && "bg-black text-white"
+              } `}
+            >
+              Low Stock
+            </button>
+            <button
+              onClick={() => setSelectedFilter("noStock")}
+              className={`px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white ${
+                selectedFilter === "noStock" && "bg-black text-white"
+              } `}
+            >
+              No Stock
+            </button>
+            <button
+              onClick={() => {
+                setSelectedFilter("returns");
+                fetchReturns();
+              }}
+              className={`px-4 py-1 text-gray-600  rounded-md flex items-center border hover:bg-black hover:text-white ${
+                selectedFilter === "returns" && "bg-black text-white"
+              } `}
+            >
+              Returns
+            </button>
+          </div>
+
+          {/* Conditional Rendering Based on Selected Filter */}
+          {selectedFilter === "lowStock" && (
+            <div>
+              <h3 className="text-xl font-semibold text-yellow-600 p-5 ">
+                Low Stock Items
+              </h3>
+              {lowStockItems.length > 0 ? (
+                <div
+                  className="overflow-y-auto border"
+                  style={{ minHeight: "52vh" }}
+                >
+                  <table className="w-full border-collapse text-start ">
+                    <thead>
+                      <tr className=" border-b">
+                        <th className="px-8 py-1 text-gray-400 font-semibold text-start">
+                          Date
+                        </th>
+                        <th className="px-5 py-1 text-gray-400 font-semibold text-start">
+                          Name
+                        </th>
+                        <th className="px-5 py-1 text-gray-400 font-semibold text-center">
+                          Quantity
+                        </th>
+                        <th className="px-5 py-1 text-gray-400 font-semibold text-center">
+                          purchasePrice
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {lowStockItems.map((item) => (
+                        <tr
+                          key={item.id}
+                          className="border-b border-gray-200 text-center cursor-pointer hover:bg-blue-50 "
+                          onClick={() => navigateToInvoice(item.invoiceId)}
+                        >
+                          <td className="px-8 py-3 text-start">
+                            <FormatTimestamp timestamp={item.createdAt} />
+                          </td>
+                          <td className="px-5 py-3 text-start">{item.name}</td>
+                          <td className="px-5 py-3 text-center">
+                            {item.stock}
+                          </td>
+                          <td className="px-5 py-3 text-center">
+                            {item.purchasePrice}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-gray-600 p-5" style={{ height: "54vh" }}>
+                  No low stock items.
+                </p>
+              )}
+            </div>
+          )}
+
+          {selectedFilter === "noStock" && (
+            <div className="bg-white rounded-lg shadow-md ">
+              <h3 className="text-xl font-semibold text-red-600  p-5">
+                No Stock Items
+              </h3>
+              {noStockItems.length > 0 ? (
+                <div className="overflow-y-auto" style={{ height: "54vh" }}>
+                  <table className="w-full border-collapse text-start ">
+                    <thead>
+                      <tr className=" border-b">
+                        <th className="px-8 py-1 text-gray-400 font-semibold text-start">
+                          Date
+                        </th>
+                        <th className="px-5 py-1 text-gray-400 font-semibold text-start">
+                          Name
+                        </th>
+                        <th className="px-5 py-1 text-gray-400 font-semibold text-center">
+                          purchase Price
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {noStockItems.map((item) => (
+                        <tr
+                          key={item.id}
+                          className="border-b border-gray-200 text-center cursor-pointer hover:bg-blue-50 "
+                          onClick={() => navigateToInvoice(item.invoiceId)}
+                        >
+                          <td className="px-8 py-3 text-start">
+                            <FormatTimestamp timestamp={item.createdAt} />
+                          </td>
+                          <td className="px-5 py-3 text-start">{item.name}</td>
+
+                          <td className="px-5 py-3 text-center">
+                            {item.purchasePrice}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p
+                  className="text-gray-600 overflow-hidden  p-5"
+                  style={{ height: "54vh" }}
+                >
+                  All items are in stock.
+                </p>
+              )}
+            </div>
+          )}
+
+          {selectedFilter === "returns" && (
+            <div className="bg-white  rounded-lg shadow-md">
+              <h3 className="text-xl font-semibold text-blue-600 p-5 ">
+                Returned Items
+              </h3>
+              {returns.length > 0 ? (
+                <div className="overflow-y-auto" style={{ height: "54vh" }}>
+                  <table className="w-full border-collapse text-start ">
+                    <thead>
+                      <tr className=" border-b">
+                        <th className="px-8 py-1 text-gray-400 font-semibold text-start">
+                          Date
+                        </th>
+                        <th className="px-5 py-1 text-gray-400 font-semibold text-start">
+                          Name
+                        </th>
+                        <th className="px-5 py-1 text-gray-400 font-semibold text-center">
+                          Quantity
+                        </th>
+                        <th className="px-5 py-1 text-gray-400 font-semibold text-center">
+                          Invoice Number
+                        </th>
+                        <th className="px-5 py-1 text-gray-400 font-semibold text-center">
+                          Amount
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {returns.map((item) => (
+                        <tr
+                          key={item.id}
+                          className="border-b border-gray-200 text-center cursor-pointer hover:bg-blue-50 "
+                          onClick={() => navigateToInvoice(item.invoiceId)}
+                        >
+                          <td className="px-8 py-3 text-start">
+                            <FormatTimestamp timestamp={item.createdAt} />
+                          </td>
+                          <td className="px-5 py-3 text-start">{item.name}</td>
+                          <td className="px-5 py-3 text-center">
+                            {item.quantity}
+                          </td>
+                          <td className="px-5 py-3 text-center">
+                            {item.prefix}-{item.invoiceNo}
+                          </td>
+                          <td className="px-5 py-3 text-center">
+                            {item.amount}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-gray-600 p-5" style={{ height: "54vh" }}>
+                  No returned items found.
+                </p>
+              )}
+            </div>
+          )}
         </div>
-
-        {/* Conditional Rendering Based on Selected Filter */}
-        {selectedFilter === "lowStock" && (
-          <div>
-            <h3 className="text-xl font-semibold text-yellow-600 p-5 ">
-              Low Stock Items
-            </h3>
-            {lowStockItems.length > 0 ? (
-              <div
-                className="overflow-y-auto border"
-                style={{ minHeight: "52vh" }}
-              >
-                <table className="w-full border-collapse text-start ">
-                  <thead>
-                    <tr className=" border-b">
-                      <th className="px-8 py-1 text-gray-400 font-semibold text-start">
-                        Date
-                      </th>
-                      <th className="px-5 py-1 text-gray-400 font-semibold text-start">
-                        Name
-                      </th>
-                      <th className="px-5 py-1 text-gray-400 font-semibold text-center">
-                        Quantity
-                      </th>
-                      <th className="px-5 py-1 text-gray-400 font-semibold text-center">
-                        purchasePrice
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {lowStockItems.map((item) => (
-                      <tr
-                        key={item.id}
-                        className="border-b border-gray-200 text-center cursor-pointer hover:bg-blue-50 "
-                        onClick={() => navigateToInvoice(item.invoiceId)}
-                      >
-                        <td className="px-8 py-3 text-start">
-                          <FormatTimestamp timestamp={item.createdAt} />
-                        </td>
-                        <td className="px-5 py-3 text-start">{item.name}</td>
-                        <td className="px-5 py-3 text-center">{item.stock}</td>
-                        <td className="px-5 py-3 text-center">
-                          {item.purchasePrice}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p className="text-gray-600 p-5" style={{ height: "54vh" }}>
-                No low stock items.
-              </p>
-            )}
-          </div>
-        )}
-
-        {selectedFilter === "noStock" && (
-          <div className="bg-white rounded-lg shadow-md ">
-            <h3 className="text-xl font-semibold text-red-600  p-5">
-              No Stock Items
-            </h3>
-            {noStockItems.length > 0 ? (
-              <div className="overflow-y-auto" style={{ height: "54vh" }}>
-                <table className="w-full border-collapse text-start ">
-                  <thead>
-                    <tr className=" border-b">
-                      <th className="px-8 py-1 text-gray-400 font-semibold text-start">
-                        Date
-                      </th>
-                      <th className="px-5 py-1 text-gray-400 font-semibold text-start">
-                        Name
-                      </th>
-                      <th className="px-5 py-1 text-gray-400 font-semibold text-center">
-                        purchase Price
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {noStockItems.map((item) => (
-                      <tr
-                        key={item.id}
-                        className="border-b border-gray-200 text-center cursor-pointer hover:bg-blue-50 "
-                        onClick={() => navigateToInvoice(item.invoiceId)}
-                      >
-                        <td className="px-8 py-3 text-start">
-                          <FormatTimestamp timestamp={item.createdAt} />
-                        </td>
-                        <td className="px-5 py-3 text-start">{item.name}</td>
-
-                        <td className="px-5 py-3 text-center">
-                          {item.purchasePrice}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p
-                className="text-gray-600 overflow-hidden  p-5"
-                style={{ height: "54vh" }}
-              >
-                All items are in stock.
-              </p>
-            )}
-          </div>
-        )}
-
-        {selectedFilter === "returns" && (
-          <div className="bg-white  rounded-lg shadow-md">
-            <h3 className="text-xl font-semibold text-blue-600 p-5 ">
-              Returned Items
-            </h3>
-            {returns.length > 0 ? (
-              <div className="overflow-y-auto" style={{ height: "54vh" }}>
-                <table className="w-full border-collapse text-start ">
-                  <thead>
-                    <tr className=" border-b">
-                      <th className="px-8 py-1 text-gray-400 font-semibold text-start">
-                        Date
-                      </th>
-                      <th className="px-5 py-1 text-gray-400 font-semibold text-start">
-                        Name
-                      </th>
-                      <th className="px-5 py-1 text-gray-400 font-semibold text-center">
-                        Quantity
-                      </th>
-                      <th className="px-5 py-1 text-gray-400 font-semibold text-center">
-                        Invoice Number
-                      </th>
-                      <th className="px-5 py-1 text-gray-400 font-semibold text-center">
-                        Amount
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {returns.map((item) => (
-                      <tr
-                        key={item.id}
-                        className="border-b border-gray-200 text-center cursor-pointer hover:bg-blue-50 "
-                        onClick={() => navigateToInvoice(item.invoiceId)}
-                      >
-                        <td className="px-8 py-3 text-start">
-                          <FormatTimestamp timestamp={item.createdAt} />
-                        </td>
-                        <td className="px-5 py-3 text-start">{item.name}</td>
-                        <td className="px-5 py-3 text-center">
-                          {item.quantity}
-                        </td>
-                        <td className="px-5 py-3 text-center">
-                          {item.prefix}-{item.invoiceNo}
-                        </td>
-                        <td className="px-5 py-3 text-center">{item.amount}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p className="text-gray-600 p-5" style={{ height: "54vh" }}>
-                No returned items found.
-              </p>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );

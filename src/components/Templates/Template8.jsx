@@ -152,10 +152,10 @@ const Template8 = forwardRef((props, ref) => {
                     <p>{dataSet?.totalCgstAmount_6?.toFixed(2)}%</p>
                     <p>{dataSet?.totalSgstAmount_9?.toFixed(2)}%</p>
                     <p>{dataSet?.totalCgstAmount_9?.toFixed(2)}%</p>
-                    <p>{dataSet?.tds.tds_amount?.toFixed(2) || 0}%</p>
-                    <p>{dataSet?.tcs.tcs_amount?.toFixed(2) || 0}%</p>
-                    <p>{dataSet?.shippingCharges}</p>
-                    <p>{dataSet?.packagingCharges}</p>
+                    <p>{dataSet?.tds?.tds_amount?.toFixed(2) || 0}%</p>
+                    <p>{dataSet?.tcs?.tcs_amount?.toFixed(2) || 0}%</p>
+                    <p>{dataSet?.shippingCharges || 0}</p>
+                    <p>{dataSet?.packagingCharges || 0}</p>
                   </td>
                 </tr>
                 <tr className="border-t-2 border-black">
@@ -186,6 +186,16 @@ const Template8 = forwardRef((props, ref) => {
                 <p>Account #: {bankDetails?.accountNo}</p>
                 <p>IFSC: {bankDetails?.ifscCode}</p>
                 <p>Branch: {bankDetails?.branch}</p>
+                <div className="">
+                  {dataSet.sign && (
+                    <img
+                      src={dataSet.sign}
+                      alt={dataSet?.createdBy?.name}
+                      className="w-36 h-14 mix-blend-multiply object-contain"
+                    />
+                  )}
+                  <div className="px-4">Authorized Person</div>
+                </div>
               </div>
               <div className="text-sm text-gray-600 w-3/4 px-2">
                 <div className="font-bold text-gray-800">Note:</div>

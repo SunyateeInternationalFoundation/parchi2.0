@@ -11,11 +11,16 @@ import {
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
 import FormatTimestamp from "../../../constants/FormatTimestamp";
 import { db } from "../../../firebase";
-import { LuChevronLeft, LuChevronRight, LuChevronsLeft, LuChevronsRight } from "react-icons/lu";
 
 const Branches = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -72,10 +77,14 @@ const Branches = () => {
   }, [companyId]);
 
   useEffect(() => {
-    // Update pagination data when branches or currentPage changes
-    setPaginationData(branches.slice(currentPage * 10, currentPage * 10 + 10));
-    setTotalPages(Math.ceil(branches.length / 10)); // Update total pages based on branches length
-  }, [branches, currentPage]);
+    const filteredBranches = branches.filter((b) =>
+      b.branchName.toLowerCase().includes(searchInput.toLowerCase())
+    );
+    setPaginationData(
+      filteredBranches.slice(currentPage * 10, currentPage * 10 + 10)
+    );
+    setTotalPages(Math.ceil(filteredBranches.length / 10));
+  }, [branches, currentPage, searchInput]);
 
   const handleAddBranch = (newBranch) => {
     setBranches((prev) => [...prev, newBranch]);
@@ -84,9 +93,6 @@ const Branches = () => {
     }));
   };
 
-  const filteredBranches = branches.filter((b) =>
-    b.branchName.toLowerCase().includes(searchInput.toLowerCase())
-  );
   async function OnDeleteBranch(e, branchId) {
     e.stopPropagation();
     try {

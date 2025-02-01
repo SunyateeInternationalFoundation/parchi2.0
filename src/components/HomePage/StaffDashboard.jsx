@@ -1,7 +1,7 @@
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Credit from "../../assets/dashboard/Credit.png";
 import Customers from "../../assets/dashboard/Customers.png";
 import Debit from "../../assets/dashboard/Debit.png";
@@ -20,7 +20,7 @@ import Subscriptions from "../../assets/dashboard/Subscriptions.png";
 import Vendors from "../../assets/dashboard/Vendors.png";
 import { db } from "../../firebase";
 
-const StaffDashboard = ({ checkPermission }) => {
+const StaffDashboard = ({ checkPermission, staffDetails }) => {
   const navigate = useNavigate();
   const defaultIcons = {
     quick: [
@@ -174,6 +174,7 @@ const StaffDashboard = ({ checkPermission }) => {
       link: "pos/create-pos",
     },
   ];
+
   const [expenseAmount, setExpenseAmount] = useState({
     expense: 0,
     income: 0,
@@ -379,6 +380,14 @@ const StaffDashboard = ({ checkPermission }) => {
                       <div className="text-[16px]">{userDetails.address}</div>
                       <div className="text-[16px]">{userDetails.phone}</div>
                     </div>
+                  </div>
+                  <div>
+                    <Link
+                      to={"profile/" + staffDetails.id}
+                      className="btn-outline-black"
+                    >
+                      View
+                    </Link>
                   </div>
                 </div>
                 {/* <div className="flex items-center justify-around w-full space-x-3">
