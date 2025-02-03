@@ -323,11 +323,13 @@ const AddDesignationModal = ({
       };
       let docRef;
 
-      const q = query(
-        collection(db, "staff"),
-        where("companyRef", "==", companyRef),
-        where("designation", "==", editDes.designationName)
-      );
+      const q = editDes?.id
+        ? query(
+            collection(db, "staff"),
+            where("companyRef", "==", companyRef),
+            where("designation", "==", editDes.designationName)
+          )
+        : query(collection(db, "staff"), where("companyRef", "==", companyRef));
 
       const getData = await getDocs(q);
       const staffData = getData.docs.map((doc) => ({
@@ -335,7 +337,7 @@ const AddDesignationModal = ({
         ...doc.data(),
       }));
 
-      if (editDes) {
+      if (editDes?.id) {
         docRef = doc(db, "designations", editDes.id);
 
         await updateDoc(docRef, {
@@ -351,9 +353,13 @@ const AddDesignationModal = ({
       } else {
         docRef = await addDoc(collection(db, "designations"), {
           createdAt: Timestamp.fromDate(new Date()),
-          payload,
+          ...payload,
         });
-        onAddDesignation({ id: docRef.id, ...payload });
+        onAddDesignation({
+          id: docRef.id,
+          createdAt: Timestamp.fromDate(new Date()),
+          ...payload,
+        });
       }
 
       onClose();

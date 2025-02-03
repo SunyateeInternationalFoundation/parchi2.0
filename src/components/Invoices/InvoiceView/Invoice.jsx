@@ -1,4 +1,12 @@
-import { deleteDoc, doc, increment, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  increment,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import jsPDF from "jspdf";
 import PropTypes from "prop-types";
@@ -242,7 +250,13 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
       );
       if (!confirmDelete) return;
       await deleteDoc(invoiceDocRef);
-
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: invoice.id,
+        date: serverTimestamp(),
+        section: "Invoice",
+        action: "Delete",
+        description: `Invoice-${invoice.no} deleted by ${invoice.createdBy.who}`,
+      });
       if (invoice.products && invoice.products.length > 0) {
         const updateInventoryPromises = invoice.products.map(
           (inventoryItem) => {
@@ -316,7 +330,7 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
       label: "PRICE",
     },
   ];
-
+  console.log("invoice", invoice);
   const handleViewTemplate = () => {
     const serializableInvoice = JSON.parse(JSON.stringify(invoice));
     const serializableBankDetails = JSON.parse(JSON.stringify(bankDetails));

@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 import {
   Select,
   SelectContent,
@@ -10,6 +11,7 @@ import {
 } from "../../UI/select";
 
 function Projects({ projectsData }) {
+  const navigate = useNavigate();
   const [modifiedProjectsList, setModifiedProjectsList] =
     useState(projectsData);
   const [filterStatus, setFilterStatus] = useState("All");
@@ -88,6 +90,9 @@ function Projects({ projectsData }) {
                 <div
                   className={` bg-white border cursor-pointer rounded-lg shadow h-56 hover:shadow-md `}
                   key={item.id}
+                  onClick={() => {
+                    navigate(`/projects/${item.id}`);
+                  }}
                 >
                   <div className="p-3 h-40">
                     <div

@@ -29,6 +29,7 @@ import Navbar from "../UI/Navbar";
 import VendorList from "../Vendors/VendorList";
 import VendorView from "../Vendors/VendorView/VendorView";
 // import CreateProFormaInvoice from "../ProFormaInvoice/CreateProFormaInvoice/CreateProFormaInvoice";
+import Logs from "../AllLogs/AllLogs";
 import BusinessCard from "../BusinessCard/BusinessCard";
 import CreditNoteList from "../CreditNote/CreditNoteList";
 import CreditNoteView from "../CreditNote/CreditNoteView/CreditNoteView";
@@ -316,6 +317,7 @@ const Home = () => {
             ></Route>
             <Route path="/settings/prefix" element={<Prefix />}></Route>
             <Route path="/business-card" element={<BusinessCard />}></Route>
+            <Route path="/settings/logs" element={<Logs />}></Route>
           </Routes>
           <Outlet />
         </div>

@@ -1,9 +1,11 @@
 import {
+  addDoc,
   collection,
   doc,
   getDocs,
   orderBy,
   query,
+  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -92,7 +94,17 @@ const InvoiceList = () => {
   const handleStatusChange = async (invoiceId, newStatus) => {
     try {
       const invoiceDoc = doc(db, "companies", companyId, "invoices", invoiceId);
+      const data = invoices.find((d) => d.id === invoiceId);
+      console.log("data", data);
+      console.log("invoiceDoc", invoiceDoc);
       await updateDoc(invoiceDoc, { paymentStatus: newStatus });
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: invoiceDoc,
+        date: serverTimestamp(),
+        section: "Invoice",
+        action: "Update",
+        description: `${data.invoiceNo} status updated by ${data.createdBy}`,
+      });
       setInvoices((prevInvoices) =>
         prevInvoices.map((invoice) =>
           invoice.id === invoiceId

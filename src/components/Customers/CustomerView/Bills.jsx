@@ -7,6 +7,7 @@ import {
   LuChevronsLeft,
   LuChevronsRight,
 } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
 import FormatTimestamp from "../../../constants/FormatTimestamp";
 import {
   Select,
@@ -15,14 +16,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../UI/select";
-
 function Bills({ salesData }) {
   const tabs = {
-    Invoice: "invoices",
-    Quotation: "quotations",
-    "Pro Forma Invoice": "proFormaInvoice",
-    "Delivery Challan": "deliveryChallan",
-    "Credit Note": "creditNote",
+    Invoice: {
+      colletionName: "invoices",
+      path: "invoice",
+    },
+    Quotation: {
+      collectionName: "quotations",
+      path: "quotation",
+    },
+    "Pro Forma Invoice": {
+      collectionName: "proFormaInvoice",
+      path: "pro-forma-invoice",
+    },
+    "Delivery Challan": {
+      collectionName: "deliveryChallan",
+      path: "delivery-challan",
+    },
+    "Credit Note": {
+      collectionName: "creditNote",
+      path: "credit-note",
+    },
   };
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -30,10 +45,12 @@ function Bills({ salesData }) {
   const [paginationData, setPaginationData] = useState([]);
   const [filterStatus, setFilterStatus] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
-
+  const navigate = useNavigate();
   useEffect(() => {
-    setTotalPages(Math.ceil(salesData[tabs[activeTab]].length / 10));
-    const filteredServices = salesData[tabs[activeTab]].filter((service) => {
+    const collection = salesData[tabs[activeTab].collectionName] || [];
+    console.log("collection", collection);
+    setTotalPages(Math.ceil(collection?.length / 10));
+    const filteredServices = collection.filter((service) => {
       const { paymentStatus, no } = service;
       const matchesSearch = no
         ?.toString()
@@ -50,6 +67,7 @@ function Bills({ salesData }) {
       filteredServices.slice(currentPage * 10, currentPage * 10 + 10)
     );
   }, [currentPage, salesData, searchTerm, filterStatus, activeTab]);
+  console.log("salesData", salesData);
   return (
     <div
       className="w-full bg-gray-100 overflow-y-auto"
@@ -137,6 +155,9 @@ function Bills({ salesData }) {
                     <tr
                       key={sale.id}
                       className="border-b border-gray-200 text-center cursor-pointer"
+                      onClick={() => {
+                        navigate(`/${tabs[activeTab].path}/${sale.id}`);
+                      }}
                     >
                       <td className="px-8 py-3 text-start">
                         <FormatTimestamp timestamp={sale.date} />
