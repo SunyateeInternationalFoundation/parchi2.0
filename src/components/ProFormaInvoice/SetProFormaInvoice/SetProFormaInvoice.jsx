@@ -5,6 +5,7 @@ import {
   getDoc,
   getDocs,
   query,
+  serverTimestamp,
   Timestamp,
   updateDoc,
   where,
@@ -234,7 +235,15 @@ const SetProFormaInvoice = () => {
           name: selectedCustomerData.name,
         },
       };
-      let proFormaRef;
+      let proFormaRef = "";
+      let payloadLog = {
+        ref: proFormaRef,
+        date: serverTimestamp(),
+        section: "ProForma Invoice",
+        action: "Create",
+        description: `${prefix}-${no} updated by ${payload.createdBy.who}`,
+      };
+
       if (proFormaId) {
         (proFormaRef = doc(
           db,
@@ -244,6 +253,8 @@ const SetProFormaInvoice = () => {
           proFormaId
         )),
           await updateDoc(proFormaRef, payload);
+        payloadLog.ref = proFormaRef;
+        payloadLog.action = "Update";
       } else {
         proFormaRef = await addDoc(
           collection(
@@ -254,8 +265,14 @@ const SetProFormaInvoice = () => {
           ),
           payload
         );
+        payloadLog.ref = proFormaRef;
+        payloadLog.action = "Create";
       }
 
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        payloadLog
+      );
       for (const item of items) {
         if (item.quantity === 0) {
           continue;

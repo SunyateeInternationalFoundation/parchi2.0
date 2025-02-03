@@ -1,9 +1,11 @@
 import {
+  addDoc,
   collection,
   doc,
   getDocs,
   orderBy,
   query,
+  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -104,10 +106,19 @@ function PO() {
     fetchPoList();
   }, []);
 
-  async function onStatusUpdate(value, poId) {
+  async function onStatusUpdate(poId, value) {
     try {
       const docRef = doc(db, "companies", companyId, "po", poId);
+      const data = POList.find((d) => d.id === poId);
+      console.log("docref", docRef);
       await updateDoc(docRef, { orderStatus: value });
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: docRef,
+        date: serverTimestamp(),
+        section: "PO",
+        action: "Update",
+        description: `${data.poNo} status updated by ${data.createdBy}`,
+      });
       const UpdatedData = POList.map((ele) => {
         if (ele.id === poId) {
           ele.orderStatus = value;

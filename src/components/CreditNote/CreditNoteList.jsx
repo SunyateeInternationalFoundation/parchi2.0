@@ -1,9 +1,11 @@
 import {
+  addDoc,
   collection,
   doc,
   getDocs,
   orderBy,
   query,
+  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -105,7 +107,16 @@ const CreditNoteList = () => {
         "creditNote",
         creditNoteId
       );
+      const data = creditNote.find((d) => d.id === creditNoteId);
+
       await updateDoc(creditNoteDoc, { paymentStatus: newStatus });
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: creditNoteDoc,
+        date: serverTimestamp(),
+        section: "Credit Note",
+        action: "Update",
+        description: `${data.creditNoteNo} status updated by ${data.createdBy}`,
+      });
       setCreditNote((prevCreditNote) =>
         prevCreditNote.map((creditNote) =>
           creditNote.id === creditNoteId

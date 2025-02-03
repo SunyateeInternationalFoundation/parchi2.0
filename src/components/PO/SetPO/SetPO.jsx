@@ -6,6 +6,7 @@ import {
   getDocs,
   increment,
   query,
+  serverTimestamp,
   Timestamp,
   updateDoc,
   where,
@@ -229,17 +230,31 @@ const SetPO = () => {
           name: selectedVendorData.name,
         },
       };
-      let poRef;
+      let poRef = "";
+      let payloadLog = {
+        ref: poRef,
+        date: serverTimestamp(),
+        section: "PO",
+        action: "Create",
+        description: `${prefix}-${no} updated by ${payload.createdBy.who}`,
+      };
       if (poId) {
         poRef = doc(db, "companies", companyDetails.companyId, "po", poId);
         await updateDoc(poRef, payload);
+        payloadLog.ref = poRef;
+        payloadLog.action = "Update";
       } else {
         poRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "po"),
           payload
         );
+        payloadLog.ref = poRef;
+        payloadLog.action = "Create";
       }
-
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        payloadLog
+      );
       for (const item of items) {
         if (item.quantity === 0) {
           continue;

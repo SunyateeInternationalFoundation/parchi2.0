@@ -1,4 +1,12 @@
-import { deleteDoc, doc, increment, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  increment,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import jsPDF from "jspdf";
 import PropTypes from "prop-types";
@@ -195,7 +203,13 @@ function Po({ Po, bankDetails, selectTemplate }) {
       );
       if (!confirmDelete) return;
       await deleteDoc(PoDocRef);
-
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: PoDocRef,
+        date: serverTimestamp(),
+        section: "PO",
+        action: "Delete",
+        description: `${Po.prefix}-${Po.no} deleted by ${Po.createdBy.who}`,
+      });
       if (Po.products && Po.products.length > 0) {
         const updateInventoryPromises = Po.products.map((inventoryItem) => {
           if (

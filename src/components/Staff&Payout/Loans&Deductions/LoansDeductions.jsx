@@ -29,6 +29,7 @@ const LoansDeductions = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
+  const [selectedLoan, setSelectedLoan] = useState(null); // State to hold selected loan data
 
   const userDetails = useSelector((state) => state.users);
   const companyId =
@@ -37,7 +38,6 @@ const LoansDeductions = () => {
   const fetchLoans = async () => {
     setLoading(true);
     try {
-      console.log(companyId);
       const loanRef = collection(db, "companies", companyId, "loans");
 
       const q = query(loanRef, orderBy("createdAt", "desc"));
@@ -90,7 +90,6 @@ const LoansDeductions = () => {
 
       setLoans((prev) => {
         const updatedLoans = prev.filter((item) => item.id !== loanId);
-
         return updatedLoans;
       });
     } catch (error) {
@@ -98,11 +97,17 @@ const LoansDeductions = () => {
     }
   }
 
+  // Handle loan record click
+  const handleLoanClick = (loan) => {
+    setSelectedLoan(loan); // Set the clicked loan as selected loan
+    setIsSidebarOpen(true); // Open the sidebar for editing
+  };
+
   return (
-    <div className="main-container " style={{ height: "82vh" }}>
-      <div className="container ">
+    <div className="main-container" style={{ height: "82vh" }}>
+      <div className="container">
         <header className="flex items-center justify-between px-5">
-          <div className="flex space-x-3  items-center">
+          <div className="flex space-x-3 items-center">
             <h1 className="text-2xl font-bold">Loans&Deductions</h1>
             <div className="input-div-icon">
               <input
@@ -117,9 +122,10 @@ const LoansDeductions = () => {
           </div>
 
           <button
-            className="btn-add "
+            className="btn-add"
             onClick={() => {
               setIsSidebarOpen(true);
+              setSelectedLoan(null); // Clear any selected loan when creating a new loan
             }}
           >
             + Create Loan
@@ -160,6 +166,7 @@ const LoansDeductions = () => {
                       <tr
                         key={loan.id}
                         className="border-b border-gray-200 text-center cursor-pointer"
+                        onClick={() => handleLoanClick(loan)} // Click handler to open sidebar with loan data
                       >
                         <td className="px-8 py-3 text-start">
                           <FormatTimestamp timestamp={loan.date} />
@@ -247,12 +254,15 @@ const LoansDeductions = () => {
           </div>
         </div>
       </div>
+
+      {/* Sidebar Component for Add/Edit Loan */}
       {isSidebarOpen && (
         <SidebarLoans
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
           onAddLoan={handleAddLoan}
           companyId={companyId}
+          loanDataToEdit={selectedLoan} // Pass selected loan for editing
         />
       )}
     </div>

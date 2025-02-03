@@ -1,9 +1,11 @@
 import {
+  addDoc,
   collection,
   doc,
   getDocs,
   orderBy,
   query,
+  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -104,7 +106,16 @@ const ProFormaProForma = () => {
         "proFormaInvoice",
         invoiceId
       );
+      const data = proForma.find((d) => d.id === invoiceId);
+
       await updateDoc(invoiceDoc, { paymentStatus: newStatus });
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: invoiceDoc,
+        date: serverTimestamp(),
+        section: "ProForma Invoice",
+        action: "Update",
+        description: `${data.proFormaNo} status updated by ${data.createdBy}`,
+      });
       setProForma((prevProForma) =>
         prevProForma.map((invoice) =>
           invoice.id === invoiceId

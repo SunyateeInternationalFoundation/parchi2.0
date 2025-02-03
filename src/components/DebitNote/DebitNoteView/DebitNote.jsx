@@ -1,4 +1,12 @@
-import { deleteDoc, doc, increment, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  increment,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import jsPDF from "jspdf";
 import PropTypes from "prop-types";
@@ -264,7 +272,13 @@ function DebitNote({ debitNote, bankDetails, selectTemplate }) {
       );
       if (!confirmDelete) return;
       await deleteDoc(debitNoteDocRef);
-
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: debitNoteDocRef,
+        date: serverTimestamp(),
+        section: "Debit Note",
+        action: "Delete",
+        description: `${debitNote.prefix}-${debitNote.no} deleted by ${debitNote.createdBy.who}`,
+      });
       if (debitNote.products && debitNote.products.length > 0) {
         const updateInventoryPromises = debitNote.products.map(
           (inventoryItem) => {

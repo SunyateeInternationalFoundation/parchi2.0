@@ -1,4 +1,10 @@
-import { deleteDoc, doc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  serverTimestamp,
+} from "firebase/firestore";
 import jsPDF from "jspdf";
 import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
@@ -183,6 +189,13 @@ function QuotationView({ quotation, bankDetails, selectTemplate }) {
       );
       if (!confirmDelete) return;
       await deleteDoc(quotationDocRef);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: quotationDocRef,
+        date: serverTimestamp(),
+        section: "Invoice",
+        action: "Delete",
+        description: `${quotation.prefix}-${quotation.no} deleted by ${quotation.createdBy.who}`,
+      });
       navigate("./../");
     } catch (error) {
       console.error("Error deleting quotation:", error);

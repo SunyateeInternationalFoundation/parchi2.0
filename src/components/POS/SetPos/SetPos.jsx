@@ -6,6 +6,7 @@ import {
   getDoc,
   getDocs,
   query,
+  serverTimestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -232,18 +233,33 @@ const SetPos = () => {
           name: selectedCustomerData.name,
         },
       };
-      let posRef;
+      let posRef = "";
+      let payloadLog = {
+        ref: posRef,
+        date: serverTimestamp(),
+        section: "POS",
+        action: "Create",
+        description: `${prefix}-${no} updated by ${payload.createdBy.who}`,
+      };
 
       if (posId) {
         posRef = doc(db, "companies", companyDetails.companyId, "pos", posId);
         await updateDoc(posRef, payload);
+        payloadLog.ref = posRef;
+        payloadLog.action = "Update";
       } else {
         posRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "pos"),
           payload
         );
+        payloadLog.ref = posRef;
+        payloadLog.action = "Create";
       }
 
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        payloadLog
+      );
       for (const item of items) {
         if (item.quantity === 0) {
           continue;
