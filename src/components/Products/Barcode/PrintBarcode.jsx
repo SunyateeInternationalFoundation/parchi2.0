@@ -264,8 +264,8 @@ function PrintBarcode() {
                       val.length > 0
                         ? val
                         : selectedCategory == "all"
-                        ? products
-                        : []
+                          ? products
+                          : []
                     );
                   }}
                   onBlur={() => {
@@ -468,7 +468,7 @@ function PrintBarcode() {
               key={index}
               className="border rounded bg-white"
               style={{
-                height: "12in",
+                height: "11.3in",
                 width: "8.45in",
                 margin: "10px auto",
                 paddingTop: "0.1in",
