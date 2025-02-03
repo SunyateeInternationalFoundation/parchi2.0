@@ -30,6 +30,7 @@ function PrintBarcode() {
   const [editProduct, setEditProduct] = useState("");
   const [printData, setPrintData] = useState([]);
   const barcodeRef = useRef();
+  const totalQuantity = useRef(0)
   const reactToPrintFn = useReactToPrint({
     contentRef: barcodeRef,
   });
@@ -164,10 +165,23 @@ function PrintBarcode() {
     }
   }
 
+  function printBarcodeData() {
+    try {
+
+      reactToPrintFn()
+      console.log(totalQuantity.current);
+
+    } catch (error) {
+      console.log("🚀 ~ printBarcodeData ~ error:", error)
+
+    }
+  }
+
   useEffect(() => {
     fetchProducts();
     fetchCategories();
   }, []);
+
   useEffect(() => {
     const limit = selectSheetDetails.sheetData.itemsPerSheet;
     const result = [];
@@ -176,7 +190,6 @@ function PrintBarcode() {
 
     for (const item of selectProduct) {
       let remainingQuantity = item.quantity;
-
       while (remainingQuantity > 0) {
         const availableSpace = limit - currentQuantity;
         const quantityToAdd = Math.min(availableSpace, remainingQuantity);
@@ -188,6 +201,8 @@ function PrintBarcode() {
           });
           currentQuantity += quantityToAdd;
           remainingQuantity -= quantityToAdd;
+          totalQuantity.current += quantityToAdd
+
         }
 
         if (currentQuantity >= limit) {
@@ -454,7 +469,7 @@ function PrintBarcode() {
           </button>
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded"
-            onClick={reactToPrintFn}
+            onClick={printBarcodeData}
           >
             Print Barcode
           </button>
