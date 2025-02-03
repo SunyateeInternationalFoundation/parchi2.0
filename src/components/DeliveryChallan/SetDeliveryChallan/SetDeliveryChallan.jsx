@@ -6,6 +6,7 @@ import {
   getDoc,
   getDocs,
   query,
+  serverTimestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -233,7 +234,15 @@ const SetDeliveryChallan = () => {
           name: selectedCustomerData.name,
         },
       };
-      let deliveryChallanRef;
+      let deliveryChallanRef = "";
+
+      let payloadLog = {
+        ref: deliveryChallanRef,
+        date: serverTimestamp(),
+        section: "Delivery Challan",
+        action: "Create",
+        description: `${prefix}-${no} updated by ${payload.createdBy.who}`,
+      };
       if (deliverychallanId) {
         deliveryChallanRef = doc(
           db,
@@ -243,6 +252,9 @@ const SetDeliveryChallan = () => {
           deliverychallanId
         );
         await updateDoc(deliveryChallanRef, payload);
+
+        payloadLog.ref = deliveryChallanRef;
+        payloadLog.action = "Update";
       } else {
         deliveryChallanRef = await addDoc(
           collection(
@@ -253,8 +265,13 @@ const SetDeliveryChallan = () => {
           ),
           payload
         );
+        payloadLog.ref = deliveryChallanRef;
+        payloadLog.action = "Create";
       }
-
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        payloadLog
+      );
       for (const item of items) {
         if (item.quantity === 0) {
           continue;

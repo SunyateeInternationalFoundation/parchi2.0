@@ -6,6 +6,7 @@ import {
   getDoc,
   getDocs,
   query,
+  serverTimestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -233,7 +234,14 @@ const SetCreditNote = () => {
           name: selectedCustomerData.name,
         },
       };
-      let creditNoteRef;
+      let creditNoteRef = "";
+      let payloadLog = {
+        ref: creditNoteRef,
+        date: serverTimestamp(),
+        section: "Credit Note",
+        action: "Create",
+        description: `${prefix}-${no} updated by ${payload.createdBy.who}`,
+      };
       if (creditNoteId) {
         creditNoteRef = doc(
           db,
@@ -243,13 +251,20 @@ const SetCreditNote = () => {
           creditNoteId
         );
         await updateDoc(creditNoteRef, payload);
+        payloadLog.ref = creditNoteRef;
+        payloadLog.action = "Update";
       } else {
         creditNoteRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "creditNote"),
           payload
         );
+        payloadLog.ref = creditNoteRef;
+        payloadLog.action = "Create";
       }
-
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        payloadLog
+      );
       for (const item of items) {
         if (item.quantity === 0) {
           continue;

@@ -1,4 +1,10 @@
-import { deleteDoc, doc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  serverTimestamp,
+} from "firebase/firestore";
 import jsPDF from "jspdf";
 import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
@@ -139,6 +145,13 @@ function POSViewHome({ POS, bankDetails, selectTemplate }) {
       );
       if (!confirmDelete) return;
       await deleteDoc(POSDocRef);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: POSDocRef,
+        date: serverTimestamp(),
+        section: "POS",
+        action: "Delete",
+        description: `${POS.prefix}-${POS.no} deleted by ${POS.createdBy.who}`,
+      });
       navigate("/pos");
     } catch (error) {
       console.error("Error deleting POS:", error);

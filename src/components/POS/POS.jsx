@@ -1,9 +1,11 @@
 import {
+  addDoc,
   collection,
   doc,
   getDocs,
   orderBy,
   query,
+  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -92,7 +94,16 @@ const POS = () => {
   const handleStatusChange = async (posId, newStatus) => {
     try {
       const posDoc = doc(db, "companies", companyId, "pos", posId);
+      const data = pos.find((d) => d.id === posId);
+
       await updateDoc(posDoc, { paymentStatus: newStatus });
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: posDoc,
+        date: serverTimestamp(),
+        section: "POS",
+        action: "Update",
+        description: `${data.posNo} status updated by ${data.createdBy}`,
+      });
       setPos((prevPos) =>
         prevPos.map((pos) =>
           pos.id === posId ? { ...pos, paymentStatus: newStatus } : pos
