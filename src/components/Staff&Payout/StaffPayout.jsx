@@ -18,6 +18,7 @@ import Holidays from "./Hoildays/Holidays";
 import Roles from "./Roles/Roles";
 import Staff from "./Staff/Staff";
 import WeekOff from "./WeekOff/WeekOff";
+import LoansDeductions from "./Loans&Deductions/LoansDeductions";
 
 function StaffPayout() {
   const navigate = useNavigate();
@@ -108,6 +109,11 @@ function StaffPayout() {
       // onClick: () => {
       //   navigate("assets");
       // },
+    },
+    {
+      icon: <HiOutlineClipboardList />,
+      name: "Loans",
+      component: <LoansDeductions />,
     },
   ];
   useEffect(() => {
