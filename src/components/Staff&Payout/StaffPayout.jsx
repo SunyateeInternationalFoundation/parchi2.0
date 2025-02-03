@@ -18,6 +18,9 @@ import Holidays from "./Hoildays/Holidays";
 import Roles from "./Roles/Roles";
 import Staff from "./Staff/Staff";
 import WeekOff from "./WeekOff/WeekOff";
+import { MdAddCard } from "react-icons/md";
+import Payout from "./Payout/Payout";
+
 
 function StaffPayout() {
   const navigate = useNavigate();
@@ -43,12 +46,13 @@ function StaffPayout() {
       //   navigate("attendance");
       // },
     },
-    // {
-    //   icon: <MdAddCard />,
-    //   name: "Payouts",
-    //   totalLabelName: "Total Staff",
-    //   onClick: () => {},
-    // },
+    {
+      icon: <MdAddCard />,
+      name: "Payouts",
+      totalLabelName: "Total Staff",
+      component: <Payout />,
+      onClick: () => {},
+    },
     {
       icon: <GrDocumentUser />,
       name: "Designations",

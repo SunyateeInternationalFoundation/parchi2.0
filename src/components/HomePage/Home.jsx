@@ -67,6 +67,7 @@ import DesignationView from "../Staff&Payout/Designation/DesignationView";
 import Sidebar2 from "../UI/Sidebar2";
 import VendorPO from "../VendorDashBoard/VendorPO";
 import Dashboard from "./Dashboard";
+import Payout from "../Staff&Payout/Payout/Payout";
 
 const Home = () => {
   const location = useLocation();
@@ -240,6 +241,8 @@ const Home = () => {
               path="/staff-payout/attendance"
               element={<Attendance />}
             ></Route> */}
+            <Route path = "/staff-payout/payout" element = {<Payout />} />
+           
 
             <Route path="/subscriptions" element={<Services />}></Route>
             <Route
