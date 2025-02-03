@@ -9,7 +9,7 @@ import {
 import dummy from "../../../assets/dummy.jpeg";
 import CreateCustomer from "../CreateCustomer";
 
-const Profile = ({ customerData, expenseData }) => {
+const Profile = ({ customerData, expenseData, refresh }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -56,13 +56,13 @@ const Profile = ({ customerData, expenseData }) => {
                       <h2 className="text-2xl font-semibold mb-1 break-words max-w-[200px]">
                         {customerData.name
                           ? customerData.name
-                              .split(" ")
-                              .map(
-                                (word) =>
-                                  word.charAt(0).toUpperCase() +
-                                  word.slice(1).toLowerCase()
-                              )
-                              .join(" ")
+                            .split(" ")
+                            .map(
+                              (word) =>
+                                word.charAt(0).toUpperCase() +
+                                word.slice(1).toLowerCase()
+                            )
+                            .join(" ")
                           : "N/A"}
                       </h2>
                     </div>
@@ -167,6 +167,7 @@ const Profile = ({ customerData, expenseData }) => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         customerData={customerData}
+        refresh={refresh}
       />
     </div>
   );

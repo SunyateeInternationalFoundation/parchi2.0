@@ -52,11 +52,6 @@ const CustomerList = () => {
   const dispatch = useDispatch();
 
   const fetchCustomers = async () => {
-    // if (customersDetails.length !== 0) {
-    //   setTotalPages(Math.ceil(customersDetails.length / 10));
-    //   setPaginationData(customersDetails.slice(0, 10));
-    //   return;
-    // }
     setLoading(true);
     try {
       const customersRef = collection(db, "customers");

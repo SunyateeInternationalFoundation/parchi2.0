@@ -16,7 +16,7 @@ import {
   updateCustomerDetails,
 } from "../../store/CustomerSlice";
 
-const CreateCustomer = ({ isOpen, onClose, customerData }) => {
+const CreateCustomer = ({ isOpen, onClose, customerData, refresh }) => {
   const userDetails = useSelector((state) => state.users);
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
@@ -118,6 +118,7 @@ const CreateCustomer = ({ isOpen, onClose, customerData }) => {
         };
         dispatch(setCustomerDetails(payload));
       }
+      refresh()
       setFileName("");
       onClose();
     } catch (error) {
@@ -127,15 +128,13 @@ const CreateCustomer = ({ isOpen, onClose, customerData }) => {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={onClose}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform  ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`bg-white  pt-2 transform transition-transform  ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
