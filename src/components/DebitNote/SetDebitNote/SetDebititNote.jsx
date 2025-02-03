@@ -5,6 +5,7 @@ import {
   getDoc,
   getDocs,
   query,
+  serverTimestamp,
   Timestamp,
   updateDoc,
   where,
@@ -231,7 +232,14 @@ const SetDebitNote = () => {
           name: selectedVendorData.name,
         },
       };
-      let debitNoteRef;
+      let debitNoteRef = "";
+      let payloadLog = {
+        ref: debitNoteRef,
+        date: serverTimestamp(),
+        section: "Debit Note",
+        action: "Create",
+        description: `${prefix}-${no} updated by ${payload.createdBy.who}`,
+      };
       if (debitNoteId) {
         debitNoteRef = doc(
           db,
@@ -241,13 +249,20 @@ const SetDebitNote = () => {
           debitNoteId
         );
         await updateDoc(debitNoteRef, payload);
+        payloadLog.ref = debitNoteRef;
+        payloadLog.action = "Update";
       } else {
         debitNoteRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "debitNote"),
           payload
         );
+        payloadLog.ref = debitNoteRef;
+        payloadLog.action = "Create";
       }
-
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        payloadLog
+      );
       for (const item of items) {
         if (item.quantity === 0) {
           continue;

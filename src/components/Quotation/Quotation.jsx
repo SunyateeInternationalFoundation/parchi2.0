@@ -1,9 +1,11 @@
 import {
+  addDoc,
   collection,
   doc,
   getDocs,
   orderBy,
   query,
+  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -104,7 +106,16 @@ function Quotation() {
         "quotations",
         quotationId
       );
+      const data = quotations.find((d) => d.id === quotationId);
+
       await updateDoc(quotationDoc, { paymentStatus: newStatus });
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: quotationDoc,
+        date: serverTimestamp(),
+        section: "Quotation",
+        action: "Update",
+        description: `${data.quotationNo} status updated by ${data.createdBy}`,
+      });
       setQuotations((prevQuotations) =>
         prevQuotations.map((quotation) =>
           quotation.id === quotationId

@@ -229,7 +229,7 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
       console.error("Error uploading or sharing the PDF:", error);
     }
   };
-
+  console.log("invoice", invoice);
   const handleDelete = async () => {
     try {
       if (!invoice.id || !companyId) {
@@ -251,12 +251,13 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
       if (!confirmDelete) return;
       await deleteDoc(invoiceDocRef);
       await addDoc(collection(db, "companies", companyId, "audit"), {
-        ref: invoice.id,
+        ref: invoiceDocRef,
         date: serverTimestamp(),
         section: "Invoice",
         action: "Delete",
-        description: `Invoice-${invoice.no} deleted by ${invoice.createdBy.who}`,
+        description: `${invoice.prefix}-${invoice.no} deleted by ${invoice.createdBy.who}`,
       });
+
       if (invoice.products && invoice.products.length > 0) {
         const updateInventoryPromises = invoice.products.map(
           (inventoryItem) => {

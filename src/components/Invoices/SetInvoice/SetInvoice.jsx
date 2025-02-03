@@ -254,7 +254,7 @@ const SetInvoice = () => {
 
       let invoiceRef = "";
       let payloadLog = {
-        id: invoiceRef,
+        ref: invoiceRef,
         date: serverTimestamp(),
         section: "Invoice",
         action: "Create",
@@ -269,14 +269,14 @@ const SetInvoice = () => {
           invoiceId
         );
         await updateDoc(invoiceRef, payload);
-        payloadLog.id = invoiceRef;
+        payloadLog.ref = invoiceRef;
         payloadLog.action = "Update";
       } else {
         invoiceRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "invoices"),
           payload
         );
-        payloadLog.id = invoiceRef;
+        payloadLog.ref = invoiceRef;
         payloadLog.action = "Create";
       }
       await addDoc(

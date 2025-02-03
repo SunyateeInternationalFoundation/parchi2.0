@@ -1,4 +1,10 @@
-import { deleteDoc, doc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  serverTimestamp,
+} from "firebase/firestore";
 import jsPDF from "jspdf";
 import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
@@ -184,6 +190,13 @@ const CreditNote = ({ creditNote, bankDetails, selectTemplate }) => {
       );
       if (!confirmDelete) return;
       await deleteDoc(creditNoteDocRef);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: creditNoteDocRef,
+        date: serverTimestamp(),
+        section: "Credit Note",
+        action: "Delete",
+        description: `${creditNote.prefix}-${creditNote.no} deleted by ${creditNote.createdBy.who}`,
+      });
       navigate("./../");
     } catch (error) {
       console.error("Error deleting creditNote:", error);

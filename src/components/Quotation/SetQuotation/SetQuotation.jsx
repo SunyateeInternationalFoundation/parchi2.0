@@ -5,6 +5,7 @@ import {
   getDoc,
   getDocs,
   query,
+  serverTimestamp,
   Timestamp,
   updateDoc,
   where,
@@ -235,7 +236,14 @@ const SetQuotation = () => {
           name: selectedCustomerData.name,
         },
       };
-      let quotationRef;
+      let quotationRef = "";
+      let payloadLog = {
+        ref: quotationRef,
+        date: serverTimestamp(),
+        section: "Quotation",
+        action: "Create",
+        description: `${prefix}-${no} updated by ${payload.createdBy.who}`,
+      };
       if (quotationId) {
         (quotationRef = doc(
           db,
@@ -245,13 +253,20 @@ const SetQuotation = () => {
           quotationId
         )),
           await updateDoc(quotationRef, payload);
+        payloadLog.ref = quotationRef;
+        payloadLog.action = "Update";
       } else {
         quotationRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "quotations"),
           payload
         );
+        payloadLog.ref = quotationRef;
+        payloadLog.action = "Create";
       }
-
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        payloadLog
+      );
       // for (const item of items) {
       //   if (item.quantity === 0) {
       //     continue;

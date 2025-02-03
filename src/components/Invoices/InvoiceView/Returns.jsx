@@ -3,6 +3,7 @@ import {
   collection,
   doc,
   increment,
+  serverTimestamp,
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
@@ -118,7 +119,7 @@ function Returns({ invoice }) {
           productRef: product.productRef,
         };
 
-        await addDoc(
+        const returnRef = await addDoc(
           collection(db, "companies", companyId, "invoices", id, "returns"),
           payload
         );
@@ -139,7 +140,13 @@ function Returns({ invoice }) {
           collection(product.productRef, "logs"),
           productPayloadLogs
         );
-
+        await addDoc(collection(db, "companies", companyId, "audit"), {
+          ref: returnRef,
+          date: serverTimestamp(),
+          section: "Invoice",
+          action: "Delete",
+          description: `${invoice.prefix}-${invoice.no}  ${product.name} returned by ${invoice.createdBy.who}`,
+        });
         UpdateProduct.push({
           ...product,
           quantity: product.quantity - product.actionQty,

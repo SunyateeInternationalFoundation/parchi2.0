@@ -5,6 +5,7 @@ import {
   getDoc,
   getDocs,
   query,
+  serverTimestamp,
   Timestamp,
   updateDoc,
   where,
@@ -227,7 +228,14 @@ const SetPurchase = () => {
           name: selectedVendorData.name,
         },
       };
-      let purchaseRef;
+      let purchaseRef = "";
+      let payloadLog = {
+        ref: purchaseRef,
+        date: serverTimestamp(),
+        section: "Purchase",
+        action: "Create",
+        description: `${prefix}-${no} updated by ${payload.createdBy.who}`,
+      };
       if (purchaseId) {
         (purchaseRef = doc(
           db,
@@ -237,13 +245,20 @@ const SetPurchase = () => {
           purchaseId
         )),
           await updateDoc(purchaseRef, payload);
+        payloadLog.ref = purchaseRef;
+        payloadLog.action = "Update";
       } else {
         purchaseRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "purchases"),
           payload
         );
+        payloadLog.ref = purchaseRef;
+        payloadLog.action = "Create";
       }
-
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        payloadLog
+      );
       alert(
         "Successfully " + (purchaseId ? "Updated" : "Created") + " the Purchase"
       );

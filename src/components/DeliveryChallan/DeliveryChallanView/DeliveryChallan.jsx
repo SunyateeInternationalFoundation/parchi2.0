@@ -1,4 +1,10 @@
-import { deleteDoc, doc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  serverTimestamp,
+} from "firebase/firestore";
 import jsPDF from "jspdf";
 import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
@@ -184,6 +190,13 @@ const DeliveryChallan = ({ deliveryChallan, bankDetails, selectTemplate }) => {
       );
       if (!confirmDelete) return;
       await deleteDoc(deliveryChallanDocRef);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: deliveryChallanDocRef,
+        date: serverTimestamp(),
+        section: "Delivery Challan",
+        action: "Delete",
+        description: `${deliveryChallan.prefix}-${deliveryChallan.no} deleted by ${deliveryChallan.createdBy.who}`,
+      });
       navigate("./../");
     } catch (error) {
       console.error("Error deleting DeliveryChallan:", error);

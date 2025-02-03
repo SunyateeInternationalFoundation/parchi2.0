@@ -1,9 +1,11 @@
 import {
+  addDoc,
   collection,
   doc,
   getDocs,
   orderBy,
   query,
+  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -108,7 +110,16 @@ function DebitNoteList() {
   async function onStatusUpdate(value, debitNoteId) {
     try {
       const docRef = doc(db, "companies", companyId, "debitNote", debitNoteId);
+      const data = DebitNoteList.find((d) => d.id === debitNoteId);
+
       await updateDoc(docRef, { orderStatus: value });
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: docRef,
+        date: serverTimestamp(),
+        section: "DebitNote",
+        action: "Update",
+        description: `${data.debitNoteNo} status updated by ${data.createdBy}`,
+      });
       const UpdatedData = DebitNoteList.map((ele) => {
         if (ele.id === debitNoteId) {
           ele.orderStatus = value;
