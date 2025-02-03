@@ -25,12 +25,10 @@ const LoansDeductions = () => {
   const [loans, setLoans] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchInput, setSearchInput] = useState("");
-
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
-  const [selectedLoan, setSelectedLoan] = useState(null); // State to hold selected loan data
-
+  const [selectedLoan, setSelectedLoan] = useState(null);
   const userDetails = useSelector((state) => state.users);
   const companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
@@ -51,8 +49,8 @@ const LoansDeductions = () => {
 
       setLoans(loanData);
 
-      setTotalPages(Math.ceil(loanData.length / 10)); // Set total pages based on the data length
-      setPaginationData(loanData.slice(0, 10)); // Set initial pagination data
+      setTotalPages(Math.ceil(loanData.length / 10));
+      setPaginationData(loanData.slice(0, 10));
     } catch (error) {
       console.error("Error fetching loan:", error);
     } finally {
@@ -125,7 +123,7 @@ const LoansDeductions = () => {
             className="btn-add"
             onClick={() => {
               setIsSidebarOpen(true);
-              setSelectedLoan(null); // Clear any selected loan when creating a new loan
+              setSelectedLoan(null);
             }}
           >
             + Create Loan

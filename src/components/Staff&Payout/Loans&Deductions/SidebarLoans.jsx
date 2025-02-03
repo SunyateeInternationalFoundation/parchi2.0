@@ -1,15 +1,15 @@
 import {
   addDoc,
   collection,
-  Timestamp,
-  updateDoc,
   doc,
   getDocs,
   query,
+  Timestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { CalendarIcon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { db } from "../../../firebase";
 import { formatDate } from "../../../lib/utils";
@@ -34,36 +34,21 @@ function SidebarLoans({
   const [staffData, setStaffData] = useState([]);
   const [formData, setFormData] = useState({
     staff: "",
-    date: null, // Will hold the selected date
+    date: Timestamp.fromDate(new Date()),
     amount: "",
-    financialOption: "Loans", // Default value
-    paymentSchedule: "Month", // Default value
+    financialOption: "Loans",
+    paymentSchedule: "Month",
   });
 
   const [calendarOpen, setCalendarOpen] = useState(false);
 
-  // If there's data passed to edit, populate the form with that data
   useEffect(() => {
-    if (loanDataToEdit) {
-      setFormData({
-        staff: loanDataToEdit.staff || "", // Ensure this matches the value used in dropdown options
-        date: loanDataToEdit.date,
-        amount: loanDataToEdit.amount,
-        financialOption: loanDataToEdit.financialOption,
-        paymentSchedule: loanDataToEdit.paymentSchedule,
-      });
-    } else {
-      // Set default date when no data to edit
-      setFormData((prev) => ({
-        ...prev,
-        date: Timestamp.fromDate(new Date()), // Default to current date
-        staff: "", // Reset staff to default if no loan data to edit
-      }));
+    if (loanDataToEdit.id) {
+      setFormData(loanDataToEdit);
     }
-  }, [loanDataToEdit]); // Run only when loanDataToEdit changes
+  }, [loanDataToEdit.id, staffData]);
 
   useEffect(() => {
-    // Fetch staff data when the component mounts
     async function fetchStaffData() {
       try {
         const companyRef = doc(db, "companies", companyId);
@@ -80,14 +65,13 @@ function SidebarLoans({
       }
     }
     fetchStaffData();
-  }, [companyId]);
+  }, []);
 
   const onSaveLoan = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
+    e.preventDefault();
     setIsLoading(true);
 
     try {
-      // Validate the required fields
       if (!formData.staff || !formData.amount || !formData.financialOption) {
         alert("Please fill all required fields");
         setIsLoading(false);
@@ -141,15 +125,13 @@ function SidebarLoans({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={onClose}
     >
       <div
-        className={`bg-white shadow-lg transform transition-transform ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`bg-white shadow-lg transform transition-transform ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ maxHeight: "100vh", width: "480px" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -203,11 +185,10 @@ function SidebarLoans({
               {["Loans", "Deductions", "Advance"].map((option) => (
                 <label
                   key={option}
-                  className={`px-5 py-2 border rounded-lg cursor-pointer text-center flex-1 transition-all ${
-                    formData.financialOption === option
-                      ? "bg-black text-white border-black"
-                      : "bg-white text-black border-gray-300 hover:bg-gray-100"
-                  }`}
+                  className={`px-5 py-2 border rounded-lg cursor-pointer text-center flex-1 transition-all ${formData.financialOption === option
+                    ? "bg-black text-white border-black"
+                    : "bg-white text-black border-gray-300 hover:bg-gray-100"
+                    }`}
                 >
                   <input
                     type="radio"
@@ -238,7 +219,7 @@ function SidebarLoans({
                     formatDate(
                       new Date(
                         formData.date.seconds * 1000 +
-                          formData.date.nanoseconds / 1000000
+                        formData.date.nanoseconds / 1000000
                       ),
                       "PPP"
                     )
@@ -254,9 +235,9 @@ function SidebarLoans({
                   selected={
                     formData.date
                       ? new Date(
-                          formData.date.seconds * 1000 +
-                            formData.date.nanoseconds / 1000000
-                        )
+                        formData.date.seconds * 1000 +
+                        formData.date.nanoseconds / 1000000
+                      )
                       : new Date() // Default to today's date if no date is selected
                   }
                   onSelect={(val) => {
@@ -296,11 +277,10 @@ function SidebarLoans({
               {["Month", "Week", "At a Time"].map((option) => (
                 <label
                   key={option}
-                  className={`px-5 py-2 border rounded-lg cursor-pointer text-center flex-1 transition-all ${
-                    formData.paymentSchedule === option
-                      ? "bg-black text-white border-black"
-                      : "bg-white text-black border-gray-300 hover:bg-gray-100"
-                  }`}
+                  className={`px-5 py-2 border rounded-lg cursor-pointer text-center flex-1 transition-all ${formData.paymentSchedule === option
+                    ? "bg-black text-white border-black"
+                    : "bg-white text-black border-gray-300 hover:bg-gray-100"
+                    }`}
                 >
                   <input
                     type="radio"
@@ -333,8 +313,8 @@ function SidebarLoans({
               isLoading
                 ? "Saving..."
                 : loanDataToEdit
-                ? "Save Changes" // Display Save Changes if editing an existing loan
-                : "Add Loan" // Display Add Loan if adding a new loan
+                  ? "Save Changes" // Display Save Changes if editing an existing loan
+                  : "Add Loan" // Display Add Loan if adding a new loan
             }
           </button>
         </div>

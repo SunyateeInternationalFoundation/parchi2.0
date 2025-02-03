@@ -129,35 +129,42 @@ const DeliveryChallanList = () => {
     }
   };
 
-  const filteredDeliveryChallan = deliveryChallan.filter((dc) => {
-    const { customerName, customerPhone, deliveryChallanNo, paymentStatus } =
-      dc;
 
-    const matchesSearch =
-      customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      deliveryChallanNo
-        ?.toString()
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      customerPhone.toString().toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesStatus =
-      filterStatus === "All" || paymentStatus === filterStatus;
-
-    return matchesSearch && matchesStatus;
-  });
-
-  const totalAmount = filteredDeliveryChallan.reduce(
+  const totalAmount = deliveryChallan.reduce(
     (sum, deliveryChallan) => sum + deliveryChallan.total,
     0
   );
-
-  const paidAmount = filteredDeliveryChallan
+  const paidAmount = deliveryChallan
     .filter((deliveryChallan) => deliveryChallan.paymentStatus === "Paid")
     .reduce((sum, deliveryChallan) => sum + deliveryChallan.total, 0);
-  const pendingAmount = filteredDeliveryChallan
+  const pendingAmount = deliveryChallan
     .filter((deliveryChallan) => deliveryChallan.paymentStatus === "Pending")
     .reduce((sum, deliveryChallan) => sum + deliveryChallan.total, 0);
+
+
+  useEffect(() => {
+    const filteredDeliveryChallan = deliveryChallan.filter((dc) => {
+      const { customerName, customerPhone, deliveryChallanNo, paymentStatus } =
+        dc;
+
+      const matchesSearch =
+        customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        deliveryChallanNo
+          ?.toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        customerPhone.toString().toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesStatus =
+        filterStatus === "All" || paymentStatus === filterStatus;
+
+      return matchesSearch && matchesStatus;
+    });
+    setPaginationData(
+      filteredDeliveryChallan.slice(currentPage * 10, currentPage * 10 + 10)
+    );
+  }, [currentPage, deliveryChallan, searchTerm, filterStatus]);
+
   const columns = [
     {
       title: "Date",
@@ -233,8 +240,8 @@ const DeliveryChallanList = () => {
           (value === "Paid"
             ? "bg-green-100"
             : value === "Pending"
-            ? "bg-yellow-100"
-            : "bg-red-100");
+              ? "bg-yellow-100"
+              : "bg-red-100");
         select.onchange = async (e) => {
           const newStatus = e.target.value;
           await handleStatusChange(
@@ -378,13 +385,13 @@ const DeliveryChallanList = () => {
                     <div className="w-full flex justify-center">
                       {(userDetails.selectedDashboard === "" ||
                         role?.create) && (
-                        <Link
-                          className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-                          to="create-deliverychallan"
-                        >
-                          + Create DeliveryChallan
-                        </Link>
-                      )}
+                          <Link
+                            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                            to="create-deliverychallan"
+                          >
+                            + Create DeliveryChallan
+                          </Link>
+                        )}
                     </div>
                   </div>
                 )}
