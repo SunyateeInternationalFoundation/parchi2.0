@@ -87,22 +87,23 @@ function PaymentsDeductions({ onClose, staff, addPaymentDeductionToStaff }) {
 
   return (
     <div
-      className={`fixed inset-0 z-100 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        staff.id ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-100 flex justify-end bg-black bg-opacity-25 transition-opacity ${staff.id ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={() => {
         onClose();
         onReset();
       }}
     >
       <div
-        className={`bg-white  p-3 pt-2 transform transition-transform min-h-screen ${
-          staff.id ? "translate-x-0" : "translate-x-full"
-        }`}
-        style={{ width: "28vw" }}
+        className={`bg-white  pt-2 transform transition-transform min-h-screen ${staff.id ? "translate-x-0" : "translate-x-full"
+          }`}
+        style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between">
+        <div
+          className="flex justify-between items-center border-b px-5 py-3"
+          style={{ height: "6vh" }}
+        >
           <h2 className="font-bold text-xl"> Payments & Deductions</h2>
           <button
             className="text-2xl"
@@ -114,156 +115,159 @@ function PaymentsDeductions({ onClose, staff, addPaymentDeductionToStaff }) {
             <IoMdClose size={24} />
           </button>
         </div>
-        <div className=" my-2">{staff.name}</div>
+        <div className="font-semibold my-2">{staff.name}</div>
         <div className=" my-2"> Amount Calculation</div>
-        <div className="overflow-y-auto" style={{ height: "70vh" }}>
-          <div>
-            <label className="text-sm block font-semibold mt-2">Shift</label>
-            <div className="flex">
-              {[0.5, 1, 1.5, 2].map((shift) => (
-                <div key={shift} className="flex-grow text-center">
-                  <input
-                    type="radio"
-                    name="shift"
-                    id={shift}
-                    value={shift}
-                    className="hidden"
-                    onChange={(e) => setSelectedShift(+e.target.value)}
-                  />
-                  <label
-                    htmlFor={shift}
-                    className={`inline-block px-5 py-2 cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow-md ${
-                      selectedShift === shift
+        <div>
+          <div className="overflow-y-auto px-5" style={{ height: "77vh" }}>
+            <div>
+              <label className="text-sm block font-semibold mt-2">Shift</label>
+              <div className="flex">
+                {[0.5, 1, 1.5, 2].map((shift) => (
+                  <div key={shift} className="flex-grow text-center">
+                    <input
+                      type="radio"
+                      name="shift"
+                      id={shift}
+                      value={shift}
+                      className="hidden"
+                      onChange={(e) => setSelectedShift(+e.target.value)}
+                    />
+                    <label
+                      htmlFor={shift}
+                      className={`inline-block px-5 py-2 cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow-md ${selectedShift === shift
                         ? "border-blue-700  bg-blue-700 text-white "
                         : "bg-white text-blue-900 border-blue-700"
-                    }`}
-                  >
-                    {shift} Shift
-                  </label>
-                </div>
-              ))}
+                        }`}
+                    >
+                      {shift} Shift
+                    </label>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="my-3">
-            <div className="flex">
-              {["overTime", "lateFine"].map((time) => (
-                <div key={time} className="flex-grow text-center">
-                  <input
-                    type="radio"
-                    name="time"
-                    id={time}
-                    value={time}
-                    className="hidden"
-                    onChange={(e) =>
-                      setSelectedTiming((val) => ({
-                        ...val,
-                        type: e.target.value,
-                      }))
-                    }
-                  />
-                  <label
-                    htmlFor={time}
-                    className={`inline-block px-5 py-2 cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow-md  border-green-700 ${
-                      selectedTiming.type === time
+            <div className="my-3">
+              <div className="flex">
+                {["overTime", "lateFine"].map((time) => (
+                  <div key={time} className="flex-grow text-center">
+                    <input
+                      type="radio"
+                      name="time"
+                      id={time}
+                      value={time}
+                      className="hidden"
+                      onChange={(e) =>
+                        setSelectedTiming((val) => ({
+                          ...val,
+                          type: e.target.value,
+                        }))
+                      }
+                    />
+                    <label
+                      htmlFor={time}
+                      className={`inline-block px-5 py-2 cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow-md  border-green-700 ${selectedTiming.type === time
                         ? "bg-green-700 text-white "
                         : "bg-white text-green-900 "
-                    }`}
-                  >
-                    {time.toUpperCase()}
-                  </label>
-                </div>
-              ))}
+                        }`}
+                    >
+                      {time.toUpperCase()}
+                    </label>
+                  </div>
+                ))}
+              </div>
+              <div className="flex w-full my-2">
+                <input
+                  type="number"
+                  placeholder="Hours"
+                  className="w-full border border-gray-300 p-2 rounded-l-lg focus:outline-none "
+                  value={selectedTiming.hours || ""}
+                  onChange={(e) =>
+                    setSelectedTiming((val) => ({
+                      ...val,
+                      hours: +e.target.value,
+                    }))
+                  }
+                />
+                <input
+                  type="number"
+                  placeholder="Amount"
+                  className="w-full border border-gray-300 p-2 rounded-r-lg focus:outline-none "
+                  value={selectedTiming.amount || ""}
+                  onChange={(e) =>
+                    setSelectedTiming((val) => ({
+                      ...val,
+                      amount: +e.target.value,
+                    }))
+                  }
+                />
+              </div>
             </div>
-            <div className="flex w-full my-2">
-              <input
-                type="number"
-                placeholder="Hours"
-                className="w-full border border-gray-300 p-2 rounded-l-lg focus:outline-none "
-                value={selectedTiming.hours || ""}
-                onChange={(e) =>
-                  setSelectedTiming((val) => ({
-                    ...val,
-                    hours: +e.target.value,
-                  }))
-                }
-              />
-              <input
-                type="number"
-                placeholder="Amount"
-                className="w-full border border-gray-300 p-2 rounded-r-lg focus:outline-none "
-                value={selectedTiming.amount || ""}
-                onChange={(e) =>
-                  setSelectedTiming((val) => ({
-                    ...val,
-                    amount: +e.target.value,
-                  }))
-                }
-              />
-            </div>
-          </div>
-          <div className="my-3">
-            <div className="flex">
-              {["allowance", "deduction"].map((items) => (
-                <div key={items} className="flex-grow text-center">
-                  <input
-                    type="radio"
-                    name="all-ded"
-                    id={items}
-                    value={items}
-                    className="hidden"
-                    onChange={(e) =>
-                      setSelectedAllowance((val) => ({
-                        ...val,
-                        type: e.target.value,
-                      }))
-                    }
-                  />
-                  <label
-                    htmlFor={items}
-                    className={`inline-block px-5 py-2 border-green-700  cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow-md ${
-                      selectedAllowance.type === items
+            <div className="my-3">
+              <div className="flex">
+                {["allowance", "deduction"].map((items) => (
+                  <div key={items} className="flex-grow text-center">
+                    <input
+                      type="radio"
+                      name="all-ded"
+                      id={items}
+                      value={items}
+                      className="hidden"
+                      onChange={(e) =>
+                        setSelectedAllowance((val) => ({
+                          ...val,
+                          type: e.target.value,
+                        }))
+                      }
+                    />
+                    <label
+                      htmlFor={items}
+                      className={`inline-block px-5 py-2 border-green-700  cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow-md ${selectedAllowance.type === items
                         ? " bg-green-700 text-white "
                         : "bg-white text-green-900 "
-                    }`}
-                  >
-                    {items.toUpperCase()}
-                  </label>
-                </div>
-              ))}
-            </div>
-            <div className="flex w-full my-2">
-              <input
-                type="number"
-                placeholder="Hours"
-                value={selectedAllowance.hours || ""}
-                className="w-full border border-gray-300 p-2 rounded-l-lg focus:outline-none "
-                onChange={(e) =>
-                  setSelectedAllowance((val) => ({
-                    ...val,
-                    hours: +e.target.value,
-                  }))
-                }
-              />
-              <input
-                type="number"
-                placeholder="Amount"
-                value={selectedAllowance.amount || ""}
-                className="w-full border border-gray-300 p-2 rounded-r-lg focus:outline-none "
-                onChange={(e) =>
-                  setSelectedAllowance((val) => ({
-                    ...val,
-                    amount: +e.target.value,
-                  }))
-                }
-              />
+                        }`}
+                    >
+                      {items.toUpperCase()}
+                    </label>
+                  </div>
+                ))}
+              </div>
+              <div className="flex w-full my-2">
+                <input
+                  type="number"
+                  placeholder="Hours"
+                  value={selectedAllowance.hours || ""}
+                  className="w-full border border-gray-300 p-2 rounded-l-lg focus:outline-none "
+                  onChange={(e) =>
+                    setSelectedAllowance((val) => ({
+                      ...val,
+                      hours: +e.target.value,
+                    }))
+                  }
+                />
+                <input
+                  type="number"
+                  placeholder="Amount"
+                  value={selectedAllowance.amount || ""}
+                  className="w-full border border-gray-300 p-2 rounded-r-lg focus:outline-none "
+                  onChange={(e) =>
+                    setSelectedAllowance((val) => ({
+                      ...val,
+                      amount: +e.target.value,
+                    }))
+                  }
+                />
+              </div>
             </div>
           </div>
-          <button
-            className="mt-4 bg-blue-500 text-white py-2 px-4 rounded w-full"
-            onClick={onSubmit}
+          <div
+            className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
+            style={{ height: "8vh" }}
           >
-            Save
-          </button>
+            <button
+              className="w-full btn-add" onClick={onSubmit}
+            >
+              Save
+            </button>
+          </div>
         </div>
       </div>
     </div>
