@@ -22,8 +22,7 @@ import SidebarLoans from "./SidebarLoans";
 
 const LoansDeductions = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  console.log("hello here");
-  const [holiday, setHoliday] = useState([]);
+  const [loans, setLoans] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchInput, setSearchInput] = useState("");
 
@@ -35,67 +34,70 @@ const LoansDeductions = () => {
   const companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
 
-  const fetchHoliday = async () => {
+  const fetchLoans = async () => {
     setLoading(true);
     try {
-      const holidayRef = collection(db, "companies", companyId, "holidays");
+      console.log(companyId);
+      const loanRef = collection(db, "companies", companyId, "loans");
 
-      const q = query(holidayRef, orderBy("date", "desc"));
+      const q = query(loanRef, orderBy("createdAt", "desc"));
 
       const querySnapshot = await getDocs(q);
 
-      const holidayData = querySnapshot.docs.map((doc) => ({
+      const loanData = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
 
-      setHoliday(holidayData);
+      setLoans(loanData);
 
-      setTotalPages(Math.ceil(holidayData.length / 10)); // Set total pages based on the data length
-      setPaginationData(holidayData.slice(0, 10)); // Set initial pagination data
+      setTotalPages(Math.ceil(loanData.length / 10)); // Set total pages based on the data length
+      setPaginationData(loanData.slice(0, 10)); // Set initial pagination data
     } catch (error) {
-      console.error("Error fetching holiday:", error);
+      console.error("Error fetching loan:", error);
     } finally {
       setLoading(false);
     }
   };
+
   useEffect(() => {
-    fetchHoliday();
+    fetchLoans();
   }, [companyId]);
 
   useEffect(() => {
-    const filteredHoliday = holiday.filter((b) =>
-      b.name.toLowerCase().includes(searchInput.toLowerCase())
+    const filteredLoans = loans.filter((loan) =>
+      loan.staff.toLowerCase().includes(searchInput.toLowerCase())
     );
     setPaginationData(
-      filteredHoliday.slice(currentPage * 10, currentPage * 10 + 10)
+      filteredLoans.slice(currentPage * 10, currentPage * 10 + 10)
     );
-    setTotalPages(Math.ceil(filteredHoliday.length / 10));
-  }, [holiday, currentPage, searchInput]);
+    setTotalPages(Math.ceil(filteredLoans.length / 10));
+  }, [loans, currentPage, searchInput]);
 
-  const handleAddHoliday = (newData) => {
-    setHoliday((prev) => [...prev, newData]);
+  const handleAddLoan = (newData) => {
+    setLoans((prev) => [...prev, newData]);
   };
 
-  async function OnDeleteHoliday(e, holidayId) {
+  async function OnDeleteLoan(e, loanId) {
     e.stopPropagation();
     try {
       const confirm = window.confirm(
-        "Are you sure you want to delete this Holiday?"
+        "Are you sure you want to delete this Loan?"
       );
       if (!confirm) return;
 
-      await deleteDoc(doc(db, "companies", companyId, "holiday", holidayId));
+      await deleteDoc(doc(db, "companies", companyId, "loans", loanId));
 
-      setHoliday((prev) => {
-        const updatedHoliday = prev.filter((item) => item.id !== holidayId);
+      setLoans((prev) => {
+        const updatedLoans = prev.filter((item) => item.id !== loanId);
 
-        return updatedHoliday;
+        return updatedLoans;
       });
     } catch (error) {
-      console.error("Error deleting Holiday:", error);
+      console.error("Error deleting Loan:", error);
     }
   }
+
   return (
     <div className="main-container " style={{ height: "82vh" }}>
       <div className="container ">
@@ -105,7 +107,7 @@ const LoansDeductions = () => {
             <div className="input-div-icon">
               <input
                 type="text"
-                placeholder="Search by Loan Name..."
+                placeholder="Search by Staff Name..."
                 className=" w-full"
                 onChange={(e) => setSearchInput(e.target.value)}
                 value={searchInput}
@@ -123,6 +125,7 @@ const LoansDeductions = () => {
             + Create Loan
           </button>
         </header>
+
         <div>
           {loading ? (
             <div className="text-center">Loading...</div>
@@ -135,7 +138,16 @@ const LoansDeductions = () => {
                       Date
                     </td>
                     <td className="px-5 py-1 text-gray-400 font-semibold text-start">
-                      Name
+                      Staff Name
+                    </td>
+                    <td className="px-8 py-1 text-gray-400 font-semibold text-start">
+                      Financial Option
+                    </td>
+                    <td className="px-8 py-1 text-gray-400 font-semibold text-start">
+                      Payment Schedule
+                    </td>
+                    <td className="px-8 py-1 text-gray-400 font-semibold text-end">
+                      Amount
                     </td>
                     <td className="px-8 py-1 text-gray-400 font-semibold text-end">
                       Delete
@@ -144,15 +156,22 @@ const LoansDeductions = () => {
                 </thead>
                 <tbody>
                   {paginationData.length > 0 ? (
-                    paginationData.map((holiday) => (
+                    paginationData.map((loan) => (
                       <tr
-                        key={holiday.id}
+                        key={loan.id}
                         className="border-b border-gray-200 text-center cursor-pointer"
                       >
                         <td className="px-8 py-3 text-start">
-                          <FormatTimestamp timestamp={holiday.createdAt} />
+                          <FormatTimestamp timestamp={loan.date} />
                         </td>
-                        <td className="px-5 py-3 text-start">{holiday.name}</td>
+                        <td className="px-5 py-3 text-start">{loan.staff}</td>
+                        <td className="px-8 py-3 text-start">
+                          {loan.financialOption}
+                        </td>
+                        <td className="px-8 py-3 text-start">
+                          {loan.paymentSchedule}
+                        </td>
+                        <td className="px-8 py-3 text-end">{loan.amount}</td>
                         <td
                           className="px-12 py-3"
                           onClick={(e) => {
@@ -161,7 +180,7 @@ const LoansDeductions = () => {
                         >
                           <div
                             className="text-red-500 flex items-center justify-end"
-                            onClick={() => OnDeleteHoliday(holiday.id)}
+                            onClick={(e) => OnDeleteLoan(e, loan.id)}
                           >
                             <RiDeleteBin6Line />
                           </div>
@@ -170,8 +189,8 @@ const LoansDeductions = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="4" className="h-24 text-center py-4">
-                        No Holiday Found
+                      <td colSpan="6" className="h-24 text-center py-4">
+                        No Loan Found
                       </td>
                     </tr>
                   )}
@@ -232,7 +251,7 @@ const LoansDeductions = () => {
         <SidebarLoans
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
-          onAddHoliday={handleAddHoliday}
+          onAddLoan={handleAddLoan}
           companyId={companyId}
         />
       )}

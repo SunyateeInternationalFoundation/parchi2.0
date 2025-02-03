@@ -20,14 +20,26 @@ function SidebarLoans({ isOpen, onClose, onAddLoan, companyId }) {
   const [staffData, setStaffData] = useState([]);
   const [formData, setFormData] = useState({
     staff: "",
-    date: "",
+    date: null, // Will hold the selected date
     amount: "",
-    financialOption: "",
-    paymentSchedule: "",
+    financialOption: "Loans", // Default value
+    paymentSchedule: "Month", // Default value
   });
+
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   useEffect(() => {
+    // Set the default date to today if no date is selected
+    if (!formData.date) {
+      setFormData((prev) => ({
+        ...prev,
+        date: Timestamp.fromDate(new Date()), // Default to current date
+      }));
+    }
+  }, []); // Empty dependency array ensures this runs once when the component mounts
+
+  useEffect(() => {
+    // Fetch staff data when the component mounts
     async function fetchStaffData() {
       try {
         const companyRef = doc(db, "companies", companyId);
@@ -46,11 +58,12 @@ function SidebarLoans({ isOpen, onClose, onAddLoan, companyId }) {
     fetchStaffData();
   }, [companyId]);
 
-  async function onCreateLoan(e) {
+  const onCreateLoan = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
+      // Validate the required fields
       if (!formData.staff || !formData.amount || !formData.financialOption) {
         alert("Please fill all required fields");
         setIsLoading(false);
@@ -59,29 +72,34 @@ function SidebarLoans({ isOpen, onClose, onAddLoan, companyId }) {
 
       const payload = {
         ...formData,
-        createdAt: Timestamp.fromDate(new Date()),
+        createdAt: Timestamp.fromDate(new Date()), // Store creation timestamp
       };
+
+      // Add the loan data to the Firestore
       const loanRef = await addDoc(
         collection(db, "companies", companyId, "loans"),
         payload
       );
-      onAddLoan({ id: loanRef.id, ...payload });
+
+      onAddLoan({ id: loanRef.id, ...payload }); // Pass the new loan data
       alert("Successfully added!");
+
+      // Reset form data
       setFormData({
         staff: "",
-        date: "",
+        date: Timestamp.fromDate(new Date()), // Reset to today's date
         amount: "",
-        financialOption: "",
-        paymentSchedule: "",
+        financialOption: "Loans", // Reset to default
+        paymentSchedule: "Month", // Reset to default
       });
-      onClose();
+      onClose(); // Close the sidebar
     } catch (error) {
       console.error("Error adding loan:", error);
       alert("Failed to add loan. Please try again.");
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div
@@ -99,7 +117,7 @@ function SidebarLoans({ isOpen, onClose, onAddLoan, companyId }) {
       >
         {/* Header */}
         <div className="flex justify-between items-center border-b px-6 py-5">
-          <h2 className="text-lg font-semibold">Loans&Deductions</h2>
+          <h2 className="text-lg font-semibold">Loans & Deductions</h2>
           <button
             onClick={onClose}
             className="text-2xl text-gray-500 hover:text-gray-800"
@@ -162,6 +180,7 @@ function SidebarLoans({ isOpen, onClose, onAddLoan, companyId }) {
                         financialOption: option,
                       }))
                     }
+                    checked={formData.financialOption === option}
                   />
                   {option}
                 </label>
@@ -178,8 +197,8 @@ function SidebarLoans({ isOpen, onClose, onAddLoan, companyId }) {
                   {formData.date?.seconds ? (
                     formatDate(
                       new Date(
-                        formData.date?.seconds * 1000 +
-                          formData.date?.nanoseconds / 1000000
+                        formData.date.seconds * 1000 +
+                          formData.date.nanoseconds / 1000000
                       ),
                       "PPP"
                     )
@@ -193,10 +212,12 @@ function SidebarLoans({ isOpen, onClose, onAddLoan, companyId }) {
                 <Calendar
                   mode="single"
                   selected={
-                    new Date(
-                      formData.date?.seconds * 1000 +
-                        formData.date?.nanoseconds / 1000000
-                    )
+                    formData.date
+                      ? new Date(
+                          formData.date.seconds * 1000 +
+                            formData.date.nanoseconds / 1000000
+                        )
+                      : new Date() // Default to today's date if no date is selected
                   }
                   onSelect={(val) => {
                     setFormData((prev) => ({
@@ -252,6 +273,7 @@ function SidebarLoans({ isOpen, onClose, onAddLoan, companyId }) {
                         paymentSchedule: option,
                       }))
                     }
+                    checked={formData.paymentSchedule === option}
                   />
                   {option}
                 </label>
@@ -260,9 +282,13 @@ function SidebarLoans({ isOpen, onClose, onAddLoan, companyId }) {
           </div>
         </form>
 
-        {/* Bottom Button & Divider */}
+        {/* Bottom Button */}
         <div className="border-t bg-white p-6 fixed bottom-0 w-full shadow-lg">
-          <button type="submit" className="w-full btn-add">
+          <button
+            type="submit"
+            onClick={onCreateLoan}
+            className="w-full btn-add"
+          >
             {isLoading ? "Adding..." : "Add Loan"}
           </button>
         </div>
