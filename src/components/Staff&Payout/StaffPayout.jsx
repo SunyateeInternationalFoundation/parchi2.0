@@ -21,6 +21,7 @@ import WeekOff from "./WeekOff/WeekOff";
 import { MdAddCard } from "react-icons/md";
 import Payout from "./Payout/Payout";
 
+import LoansDeductions from "./Loans&Deductions/LoansDeductions";
 
 function StaffPayout() {
   const navigate = useNavigate();
@@ -112,6 +113,11 @@ function StaffPayout() {
       // onClick: () => {
       //   navigate("assets");
       // },
+    },
+    {
+      icon: <HiOutlineClipboardList />,
+      name: "Loans",
+      component: <LoansDeductions />,
     },
   ];
   useEffect(() => {

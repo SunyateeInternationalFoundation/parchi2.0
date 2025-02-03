@@ -7,6 +7,7 @@ import {
   LuChevronsLeft,
   LuChevronsRight,
 } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
 import FormatTimestamp from "../../../constants/FormatTimestamp";
 import {
   Select,
@@ -17,6 +18,7 @@ import {
 } from "../../UI/select";
 
 function Services({ servicesList }) {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(
     Math.ceil(servicesList.length / 10)
@@ -114,6 +116,9 @@ function Services({ servicesList }) {
                     <tr
                       key={service.id}
                       className="border-b border-gray-200 text-center cursor-pointer  text-start"
+                      onClick={() => {
+                        navigate(`/subscriptions/${service.id}`);
+                      }}
                     >
                       <td className="px-8 py-3">
                         <FormatTimestamp timestamp={service.date} />

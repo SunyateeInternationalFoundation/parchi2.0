@@ -6,6 +6,7 @@ import {
   getDocs,
   orderBy,
   query,
+  serverTimestamp,
   Timestamp,
   updateDoc,
   where,
@@ -252,7 +253,13 @@ const SetInvoice = () => {
       };
 
       let invoiceRef = "";
-
+      let payloadLog = {
+        id: invoiceRef,
+        date: serverTimestamp(),
+        section: "Invoice",
+        action: "Create",
+        description: `${prefix}-${no} updated by ${payload.createdBy.who}`,
+      };
       if (invoiceId) {
         invoiceRef = doc(
           db,
@@ -262,13 +269,20 @@ const SetInvoice = () => {
           invoiceId
         );
         await updateDoc(invoiceRef, payload);
+        payloadLog.id = invoiceRef;
+        payloadLog.action = "Update";
       } else {
         invoiceRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "invoices"),
           payload
         );
+        payloadLog.id = invoiceRef;
+        payloadLog.action = "Create";
       }
-
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        payloadLog
+      );
       for (const item of items) {
         if (item.quantity === 0) {
           continue;

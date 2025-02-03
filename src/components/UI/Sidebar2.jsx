@@ -1,6 +1,7 @@
 import { AiOutlineHome } from "react-icons/ai";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import clock from "../../assets/dashboard/clock.jpeg";
 import heartPartnerHandshake from "../../assets/dashboard/heart-partner-handshake.png";
 import settings from "../../assets/dashboard/settings.png";
 import signOut from "../../assets/dashboard/signOut.png";
@@ -32,6 +33,11 @@ function Sidebar2() {
       name: "Settings",
       img: settings,
       link: "/settings/user-profile",
+    },
+    {
+      name: "Logs",
+      img: clock,
+      link: "/settings/logs",
     },
   ];
   return (

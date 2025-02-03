@@ -7,6 +7,7 @@ import {
   LuChevronsLeft,
   LuChevronsRight,
 } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
 import FormatTimestamp from "../../../constants/FormatTimestamp";
 import {
   Select,
@@ -15,13 +16,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../UI/select";
-
 function VendorBills({ purchasesData }) {
   console.log("🚀 ~ VendorBills ~ purchasesData:", purchasesData);
+  const navigate = useNavigate();
   const tabs = {
-    Purchases: "purchases",
-    Po: "po",
-    "Debit Note": "debitNote",
+    Purchases: {
+      collectionName: "purchases",
+      path: "purchase",
+    },
+    Po: {
+      collectionName: "po",
+      path: "po",
+    },
+    "Debit Note": {
+      collectionName: "debitNote",
+      path: "debit-note",
+    },
   };
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -31,21 +41,21 @@ function VendorBills({ purchasesData }) {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    setTotalPages(Math.ceil(purchasesData[tabs[activeTab]].length / 10));
-    const filteredServices = purchasesData[tabs[activeTab]].filter(
-      (service) => {
-        const { orderStatus, no } = service;
-        const matchesSearch = no
-          ?.toString()
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
+    const collection = purchasesData[tabs[activeTab].collectionName] || [];
 
-        const matchesStatus =
-          filterStatus === "All" || orderStatus === filterStatus;
+    setTotalPages(Math.ceil(collection.length / 10));
+    const filteredServices = collection.filter((service) => {
+      const { orderStatus, no } = service;
+      const matchesSearch = no
+        ?.toString()
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
 
-        return matchesSearch && matchesStatus;
-      }
-    );
+      const matchesStatus =
+        filterStatus === "All" || orderStatus === filterStatus;
+
+      return matchesSearch && matchesStatus;
+    });
     setPaginationData(
       filteredServices.slice(currentPage * 10, currentPage * 10 + 10)
     );
@@ -136,6 +146,9 @@ function VendorBills({ purchasesData }) {
                     <tr
                       key={sale.id}
                       className="border-b border-gray-200 text-center cursor-pointer"
+                      onClick={() => {
+                        navigate(`/${tabs[activeTab].path}/${sale.id}`);
+                      }}
                     >
                       <td className="px-8 py-3 text-start">
                         <FormatTimestamp timestamp={sale.date} />

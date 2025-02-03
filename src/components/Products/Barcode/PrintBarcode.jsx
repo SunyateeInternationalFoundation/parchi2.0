@@ -28,6 +28,7 @@ function PrintBarcode() {
   const [isModelOpen, setIsModelOpen] = useState(false);
   const [newBarcode, setNewBarcode] = useState("");
   const [editProduct, setEditProduct] = useState("");
+  const [printData, setPrintData] = useState([]);
   const barcodeRef = useRef();
   const reactToPrintFn = useReactToPrint({
     contentRef: barcodeRef,
@@ -129,11 +130,10 @@ function PrintBarcode() {
   };
 
   const handleQuantityChange = (id, value) => {
-    setSelectProduct(
-      selectProduct.map((product) =>
-        product.id === id ? { ...product, quantity: value } : product
-      )
+    const updatedProduct = selectProduct.map((product) =>
+      product.id === id ? { ...product, quantity: value } : product
     );
+    setSelectProduct(updatedProduct);
   };
 
   const handleDelete = (id) => {
@@ -168,6 +168,41 @@ function PrintBarcode() {
     fetchProducts();
     fetchCategories();
   }, []);
+  useEffect(() => {
+    const limit = selectSheetDetails.sheetData.itemsPerSheet;
+    const result = [];
+    let currentChunk = [];
+    let currentQuantity = 0;
+
+    for (const item of selectProduct) {
+      let remainingQuantity = item.quantity;
+
+      while (remainingQuantity > 0) {
+        const availableSpace = limit - currentQuantity;
+        const quantityToAdd = Math.min(availableSpace, remainingQuantity);
+
+        if (quantityToAdd > 0) {
+          currentChunk.push({
+            ...item,
+            quantity: quantityToAdd,
+          });
+          currentQuantity += quantityToAdd;
+          remainingQuantity -= quantityToAdd;
+        }
+
+        if (currentQuantity >= limit) {
+          result.push(currentChunk);
+          currentChunk = [];
+          currentQuantity = 0;
+        }
+      }
+    }
+
+    if (currentChunk.length > 0) {
+      result.push(currentChunk);
+    }
+    setPrintData(result);
+  }, [selectProduct, selectSheetDetails.sheetData.itemsPerSheet]);
 
   useEffect(() => {
     if (selectedCategory === "all" && productSearch === "") {
@@ -229,8 +264,8 @@ function PrintBarcode() {
                       val.length > 0
                         ? val
                         : selectedCategory == "all"
-                        ? products
-                        : []
+                          ? products
+                          : []
                     );
                   }}
                   onBlur={() => {
@@ -426,49 +461,62 @@ function PrintBarcode() {
         </div>
 
         {/* Barcode Display */}
-        <div
-          className="border rounded bg-white"
-          ref={barcodeRef}
-          style={{
-            height: "10.3in",
-            width: "8.45in",
-            margin: "10px auto",
-            paddingTop: "0.1in",
-          }}
-        >
-          <div className="flex flex-wrap gap-4 ps-4 mt-5" ref={barcodeRef}>
-            {selectProduct.map((product) =>
-              Array.from({ length: product.quantity }).map((_, i) => (
-                <div
-                  key={`${product.id}-${i}`}
-                  className="  text-center "
-                  style={{
-                    height:
-                      selectSheetDetails.sheetData.dimensions[1] + 0.1 + "in",
-                    lineHeight: "14px",
-                    paddingTop: "0.05in",
-                    width: selectSheetDetails.sheetData.dimensions[0] + "in",
-                    border: "1px dotted rgb(204, 204, 204)",
-                    overflow: "hidden",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  {selectSheetDetails.isName && <div>{product.name}</div>}
-                  {selectSheetDetails.isPrice && (
-                    <div className="">₹{product.sellingPrice}</div>
-                  )}
-                  <div className="flex justify-center  ">
-                    <Barcode
-                      value={product.barcode}
-                      height={"32px"}
-                      marginTop={"0px"}
-                      paddingTop={"0px"}
-                    />
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+
+        <div ref={barcodeRef}>
+          {printData.map((list, index) => (
+            <div
+              key={index}
+              className="border rounded bg-white"
+              style={{
+                height: "11.3in",
+                width: "8.45in",
+                margin: "10px auto",
+                paddingTop: "0.1in",
+              }}
+            >
+              <div className="flex flex-wrap gap-x-4 ps-4 my-2">
+                {list.map((product) => {
+                  return Array.from({ length: product.quantity }).map(
+                    (_, i) => {
+                      return (
+                        <div
+                          key={`${product.id}-${i}`}
+                          className="uppercase  text-center "
+                          style={{
+                            height:
+                              selectSheetDetails.sheetData.dimensions[1] + "in",
+                            lineHeight: "14px",
+                            paddingTop: "0.05in",
+                            width:
+                              selectSheetDetails.sheetData.dimensions[0] + "in",
+                            border: "1px dotted rgb(204, 204, 204)",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {selectSheetDetails.isName && (
+                            <div>{product.name}</div>
+                          )}
+                          {selectSheetDetails.isPrice && (
+                            <div className="">₹{product.sellingPrice}</div>
+                          )}
+                          <div className="flex justify-center">
+                            <div className="flex  justify-center w-32">
+                              <Barcode
+                                value={product.barcode}
+                                height={32}
+                                marginTop={-1}
+                                paddingTop="0px"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
