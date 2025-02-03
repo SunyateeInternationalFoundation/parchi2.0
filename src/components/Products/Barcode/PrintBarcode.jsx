@@ -1,4 +1,4 @@
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, serverTimestamp, updateDoc } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import Barcode from "react-barcode";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -30,6 +30,7 @@ function PrintBarcode() {
   const [editProduct, setEditProduct] = useState("");
   const [printData, setPrintData] = useState([]);
   const barcodeRef = useRef();
+  const totalQuantity = useRef(0)
   const reactToPrintFn = useReactToPrint({
     contentRef: barcodeRef,
   });
@@ -164,19 +165,43 @@ function PrintBarcode() {
     }
   }
 
+  async function printBarcodeData() {
+    try {
+
+      reactToPrintFn()
+      let payloadLog = {
+        id: "",
+        date: serverTimestamp(),
+        section: "Inventory",
+        action: "Print",
+        description: `Total ${totalQuantity.current} Quantity Barcode Printed by ${userDetails.selectedDashboard === "staff" ? "staff" : "owner"}`,
+      };
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        payloadLog
+      );
+
+    } catch (error) {
+      console.log("🚀 ~ printBarcodeData ~ error:", error)
+
+    }
+  }
+
   useEffect(() => {
     fetchProducts();
     fetchCategories();
   }, []);
+
   useEffect(() => {
     const limit = selectSheetDetails.sheetData.itemsPerSheet;
     const result = [];
     let currentChunk = [];
     let currentQuantity = 0;
 
+    totalQuantity.current = 0
     for (const item of selectProduct) {
       let remainingQuantity = item.quantity;
-
+      totalQuantity.current += item.quantity
       while (remainingQuantity > 0) {
         const availableSpace = limit - currentQuantity;
         const quantityToAdd = Math.min(availableSpace, remainingQuantity);
@@ -188,6 +213,8 @@ function PrintBarcode() {
           });
           currentQuantity += quantityToAdd;
           remainingQuantity -= quantityToAdd;
+
+
         }
 
         if (currentQuantity >= limit) {
@@ -332,7 +359,7 @@ function PrintBarcode() {
                         </td>
                         <td className="px-1 py-2 space-x-1">
                           <input
-                            type="number"
+                            type="text"
                             value={product.quantity}
                             onChange={(e) => {
                               const { value } = e.target;
@@ -454,7 +481,7 @@ function PrintBarcode() {
           </button>
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded"
-            onClick={reactToPrintFn}
+            onClick={printBarcodeData}
           >
             Print Barcode
           </button>
@@ -480,7 +507,7 @@ function PrintBarcode() {
                     (_, i) => {
                       return (
                         <div
-                          key={`${product.id}-${i}`}
+                          key={`${product.id}-${i} `}
                           className="uppercase  text-center "
                           style={{
                             height:
