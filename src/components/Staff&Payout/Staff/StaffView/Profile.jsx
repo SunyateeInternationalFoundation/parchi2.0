@@ -7,7 +7,7 @@ const Profile = ({ staffData, refresh }) => {
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
   return (
-    <div className="main-container">
+    <div className="main-container" style={{ height: "82vh" }}>
       {!staffData.id ? (
         <div className="text-gray-500 text-center">Loading staff...</div>
       ) : (
@@ -93,7 +93,7 @@ const Profile = ({ staffData, refresh }) => {
                     <label className="text-sm text-gray-500">ID</label>
                     <div className="block w-full border border-gray-300 p-2 rounded-md bg-white focus:ring focus:ring-purple-200">
                       {" "}
-                      {staffData.idNo || ""}
+                      {staffData.idNo || "N/A"}
                     </div>
                   </div>
                   <div>
@@ -118,10 +118,15 @@ const Profile = ({ staffData, refresh }) => {
                     <div className="block w-full border border-gray-300 p-2 rounded-md bg-white focus:ring focus:ring-purple-200">{`${
                       staffData.isDailyWages ? "Daily Pay" : "Monthly Pay"
                     }`}</div>
+                    <div>
+                      <label className="text-sm text-gray-500">Branch</label>
+                      <div className="block w-full border border-gray-300 p-2 rounded-md bg-white focus:ring focus:ring-purple-200">
+                        {staffData.branch || "N/A"}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-
               {/* Right Column: Address */}
               <div>
                 <h3 className="text-gray-700 font-medium mb-2">Address</h3>
