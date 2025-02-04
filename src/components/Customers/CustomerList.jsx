@@ -1,9 +1,11 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   getDocs,
   query,
+  serverTimestamp,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -163,13 +165,21 @@ const CustomerList = () => {
     navigator(customerId);
   }
 
-  async function onHandleDeleteCustomer(customerId) {
+  async function onHandleDeleteCustomer(customerId, name) {
     try {
       const confirmDelete = window.confirm(
         "Are you sure you want to delete this Customers?"
       );
       if (!confirmDelete) return;
-      await deleteDoc(doc(db, "customers", customerId));
+      const cusRef = doc(db, "customers", customerId);
+      await deleteDoc(cusRef);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: cusRef,
+        date: serverTimestamp(),
+        section: "Customer",
+        action: "Delete",
+        description: `${name} removed`,
+      });
       dispatch(deleteCustomerDetails(customerId));
     } catch (error) {
       console.log("🚀 ~ onHandleDeleteCustomer ~ error:", error);
@@ -291,7 +301,9 @@ const CustomerList = () => {
                         >
                           <div
                             className="text-red-500 flex items-center justify-center"
-                            onClick={() => onHandleDeleteCustomer(customer.id)}
+                            onClick={() =>
+                              onHandleDeleteCustomer(customer.id, customer.name)
+                            }
                           >
                             <RiDeleteBin6Line />
                           </div>
@@ -375,6 +387,7 @@ const CustomerList = () => {
               setIsModalOpen(false);
               setSelectedCustomer(null);
             }}
+            onCustomerAdded={fetchCustomers}
             customerData={selectedCustomer}
           />
         </div>

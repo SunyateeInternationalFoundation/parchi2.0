@@ -2,6 +2,7 @@ import {
   addDoc,
   collection,
   doc,
+  serverTimestamp,
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
@@ -16,7 +17,7 @@ import {
   updateCustomerDetails,
 } from "../../store/CustomerSlice";
 
-const CreateCustomer = ({ isOpen, onClose, customerData }) => {
+const CreateCustomer = ({ isOpen, onClose, onCustomerAdded, customerData }) => {
   const userDetails = useSelector((state) => state.users);
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
@@ -93,10 +94,21 @@ const CreateCustomer = ({ isOpen, onClose, customerData }) => {
     e.preventDefault();
     try {
       const companyRef = doc(db, "companies", companyId);
+      let customersRef = "";
+      let customerLogs = {
+        ref: customersRef,
+        date: serverTimestamp(),
+        section: "Customer",
+        action: "Update",
+        description: "",
+      };
       if (customerData?.id) {
-        const customersRef = doc(db, "customers", customerData.id);
+        customersRef = doc(db, "customers", customerData.id);
         const { id, createdAt, companyRef, ...rest } = formData;
         await updateDoc(customersRef, rest);
+        customerLogs.action = "Update";
+        customerLogs.description = `${customerData.name} details updated`;
+
         dispatch(
           updateCustomerDetails({
             id,
@@ -111,6 +123,9 @@ const CreateCustomer = ({ isOpen, onClose, customerData }) => {
           companyRef: companyRef,
           createdAt: Timestamp.fromDate(new Date()),
         });
+        customerLogs.action = "Create";
+        customerLogs.description = `${formData.name} details created`;
+
         const payload = {
           id: newCustomer.id,
           ...formData,
@@ -118,8 +133,13 @@ const CreateCustomer = ({ isOpen, onClose, customerData }) => {
         };
         dispatch(setCustomerDetails(payload));
       }
+      await addDoc(
+        collection(db, "companies", companyId, "audit"),
+        customerLogs
+      );
       setFileName("");
       onClose();
+      onCustomerAdded();
     } catch (error) {
       console.error("Error saving customer:", error);
     }
