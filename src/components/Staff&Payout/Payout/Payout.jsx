@@ -7,14 +7,12 @@ import { db } from "../../../firebase";
 function Payout() {
   const [loading, setLoading] = useState(!true);
   const [staffData, setStaffData] = useState([]);
-  const [attendance, setAttendance] = useState([]);
   const userDetails = useSelector((state) => state.users);
   const companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
 
-  const memoData = useRef({
-
-  })
+  const memoData = useRef({})
+  const selectDate = useRef(`${String(new Date().getMonth() + 1).padStart(2, "0")}-${new Date().getFullYear()}`)
 
   const [selectedData, setSelectedData] = useState(null)
 
@@ -87,16 +85,21 @@ function Payout() {
               paymentDetails: +staffDetails.paymentDetails,
               isDailyWages: staffDetails.isDailyWages,
               salaryPerDay,
-              [key]: {
-                payout: 0,
-                allowance: 0,
-                overTime: 0,
-                deduction: 0,
-                lateFine: 0,
-                total: 0
-              }
             }
           }
+          if (!customData[staff.id][key]) {
+            customData[staff.id][key] = {
+              payout: 0,
+              allowance: 0,
+              overTime: 0,
+              deduction: 0,
+              lateFine: 0,
+              total: 0,
+              extraShiftAmount: 0,
+              halfShiftAmount: 0
+            }
+          }
+
 
           if (staff.status == "absent") {
             return
@@ -109,11 +112,10 @@ function Payout() {
             deduction: +((staff?.adjustments?.deduction?.amount * staff?.adjustments?.deduction?.hours) || 0),
             lateFine: +((staff?.adjustments?.lateFine?.amount * staff?.adjustments?.lateFine?.hours) || 0),
           }
-          console.log("🚀 ~ staffAttendanceData.docs.forEach ~ obj:", obj)
 
-          const daySalary = obj.payout * staff.shift;
+          const daySalary = customData[staff.id].salaryPerDay * staff.shift;
 
-          const extraShiftAmount = (staff.shift !== 0.5 ? daySalary - obj.payout : 0)
+          const extraShiftAmount = (staff.shift !== 0.5 ? daySalary - customData[staff.id].salaryPerDay : 0)
           const halfShiftAmount = (staff.shift == 0.5 ? obj.payout / 2 : 0)
 
           const total = (daySalary + obj.allowance + obj.overTime - obj.deduction - obj.lateFine || 0)
@@ -125,15 +127,11 @@ function Payout() {
             deduction: customData[staff.id][key]?.deduction + obj.deduction,
             lateFine: customData[staff.id][key]?.lateFine + obj.lateFine,
             total: +customData[staff.id][key]?.total + +total,
-            extraShiftAmount: +customData[staff.id][key]?.total + +extraShiftAmount,
-            halfShiftAmount: +customData[staff.id][key]?.total + +halfShiftAmount
+            extraShiftAmount: +customData[staff.id][key]?.extraShiftAmount + +extraShiftAmount,
+            halfShiftAmount: +customData[staff.id][key]?.halfShiftAmount + +halfShiftAmount
           }
         }
 
-        return {
-          id: doc.id,
-          ...data,
-        };
       });
       memoData.current = customData;
     } catch (error) {
@@ -143,10 +141,9 @@ function Payout() {
     }
   }
 
-  function onSelectStaff(id, date = `${String(new Date().getMonth() + 1).padStart(2, "0")}-${new Date().getFullYear()}`) {
-    console.log("🚀 ~ onSelectStaff ~ memoData.current[id][date]:", memoData.current[id]["02-2025"])
-    setSelectedData({ ...memoData.current[id][date], name: memoData.current[id].name, idNo: memoData.current[id].idNo })
-
+  function onSelectStaff(id, date = selectDate.current) {
+    setSelectedData({ id, ...memoData.current[id][date], name: memoData.current[id].name, idNo: memoData.current[id].idNo })
+    selectDate.current = date
   }
 
   useEffect(() => {
@@ -235,11 +232,11 @@ function Payout() {
               <input
                 type="month"
                 className=" input-tag w-96"
+                defaultValue={`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`}
                 onChange={(e) => {
                   const date = e.target.value.split("-");
-                  onSelectStaff(selectedData.idNo, `${date[1]}-${date[0]}`);
+                  onSelectStaff(selectedData.id, `${date[1]}-${date[0]}`);
                 }}
-                value={`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`}
               />
             </div>
           </div>
