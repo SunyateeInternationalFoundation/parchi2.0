@@ -64,7 +64,6 @@ function Staff() {
       setLoading(false);
     }
   }
-  console.log("staffData", staffData);
   useEffect(() => {
     fetchStaffData();
   }, [companyId]);
@@ -198,11 +197,10 @@ function Staff() {
                         onClick={(e) => e.stopPropagation()}
                       >
                         <div
-                          className={` text-center flex justify-center items-center h-8 overflow-hidden w-28  rounded-lg text-xs  ${
-                            staff.status === "Active"
+                          className={` text-center flex justify-center items-center h-8 overflow-hidden w-28  rounded-lg text-xs  ${staff.status === "Active"
                               ? "bg-green-100"
                               : "bg-red-100"
-                          }`}
+                            }`}
                         >
                           <Select
                             value={staff.status}
