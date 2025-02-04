@@ -16,16 +16,7 @@ function Payout() {
 
   })
 
-  const [selectedData, setSelectedData] = useState({
-    name: "",
-    idNo: "",
-    payout: 0,
-    allowance: 0,
-    overTime: 0,
-    deduction: 0,
-    lateFine: 0,
-    total: 0
-  })
+  const [selectedData, setSelectedData] = useState(null)
 
   async function fetchStaffData() {
     try {
@@ -113,12 +104,13 @@ function Payout() {
           }
 
           const obj = {
-            payout: customData[staff.id][key].payout + customData[staff.id].salaryPerDay,
+            payout: customData[staff.id][key]?.payout + customData[staff.id].salaryPerDay,
             allowance: +((staff?.adjustments?.allowance?.amount * staff?.adjustments?.allowance?.hours) || 0),
             overTime: +((staff?.adjustments?.overTime?.amount * staff?.adjustments?.overTime?.hours) || 0),
             deduction: +((staff?.adjustments?.deduction?.amount * staff?.adjustments?.deduction?.hours) || 0),
             lateFine: +((staff?.adjustments?.lateFine?.amount * staff?.adjustments?.lateFine?.hours) || 0),
           }
+          console.log("🚀 ~ staffAttendanceData.docs.forEach ~ obj:", obj)
 
           const daySalary = obj.payout * staff.shift;
 
@@ -129,13 +121,13 @@ function Payout() {
 
           customData[staff.id][key] = {
             payout: obj.payout,
-            allowance: customData[staff.id][key].allowance + obj.allowance,
-            overTime: customData[staff.id][key].overTime + obj.overTime,
-            deduction: customData[staff.id][key].deduction + obj.deduction,
-            lateFine: customData[staff.id][key].lateFine + obj.lateFine,
-            total: +customData[staff.id][key].total + +total,
-            extraShiftAmount: +customData[staff.id][key].total + +extraShiftAmount,
-            halfShiftAmount: +customData[staff.id][key].total + +halfShiftAmount
+            allowance: customData[staff.id][key]?.allowance + obj.allowance,
+            overTime: customData[staff.id][key]?.overTime + obj.overTime,
+            deduction: customData[staff.id][key]?.deduction + obj.deduction,
+            lateFine: customData[staff.id][key]?.lateFine + obj.lateFine,
+            total: +customData[staff.id][key]?.total + +total,
+            extraShiftAmount: +customData[staff.id][key]?.total + +extraShiftAmount,
+            halfShiftAmount: +customData[staff.id][key]?.total + +halfShiftAmount
           }
         }
 
@@ -152,8 +144,10 @@ function Payout() {
     }
   }
 
-  function onSelectStaff(id, date = "02-2025") {
+  function onSelectStaff(id, date = `${String(new Date().getMonth() + 1).padStart(2, "0")}-${new Date().getFullYear()}`) {
+    console.log("🚀 ~ onSelectStaff ~ memoData.current[id][date]:", memoData.current[id]["02-2025"])
     setSelectedData({ ...memoData.current[id][date], name: memoData.current[id].name, idNo: memoData.current[id].idNo })
+
   }
 
   useEffect(() => {
@@ -197,7 +191,7 @@ function Payout() {
                   staffData.map((staff) => (
                     <tr
                       key={staff.id}
-                      className={"border-b border-gray-200 text-center cursor-pointer " + (selectedData.idNo == staff.idNo && " bg-blue-100")}
+                      className={"border-b border-gray-200 text-center cursor-pointer " + (selectedData?.idNo == staff?.idNo && " bg-blue-100")}
                       onClick={() => {
                         onSelectStaff(staff.id)
                       }
@@ -230,18 +224,25 @@ function Payout() {
         )}
       </div>
       <div className="w-full flex justify-center overflow-y-auto  px-10 py-5" style={{ height: "82vh" }}>
-        <div className="w-full bg-white p-5  rounded-lg " >
-          <div>
-            <div className="text-2xl font-bold">{selectedData?.name}</div>
-            <div className="text-gray-500">IdNo:{selectedData?.idNo}</div>
-          </div>
-          <div className="w-full py-5 flex justify-center ">
-            <input
-              type="month"
-              className=" input-tag w-96"
-              onChange={(e) => { }
-              }
-            />
+        {selectedData && <div className="w-full bg-white p-5  rounded-lg " >
+          <div className="flex items-center w-full">
+            <div className="w-full">
+              <div className="text-2xl font-bold">{selectedData?.name}
+              </div>
+              <div className="text-gray-500 text-sm">IdNo: {selectedData?.idNo}</div>
+            </div>
+
+            <div className="w-full py-3 flex justify-center ">
+              <input
+                type="month"
+                className=" input-tag w-96"
+                onChange={(e) => {
+                  const date = e.target.value.split("-");
+                  onSelectStaff(selectedData.idNo, `${date[1]}-${date[0]}`);
+                }}
+                value={`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`}
+              />
+            </div>
           </div>
           <div className="w-full">
             <h2 className="text-lg font-semibold mb-2">Recent Transactions (+)</h2>
@@ -254,12 +255,12 @@ function Payout() {
                 <span>Allowance</span>
                 <span>{selectedData.allowance?.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between py-3">
+              <div className="flex justify-between py-3 border-b">
                 <span>Overtime Payment</span>
                 <span>{selectedData.overTime?.toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-3">
-                <span>extraShiftAmount</span>
+                <span>Extra Shift Amount</span>
                 <span>{selectedData.extraShiftAmount?.toFixed(2)}</span>
               </div>
             </div>
@@ -275,7 +276,7 @@ function Payout() {
                 <span>{selectedData.lateFine?.toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-3 border-b">
-                <span>halfShiftAmount</span>
+                <span>Half Shift Amount</span>
                 <span>{selectedData.halfShiftAmount?.toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-3 font-semibold text-2xl">
@@ -284,7 +285,7 @@ function Payout() {
               </div>
             </div>
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   );
