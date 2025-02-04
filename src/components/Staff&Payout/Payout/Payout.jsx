@@ -1,5 +1,5 @@
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { db } from "../../../firebase";
 
@@ -7,10 +7,26 @@ import { db } from "../../../firebase";
 function Payout() {
   const [loading, setLoading] = useState(!true);
   const [staffData, setStaffData] = useState([]);
+  const [attendance, setAttendance] = useState([]);
   const userDetails = useSelector((state) => state.users);
   const companyId =
-    userDetails.companies[userDetails.selectedCompanyIndex].companyId
-  const [memoData, setMemoData] = useState({})
+    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+
+  const memoData = useRef({
+
+  })
+
+  const [selectedData, setSelectedData] = useState({
+    name: "",
+    idNo: "",
+    payout: 0,
+    allowance: 0,
+    overTime: 0,
+    deduction: 0,
+    lateFine: 0,
+    total: 0
+  })
+
   async function fetchStaffData() {
     try {
       setLoading(true);
@@ -33,6 +49,24 @@ function Payout() {
     }
   }
 
+  function DateFormate(timestamp) {
+    if (!timestamp) {
+      return;
+    }
+    const milliseconds =
+      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
+    const date = new Date(milliseconds);
+    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
+    const getFullYear = date.getFullYear();
+
+    return `${getMonth}-${getFullYear}`;
+  }
+
+  function getDaysInMonth(year, month) {
+    // Month is 0-indexed in JavaScript (0 = January, 11 = December)
+    return new Date(year, month + 1, 0).getDate();
+  }
+
   async function fetchStaffAttendance() {
     setLoading(true);
 
@@ -44,35 +78,103 @@ function Payout() {
         "staffAttendance"
       );
       const staffAttendanceData = await getDocs(staffAttendanceRef);
-      const staffAttendance = staffAttendanceData.docs.map((doc) => {
-        const data = doc.data();
+      let customData = {}
+      staffAttendanceData.docs.forEach((doc) => {
+        const { date, staffs, ...data } = doc.data();
+        for (let staff of staffs) {
+          const key = DateFormate(date);
+
+          if (!customData[staff.id]) {
+            const staffDetails = staffData.find(ele => ele.id == staff.id)
+            const monthYear = key.split("-")
+            let salaryPerDay = +staffDetails.paymentDetails;
+            if (!staffDetails.isDailyWages) {
+              salaryPerDay = +staffDetails.paymentDetails / getDaysInMonth(monthYear[1], monthYear[0] - 1);
+            }
+            customData[staff.id] = {
+              name: staffDetails.name,
+              idNo: staffDetails.idNo,
+              paymentDetails: +staffDetails.paymentDetails,
+              isDailyWages: staffDetails.isDailyWages,
+              salaryPerDay,
+              [key]: {
+                payout: 0,
+                allowance: 0,
+                overTime: 0,
+                deduction: 0,
+                lateFine: 0,
+                total: 0
+              }
+            }
+          }
+
+          if (staff.status == "absent") {
+            return
+          }
+
+          const obj = {
+            payout: customData[staff.id][key].payout + customData[staff.id].salaryPerDay,
+            allowance: +((staff?.adjustments?.allowance?.amount * staff?.adjustments?.allowance?.hours) || 0),
+            overTime: +((staff?.adjustments?.overTime?.amount * staff?.adjustments?.overTime?.hours) || 0),
+            deduction: +((staff?.adjustments?.deduction?.amount * staff?.adjustments?.deduction?.hours) || 0),
+            lateFine: +((staff?.adjustments?.lateFine?.amount * staff?.adjustments?.lateFine?.hours) || 0),
+          }
+
+          const daySalary = obj.payout * staff.shift;
+
+          const extraShiftAmount = (staff.shift !== 0.5 ? daySalary - obj.payout : 0)
+          const halfShiftAmount = (staff.shift == 0.5 ? obj.payout / 2 : 0)
+
+          const total = (daySalary + obj.allowance + obj.overTime - obj.deduction - obj.lateFine || 0)
+
+          customData[staff.id][key] = {
+            payout: obj.payout,
+            allowance: customData[staff.id][key].allowance + obj.allowance,
+            overTime: customData[staff.id][key].overTime + obj.overTime,
+            deduction: customData[staff.id][key].deduction + obj.deduction,
+            lateFine: customData[staff.id][key].lateFine + obj.lateFine,
+            total: +customData[staff.id][key].total + +total,
+            extraShiftAmount: +customData[staff.id][key].total + +extraShiftAmount,
+            halfShiftAmount: +customData[staff.id][key].total + +halfShiftAmount
+          }
+        }
+
         return {
           id: doc.id,
           ...data,
         };
       });
-      console.log("🚀 ~ staffAttendance ~ staffAttendance:", staffAttendance)
+      memoData.current = customData;
     } catch (error) {
       console.log("🚀 ~ fetchStaffData ~ error:", error);
     } finally {
       setLoading(false);
     }
   }
+
+  function onSelectStaff(id, date = "02-2025") {
+    setSelectedData({ ...memoData.current[id][date], name: memoData.current[id].name, idNo: memoData.current[id].idNo })
+  }
+
   useEffect(() => {
     fetchStaffData();
-    fetchStaffAttendance();
-  }, [companyId]);
+  }, []);
+
+  useEffect(() => {
+    if (staffData.length > 0) {
+      fetchStaffAttendance();
+    }
+  }, [staffData])
 
 
 
   return (
-    <div className="flex bg-white overflow-hidden" style={{ height: "82vh" }}>
-      <div className="border-r w-3/4 ">
-        <div className="text-2xl font-bold px-5 " style={{ height: "4vh" }}>Staff</div>
+    <div className="flex  overflow-hidden" style={{ height: "82vh" }}>
+      <div className="border-r w-3/4 bg-white pt-5">
         {loading ? (
           <div className="text-center py-6">Loading Expenses...</div>
         ) : (
-          <div className="overflow-y-auto border-t" style={{ height: "78vh" }}>
+          <div className="overflow-y-auto border-t" style={{ height: "80vh" }}>
             <table className="w-full border-collapse text-start">
               <thead className=" bg-white">
                 <tr className="border-b">
@@ -85,6 +187,9 @@ function Payout() {
                   <td className="px-5 py-1 text-gray-400 font-semibold text-center">
                     Mobile
                   </td>
+                  <td className="px-5 py-1 text-gray-400 font-semibold text-center">
+                    Salary
+                  </td>
                 </tr>
               </thead>
               <tbody>
@@ -92,8 +197,10 @@ function Payout() {
                   staffData.map((staff) => (
                     <tr
                       key={staff.id}
-                      className="border-b border-gray-200 text-center cursor-pointer"
-                      onClick={() => { }
+                      className={"border-b border-gray-200 text-center cursor-pointer " + (selectedData.idNo == staff.idNo && " bg-blue-100")}
+                      onClick={() => {
+                        onSelectStaff(staff.id)
+                      }
                       }
                     >
                       <td className="px-8 py-4 text-start w-24">
@@ -104,6 +211,9 @@ function Payout() {
                       </td>
                       <td className="px-5 py-4 ">
                         {staff.phone}
+                      </td>
+                      <td className="px-5 py-4 ">
+                        {staff.paymentDetails}{staff.isDailyWages ? "/perDay" : "/perMonth"}
                       </td>
                     </tr>
                   ))
@@ -119,8 +229,12 @@ function Payout() {
           </div>
         )}
       </div>
-      <div className="w-full flex justify-center overflow-y-auto" style={{ height: "82vh" }}>
-        <div className="w-full px-20">
+      <div className="w-full flex justify-center overflow-y-auto  px-10 py-5" style={{ height: "82vh" }}>
+        <div className="w-full bg-white p-5  rounded-lg " >
+          <div>
+            <div className="text-2xl font-bold">{selectedData?.name}</div>
+            <div className="text-gray-500">IdNo:{selectedData?.idNo}</div>
+          </div>
           <div className="w-full py-5 flex justify-center ">
             <input
               type="month"
@@ -134,31 +248,39 @@ function Payout() {
             <div className=" mb-4">
               <div className="flex justify-between py-3 border-b">
                 <span>Payout</span>
-                <span>0</span>
+                <span>{selectedData.payout?.toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-3 border-b">
                 <span>Allowance</span>
-                <span>0</span>
+                <span>{selectedData.allowance?.toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-3">
                 <span>Overtime Payment</span>
-                <span>0</span>
+                <span>{selectedData.overTime?.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between py-3">
+                <span>extraShiftAmount</span>
+                <span>{selectedData.extraShiftAmount?.toFixed(2)}</span>
               </div>
             </div>
 
-            <h2 className="text-lg font-semibold mb-2">Deductions (-)</h2>
+            <h2 className="text-lg font-semibold mb-2">Deduction (-)</h2>
             <div className="">
               <div className="flex justify-between py-2 border-b">
-                <span>Deductions</span>
-                <span>0</span>
+                <span>Deduction</span>
+                <span>{selectedData.deduction?.toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-3 border-b">
-                <span>Late fine</span>
-                <span>0</span>
+                <span>Late Fine</span>
+                <span>{selectedData.lateFine?.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between py-3 border-b">
+                <span>halfShiftAmount</span>
+                <span>{selectedData.halfShiftAmount?.toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-3 font-semibold text-2xl">
                 <span>Total</span>
-                <span>0</span>
+                <span>{selectedData.total?.toFixed(2)}</span>
               </div>
             </div>
           </div>
