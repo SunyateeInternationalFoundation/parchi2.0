@@ -1,6 +1,6 @@
 import { Timestamp } from "firebase/firestore";
 import React from "react";
-function Template3Inch() {
+function Template3Inch({ dataSet1, bankDetails1 }) {
   const date = Timestamp.fromDate(new Date());
   const dataSet = {
     id: "OHo4nmA95a0xPkRR88b5",
@@ -179,10 +179,10 @@ function Template3Inch() {
         <p className="flex justify-start">
           <span className="font-semibold">Bank Details</span>
         </p>
-        <p>Bank : {}</p>
-        <p>Account : {}</p>
-        <p>IFSC Code : {}</p>
-        <p>Branch : {}</p>
+        <p>Bank : { }</p>
+        <p>Account : { }</p>
+        <p>IFSC Code : { }</p>
+        <p>Branch : { }</p>
       </div>
 
       {/* Authorized Signature Section */}

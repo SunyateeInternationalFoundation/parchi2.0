@@ -168,7 +168,7 @@ function Expense() {
     try {
       if (!window.confirm("Are you sure you want to delete this expense?"))
         return;
-
+  
       const expenseRef = doc(db, "companies", companyId, "expenses", expenseId);
       await deleteDoc(expenseRef);
       await addDoc(collection(db, "companies", companyId, "audit"), {
@@ -179,6 +179,7 @@ function Expense() {
         description: `${type} deleted`,
       });
       setExpenses((prev) => prev.filter((expense) => expense.id !== expenseId));
+      fetchExpenses();
     } catch (error) {
       console.log("🚀 ~ onDeleteExpense ~ error:", error);
     }

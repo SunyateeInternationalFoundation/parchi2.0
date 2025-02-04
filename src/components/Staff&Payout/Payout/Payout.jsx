@@ -54,7 +54,6 @@ function Payout() {
   }
 
   function getDaysInMonth(year, month) {
-    // Month is 0-indexed in JavaScript (0 = January, 11 = December)
     return new Date(year, month + 1, 0).getDate();
   }
 

@@ -96,7 +96,7 @@ const AllLogs = () => {
             <div className="overflow-y-auto" style={{ minHeight: "80vh" }}>
               <table className="w-full border-collapse text-start">
                 <thead className=" bg-white">
-                  <tr className="border-b">
+                  <tr className="border-b grid grid-cols-4">
                     <td className="px-8 py-1 text-gray-400 font-semibold text-start">
                       Date
                     </td>
@@ -116,7 +116,7 @@ const AllLogs = () => {
                     paginationData.map((logs) => (
                       <tr
                         key={logs.id}
-                        className="border-b border-gray-200 text-center cursor-pointer"
+                        className="border-b border-gray-200 text-center cursor-pointer grid grid-cols-4"
                       >
                         <td className="px-8 py-3 text-start">
                           <FormatTimestamp timestamp={logs.date} />
