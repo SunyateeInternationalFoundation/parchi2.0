@@ -1,9 +1,11 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   getDocs,
   query,
+  serverTimestamp,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -147,7 +149,16 @@ const Stocks = ({ projectDetails }) => {
     try {
       if (!window.confirm("Are you sure you want to delete this stock?"))
         return;
-      await deleteDoc(doc(db, "companies", companyId, "stocks", stockId));
+
+      const stockRef = doc(db, "companies", companyId, "stocks", stockId);
+      await deleteDoc(stockRef);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: stockRef,
+        date: serverTimestamp(),
+        section: "Inventory",
+        action: "Delete",
+        description: `${isModalOpen.type} deleted from stocks`,
+      });
       setStocks((prev) => prev.filter((stock) => stock.id !== stockId));
     } catch (error) {
       console.log("🚀 ~ onDeleteStock ~ error:", error);

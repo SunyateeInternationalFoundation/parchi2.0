@@ -5,6 +5,7 @@ import {
   doc,
   getDocs,
   query,
+  serverTimestamp,
   Timestamp,
   updateDoc,
   where,
@@ -102,16 +103,30 @@ const Branches = () => {
       )
     );
   };
-  async function OnDeleteBranch(e, branchId) {
+  async function OnDeleteBranch(e, branchId, name) {
     e.stopPropagation();
     try {
       const confirm = window.confirm(
         "Are you sure you want to delete this Branch?"
       );
       if (!confirm) return;
-
-      await deleteDoc(doc(db, "branches", branchId));
-
+      const ref = doc(db, "branches", branchId);
+      await deleteDoc(ref);
+      await addDoc(
+        collection(
+          db,
+          "companies",
+          userDetails?.companies[userDetails.selectedCompanyIndex]?.companyId,
+          "audit"
+        ),
+        {
+          ref: ref,
+          date: serverTimestamp(),
+          section: "Staff&Payout",
+          action: "Delete",
+          description: `${name} branch deleted`,
+        }
+      );
       setBranches((prev) => {
         const updatedBranches = prev.filter((branch) => branch.id !== branchId);
 
@@ -207,7 +222,9 @@ const Branches = () => {
                         >
                           <div
                             className="text-red-500 flex items-center justify-end"
-                            onClick={() => OnDeleteBranch(branch.id)}
+                            onClick={() =>
+                              OnDeleteBranch(branch.id, branch.branchName)
+                            }
                           >
                             <RiDeleteBin6Line />
                           </div>
@@ -328,6 +345,13 @@ const AddBranchModal = ({
         companyRef: companyRef,
       };
       let branchRef;
+      let payloadLog = {
+        ref: branchRef,
+        date: serverTimestamp(),
+        section: "Staff&Payout",
+        action: "Create",
+        description: `${branchName} branch created`,
+      };
       if (editBranch?.id) {
         branchRef = doc(db, "branches", editBranch.id);
 
@@ -335,6 +359,9 @@ const AddBranchModal = ({
           updatedAt: Timestamp.fromDate(new Date()),
           ...payload,
         });
+        payloadLog.ref = branchRef;
+        payloadLog.action = "Update";
+        payloadLog.description = `${branchName} branch updated`;
         handleEditBranch({ id: branchRef.id, ...payload });
       } else {
         branchRef = await addDoc(collection(db, "branches"), {
@@ -346,7 +373,9 @@ const AddBranchModal = ({
           createdAt: Timestamp.fromDate(new Date()),
           ...payload,
         });
+        payloadLog.ref = branchRef;
       }
+      await addDoc(collection(db, "companies", companyId, "audit"), payloadLog);
       alert("Branch successfully created!");
       setFormData({
         branchName: "",

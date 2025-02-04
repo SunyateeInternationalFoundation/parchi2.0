@@ -3,6 +3,7 @@ import {
   collection,
   doc,
   getDocs,
+  serverTimestamp,
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
@@ -91,29 +92,44 @@ function TransferSidebar({
         name: productDetails.name,
         who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
       };
+      let transferLog = {
+        ref: "",
+        date: serverTimestamp(),
+        section: "Inventory",
+        action: "Create",
+        description: "",
+      };
+
       let docId = "";
       if (updateData?.id) {
         docId = updateData?.id;
-        await updateDoc(
-          doc(
-            db,
-            "companies",
-            companyId,
-            "products",
-            id,
-            "transfers",
-            updateData.id
-          ),
-          payload
+        const tranRef = doc(
+          db,
+          "companies",
+          companyId,
+          "products",
+          id,
+          "transfers",
+          updateData.id
         );
+        await updateDoc(tranRef, payload);
+        transferLog.ref = tranRef;
+        transferLog.action = "Update";
+        transferLog.description = `${formData.name} transfer updated`;
       } else {
         const newDocRef = await addDoc(
           collection(db, "companies", companyId, "products", id, "transfers"),
           payload
         );
         docId = newDocRef.id;
+        transferLog.ref = newDocRef;
+        transferLog.action = "Create";
+        transferLog.description = `${formData.name} transfer created`;
       }
-
+      await addDoc(
+        collection(db, "companies", companyId, "audit"),
+        transferLog
+      );
       alert(`successfully  ${updateData?.id ? "Edit " : "Create "} `);
       ResetForm({ id: docId, ...payload });
       refresh();

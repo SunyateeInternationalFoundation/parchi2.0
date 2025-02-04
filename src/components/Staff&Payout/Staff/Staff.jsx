@@ -1,9 +1,11 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   getDocs,
   query,
+  serverTimestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -88,13 +90,21 @@ function Staff() {
     navigate("staff/" + staffId);
   }
 
-  const handleDeleteStaff = async (staffId) => {
+  const handleDeleteStaff = async (staffId, name) => {
     try {
       const confirmDelete = window.confirm(
         "Are you sure you want to delete this Staff?"
       );
       if (!confirmDelete) return;
-      await deleteDoc(doc(db, "staff", staffId));
+      const staffRef = doc(db, "staff", staffId);
+      await deleteDoc(staffRef);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: staffRef,
+        date: serverTimestamp(),
+        section: "Staff&Payout",
+        action: "Delete",
+        description: `${name} staff deleted`,
+      });
       fetchStaffData();
     } catch (error) {
       console.log("🚀 ~ handleDeleteStaff ~ error:", error);
@@ -104,7 +114,15 @@ function Staff() {
   const handleStatusChange = async (staffId, newStatus) => {
     try {
       const invoiceDoc = doc(db, "staff", staffId);
+      const data = staffData.find((d) => d.id === staffId);
       await updateDoc(invoiceDoc, { status: newStatus });
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: invoiceDoc,
+        date: serverTimestamp(),
+        section: "Staff&Payout",
+        action: "Update",
+        description: `${data.name} staff status updated`,
+      });
       setStaffData((prevData) =>
         prevData.map((staff) =>
           staff.id === staffId ? { ...staff, status: newStatus } : staff
@@ -229,7 +247,7 @@ function Staff() {
                           className="text-red-500 flex items-center justify-center"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDeleteStaff(staff.id);
+                            handleDeleteStaff(staff.id, staff.name);
                           }}
                         >
                           <RiDeleteBin6Line />

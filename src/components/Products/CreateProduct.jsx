@@ -5,6 +5,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  serverTimestamp,
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
@@ -141,6 +142,14 @@ function CreateProduct() {
     }
 
     try {
+      let productLogs = {
+        ref: "",
+        date: serverTimestamp(),
+        section: "Inventory",
+        action: "Create",
+        description: `${name} created on inventory`,
+      };
+
       if (productId) {
         const productDocRef = doc(
           db,
@@ -169,6 +178,8 @@ function CreateProduct() {
           ref: productDocRef,
         };
         await addDoc(collection(productDocRef, "logs"), productPayloadLogs);
+        productLogs.action = "Update";
+        productLogs.description = `${name} product updated`;
         alert("Product successfully updated.");
       } else {
         let productImageUrl = "";
@@ -219,7 +230,13 @@ function CreateProduct() {
           productPayloadLogs
         );
         alert("Product successfully created.");
+        productLogs.action = "Create";
+        productLogs.description = `${name} product created`;
       }
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        productLogs
+      );
       navigate("/products");
     } catch (error) {
       console.log("🚀 ~ onCreateProduct ~ error:", error);

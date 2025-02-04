@@ -1,6 +1,16 @@
-import { addDoc, collection, Timestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  serverTimestamp,
+  Timestamp,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { CalendarIcon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { db } from "../../../firebase";
 import { formatDate } from "../../../lib/utils";
@@ -13,33 +23,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../UI/select";
-import { doc, getDocs, query, where } from "firebase/firestore";
 
-function SidebarLoans({ isOpen, onClose, onAddLoan, companyId }) {
+function SidebarLoans({
+  isOpen,
+  onClose,
+  onAddLoan,
+  companyId,
+  loanDataToEdit,
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const [staffData, setStaffData] = useState([]);
   const [formData, setFormData] = useState({
     staff: "",
-    date: null, // Will hold the selected date
+    date: Timestamp.fromDate(new Date()),
     amount: "",
-    financialOption: "Loans", // Default value
-    paymentSchedule: "Month", // Default value
+    financialOption: "Loans",
+    paymentSchedule: "Month",
   });
 
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   useEffect(() => {
-    // Set the default date to today if no date is selected
-    if (!formData.date) {
-      setFormData((prev) => ({
-        ...prev,
-        date: Timestamp.fromDate(new Date()), // Default to current date
-      }));
+    if (loanDataToEdit?.id) {
+      setFormData(loanDataToEdit);
     }
-  }, []); // Empty dependency array ensures this runs once when the component mounts
+  }, [loanDataToEdit?.id, staffData]);
 
   useEffect(() => {
-    // Fetch staff data when the component mounts
     async function fetchStaffData() {
       try {
         const companyRef = doc(db, "companies", companyId);
@@ -56,35 +66,58 @@ function SidebarLoans({ isOpen, onClose, onAddLoan, companyId }) {
       }
     }
     fetchStaffData();
-  }, [companyId]);
+  }, []);
 
-  const onCreateLoan = async (e) => {
+  const onSaveLoan = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // Validate the required fields
       if (!formData.staff || !formData.amount || !formData.financialOption) {
         alert("Please fill all required fields");
         setIsLoading(false);
         return;
       }
 
+      // Prepare payload
       const payload = {
         ...formData,
         createdAt: Timestamp.fromDate(new Date()), // Store creation timestamp
       };
+      const payloadLog = {
+        ref: "",
+        date: serverTimestamp(),
+        section: "Staff&Payout",
+        action: "Create",
+        description: `${formData.staff} staff loan created`,
+      };
 
-      // Add the loan data to the Firestore
-      const loanRef = await addDoc(
-        collection(db, "companies", companyId, "loans"),
-        payload
-      );
-
-      onAddLoan({ id: loanRef.id, ...payload }); // Pass the new loan data
-      alert("Successfully added!");
-
-      // Reset form data
+      if (loanDataToEdit) {
+        // Update existing loan record
+        const loanRef = doc(
+          db,
+          "companies",
+          companyId,
+          "loans",
+          loanDataToEdit.id
+        );
+        await updateDoc(loanRef, payload); // Update the loan in the database
+        payloadLog.ref = loanRef;
+        payloadLog.action = "Update";
+        payloadLog.description = `${formData.staff} staff loan updated`;
+        alert("Loan successfully updated!");
+      } else {
+        // Add new loan record
+        const loanRef = await addDoc(
+          collection(db, "companies", companyId, "loans"),
+          payload
+        );
+        payloadLog.ref = loanRef;
+        onAddLoan({ id: loanRef.id, ...payload }); // Pass the new loan data back
+        alert("Loan successfully added!");
+      }
+      await addDoc(collection(db, "companies", companyId, "audit"), payloadLog);
+      // Reset form data after successful operation
       setFormData({
         staff: "",
         date: Timestamp.fromDate(new Date()), // Reset to today's date
@@ -92,10 +125,11 @@ function SidebarLoans({ isOpen, onClose, onAddLoan, companyId }) {
         financialOption: "Loans", // Reset to default
         paymentSchedule: "Month", // Reset to default
       });
-      onClose(); // Close the sidebar
+
+      onClose(); // Close the sidebar after saving
     } catch (error) {
-      console.error("Error adding loan:", error);
-      alert("Failed to add loan. Please try again.");
+      console.error("Error adding/updating loan:", error);
+      alert("Failed to add/update loan. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -117,7 +151,9 @@ function SidebarLoans({ isOpen, onClose, onAddLoan, companyId }) {
       >
         {/* Header */}
         <div className="flex justify-between items-center border-b px-6 py-5">
-          <h2 className="text-lg font-semibold">Loans & Deductions</h2>
+          <h2 className="text-lg font-semibold">
+            {loanDataToEdit ? "Edit Loan" : "Add Loan"}
+          </h2>
           <button
             onClick={onClose}
             className="text-2xl text-gray-500 hover:text-gray-800"
@@ -128,7 +164,7 @@ function SidebarLoans({ isOpen, onClose, onAddLoan, companyId }) {
 
         {/* Form */}
         <form
-          onSubmit={onCreateLoan}
+          onSubmit={onSaveLoan}
           className="p-6 space-y-6 overflow-y-auto"
           style={{ maxHeight: "calc(100vh - 120px)" }}
         >
@@ -285,11 +321,17 @@ function SidebarLoans({ isOpen, onClose, onAddLoan, companyId }) {
         {/* Bottom Button */}
         <div className="border-t bg-white p-6 fixed bottom-0 w-full shadow-lg">
           <button
-            type="submit"
-            onClick={onCreateLoan}
+            type="button" // Use 'button' instead of 'submit' to prevent form submission behavior
+            onClick={onSaveLoan}
             className="w-full btn-add"
           >
-            {isLoading ? "Adding..." : "Add Loan"}
+            {
+              isLoading
+                ? "Saving..."
+                : loanDataToEdit
+                ? "Save Changes" // Display Save Changes if editing an existing loan
+                : "Add Loan" // Display Add Loan if adding a new loan
+            }
           </button>
         </div>
       </div>

@@ -58,7 +58,7 @@ function Users() {
 
       if (projectSnapshot.exists()) {
         const projectData = projectSnapshot.data();
-
+        console.log("project", projectData);
         const customerRef = projectData.customerRef || [];
         const vendorRef = projectData.vendorRef || [];
         const staffRef = projectData.staffRef || [];
@@ -300,6 +300,7 @@ function Users() {
               customerRef: projectDetails.customerRef,
               vendorRef: projectDetails.vendorRef,
               staffRef: projectDetails.staffRef,
+              name: projectDetails.name,
             }}
             onClose={() => {
               setIsSideBarOpen(false);

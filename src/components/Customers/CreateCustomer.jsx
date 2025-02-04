@@ -17,7 +17,13 @@ import {
   updateCustomerDetails,
 } from "../../store/CustomerSlice";
 
-const CreateCustomer = ({ isOpen, onClose, onCustomerAdded, customerData }) => {
+const CreateCustomer = ({
+  isOpen,
+  onClose,
+  customerData,
+  onCustomerAdded,
+  refresh,
+}) => {
   const userDetails = useSelector((state) => state.users);
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
@@ -137,6 +143,7 @@ const CreateCustomer = ({ isOpen, onClose, onCustomerAdded, customerData }) => {
         collection(db, "companies", companyId, "audit"),
         customerLogs
       );
+      refresh();
       setFileName("");
       onClose();
       onCustomerAdded();

@@ -95,8 +95,7 @@ const InvoiceList = () => {
     try {
       const invoiceDoc = doc(db, "companies", companyId, "invoices", invoiceId);
       const data = invoices.find((d) => d.id === invoiceId);
-      console.log("data", data);
-      console.log("invoiceDoc", invoiceDoc);
+
       await updateDoc(invoiceDoc, { paymentStatus: newStatus });
       await addDoc(collection(db, "companies", companyId, "audit"), {
         ref: invoiceDoc,
@@ -227,8 +226,8 @@ const InvoiceList = () => {
           (value === "Paid"
             ? "bg-green-100"
             : value === "Pending"
-            ? "bg-yellow-100"
-            : "bg-red-100");
+              ? "bg-yellow-100"
+              : "bg-red-100");
         select.onchange = async (e) => {
           const newStatus = e.target.value;
           await handleStatusChange(
@@ -373,13 +372,13 @@ const InvoiceList = () => {
                     <div className="w-full flex justify-center">
                       {(userDetails.selectedDashboard === "" ||
                         role?.create) && (
-                        <Link
-                          className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-                          to="create-invoice"
-                        >
-                          + Create Invoice
-                        </Link>
-                      )}
+                          <Link
+                            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                            to="create-invoice"
+                          >
+                            + Create Invoice
+                          </Link>
+                        )}
                     </div>
                   </div>
                 )}

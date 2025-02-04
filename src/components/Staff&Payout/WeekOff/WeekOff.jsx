@@ -1,21 +1,23 @@
 import {
+  addDoc,
   collection,
   doc,
   getDocs,
   query,
+  serverTimestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { db } from "../../../firebase";
-import { updateCompanyDetails } from "../../../store/UserSlice";
 import {
   LuChevronLeft,
   LuChevronRight,
   LuChevronsLeft,
   LuChevronsRight,
 } from "react-icons/lu";
+import { useDispatch, useSelector } from "react-redux";
+import { db } from "../../../firebase";
+import { updateCompanyDetails } from "../../../store/UserSlice";
 
 const WeekOff = () => {
   const [selectedWeekDays, setSelectedWeekDays] = useState([]);
@@ -82,7 +84,18 @@ const WeekOff = () => {
 
   async function onSubmitWeekOff(staff) {
     try {
-      await updateDoc(doc(db, "staff", staff.id), { weekOff: staff.weekOff });
+      const ref = doc(db, "staff", staff.id);
+      await updateDoc(ref, { weekOff: staff.weekOff });
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        {
+          ref: ref,
+          date: serverTimestamp(),
+          section: "Staff&Payout",
+          action: "Update",
+          description: `staff weekoff updated`,
+        }
+      );
       setTempStaff((val) => ({ ...val, [staff.id]: staff.weekOff }));
     } catch (error) {
       console.log("🚀 ~ onSubmitWeekOff ~ error:", error);
@@ -92,7 +105,18 @@ const WeekOff = () => {
   async function onSubmitCompanyWeekOff() {
     try {
       const payload = { weekOff: selectedWeekDays };
-      await updateDoc(doc(db, "companies", companyDetails.companyId), payload);
+      const ref = doc(db, "companies", companyDetails.companyId);
+      await updateDoc(ref, payload);
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        {
+          ref: ref,
+          date: serverTimestamp(),
+          section: "Staff&Payout",
+          action: "Update",
+          description: `company weekoff updated`,
+        }
+      );
       dispatch(
         updateCompanyDetails({ ...companyDetails, weekOff: selectedWeekDays })
       );
@@ -119,9 +143,20 @@ const WeekOff = () => {
 
   async function onChangeIsCalendarMonth(value) {
     try {
-      await updateDoc(doc(db, "companies", companyDetails.companyId), {
+      const ref = doc(db, "companies", companyDetails.companyId);
+      await updateDoc(ref, {
         isCalendarMonth: value,
       });
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        {
+          ref: ref,
+          date: serverTimestamp(),
+          section: "Staff&Payout",
+          action: "Update",
+          description: `calender updated`,
+        }
+      );
       setIsCalendarMonth(value);
       dispatch(
         updateCompanyDetails({ ...companyDetails, isCalendarMonth: value })
@@ -289,50 +324,50 @@ const WeekOff = () => {
               ))}
             </div>
             <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
-            <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
-              {currentPage + 1} of {totalPages || 1} row(s) selected.
-            </div>
-            <div className="flex flex-wrap items-center gap-6">
-              <div className="flex items-center gap-2">
-                <button
-                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                  onClick={() => setCurrentPage(0)}
-                  disabled={currentPage <= 0}
-                >
-                  <div className="flex justify-center">
-                    <LuChevronsLeft className="text-sm" />
-                  </div>
-                </button>
-                <button
-                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                  onClick={() => setCurrentPage((val) => val - 1)}
-                  disabled={currentPage <= 0}
-                >
-                  <div className="flex justify-center">
-                    <LuChevronLeft className="text-sm" />
-                  </div>
-                </button>
-                <button
-                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                  onClick={() => setCurrentPage((val) => val + 1)}
-                  disabled={currentPage + 1 >= totalPages}
-                >
-                  <div className="flex justify-center">
-                    <LuChevronRight className="text-sm" />
-                  </div>
-                </button>
-                <button
-                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                  onClick={() => setCurrentPage(totalPages - 1)}
-                  disabled={currentPage + 1 >= totalPages}
-                >
-                  <div className="flex justify-center">
-                    <LuChevronsRight />
-                  </div>
-                </button>
+              <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+                {currentPage + 1} of {totalPages || 1} row(s) selected.
+              </div>
+              <div className="flex flex-wrap items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <button
+                    className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                    onClick={() => setCurrentPage(0)}
+                    disabled={currentPage <= 0}
+                  >
+                    <div className="flex justify-center">
+                      <LuChevronsLeft className="text-sm" />
+                    </div>
+                  </button>
+                  <button
+                    className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                    onClick={() => setCurrentPage((val) => val - 1)}
+                    disabled={currentPage <= 0}
+                  >
+                    <div className="flex justify-center">
+                      <LuChevronLeft className="text-sm" />
+                    </div>
+                  </button>
+                  <button
+                    className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                    onClick={() => setCurrentPage((val) => val + 1)}
+                    disabled={currentPage + 1 >= totalPages}
+                  >
+                    <div className="flex justify-center">
+                      <LuChevronRight className="text-sm" />
+                    </div>
+                  </button>
+                  <button
+                    className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                    onClick={() => setCurrentPage(totalPages - 1)}
+                    disabled={currentPage + 1 >= totalPages}
+                  >
+                    <div className="flex justify-center">
+                      <LuChevronsRight />
+                    </div>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
           </div>
         )}
 

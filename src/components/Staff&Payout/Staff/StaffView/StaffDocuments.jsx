@@ -5,11 +5,11 @@ import {
   doc,
   getDocs,
   query,
+  serverTimestamp,
   Timestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
-import { IoSearch } from "react-icons/io5";
 import {
   deleteObject,
   getDownloadURL,
@@ -23,9 +23,13 @@ import {
   AiOutlineFile,
 } from "react-icons/ai";
 import { HiDotsVertical } from "react-icons/hi";
+import { useSelector } from "react-redux";
 import { db, storage } from "../../../../firebase";
 
 const StaffDocuments = (StaffData) => {
+  const userDetails = useSelector((state) => state.users);
+  const companyId =
+    userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   const staffId = StaffData?.staffData?.id;
   const [folders, setFolders] = useState([]);
   const [files, setFiles] = useState([]);
@@ -33,7 +37,7 @@ const StaffDocuments = (StaffData) => {
   const [currentFolder, setCurrentFolder] = useState(null);
   const [folderName, setFolderName] = useState("New Folder");
   const [countOfNewFolder, setCountOfNewFolder] = useState(0);
-const [searchTerm, setSearchTerm] = useState(""); // Add state for search term
+  const [searchTerm, setSearchTerm] = useState(""); // Add state for search term
   const [isLoading, setIsLoading] = useState(false);
   const [pathnames, setPathnames] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(null);
@@ -112,6 +116,13 @@ const [searchTerm, setSearchTerm] = useState(""); // Add state for search term
         parentId: currentFolder?.id || null,
         createdAt: Timestamp.now(),
       });
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: folderRef,
+        date: serverTimestamp(),
+        section: "Staff&Payout",
+        action: "Create",
+        description: `${folderName} folder created`,
+      });
       setEditingItem(folderRef.id);
       const newFolder = {
         id: folderRef.id,
@@ -172,6 +183,13 @@ const [searchTerm, setSearchTerm] = useState(""); // Add state for search term
               collection(staffRef, "files"),
               fileData
             );
+            await addDoc(collection(db, "companies", companyId, "audit"), {
+              ref: fileRef,
+              date: serverTimestamp(),
+              section: "Staff&Payout",
+              action: "Create",
+              description: `${fileData.name} file uploaded`,
+            });
             const newFile = { ...fileData, id: fileRef.id };
 
             setFiles((prev) => [...prev, newFile]);
@@ -216,6 +234,13 @@ const [searchTerm, setSearchTerm] = useState(""); // Add state for search term
         item.id
       );
       await updateDoc(itemRef, { name: newName });
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: itemRef,
+        date: serverTimestamp(),
+        section: "Staff&Payout",
+        action: "Update",
+        description: `${newName} ${item.type} name updated`,
+      });
       if (item.type === "folder") {
         setFolders((prev) =>
           prev.map((folder) =>
@@ -251,7 +276,13 @@ const [searchTerm, setSearchTerm] = useState(""); // Add state for search term
         item.id
       );
       await deleteDoc(itemRef);
-
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: itemRef,
+        date: serverTimestamp(),
+        section: "Staff&Payout",
+        action: "Delete",
+        description: `${item.name} ${item.type} deleted`,
+      });
       if (item.type === "folder") {
         setFolders((prev) => prev.filter((folder) => folder.id !== item.id));
       } else {

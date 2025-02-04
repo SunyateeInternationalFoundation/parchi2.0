@@ -123,7 +123,7 @@ const MilestoneCard = ({ milestone }) => {
 const AddMilestoneModal = ({ onClose, onAddMilestone, projectId }) => {
   const [milestoneName, setMilestoneName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const userDetails = useSelector((state) => state.users);
   const handleAddMilestone = async () => {
     if (!milestoneName.trim()) {
       alert("Milestone name is required");
@@ -131,6 +131,8 @@ const AddMilestoneModal = ({ onClose, onAddMilestone, projectId }) => {
     }
     setIsLoading(true);
 
+    const companyId =
+      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
     try {
       const milestoneRef = collection(db, `projects/${projectId}/milestone`);
       const newMilestone = {
@@ -141,6 +143,13 @@ const AddMilestoneModal = ({ onClose, onAddMilestone, projectId }) => {
 
       const docRef = await addDoc(milestoneRef, newMilestone);
 
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: docRef,
+        date: serverTimestamp(),
+        section: "Project",
+        action: "Create",
+        description: `${newMilestone.name} milestone created`,
+      });
       onAddMilestone({ id: docRef.id, ...newMilestone });
       onClose();
     } catch (error) {

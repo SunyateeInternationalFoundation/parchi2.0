@@ -1,9 +1,11 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   getDocs,
   query,
+  serverTimestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -53,6 +55,13 @@ function ProjectView({ projectDetails, refreshProject }) {
     try {
       const projectDoc = doc(db, "projects", id);
       await updateDoc(projectDoc, { status: value });
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: projectDoc,
+        date: serverTimestamp(),
+        section: "Project",
+        action: "Update",
+        description: `${project?.name} status updated`,
+      });
       setProject((val) => ({ ...val, status: value }));
       alert("Project updated successfully!");
       refreshProject();
@@ -109,7 +118,15 @@ function ProjectView({ projectDetails, refreshProject }) {
         "Are you sure you want to delete this Project?"
       );
       if (!confirmDelete) return;
-      await deleteDoc(doc(db, "projects", id));
+      const projectRef = doc(db, "projects", id);
+      await deleteDoc(projectRef);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: projectRef,
+        date: serverTimestamp(),
+        section: "Project",
+        action: "Delete",
+        description: `${project?.name} project deleted`,
+      });
       navigate("/projects");
     } catch (error) {
       console.log("🚀 ~ onHandleDeleteVendor ~ error:", error);

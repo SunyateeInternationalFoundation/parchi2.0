@@ -1,4 +1,12 @@
-import { deleteDoc, doc, setDoc, Timestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  serverTimestamp,
+  setDoc,
+  Timestamp,
+} from "firebase/firestore";
 import { CalendarIcon } from "lucide-react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
@@ -115,10 +123,21 @@ function AddAttendanceSidebar({
         }
       }
 
-      await setDoc(
-        doc(db, "companies", companyId, "staffAttendance", attendanceId),
-        payload
+      const ref = doc(
+        db,
+        "companies",
+        companyId,
+        "staffAttendance",
+        attendanceId
       );
+      await setDoc(ref, payload);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: ref,
+        date: serverTimestamp(),
+        section: "Staff&Payout",
+        action: "Update",
+        description: `Marked Attendance`,
+      });
       alert("Successfully Marked Attendance");
 
       markedAttendance(attendanceId, {

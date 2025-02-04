@@ -312,10 +312,25 @@ function PrintBarcode() {
                             setIsModelOpen(true);
                             return;
                           }
-                          setSelectProduct((val) => [
-                            ...val,
-                            { ...product, quantity: 1 },
-                          ]);
+                          let isFound = false
+                          const updatedProduct = selectProduct.map(ele => {
+                            if (ele.id == product.id) {
+                              ++ele.quantity
+                              isFound = true
+                            }
+                            return ele;
+                          }
+                          )
+                          if (isFound) {
+                            setSelectProduct(updatedProduct);
+                          } else {
+                            setSelectProduct((val) => [
+                              ...val,
+                              { ...product, quantity: 1 },
+                            ]);
+                          }
+
+
                         }}
                         className="flex flex-col   text-gray-800 hover:bg-blue-50 cursor-pointer transition-all duration-150 ease-in-out"
                       >

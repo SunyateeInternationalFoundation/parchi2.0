@@ -5,6 +5,7 @@ import {
   doc,
   getDocs,
   query,
+  serverTimestamp,
   Timestamp,
   updateDoc,
   where,
@@ -91,15 +92,29 @@ const Designation = () => {
   };
   const navigate = useNavigate();
 
-  async function OnDeleteDesignation(designationId) {
+  async function OnDeleteDesignation(designationId, name) {
     try {
       const confirm = window.confirm(
         "Are you sure you want to delete this Designation?"
       );
       if (!confirm) return;
-
-      await deleteDoc(doc(db, "designations", designationId));
-
+      const ref = doc(db, "designations", designationId);
+      await deleteDoc(ref);
+      await addDoc(
+        collection(
+          db,
+          "companies",
+          userDetails?.companies[userDetails.selectedCompanyIndex]?.companyId,
+          "audit"
+        ),
+        {
+          ref: ref,
+          date: serverTimestamp(),
+          section: "Staff&Payout",
+          action: "Delete",
+          description: `${name} designation deleted`,
+        }
+      );
       setDesignation((prev) => {
         const updatedDesignation = prev.filter(
           (des) => des.id !== designationId
@@ -207,7 +222,10 @@ const Designation = () => {
                             <RiDeleteBin6Line
                               onClick={(e) => {
                                 e.preventDefault();
-                                OnDeleteDesignation(designation.id);
+                                OnDeleteDesignation(
+                                  designation.id,
+                                  designation.designationName
+                                );
                               }}
                               className="text-red-500 "
                             />
@@ -336,7 +354,13 @@ const AddDesignationModal = ({
         id: doc.id,
         ...doc.data(),
       }));
-
+      let payloadLog = {
+        ref: docRef,
+        date: serverTimestamp(),
+        section: "Staff&Payout",
+        action: "Create",
+        description: `${designationName} designation created`,
+      };
       if (editDes?.id) {
         docRef = doc(db, "designations", editDes.id);
 
@@ -350,6 +374,9 @@ const AddDesignationModal = ({
           await updateDoc(staffRef, { designation: designationName });
         }
         handleEditDesignation({ id: docRef.id, ...payload });
+        payloadLog.ref = docRef;
+        payloadLog.action = "Update";
+        payloadLog.description = `${designationName} designation updated`;
       } else {
         docRef = await addDoc(collection(db, "designations"), {
           createdAt: Timestamp.fromDate(new Date()),
@@ -360,8 +387,12 @@ const AddDesignationModal = ({
           createdAt: Timestamp.fromDate(new Date()),
           ...payload,
         });
+        payloadLog.ref = docRef;
       }
-
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        payloadLog
+      );
       onClose();
     } catch (error) {
       console.error("Error adding Designation:", error);

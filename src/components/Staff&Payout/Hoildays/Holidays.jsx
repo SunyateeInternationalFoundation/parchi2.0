@@ -1,10 +1,12 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   getDocs,
   orderBy,
   query,
+  serverTimestamp,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
@@ -76,16 +78,22 @@ const Holidays = () => {
     setHoliday((prev) => [...prev, newData]);
   };
 
-  async function OnDeleteHoliday(e, holidayId) {
-    e.stopPropagation();
+  async function OnDeleteHoliday(holidayId, name) {
     try {
       const confirm = window.confirm(
         "Are you sure you want to delete this Holiday?"
       );
       if (!confirm) return;
-
-      await deleteDoc(doc(db, "companies", companyId, "holiday", holidayId));
-
+      console.log("holiday", holidayId);
+      const ref = doc(db, "companies", companyId, "holidays", holidayId);
+      await deleteDoc(ref);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: ref,
+        date: serverTimestamp(),
+        section: "Staff&Payout",
+        action: "Delete",
+        description: `${name} holiday removed`,
+      });
       setHoliday((prev) => {
         const updatedHoliday = prev.filter((item) => item.id !== holidayId);
 
@@ -160,7 +168,10 @@ const Holidays = () => {
                         >
                           <div
                             className="text-red-500 flex items-center justify-end"
-                            onClick={() => OnDeleteHoliday(holiday.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              OnDeleteHoliday(holiday.id, holiday.name);
+                            }}
                           >
                             <RiDeleteBin6Line />
                           </div>

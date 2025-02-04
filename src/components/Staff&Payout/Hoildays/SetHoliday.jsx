@@ -1,4 +1,9 @@
-import { addDoc, collection, Timestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+  Timestamp,
+} from "firebase/firestore";
 import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
@@ -36,6 +41,13 @@ function SetHoliday({ isOpen, onClose, onAddHoliday, companyId }) {
         collection(db, "companies", companyId, "holidays"),
         payload
       );
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: holidayRef,
+        date: serverTimestamp(),
+        section: "Staff&Payout",
+        action: "Create",
+        description: `${name} holiday created`,
+      });
       onAddHoliday({ id: holidayRef.id, ...payload });
       alert("Holiday successfully created!");
       setFormData({

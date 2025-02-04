@@ -5,6 +5,7 @@ import {
   getDoc,
   getDocs,
   query,
+  serverTimestamp,
   Timestamp,
   updateDoc,
   where,
@@ -142,7 +143,23 @@ function TaskSideBar({
           createdAt: Timestamp.fromDate(new Date()),
         };
         const taskRef = collection(db, "projects", projectId, "tasks");
-        await addDoc(taskRef, payload);
+        const ref = await addDoc(taskRef, payload);
+
+        await addDoc(
+          collection(
+            db,
+            "companies",
+            userDetails.companies[userDetails.selectedCompanyIndex].companyId,
+            "audit"
+          ),
+          {
+            ref: ref,
+            date: serverTimestamp(),
+            section: "Project",
+            action: "Create",
+            description: `${formData.name} milestone created`,
+          }
+        );
         alert("Successfully Created the Task");
         ResetForm();
       } else {

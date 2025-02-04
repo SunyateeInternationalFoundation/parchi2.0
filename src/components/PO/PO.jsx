@@ -110,7 +110,6 @@ function PO() {
     try {
       const docRef = doc(db, "companies", companyId, "po", poId);
       const data = POList.find((d) => d.id === poId);
-      console.log("docref", docRef);
       await updateDoc(docRef, { orderStatus: value });
       await addDoc(collection(db, "companies", companyId, "audit"), {
         ref: docRef,
@@ -119,18 +118,27 @@ function PO() {
         action: "Update",
         description: `${data.poNo} status updated by ${data.createdBy}`,
       });
+      let receivedCount = 0
       const UpdatedData = POList.map((ele) => {
         if (ele.id === poId) {
           ele.orderStatus = value;
         }
+        if (ele.orderStatus === "Received") {
+          ++receivedCount;
+        }
         return ele;
       });
+      setPOCount(val => ({
+        ...val,
+        received: receivedCount,
+      }));
       setPOList(UpdatedData);
       alert("Successfully Status Updated");
     } catch (error) {
       console.log("🚀 ~ onStatusUpdate ~ error:", error);
     }
   }
+
   useEffect(() => {
     const filteredPO = POList.filter((po) => {
       const { vendorName, vendorPhone, poNo, orderStatus } = po;
@@ -148,6 +156,7 @@ function PO() {
       filteredPO.slice(currentPage * 10, currentPage * 10 + 10)
     );
   }, [currentPage, POList, searchTerm, filterStatus]);
+
   const columns = [
     {
       title: "Date",
@@ -252,6 +261,7 @@ function PO() {
       width: 90,
     },
   ];
+
   return (
     <div className="w-full">
       <div className="main-container" style={{ height: "92vh" }}>
@@ -362,13 +372,13 @@ function PO() {
                     <div className="w-full flex justify-center">
                       {(userDetails.selectedDashboard === "" ||
                         role?.create) && (
-                        <Link
-                          className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-                          to="create-po"
-                        >
-                          + Create Po
-                        </Link>
-                      )}
+                          <Link
+                            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                            to="create-po"
+                          >
+                            + Create Po
+                          </Link>
+                        )}
                     </div>
                   </div>
                 )}

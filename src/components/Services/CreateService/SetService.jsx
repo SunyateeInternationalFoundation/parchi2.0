@@ -8,6 +8,7 @@ import {
   getDocs,
   orderBy,
   query,
+  serverTimestamp,
   Timestamp,
   updateDoc,
   where,
@@ -327,21 +328,36 @@ function SetService() {
         typeOfEndMembership: membershipPeriod,
       };
       let serviceRef;
+      let payloadLog = {
+        ref: serviceRef,
+        date: serverTimestamp(),
+        section: "Subscription",
+        action: "Create",
+        description: `${prefix}-${formData.serviceNo} created by ${payload.createdBy.who}`,
+      };
       if (id) {
-        (serviceRef = doc(
+        serviceRef = doc(
           db,
           "companies",
           companyDetails.companyId,
           "services",
           id
-        )),
-          await updateDoc(serviceRef, payload);
+        );
+        await updateDoc(serviceRef, payload);
+        payloadLog.action = "Update";
+        payloadLog.ref = serviceRef;
+        payloadLog.description = `${prefix}-${formData.serviceNo} updated by ${payload.createdBy.who}`;
       } else {
         serviceRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "services"),
           payload
         );
+        payloadLog.ref = serviceRef;
       }
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        payloadLog
+      );
       if (formData.membershipId) {
         await updateDoc(customerRef, {
           memberships: arrayUnion(formData.membershipId),

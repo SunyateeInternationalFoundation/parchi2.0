@@ -85,13 +85,22 @@ const Roles = () => {
       const staffRef = doc(db, "staff", staff.id);
       const updatedRoles = tempRoles[staff.id];
       await updateDoc(staffRef, { roles: updatedRoles });
-      await addDoc(collection(db, "roleLogs"), {
-        date: serverTimestamp(),
-        name: staff.name,
-        access: currentRoles,
-        staffRef,
-      });
-
+      // await addDoc(collection(db, "roleLogs"), {
+      //   date: serverTimestamp(),
+      //   name: staff.name,
+      //   access: currentRoles,
+      //   staffRef,
+      // });
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        {
+          ref: staffRef,
+          date: serverTimestamp(),
+          section: "Staff&Payout",
+          action: "Update",
+          description: `${staff.name} staff roles updated`,
+        }
+      );
       setStaffData((prevData) =>
         prevData.map((item) =>
           item.id === staff.id ? { ...item, roles: updatedRoles } : item

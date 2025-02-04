@@ -120,12 +120,20 @@ function DebitNoteList() {
         action: "Update",
         description: `${data.debitNoteNo} status updated by ${data.createdBy}`,
       });
+      let receivedCount = 0
       const UpdatedData = DebitNoteList.map((ele) => {
         if (ele.id === debitNoteId) {
           ele.orderStatus = value;
         }
+        if (ele.orderStatus === "Received") {
+          ++receivedCount;
+        }
         return ele;
       });
+      setDebitNoteCount(val => ({
+        ...val,
+        received: receivedCount,
+      }));
       setDebitNoteList(UpdatedData);
       alert("Successfully Status Updated");
     } catch (error) {
@@ -152,6 +160,7 @@ function DebitNoteList() {
       filteredDebitNote.slice(currentPage * 10, currentPage * 10 + 10)
     );
   }, [currentPage, DebitNoteList, searchTerm, filterStatus]);
+
   const columns = [
     {
       title: "Date",
@@ -228,8 +237,8 @@ function DebitNoteList() {
         select.onchange = async (e) => {
           const newStatus = e.target.value;
           await onStatusUpdate(
+            newStatus,
             paginationData[cellProperties.row]?.id,
-            newStatus
           );
         };
         td.innerHTML = "";
@@ -256,6 +265,7 @@ function DebitNoteList() {
       width: 90,
     },
   ];
+
   return (
     <div className="main-container" style={{ height: "92vh" }}>
       <div className="mt-4 py-3">

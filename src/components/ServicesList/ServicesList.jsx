@@ -1,9 +1,11 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   getDocs,
   query,
+  serverTimestamp,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -69,13 +71,24 @@ const ServicesList = () => {
     setIsSideBarOpen(true);
   };
 
-  async function onHandleDeleteService(serviceId) {
+  async function onHandleDeleteService(serviceId, name) {
     try {
       const confirmDelete = window.confirm(
         "Are you sure you want to delete this Service?"
       );
       if (!confirmDelete) return;
-      await deleteDoc(doc(db, "services", serviceId));
+      const ref = doc(db, "services", serviceId);
+      await deleteDoc(ref);
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        {
+          ref: ref,
+          date: serverTimestamp(),
+          section: "Subscription List",
+          action: "Delete",
+          description: `${name} deleted`,
+        }
+      );
       setServices((val) => val.filter((ele) => ele.id !== serviceId));
     } catch (error) {
       console.log("🚀 ~ onHandleDeleteService ~ error:", error);
@@ -165,7 +178,12 @@ const ServicesList = () => {
                       >
                         <button
                           className="text-red-500"
-                          onClick={() => onHandleDeleteService(service.id)}
+                          onClick={() =>
+                            onHandleDeleteService(
+                              service.id,
+                              service.serviceName
+                            )
+                          }
                         >
                           <RiDeleteBin6Line />
                         </button>

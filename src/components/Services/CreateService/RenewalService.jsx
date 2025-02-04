@@ -6,6 +6,7 @@ import {
   getDoc,
   getDocs,
   query,
+  serverTimestamp,
   Timestamp,
   where,
 } from "firebase/firestore";
@@ -166,7 +167,16 @@ function RenewalService() {
         collection(db, "companies", companyDetails.companyId, "services"),
         payload
       );
-
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        {
+          ref: serviceRef,
+          date: serverTimestamp(),
+          section: "Subscription",
+          action: "Update",
+          description: `${prefix} ${formData.serviceNo} renewal updated by ${payload.createdBy.who}`,
+        }
+      );
       alert(`successfully Created Service`);
       const redirect =
         (userDetails.selectedDashboard === "staff"
