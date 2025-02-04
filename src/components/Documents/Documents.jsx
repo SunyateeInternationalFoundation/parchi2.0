@@ -117,7 +117,7 @@ const Documents = () => {
       await addDoc(collection(db, "companies", companyId, "audit"), {
         ref: folderRef,
         date: serverTimestamp(),
-        section: "Staff&Payout",
+        section: "Documents",
         action: "Create",
         description: `${folderName} folder created`,
       });
@@ -180,7 +180,7 @@ const Documents = () => {
             await addDoc(collection(db, "companies", companyId, "audit"), {
               ref: fileRef,
               date: serverTimestamp(),
-              section: "Staff&Payout",
+              section: "Documents",
               action: "Create",
               description: `${fileData.name} file uploaded`,
             });
@@ -231,7 +231,7 @@ const Documents = () => {
       await addDoc(collection(db, "companies", companyId, "audit"), {
         ref: itemRef,
         date: serverTimestamp(),
-        section: "Staff&Payout",
+        section: "Documents",
         action: "Update",
         description: `${newName} ${item.type} name updated`,
       });
@@ -273,7 +273,7 @@ const Documents = () => {
       await addDoc(collection(db, "companies", companyId, "audit"), {
         ref: itemRef,
         date: serverTimestamp(),
-        section: "Staff&Payout",
+        section: "Documents",
         action: "Delete",
         description: `${item.name} ${item.type} deleted`,
       });

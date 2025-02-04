@@ -2,6 +2,7 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   query,
   serverTimestamp,
@@ -84,6 +85,11 @@ const Roles = () => {
     try {
       const staffRef = doc(db, "staff", staff.id);
       const updatedRoles = tempRoles[staff.id];
+      const staffSnap = await getDoc(staffRef);
+      const previousRoles = staffSnap.exists()
+        ? staffSnap.data().roles || {}
+        : {};
+
       await updateDoc(staffRef, { roles: updatedRoles });
       // await addDoc(collection(db, "roleLogs"), {
       //   date: serverTimestamp(),
@@ -91,6 +97,40 @@ const Roles = () => {
       //   access: currentRoles,
       //   staffRef,
       // });
+      let givenAccessMap = {};
+      let removedAccessMap = {};
+
+      Object.keys(updatedRoles).forEach((role) => {
+        Object.keys(updatedRoles[role]).forEach((action) => {
+          const newState = updatedRoles[role][action];
+          const prevState = previousRoles[role]?.[action] ?? false;
+
+          if (newState && !prevState) {
+            if (!givenAccessMap[role]) givenAccessMap[role] = [];
+            givenAccessMap[role].push(action);
+          } else if (!newState && prevState) {
+            if (!removedAccessMap[role]) removedAccessMap[role] = [];
+            removedAccessMap[role].push(action);
+          }
+        });
+      });
+
+      let givenAccess = Object.entries(givenAccessMap)
+        .map(([role, actions]) => `${role} - ${actions.join(", ")}`)
+        .join("; ");
+
+      let removedAccess = Object.entries(removedAccessMap)
+        .map(([role, actions]) => `${role} - ${actions.join(", ")}`)
+        .join("; ");
+
+      let description = `${staff.name} staff roles --> `;
+      if (givenAccess) {
+        description += `given access: ${givenAccess} `;
+      }
+      if (removedAccess) {
+        description += `removed access: ${removedAccess}`;
+      }
+
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "audit"),
         {
@@ -98,7 +138,7 @@ const Roles = () => {
           date: serverTimestamp(),
           section: "Staff&Payout",
           action: "Update",
-          description: `${staff.name} staff roles updated`,
+          description: description.trim(),
         }
       );
       setStaffData((prevData) =>
@@ -124,13 +164,13 @@ const Roles = () => {
         },
       },
     }));
-    setCurrentRoles((prevRoles) => ({
-      ...prevRoles,
-      [roleName]: {
-        ...prevRoles[roleName],
-        [action]: isChecked,
-      },
-    }));
+    // setCurrentRoles((prevRoles) => ({
+    //   ...prevRoles,
+    //   [roleName]: {
+    //     ...prevRoles[roleName],
+    //     [action]: isChecked,
+    //   },
+    // }));
   }
 
   const rolesList = [

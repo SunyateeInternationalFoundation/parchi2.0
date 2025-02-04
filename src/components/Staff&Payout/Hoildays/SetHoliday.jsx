@@ -1,8 +1,10 @@
 import {
   addDoc,
   collection,
+  doc,
   serverTimestamp,
   Timestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
@@ -12,14 +14,21 @@ import { cn, formatDate } from "../../../lib/utils";
 import { Calendar } from "../../UI/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../../UI/popover";
 
-function SetHoliday({ isOpen, onClose, onAddHoliday, companyId }) {
+function SetHoliday({
+  isOpen,
+  onClose,
+  onAddHoliday,
+  companyId,
+  editHoliday,
+  handleEditHoliday,
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
-    date: "",
+    name: editHoliday?.name || "",
+    date: editHoliday?.createdAt || "",
   });
 
-  async function onCreateHoliday(e) {
+  async function onSetHoliday(e) {
     e.preventDefault();
     setIsLoading(true);
 
@@ -36,20 +45,42 @@ function SetHoliday({ isOpen, onClose, onAddHoliday, companyId }) {
         ...formData,
         createdAt: Timestamp.fromDate(new Date()),
       };
-
-      const holidayRef = await addDoc(
-        collection(db, "companies", companyId, "holidays"),
-        payload
-      );
-      await addDoc(collection(db, "companies", companyId, "audit"), {
+      let holidayRef;
+      let payloadLog = {
         ref: holidayRef,
         date: serverTimestamp(),
         section: "Staff&Payout",
         action: "Create",
         description: `${name} holiday created`,
-      });
-      onAddHoliday({ id: holidayRef.id, ...payload });
-      alert("Holiday successfully created!");
+      };
+      if (editHoliday?.id) {
+        holidayRef = doc(
+          db,
+          "companies",
+          companyId,
+          "holidays",
+          editHoliday.id
+        );
+
+        await updateDoc(holidayRef, {
+          ...payload,
+        });
+
+        payloadLog.ref = holidayRef;
+        payloadLog.action = "Update";
+        payloadLog.description = `${name} holiday updated`;
+        handleEditHoliday({ id: holidayRef.id, ...payload });
+      } else {
+        holidayRef = await addDoc(
+          collection(db, "companies", companyId, "holidays"),
+          payload
+        );
+
+        payloadLog.ref = holidayRef;
+        onAddHoliday({ id: holidayRef.id, ...payload });
+        alert("Holiday successfully created!");
+      }
+      await addDoc(collection(db, "companies", companyId, "audit"), payloadLog);
       setFormData({
         name: "",
         date: "",
@@ -89,7 +120,7 @@ function SetHoliday({ isOpen, onClose, onAddHoliday, companyId }) {
             <IoMdClose />
           </button>
         </div>
-        <form onSubmit={onCreateHoliday}>
+        <form onSubmit={onSetHoliday}>
           <div
             className="space-y-2 px-5 overflow-y-auto"
             style={{ height: "84vh" }}
@@ -159,7 +190,13 @@ function SetHoliday({ isOpen, onClose, onAddHoliday, companyId }) {
             style={{ height: "6vh" }}
           >
             <button type="submit" className="w-full btn-add">
-              {isLoading ? "Adding..." : "Add Holiday"}
+              {isLoading
+                ? !editHoliday?.id
+                  ? "Adding..."
+                  : "Editing"
+                : !editHoliday?.id
+                ? "Add Holiday"
+                : "Edit Holiday"}
             </button>
           </div>
         </form>
