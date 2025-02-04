@@ -134,7 +134,7 @@ function Staff() {
 
   return (
     <div className="main-container" style={{ height: "82vh" }}>
-      <div className="container">
+      <div className="container2">
         <nav className="flex items-center mb-4 px-5">
           <div className="space-x-4 w-full">
             <div className="flex items-center space-x-4 border px-5 py-3 rounded-md w-full">
@@ -215,10 +215,11 @@ function Staff() {
                         onClick={(e) => e.stopPropagation()}
                       >
                         <div
-                          className={` text-center flex justify-center items-center h-8 overflow-hidden w-28  rounded-lg text-xs  ${staff.status === "Active"
+                          className={` text-center flex justify-center items-center h-8 overflow-hidden w-28  rounded-lg text-xs  ${
+                            staff.status === "Active"
                               ? "bg-green-100"
                               : "bg-red-100"
-                            }`}
+                          }`}
                         >
                           <Select
                             value={staff.status}

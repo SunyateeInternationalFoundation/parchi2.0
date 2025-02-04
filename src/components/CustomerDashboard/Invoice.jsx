@@ -65,7 +65,7 @@ function Invoice({ invoices }) {
         />
         <div>Invoices</div>
       </div>
-      <div className="container">
+      <div className="container2">
         <nav className="flex mb-4 items-center px-5">
           <div className="space-x-4 w-full flex items-center">
             <div

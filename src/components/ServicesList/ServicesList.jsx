@@ -111,7 +111,7 @@ const ServicesList = () => {
         )}
         <div>Subscriptions Plans </div>
       </div>
-      <div className="container">
+      <div className="container2">
         <div className="flex justify-between items-center px-5">
           <h1 className="text-2xl font-bold">Plan List</h1>
           {(userDetails.selectedDashboard === "" || role?.create) && (

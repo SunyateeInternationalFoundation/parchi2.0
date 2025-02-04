@@ -74,7 +74,7 @@ const AllLogs = () => {
       </header>
 
       <div className="flex items-center justify-center">
-        <div className="container">
+        <div className="container2">
           <nav className="flex items-center mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">
               <div className="flex items-center space-x-4  border px-5  py-3 rounded-md w-full">
@@ -93,7 +93,7 @@ const AllLogs = () => {
           {loading ? (
             <div className="text-center py-6">Loading ...</div>
           ) : (
-            <div className="overflow-y-auto" style={{ minHeight: "96vh" }}>
+            <div className="overflow-y-auto" style={{ minHeight: "80vh" }}>
               <table className="w-full border-collapse text-start">
                 <thead className=" bg-white">
                   <tr className="border-b">
@@ -139,7 +139,7 @@ const AllLogs = () => {
                           />
                         </div>
 
-                        <div> No Book Found </div>
+                        <div> No Logs Found </div>
                       </td>
                     </tr>
                   )}
@@ -147,7 +147,7 @@ const AllLogs = () => {
               </table>
             </div>
           )}
-          <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
+          <div className="flex items-center flex-wrap gap-2 justify-between p-5">
             <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
               {currentPage + 1} of {totalPages || 1} row(s) selected.
             </div>

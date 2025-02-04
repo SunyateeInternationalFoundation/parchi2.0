@@ -166,7 +166,7 @@ const VendorList = () => {
         )}
         <div>Vendor</div>
       </div>
-      <div className="container">
+      <div className="container2">
         <nav className="flex pb-3 px-5">
           <div className="space-x-4 w-full">
             <div

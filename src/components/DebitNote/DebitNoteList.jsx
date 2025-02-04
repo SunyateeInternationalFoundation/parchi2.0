@@ -120,7 +120,7 @@ function DebitNoteList() {
         action: "Update",
         description: `${data.debitNoteNo} status updated by ${data.createdBy}`,
       });
-      let receivedCount = 0
+      let receivedCount = 0;
       const UpdatedData = DebitNoteList.map((ele) => {
         if (ele.id === debitNoteId) {
           ele.orderStatus = value;
@@ -130,7 +130,7 @@ function DebitNoteList() {
         }
         return ele;
       });
-      setDebitNoteCount(val => ({
+      setDebitNoteCount((val) => ({
         ...val,
         received: receivedCount,
       }));
@@ -238,7 +238,7 @@ function DebitNoteList() {
           const newStatus = e.target.value;
           await onStatusUpdate(
             newStatus,
-            paginationData[cellProperties.row]?.id,
+            paginationData[cellProperties.row]?.id
           );
         };
         td.innerHTML = "";
@@ -308,7 +308,7 @@ function DebitNoteList() {
         </div>
       </div>
 
-      <div className="container">
+      <div className="container2">
         <nav className="flex mb-4 items-center px-5">
           <div className="space-x-4 w-full flex items-center">
             <div

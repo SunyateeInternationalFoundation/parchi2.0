@@ -105,7 +105,7 @@ const VendorPO = () => {
         />
         <div>Purchase-Order</div>
       </div>
-      <div className="container">
+      <div className="container2">
         <nav className="flex mb-4 items-center px-5">
           <div className="space-x-4 w-full flex items-center">
             <div className="flex items-center space-x-4  input-tag  w-96">

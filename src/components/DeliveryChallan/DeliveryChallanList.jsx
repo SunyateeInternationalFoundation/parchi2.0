@@ -129,7 +129,6 @@ const DeliveryChallanList = () => {
     }
   };
 
-
   const totalAmount = deliveryChallan.reduce(
     (sum, deliveryChallan) => sum + deliveryChallan.total,
     0
@@ -140,7 +139,6 @@ const DeliveryChallanList = () => {
   const pendingAmount = deliveryChallan
     .filter((deliveryChallan) => deliveryChallan.paymentStatus === "Pending")
     .reduce((sum, deliveryChallan) => sum + deliveryChallan.total, 0);
-
 
   useEffect(() => {
     const filteredDeliveryChallan = deliveryChallan.filter((dc) => {
@@ -153,7 +151,10 @@ const DeliveryChallanList = () => {
           ?.toString()
           .toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
-        customerPhone.toString().toLowerCase().includes(searchTerm.toLowerCase());
+        customerPhone
+          .toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
 
       const matchesStatus =
         filterStatus === "All" || paymentStatus === filterStatus;
@@ -240,8 +241,8 @@ const DeliveryChallanList = () => {
           (value === "Paid"
             ? "bg-green-100"
             : value === "Pending"
-              ? "bg-yellow-100"
-              : "bg-red-100");
+            ? "bg-yellow-100"
+            : "bg-red-100");
         select.onchange = async (e) => {
           const newStatus = e.target.value;
           await handleStatusChange(
@@ -317,7 +318,7 @@ const DeliveryChallanList = () => {
         </div>
       </div>
       <div className="flex justify-center items-center">
-        <div className="container">
+        <div className="container2">
           <nav className="flex items-center mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">
               <div
@@ -385,13 +386,13 @@ const DeliveryChallanList = () => {
                     <div className="w-full flex justify-center">
                       {(userDetails.selectedDashboard === "" ||
                         role?.create) && (
-                          <Link
-                            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-                            to="create-deliverychallan"
-                          >
-                            + Create DeliveryChallan
-                          </Link>
-                        )}
+                        <Link
+                          className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                          to="create-deliverychallan"
+                        >
+                          + Create DeliveryChallan
+                        </Link>
+                      )}
                     </div>
                   </div>
                 )}

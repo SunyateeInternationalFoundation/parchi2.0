@@ -302,7 +302,7 @@ const StaffDocuments = (StaffData) => {
 
   return (
     <div className="main-container">
-      <div className="container p-5" style={{ minHeight: "70vh" }}>
+      <div className="container2 p-5" style={{ minHeight: "70vh" }}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             {currentPath.length > 0 && (

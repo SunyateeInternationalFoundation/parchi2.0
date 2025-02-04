@@ -133,7 +133,7 @@ const Assets = () => {
 
   return (
     <div className="main-container" style={{ width: "100%", height: "82vh" }}>
-      <div className="container">
+      <div className="container2">
         <header className="flex items-center justify-between px-5">
           <div className="flex items-center space-x-3">
             <h1 className="text-2xl font-bold">Assets</h1>

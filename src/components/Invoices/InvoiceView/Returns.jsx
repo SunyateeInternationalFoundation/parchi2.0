@@ -168,7 +168,7 @@ function Returns({ invoice }) {
   return (
     <div className="main-container " style={{ height: "82vh" }}>
       <div className="flex justify-center items-center">
-        <div className="container">
+        <div className="container2">
           <div className="text-end pb-2 space-x-3 px-5">
             <button
               className="px-4 py-2 text-gray-600  rounded-md border hover:bg-black hover:text-white"

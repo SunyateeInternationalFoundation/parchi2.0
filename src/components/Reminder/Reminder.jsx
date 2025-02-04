@@ -97,7 +97,7 @@ function Reminder() {
         {
           ref: docRef,
           date: serverTimestamp(),
-          section: "Staff&Payout",
+          section: "Remainder",
           action: "Create",
           description: `${formData.reminderName} remainder created`,
         }
@@ -128,7 +128,7 @@ function Reminder() {
         {
           ref: ref,
           date: serverTimestamp(),
-          section: "Staff&Payout",
+          section: "Remainder",
           action: "Update",
           description: `${name} remainder updated`,
         }
@@ -153,7 +153,7 @@ function Reminder() {
         {
           ref: ref,
           date: serverTimestamp(),
-          section: "Staff&Payout",
+          section: "Remainder",
           action: "Delete",
           description: `${name} remainder deleted`,
         }
@@ -172,7 +172,7 @@ function Reminder() {
   return (
     <div className="main-container " style={{ height: "92vh" }}>
       <h1 className="text-2xl font-bold  mt-4 py-3">Reminder</h1>
-      <div className="container">
+      <div className="container2">
         <nav className="flex space-x-4  px-5">
           {["Reminder", "Completed"].map((tab) => (
             <button

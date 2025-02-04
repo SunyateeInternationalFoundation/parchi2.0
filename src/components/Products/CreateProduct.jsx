@@ -281,7 +281,7 @@ function CreateProduct() {
         </h2>
       </header>
       <div className="px-5">
-        <div className="container">
+        <div className="container2">
           <div className="">
             <div className="border-b py-3 px-5 space-y-2">
               <div className="">Product Information</div>

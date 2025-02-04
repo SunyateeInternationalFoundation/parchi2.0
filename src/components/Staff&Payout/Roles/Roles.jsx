@@ -156,7 +156,7 @@ const Roles = () => {
   console.log("temp roles", tempRoles);
   return (
     <div className="main-container" style={{ height: "82vh" }}>
-      <div className="container">
+      <div className="container2">
         <header className="flex items-center px-5 py-3">
           <h1 className="text-2xl font-bold">Roles</h1>
         </header>

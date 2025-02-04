@@ -26,7 +26,7 @@ const ProductView = ({ productData }) => {
 
   return (
     <div className="main-container" style={{ height: "80vh" }}>
-      <div className="container">
+      <div className="container2">
         <div>
           <div className="border-b space-y-3 ">
             <div className="border-b py-3 px-5 space-y-2">
@@ -190,7 +190,7 @@ const ProductView = ({ productData }) => {
           </div>
         </div>
       </div>
-      <div className="container bg-white p-5 mt-10">
+      <div className="container2 bg-white p-5 mt-10">
         <div className="flex justify-between">
           <div className="flex flex-col">
             <div className="flex justify-between mb-2">

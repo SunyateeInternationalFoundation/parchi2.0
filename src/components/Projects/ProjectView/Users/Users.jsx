@@ -115,7 +115,7 @@ function Users() {
   return (
     <div className="main-container" style={{ height: "80vh" }}>
       <div className="flex justify-center items-center">
-        <div className="container">
+        <div className="container2">
           <nav className="flex mb-4 px-5">
             <div className="flex items-center space-x-4 w-full">
               <div className="w-full space-x-4">

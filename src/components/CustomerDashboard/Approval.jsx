@@ -57,7 +57,7 @@ const Approval = () => {
 
   return (
     <div className="main-container" style={{ height: "82vh" }}>
-      <div className="container">
+      <div className="container2">
         <div className=" rounded-lg overflow-y-auto" style={{ height: "80vh" }}>
           <table className="w-full border-collapse text-start  ">
             <thead className=" bg-white">

@@ -111,7 +111,7 @@ const LoansDeductions = () => {
 
   return (
     <div className="main-container" style={{ height: "82vh" }}>
-      <div className="container">
+      <div className="container2">
         <header className="flex items-center justify-between px-5">
           <div className="flex space-x-3 items-center">
             <h1 className="text-2xl font-bold">Loans&Deductions</h1>

@@ -120,7 +120,7 @@ const Categories = () => {
   return (
     <div className="main-container" style={{ height: "81vh" }}>
       <div className="flex justify-center items-center">
-        <div className="container">
+        <div className="container2">
           <div className="flex justify-between items-center px-5">
             <div
               className="flex items-center space-x-4  border

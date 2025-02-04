@@ -298,7 +298,7 @@ const Documents = () => {
   return (
     <div className="main-container">
       <h1 className="text-2xl font-bold mt-4 py-3">Documents</h1>
-      <div className="container p-5 " style={{ minHeight: "70vh" }}>
+      <div className="container2 p-5 " style={{ minHeight: "70vh" }}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             {currentPath.length > 0 && (

@@ -101,7 +101,7 @@ const Stock = () => {
   return (
     <div className="main-container" style={{ height: "81vh" }}>
       <div className="flex justify-center items-center">
-        <div className="container">
+        <div className="container2">
           <div className="flex space-x-4 px-5 pb-3 border-b">
             <button
               onClick={() => setSelectedFilter("lowStock")}

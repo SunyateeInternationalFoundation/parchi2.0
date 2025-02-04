@@ -11,7 +11,7 @@ const Profile = ({ staffData, refresh }) => {
       {!staffData.id ? (
         <div className="text-gray-500 text-center">Loading staff...</div>
       ) : (
-        <div className="container p-6">
+        <div className="container2 p-6">
           <div className="flex items-center justify-end space-x-4">
             <span
               className={`text-xs px-3 py-1.5 rounded-lg font-medium shadow-sm border flex items-center justify-center ${

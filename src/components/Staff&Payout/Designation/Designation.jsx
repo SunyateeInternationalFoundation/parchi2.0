@@ -139,7 +139,7 @@ const Designation = () => {
 
   return (
     <div className="main-container" style={{ height: "82vh" }}>
-      <div className="container">
+      <div className="container2">
         <header className="flex items-center justify-between px-5">
           <div className="flex space-x-3 items-center ">
             <div className="flex space-x-3 ">
