@@ -93,7 +93,7 @@ const Profile = ({ staffData, refresh }) => {
                     <label className="text-sm text-gray-500">ID</label>
                     <div className="block w-full border border-gray-300 p-2 rounded-md bg-white focus:ring focus:ring-purple-200">
                       {" "}
-                      {staffData.idNo || ""}
+                      {staffData.idNo || "N/A"}
                     </div>
                   </div>
                   <div>
