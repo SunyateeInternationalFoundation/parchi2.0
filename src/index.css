@@ -4,31 +4,31 @@
 @tailwind utilities;
 
 @layer utilities {
-    .main-container {
-        @apply px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto;
-    }
+  .main-container {
+    @apply px-8 pb-8 pt-2 bg-gray-100 overflow-y-auto;
+  }
 
-    .container {
-        @apply bg-white pt-6 rounded-lg shadow my-5;
-    }
+  .container2 {
+    @apply bg-white pt-6 rounded-lg shadow my-5 w-full;
+  }
 
-    .input-div-icon {
-        @apply flex items-center space-x-4 border px-5 py-3 rounded-md w-full;
-    }
+  .input-div-icon {
+    @apply flex items-center space-x-4 border px-5 py-3 rounded-md w-full;
+  }
 
-    .input-tag {
-        @apply border px-5 py-3 rounded-md;
-    }
+  .input-tag {
+    @apply border px-5 py-3 rounded-md;
+  }
 
-    .btn-add {
-        @apply bg-[#442799] text-white text-center px-5 py-3 font-semibold rounded-md;
-    }
+  .btn-add {
+    @apply bg-[#442799] text-white text-center px-5 py-3 font-semibold rounded-md;
+  }
 
-    .btn-outline-black {
-        @apply px-4 py-1 rounded-md border hover:bg-black hover:text-white;
-    }
+  .btn-outline-black {
+    @apply px-4 py-1 rounded-md border hover:bg-black hover:text-white;
+  }
 
-    .bg-primary {
-        @apply bg-[#442799];
-    }
+  .bg-primary {
+    @apply bg-[#442799];
+  }
 }

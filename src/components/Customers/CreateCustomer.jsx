@@ -2,6 +2,7 @@ import {
   addDoc,
   collection,
   doc,
+  serverTimestamp,
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
@@ -16,7 +17,13 @@ import {
   updateCustomerDetails,
 } from "../../store/CustomerSlice";
 
-const CreateCustomer = ({ isOpen, onClose, customerData, refresh }) => {
+const CreateCustomer = ({
+  isOpen,
+  onClose,
+  customerData,
+  onCustomerAdded,
+  refresh,
+}) => {
   const userDetails = useSelector((state) => state.users);
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
@@ -93,10 +100,21 @@ const CreateCustomer = ({ isOpen, onClose, customerData, refresh }) => {
     e.preventDefault();
     try {
       const companyRef = doc(db, "companies", companyId);
+      let customersRef = "";
+      let customerLogs = {
+        ref: customersRef,
+        date: serverTimestamp(),
+        section: "Customer",
+        action: "Update",
+        description: "",
+      };
       if (customerData?.id) {
-        const customersRef = doc(db, "customers", customerData.id);
+        customersRef = doc(db, "customers", customerData.id);
         const { id, createdAt, companyRef, ...rest } = formData;
         await updateDoc(customersRef, rest);
+        customerLogs.action = "Update";
+        customerLogs.description = `${customerData.name} details updated`;
+
         dispatch(
           updateCustomerDetails({
             id,
@@ -111,6 +129,9 @@ const CreateCustomer = ({ isOpen, onClose, customerData, refresh }) => {
           companyRef: companyRef,
           createdAt: Timestamp.fromDate(new Date()),
         });
+        customerLogs.action = "Create";
+        customerLogs.description = `${formData.name} details created`;
+
         const payload = {
           id: newCustomer.id,
           ...formData,
@@ -118,9 +139,14 @@ const CreateCustomer = ({ isOpen, onClose, customerData, refresh }) => {
         };
         dispatch(setCustomerDetails(payload));
       }
-      refresh()
+      await addDoc(
+        collection(db, "companies", companyId, "audit"),
+        customerLogs
+      );
+      refresh();
       setFileName("");
       onClose();
+      onCustomerAdded();
     } catch (error) {
       console.error("Error saving customer:", error);
     }
@@ -128,13 +154,15 @@ const CreateCustomer = ({ isOpen, onClose, customerData, refresh }) => {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
+        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
       onClick={onClose}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform  ${isOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={`bg-white  pt-2 transform transition-transform  ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
         style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >

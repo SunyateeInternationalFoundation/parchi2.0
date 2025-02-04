@@ -5,6 +5,7 @@ import {
   doc,
   getDocs,
   query,
+  serverTimestamp,
   Timestamp,
   where,
 } from "firebase/firestore";
@@ -12,6 +13,12 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
 import FormatTimestamp from "../../../constants/FormatTimestamp";
@@ -23,12 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../UI/select";
-import {
-  LuChevronLeft,
-  LuChevronRight,
-  LuChevronsLeft,
-  LuChevronsRight,
-} from "react-icons/lu";
 
 const Assets = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -95,15 +96,29 @@ const Assets = () => {
     }));
   };
 
-  async function OnDeleteAsset(assetId) {
+  async function OnDeleteAsset(assetId, name) {
     try {
       const confirm = window.confirm(
         "Are you sure you want to delete this asset?"
       );
       if (!confirm) return;
-
-      await deleteDoc(doc(db, "assets", assetId));
-
+      const ref = doc(db, "assets", assetId);
+      await deleteDoc(ref);
+      await addDoc(
+        collection(
+          db,
+          "companies",
+          userDetails?.companies[userDetails.selectedCompanyIndex]?.companyId,
+          "audit"
+        ),
+        {
+          ref: ref,
+          date: serverTimestamp(),
+          section: "Staff&Payout",
+          action: "Delete",
+          description: `${name} asset removed`,
+        }
+      );
       setAssets((prev) => {
         const updatedAsset = prev.filter((des) => des.id !== assetId);
 
@@ -118,7 +133,7 @@ const Assets = () => {
 
   return (
     <div className="main-container" style={{ width: "100%", height: "82vh" }}>
-      <div className="container">
+      <div className="container2">
         <header className="flex items-center justify-between px-5">
           <div className="flex items-center space-x-3">
             <h1 className="text-2xl font-bold">Assets</h1>
@@ -206,7 +221,9 @@ const Assets = () => {
                         >
                           <div
                             className="text-red-500 flex items-center justify-end"
-                            onClick={() => OnDeleteAsset(asset.id)}
+                            onClick={() =>
+                              OnDeleteAsset(asset.id, asset.assetName)
+                            }
                           >
                             <RiDeleteBin6Line />
                           </div>
@@ -356,7 +373,16 @@ const AddAssetModal = ({ onClose, onAddAsset, isOpen, companyId }) => {
       };
 
       const docRef = await addDoc(collection(db, "assets"), payload);
-
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        {
+          ref: docRef,
+          date: serverTimestamp(),
+          section: "Staff&Payout",
+          action: "Create",
+          description: `${assetName} asset created`,
+        }
+      );
       onAddAsset({ id: docRef.id, ...payload });
       onClose();
     } catch (error) {

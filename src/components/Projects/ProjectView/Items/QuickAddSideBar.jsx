@@ -3,6 +3,7 @@ import {
   collection,
   doc,
   getDoc,
+  serverTimestamp,
   setDoc,
   Timestamp,
 } from "firebase/firestore";
@@ -98,11 +99,17 @@ function QuickAddSideBar({ isOpen, onClose, isMaterialAdd }) {
         productRef = await addDoc(productDocRef, payloadInventory);
       }
 
-      await addDoc(
+      const ref = await addDoc(
         collection(db, "projects", projectId, "materials"),
         payloadMaterial
       );
-
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: ref,
+        date: serverTimestamp(),
+        section: "Project",
+        action: "Create",
+        description: `${formData.itemName} created from Quick add in project`,
+      });
       const productPayloadLogs = {
         date: payloadInventory.createdAt,
         status: "add",

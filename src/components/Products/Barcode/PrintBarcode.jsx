@@ -1,4 +1,11 @@
-import { addDoc, collection, doc, getDocs, serverTimestamp, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import Barcode from "react-barcode";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -30,7 +37,7 @@ function PrintBarcode() {
   const [editProduct, setEditProduct] = useState("");
   const [printData, setPrintData] = useState([]);
   const barcodeRef = useRef();
-  const totalQuantity = useRef(0)
+  const totalQuantity = useRef(0);
   const reactToPrintFn = useReactToPrint({
     contentRef: barcodeRef,
   });
@@ -167,23 +174,24 @@ function PrintBarcode() {
 
   async function printBarcodeData() {
     try {
-
-      reactToPrintFn()
+      reactToPrintFn();
       let payloadLog = {
         id: "",
         date: serverTimestamp(),
         section: "Inventory",
         action: "Print",
-        description: `Total ${totalQuantity.current} Quantity Barcode Printed by ${userDetails.selectedDashboard === "staff" ? "staff" : "owner"}`,
+        description: `Total ${
+          totalQuantity.current
+        } Quantity Barcode Printed by ${
+          userDetails.selectedDashboard === "staff" ? "staff" : "owner"
+        }`,
       };
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "audit"),
         payloadLog
       );
-
     } catch (error) {
-      console.log("🚀 ~ printBarcodeData ~ error:", error)
-
+      console.log("🚀 ~ printBarcodeData ~ error:", error);
     }
   }
 
@@ -198,10 +206,10 @@ function PrintBarcode() {
     let currentChunk = [];
     let currentQuantity = 0;
 
-    totalQuantity.current = 0
+    totalQuantity.current = 0;
     for (const item of selectProduct) {
       let remainingQuantity = item.quantity;
-      totalQuantity.current += item.quantity
+      totalQuantity.current += item.quantity;
       while (remainingQuantity > 0) {
         const availableSpace = limit - currentQuantity;
         const quantityToAdd = Math.min(availableSpace, remainingQuantity);
@@ -213,8 +221,6 @@ function PrintBarcode() {
           });
           currentQuantity += quantityToAdd;
           remainingQuantity -= quantityToAdd;
-
-
         }
 
         if (currentQuantity >= limit) {
@@ -248,7 +254,7 @@ function PrintBarcode() {
 
   return (
     <div className="main-container" style={{ height: "81vh" }}>
-      <div className="container p-5">
+      <div className="container2 p-5">
         <div className="">
           <div className="flex justify-between items-center mb-4 space-x-3">
             <div className="flex  items-center w-full">
@@ -291,8 +297,8 @@ function PrintBarcode() {
                       val.length > 0
                         ? val
                         : selectedCategory == "all"
-                          ? products
-                          : []
+                        ? products
+                        : []
                     );
                   }}
                   onBlur={() => {
@@ -312,15 +318,14 @@ function PrintBarcode() {
                             setIsModelOpen(true);
                             return;
                           }
-                          let isFound = false
-                          const updatedProduct = selectProduct.map(ele => {
+                          let isFound = false;
+                          const updatedProduct = selectProduct.map((ele) => {
                             if (ele.id == product.id) {
-                              ++ele.quantity
-                              isFound = true
+                              ++ele.quantity;
+                              isFound = true;
                             }
                             return ele;
-                          }
-                          )
+                          });
                           if (isFound) {
                             setSelectProduct(updatedProduct);
                           } else {
@@ -329,8 +334,6 @@ function PrintBarcode() {
                               { ...product, quantity: 1 },
                             ]);
                           }
-
-
                         }}
                         className="flex flex-col   text-gray-800 hover:bg-blue-50 cursor-pointer transition-all duration-150 ease-in-out"
                       >

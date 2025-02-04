@@ -9,6 +9,12 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import FormatTimestamp from "../../../../constants/FormatTimestamp";
@@ -20,12 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../UI/select";
-import {
-  LuChevronLeft,
-  LuChevronRight,
-  LuChevronsLeft,
-  LuChevronsRight,
-} from "react-icons/lu";
 
 const Files = () => {
   const [loading, setLoading] = useState(false);
@@ -59,7 +59,6 @@ const Files = () => {
   const { id } = useParams();
   const projectId = id;
 
-  
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
@@ -104,15 +103,14 @@ const Files = () => {
         ...doc.data(),
       }));
       setFiles(filesData);
-      setTotalPages(Math.ceil(filesData.length / 10)); 
-      setPaginationData(filesData.slice(0, 10)); 
+      setTotalPages(Math.ceil(filesData.length / 10));
+      setPaginationData(filesData.slice(0, 10));
     } catch (error) {
       console.error("Error fetching files:", error);
     }
   }
 
   useEffect(() => {
-   
     setPaginationData(files.slice(currentPage * 10, currentPage * 10 + 10));
     setTotalPages(Math.ceil(files.length / 10));
   }, [files, currentPage]);
@@ -132,14 +130,20 @@ const Files = () => {
       // const fileURL = await getDownloadURL(storageRef);
 
       const filesRef = collection(db, "projects", projectId, "files");
-      await addDoc(filesRef, {
+      const fileRef = await addDoc(filesRef, {
         name: formData.name,
         customerOrVendorRef: formData.customerOrVendorRef,
         // fileURL,
         phoneNumber: formData.phoneNumber,
         createdAt: serverTimestamp(),
       });
-
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: fileRef,
+        date: serverTimestamp(),
+        section: "Project",
+        action: "Create",
+        description: `${formData.name} file created`,
+      });
       setFormData({
         name: "",
         customerOrVendorRef: "",

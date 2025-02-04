@@ -4,6 +4,7 @@ import {
   doc,
   getDocs,
   query,
+  serverTimestamp,
   Timestamp,
   updateDoc,
   where,
@@ -43,10 +44,10 @@ function SidebarLoans({
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   useEffect(() => {
-    if (loanDataToEdit.id) {
+    if (loanDataToEdit?.id) {
       setFormData(loanDataToEdit);
     }
-  }, [loanDataToEdit.id, staffData]);
+  }, [loanDataToEdit?.id, staffData]);
 
   useEffect(() => {
     async function fetchStaffData() {
@@ -83,6 +84,13 @@ function SidebarLoans({
         ...formData,
         createdAt: Timestamp.fromDate(new Date()), // Store creation timestamp
       };
+      const payloadLog = {
+        ref: "",
+        date: serverTimestamp(),
+        section: "Staff&Payout",
+        action: "Create",
+        description: `${formData.staff} staff loan created`,
+      };
 
       if (loanDataToEdit) {
         // Update existing loan record
@@ -94,6 +102,9 @@ function SidebarLoans({
           loanDataToEdit.id
         );
         await updateDoc(loanRef, payload); // Update the loan in the database
+        payloadLog.ref = loanRef;
+        payloadLog.action = "Update";
+        payloadLog.description = `${formData.staff} staff loan updated`;
         alert("Loan successfully updated!");
       } else {
         // Add new loan record
@@ -101,10 +112,11 @@ function SidebarLoans({
           collection(db, "companies", companyId, "loans"),
           payload
         );
+        payloadLog.ref = loanRef;
         onAddLoan({ id: loanRef.id, ...payload }); // Pass the new loan data back
         alert("Loan successfully added!");
       }
-
+      await addDoc(collection(db, "companies", companyId, "audit"), payloadLog);
       // Reset form data after successful operation
       setFormData({
         staff: "",
@@ -125,13 +137,15 @@ function SidebarLoans({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
+        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
       onClick={onClose}
     >
       <div
-        className={`bg-white shadow-lg transform transition-transform ${isOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={`bg-white shadow-lg transform transition-transform ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
         style={{ maxHeight: "100vh", width: "480px" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -185,10 +199,11 @@ function SidebarLoans({
               {["Loans", "Deductions", "Advance"].map((option) => (
                 <label
                   key={option}
-                  className={`px-5 py-2 border rounded-lg cursor-pointer text-center flex-1 transition-all ${formData.financialOption === option
-                    ? "bg-black text-white border-black"
-                    : "bg-white text-black border-gray-300 hover:bg-gray-100"
-                    }`}
+                  className={`px-5 py-2 border rounded-lg cursor-pointer text-center flex-1 transition-all ${
+                    formData.financialOption === option
+                      ? "bg-black text-white border-black"
+                      : "bg-white text-black border-gray-300 hover:bg-gray-100"
+                  }`}
                 >
                   <input
                     type="radio"
@@ -219,7 +234,7 @@ function SidebarLoans({
                     formatDate(
                       new Date(
                         formData.date.seconds * 1000 +
-                        formData.date.nanoseconds / 1000000
+                          formData.date.nanoseconds / 1000000
                       ),
                       "PPP"
                     )
@@ -235,9 +250,9 @@ function SidebarLoans({
                   selected={
                     formData.date
                       ? new Date(
-                        formData.date.seconds * 1000 +
-                        formData.date.nanoseconds / 1000000
-                      )
+                          formData.date.seconds * 1000 +
+                            formData.date.nanoseconds / 1000000
+                        )
                       : new Date() // Default to today's date if no date is selected
                   }
                   onSelect={(val) => {
@@ -277,10 +292,11 @@ function SidebarLoans({
               {["Month", "Week", "At a Time"].map((option) => (
                 <label
                   key={option}
-                  className={`px-5 py-2 border rounded-lg cursor-pointer text-center flex-1 transition-all ${formData.paymentSchedule === option
-                    ? "bg-black text-white border-black"
-                    : "bg-white text-black border-gray-300 hover:bg-gray-100"
-                    }`}
+                  className={`px-5 py-2 border rounded-lg cursor-pointer text-center flex-1 transition-all ${
+                    formData.paymentSchedule === option
+                      ? "bg-black text-white border-black"
+                      : "bg-white text-black border-gray-300 hover:bg-gray-100"
+                  }`}
                 >
                   <input
                     type="radio"
@@ -313,8 +329,8 @@ function SidebarLoans({
               isLoading
                 ? "Saving..."
                 : loanDataToEdit
-                  ? "Save Changes" // Display Save Changes if editing an existing loan
-                  : "Add Loan" // Display Add Loan if adding a new loan
+                ? "Save Changes" // Display Save Changes if editing an existing loan
+                : "Add Loan" // Display Add Loan if adding a new loan
             }
           </button>
         </div>

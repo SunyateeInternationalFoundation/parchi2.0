@@ -85,13 +85,22 @@ const Roles = () => {
       const staffRef = doc(db, "staff", staff.id);
       const updatedRoles = tempRoles[staff.id];
       await updateDoc(staffRef, { roles: updatedRoles });
-      await addDoc(collection(db, "roleLogs"), {
-        date: serverTimestamp(),
-        name: staff.name,
-        access: currentRoles,
-        staffRef,
-      });
-
+      // await addDoc(collection(db, "roleLogs"), {
+      //   date: serverTimestamp(),
+      //   name: staff.name,
+      //   access: currentRoles,
+      //   staffRef,
+      // });
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        {
+          ref: staffRef,
+          date: serverTimestamp(),
+          section: "Staff&Payout",
+          action: "Update",
+          description: `${staff.name} staff roles updated`,
+        }
+      );
       setStaffData((prevData) =>
         prevData.map((item) =>
           item.id === staff.id ? { ...item, roles: updatedRoles } : item
@@ -147,7 +156,7 @@ const Roles = () => {
   console.log("temp roles", tempRoles);
   return (
     <div className="main-container" style={{ height: "82vh" }}>
-      <div className="container">
+      <div className="container2">
         <header className="flex items-center px-5 py-3">
           <h1 className="text-2xl font-bold">Roles</h1>
         </header>

@@ -1,4 +1,9 @@
-import { addDoc, collection, Timestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+  Timestamp,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
@@ -61,7 +66,13 @@ function SetWarehouse({ isOpen, onClose, onAddWarehouse, companyId }) {
         collection(db, "companies", companyId, "warehouses"),
         warehouseData
       );
-
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: warehouseRef,
+        date: serverTimestamp(),
+        section: "Inventory",
+        action: "Create",
+        description: `${name} warehouse created`,
+      });
       onAddWarehouse({ id: warehouseRef.id, ...warehouseData });
       alert("Warehouse successfully created!");
       setFormData({

@@ -1,4 +1,11 @@
-import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  serverTimestamp,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdTrash } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
@@ -59,24 +66,31 @@ const Warehouse = () => {
     }));
   };
 
-  async function OnDeleteWarehouse(e, warehouseId) {
+  async function OnDeleteWarehouse(e, warehouseId, name) {
     e.stopPropagation();
     try {
       const confirm = window.confirm(
         "Are you sure you want to delete this warehouse?"
       );
       if (!confirm) return;
-
-      await deleteDoc(
-        doc(
-          db,
-          "companies",
-          companyDetails.companyId,
-          "warehouses",
-          warehouseId
-        )
+      const wareRef = doc(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "warehouses",
+        warehouseId
       );
-
+      await deleteDoc(wareRef);
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        {
+          ref: wareRef,
+          date: serverTimestamp(),
+          section: "Inventory",
+          action: "Delete",
+          description: `${name} removed from warehouse`,
+        }
+      );
       setWarehouses((prev) => {
         const updatedWarehouses = prev.filter(
           (ware) => ware.id !== warehouseId
@@ -106,7 +120,7 @@ const Warehouse = () => {
   return (
     <div className="main-container overflow-y-auto" style={{ height: "81vh" }}>
       <div className="flex justify-center items-center">
-        <div className="container">
+        <div className="container2">
           <div className="flex justify-between items-center px-5 ">
             <div
               className="flex items-center space-x-4  border
@@ -173,7 +187,7 @@ const Warehouse = () => {
                         className="px-5 py-3 text-start text-red-700 text-2xl"
                         onClick={(e) => {
                           e.preventDefault();
-                          OnDeleteWarehouse(e, warehouse.id);
+                          OnDeleteWarehouse(e, warehouse.id, warehouse.name);
                         }}
                       >
                         <IoMdTrash />

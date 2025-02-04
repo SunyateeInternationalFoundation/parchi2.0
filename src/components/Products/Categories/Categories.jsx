@@ -1,4 +1,11 @@
-import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  serverTimestamp,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoMdTrash } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
@@ -60,18 +67,31 @@ const Categories = () => {
     }));
   };
 
-  async function OnDeleteCategory(e, categoryId) {
+  async function OnDeleteCategory(e, categoryId, name) {
     e.stopPropagation();
     try {
       const confirm = window.confirm(
         "Are you sure you want to delete this category?"
       );
       if (!confirm) return;
-
-      await deleteDoc(
-        doc(db, "companies", companyDetails.companyId, "categories", categoryId)
+      const categoryRef = doc(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "categories",
+        categoryId
       );
-
+      await deleteDoc(categoryRef);
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        {
+          ref: categoryRef,
+          date: serverTimestamp(),
+          section: "Inventory",
+          action: "Delete",
+          description: `${name} removed from categories`,
+        }
+      );
       setCategories((prev) => {
         const updatedCategories = prev.filter((cat) => cat.id !== categoryId);
 
@@ -100,7 +120,7 @@ const Categories = () => {
   return (
     <div className="main-container" style={{ height: "81vh" }}>
       <div className="flex justify-center items-center">
-        <div className="container">
+        <div className="container2">
           <div className="flex justify-between items-center px-5">
             <div
               className="flex items-center space-x-4  border
@@ -152,7 +172,7 @@ const Categories = () => {
                         <IoMdTrash
                           onClick={(e) => {
                             e.preventDefault();
-                            OnDeleteCategory(e, category.id);
+                            OnDeleteCategory(e, category.id, category.name);
                           }}
                           className="cursor-pointer text-red-700 text-2xl"
                         />

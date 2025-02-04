@@ -18,7 +18,7 @@ function ReturnsHistory({ products }) {
   return (
     <div className="main-container" style={{ height: "82vh" }}>
       <div className="flex justify-center items-center">
-        <div className="container">
+        <div className="container2">
           <div className="" style={{ height: "76vh " }}>
             <table className="w-full text-center text-gray-500 font-semibold">
               <thead className="border-b">

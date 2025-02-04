@@ -4,6 +4,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  serverTimestamp,
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
@@ -85,11 +86,28 @@ function CreateProject() {
         companyRef,
         createdAt: Timestamp.fromDate(new Date()),
       };
+      const projectLog = {
+        ref: "",
+        date: serverTimestamp(),
+        section: "Project",
+        action: "Create",
+        description: `${projectForm.name} project created`,
+      };
+
       if (id) {
-        await updateDoc(doc(db, "projects", id), projectForm);
+        const projectRef = doc(db, "projects", id);
+        await updateDoc(projectRef, projectForm);
+        projectLog.ref = projectRef;
+        projectLog.action = "Update";
+        projectLog.description = `${projectForm.name} project updated`;
       } else {
-        await addDoc(collection(db, "projects"), payload);
+        const projectRef = await addDoc(collection(db, "projects"), payload);
+        projectLog.ref = projectRef;
       }
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        projectLog
+      );
       alert(`Successfully  ${id ? "Edited" : "Created"} the Project`);
       navigate("./../");
     } catch (err) {

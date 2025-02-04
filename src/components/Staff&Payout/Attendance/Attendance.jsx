@@ -210,7 +210,7 @@ function Attendance() {
           </div>
         </div>
       </div>
-      <div className="container">
+      <div className="container2">
         <header className="flex justify-between items-center space-x-3 px-5">
           <div className="flex space-x-3 item-center">
             <h1 className="text-2xl font-bold">Attendance</h1>

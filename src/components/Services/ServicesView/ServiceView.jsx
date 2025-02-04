@@ -1,4 +1,11 @@
-import { deleteDoc, doc, getDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import jsPDF from "jspdf";
 import { useEffect, useRef, useState } from "react";
@@ -274,6 +281,13 @@ function ServiceView() {
       );
       if (!confirmDelete) return;
       await deleteDoc(ServiceDocRef);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: ServiceDocRef,
+        date: serverTimestamp(),
+        section: "Subscription",
+        action: "Delete",
+        description: `${service.prefix}-${service.no} deleted by ${service.createdBy.who}`,
+      });
       // navigate("/services");
       navigate("./../");
     } catch (error) {

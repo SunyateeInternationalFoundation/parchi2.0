@@ -6,6 +6,7 @@ import {
   doc,
   getDocs,
   query,
+  serverTimestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -91,6 +92,16 @@ function Reminder() {
         email: companyDetails.email || userDetails.email,
       };
       const docRef = await addDoc(collection(db, "reminder"), payload);
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        {
+          ref: docRef,
+          date: serverTimestamp(),
+          section: "Remainder",
+          action: "Create",
+          description: `${formData.reminderName} remainder created`,
+        }
+      );
       setReminders((prevReminders) => [
         ...prevReminders,
         { id: docRef.id, ...payload },
@@ -108,9 +119,20 @@ function Reminder() {
   };
 
   // Update reminder completion status
-  const onUpdateReminder = async (id, isComplete) => {
+  const onUpdateReminder = async (id, isComplete, name) => {
     try {
-      await updateDoc(doc(db, "reminder", id), { isComplete });
+      const ref = doc(db, "reminder", id);
+      await updateDoc(ref, { isComplete });
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        {
+          ref: ref,
+          date: serverTimestamp(),
+          section: "Remainder",
+          action: "Update",
+          description: `${name} remainder updated`,
+        }
+      );
       setReminders((prevReminders) =>
         prevReminders.map((reminder) =>
           reminder.id === id ? { ...reminder, isComplete } : reminder
@@ -122,9 +144,20 @@ function Reminder() {
   };
 
   // Delete reminder with fade-out animation
-  const onDeleteReminder = async (id) => {
+  const onDeleteReminder = async (id, name) => {
     try {
-      await deleteDoc(doc(db, "reminder", id));
+      const ref = doc(db, "reminder", id);
+      await deleteDoc(ref);
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        {
+          ref: ref,
+          date: serverTimestamp(),
+          section: "Remainder",
+          action: "Delete",
+          description: `${name} remainder deleted`,
+        }
+      );
       setReminders((prevReminders) =>
         prevReminders.filter((reminder) => reminder.id !== id)
       );
@@ -139,7 +172,7 @@ function Reminder() {
   return (
     <div className="main-container " style={{ height: "92vh" }}>
       <h1 className="text-2xl font-bold  mt-4 py-3">Reminder</h1>
-      <div className="container">
+      <div className="container2">
         <nav className="flex space-x-4  px-5">
           {["Reminder", "Completed"].map((tab) => (
             <button
@@ -238,7 +271,11 @@ function Reminder() {
                             checked={item.isComplete}
                             className="w-5 h-5"
                             onChange={() =>
-                              onUpdateReminder(item.id, !item.isComplete)
+                              onUpdateReminder(
+                                item.id,
+                                !item.isComplete,
+                                item.reminderName
+                              )
                             }
                           />
                         </td>
@@ -255,7 +292,9 @@ function Reminder() {
                         <td className="px-12 py-3 text-end">
                           <button
                             className="text-red-500 hover:text-red-700"
-                            onClick={() => onDeleteReminder(item.id)}
+                            onClick={() =>
+                              onDeleteReminder(item.id, item.reminderName)
+                            }
                           >
                             <RiDeleteBin6Line />
                           </button>
