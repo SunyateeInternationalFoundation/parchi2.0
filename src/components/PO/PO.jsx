@@ -118,7 +118,7 @@ function PO() {
         action: "Update",
         description: `${data.poNo} status updated by ${data.createdBy}`,
       });
-      let receivedCount = 0
+      let receivedCount = 0;
       const UpdatedData = POList.map((ele) => {
         if (ele.id === poId) {
           ele.orderStatus = value;
@@ -128,7 +128,7 @@ function PO() {
         }
         return ele;
       });
-      setPOCount(val => ({
+      setPOCount((val) => ({
         ...val,
         received: receivedCount,
       }));
@@ -307,7 +307,7 @@ function PO() {
           </div>
         </div>
 
-        <div className="container">
+        <div className="container2">
           <nav className="flex items-center mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">
               <div
@@ -372,13 +372,13 @@ function PO() {
                     <div className="w-full flex justify-center">
                       {(userDetails.selectedDashboard === "" ||
                         role?.create) && (
-                          <Link
-                            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-                            to="create-po"
-                          >
-                            + Create Po
-                          </Link>
-                        )}
+                        <Link
+                          className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                          to="create-po"
+                        >
+                          + Create Po
+                        </Link>
+                      )}
                     </div>
                   </div>
                 )}

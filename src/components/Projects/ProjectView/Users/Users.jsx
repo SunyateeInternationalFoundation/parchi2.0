@@ -58,7 +58,7 @@ function Users() {
 
       if (projectSnapshot.exists()) {
         const projectData = projectSnapshot.data();
-
+        console.log("project", projectData);
         const customerRef = projectData.customerRef || [];
         const vendorRef = projectData.vendorRef || [];
         const staffRef = projectData.staffRef || [];
@@ -115,7 +115,7 @@ function Users() {
   return (
     <div className="main-container" style={{ height: "80vh" }}>
       <div className="flex justify-center items-center">
-        <div className="container">
+        <div className="container2">
           <nav className="flex mb-4 px-5">
             <div className="flex items-center space-x-4 w-full">
               <div className="w-full space-x-4">
@@ -300,6 +300,7 @@ function Users() {
               customerRef: projectDetails.customerRef,
               vendorRef: projectDetails.vendorRef,
               staffRef: projectDetails.staffRef,
+              name: projectDetails.name,
             }}
             onClose={() => {
               setIsSideBarOpen(false);

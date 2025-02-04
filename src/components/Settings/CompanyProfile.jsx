@@ -112,7 +112,7 @@ const CompanyProfile = () => {
     <div className="main-container overflow-y-auto" style={{ height: "92vh" }}>
       <h1 className="text-2xl font-bold text-gray-800 px-5">Settings</h1>
 
-      <div className="container px-6 pb-5">
+      <div className="container2 px-6 pb-5">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold text-gray-700">
             Company Details

@@ -105,7 +105,7 @@ const Prefix = () => {
     <div className="main-container">
       <h1 className="text-2xl font-bold text-gray-800 px-5">Settings</h1>
 
-      <div className="container">
+      <div className="container2">
         <div className="mx-auto bg-white shadow-md rounded-md p-6">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-semibold text-gray-700">

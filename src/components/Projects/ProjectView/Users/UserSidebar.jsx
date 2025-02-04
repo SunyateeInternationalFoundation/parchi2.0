@@ -1,8 +1,10 @@
 import {
+  addDoc,
   collection,
   doc,
   getDocs,
   query,
+  serverTimestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -138,6 +140,14 @@ function UserSidebar({ isOpen, onClose, projectId, projectDetails, Refresh }) {
         [field.name]: field.data,
       };
       await updateDoc(projectDocRef, payload);
+
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: projectDocRef,
+        date: serverTimestamp(),
+        section: "Project",
+        action: "Create",
+        description: `members added in ${projectDetails?.name}`,
+      });
       alert("Users added successfully!");
       onClose();
       Refresh();

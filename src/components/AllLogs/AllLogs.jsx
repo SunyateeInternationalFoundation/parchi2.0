@@ -1,4 +1,4 @@
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
@@ -15,7 +15,7 @@ import { db } from "../../firebase";
 const AllLogs = () => {
   const [loading, setLoading] = useState(false);
 
-  const [books, setBooks] = useState([]);
+  const [allLogs, setAllLogs] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
@@ -29,7 +29,8 @@ const AllLogs = () => {
     setLoading(true);
     try {
       const bookRef = collection(db, "companies", companyId, "audit");
-      const querySnapshot = await getDocs(bookRef);
+      const q = query(bookRef, orderBy("date", "desc"));
+      const querySnapshot = await getDocs(q);
       const bookData = querySnapshot.docs.map((doc) => {
         const data = doc.data();
         return {
@@ -40,9 +41,9 @@ const AllLogs = () => {
 
       setTotalPages(Math.ceil(bookData.length / 10));
       setPaginationData(bookData.slice(0, 10));
-      setBooks(bookData);
+      setAllLogs(bookData);
     } catch (error) {
-      console.log("🚀 ~ fetchBooks ~ error:", error);
+      console.log("🚀 ~ fetchallLogs ~ error:", error);
     } finally {
       setLoading(false);
     }
@@ -52,7 +53,7 @@ const AllLogs = () => {
     fetchLogs();
   }, []);
   useEffect(() => {
-    const filteredBook = books.filter((book) => {
+    const filteredLogs = allLogs.filter((book) => {
       const { section, action } = book;
       const matchesSearch = `${section} ${action}`
         ?.toLowerCase()
@@ -62,10 +63,10 @@ const AllLogs = () => {
     });
 
     setPaginationData(
-      filteredBook.slice(currentPage * 10, currentPage * 10 + 10)
+      filteredLogs.slice(currentPage * 10, currentPage * 10 + 10)
     );
-  }, [currentPage, books, searchTerm]);
-  console.log("logs", books);
+  }, [currentPage, allLogs, searchTerm]);
+  console.log("logs", allLogs);
   return (
     <div className="main-container" style={{ height: "92vh" }}>
       <header className="mt-4  py-3">
@@ -73,7 +74,7 @@ const AllLogs = () => {
       </header>
 
       <div className="flex items-center justify-center">
-        <div className="container">
+        <div className="container2">
           <nav className="flex items-center mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">
               <div className="flex items-center space-x-4  border px-5  py-3 rounded-md w-full">
@@ -92,7 +93,7 @@ const AllLogs = () => {
           {loading ? (
             <div className="text-center py-6">Loading ...</div>
           ) : (
-            <div className="overflow-y-auto" style={{ minHeight: "96vh" }}>
+            <div className="overflow-y-auto" style={{ minHeight: "80vh" }}>
               <table className="w-full border-collapse text-start">
                 <thead className=" bg-white">
                   <tr className="border-b">
@@ -112,18 +113,18 @@ const AllLogs = () => {
                 </thead>
                 <tbody>
                   {paginationData.length > 0 ? (
-                    paginationData.map((book) => (
+                    paginationData.map((logs) => (
                       <tr
-                        key={book.id}
+                        key={logs.id}
                         className="border-b border-gray-200 text-center cursor-pointer"
                       >
                         <td className="px-8 py-3 text-start">
-                          <FormatTimestamp timestamp={book.date} />
+                          <FormatTimestamp timestamp={logs.date} />
                         </td>
-                        <td className="px-5 py-3 text-start">{book.section}</td>
-                        <td className="px-5 py-3 ">{book.action}</td>
+                        <td className="px-5 py-3 text-start">{logs.section}</td>
+                        <td className="px-5 py-3 ">{logs.action}</td>
                         <td className="px-5 py-3 text-start">
-                          {book.description}
+                          {logs.description}
                         </td>
                       </tr>
                     ))
@@ -138,7 +139,7 @@ const AllLogs = () => {
                           />
                         </div>
 
-                        <div> No Book Found </div>
+                        <div> No Logs Found </div>
                       </td>
                     </tr>
                   )}
@@ -146,7 +147,7 @@ const AllLogs = () => {
               </table>
             </div>
           )}
-          <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
+          <div className="flex items-center flex-wrap gap-2 justify-between p-5">
             <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
               {currentPage + 1} of {totalPages || 1} row(s) selected.
             </div>

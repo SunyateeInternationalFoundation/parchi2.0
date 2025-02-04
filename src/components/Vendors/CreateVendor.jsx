@@ -86,22 +86,35 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded, vendorData }) => {
       }
     }
   };
-
+  console.log("vendordata", vendorData);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      let vendorsRef = "";
+      let vendorLogs = {
+        ref: vendorsRef,
+        date: serverTimestamp(),
+        section: "Vendor",
+        action: "",
+        description: "",
+      };
       if (vendorData?.id) {
         const { id, ...rest } = formData;
         const vendorRef = doc(db, "vendors", vendorData.id);
         await updateDoc(vendorRef, rest);
+        vendorLogs.action = "Update";
+        vendorLogs.description = `${vendorData.name} details updated`;
       } else {
         await addDoc(collection(db, "vendors"), {
           ...formData,
           companyRef: doc(db, "companies", companyId),
           createdAt: serverTimestamp(),
         });
+        vendorLogs.action = "Create";
+        vendorLogs.description = `${formData.name} details created`;
       }
 
+      await addDoc(collection(db, "companies", companyId, "audit"), vendorLogs);
       setFileName("");
       onClose();
       onVendorAdded();

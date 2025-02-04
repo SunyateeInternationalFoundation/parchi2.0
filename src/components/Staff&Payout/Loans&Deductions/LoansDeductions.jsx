@@ -1,10 +1,12 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   getDocs,
   orderBy,
   query,
+  serverTimestamp,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
@@ -76,16 +78,22 @@ const LoansDeductions = () => {
     setLoans((prev) => [...prev, newData]);
   };
 
-  async function OnDeleteLoan(e, loanId) {
+  async function OnDeleteLoan(e, loanId, name) {
     e.stopPropagation();
     try {
       const confirm = window.confirm(
         "Are you sure you want to delete this Loan?"
       );
       if (!confirm) return;
-
-      await deleteDoc(doc(db, "companies", companyId, "loans", loanId));
-
+      const ref = doc(db, "companies", companyId, "loans", loanId);
+      await deleteDoc(ref);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: ref,
+        date: serverTimestamp(),
+        section: "Staff&Payout",
+        action: "Delete",
+        description: `${name} staff loan deleted`,
+      });
       setLoans((prev) => {
         const updatedLoans = prev.filter((item) => item.id !== loanId);
         return updatedLoans;
@@ -103,7 +111,7 @@ const LoansDeductions = () => {
 
   return (
     <div className="main-container" style={{ height: "82vh" }}>
-      <div className="container">
+      <div className="container2">
         <header className="flex items-center justify-between px-5">
           <div className="flex space-x-3 items-center">
             <h1 className="text-2xl font-bold">Loans&Deductions</h1>
@@ -185,7 +193,9 @@ const LoansDeductions = () => {
                         >
                           <div
                             className="text-red-500 flex items-center justify-end"
-                            onClick={(e) => OnDeleteLoan(e, loan.id)}
+                            onClick={(e) =>
+                              OnDeleteLoan(e, loan.id, loan.staff)
+                            }
                           >
                             <RiDeleteBin6Line />
                           </div>

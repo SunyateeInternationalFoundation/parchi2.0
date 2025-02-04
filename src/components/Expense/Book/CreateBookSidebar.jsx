@@ -1,4 +1,9 @@
-import { addDoc, collection, Timestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+  Timestamp,
+} from "firebase/firestore";
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
@@ -40,7 +45,17 @@ function CreateBookSidebar({ onClose, isOpen, refresh }) {
         ...formData,
         createdAt: Timestamp.fromDate(new Date()),
       };
-      await addDoc(collection(db, "companies", companyId, "books"), payload);
+      const bookRef = await addDoc(
+        collection(db, "companies", companyId, "books"),
+        payload
+      );
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: bookRef,
+        date: serverTimestamp(),
+        section: "Expense",
+        action: "Create",
+        description: `${formData.name} book/account created`,
+      });
       alert("successfully created Account");
       resetForm();
       refresh();

@@ -3,6 +3,7 @@ import {
   collection,
   doc,
   getDoc,
+  serverTimestamp,
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
@@ -157,17 +158,32 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
         projectRef,
         transactionType: isModalOpen.type,
       };
+      let expenseLogs = {
+        ref: bookRef,
+        date: serverTimestamp(),
+        section: "Project",
+        action: "Create",
+        description: "",
+      };
       if (updateData?.id) {
-        await updateDoc(
-          doc(db, "companies", companyId, "expenses", updateData.id),
-          payload
-        );
+        const ref = doc(db, "companies", companyId, "expenses", updateData.id);
+        await updateDoc(ref, payload);
+        expenseLogs.ref = ref;
+        expenseLogs.action = "Update";
+        expenseLogs.description = `${isModalOpen.type} details updated in project`;
       } else {
-        await addDoc(
+        const ref = await addDoc(
           collection(db, "companies", companyId, "expenses"),
           payload
         );
+        expenseLogs.ref = ref;
+        expenseLogs.action = "Create";
+        expenseLogs.description = `${isModalOpen.type} details updated in project`;
       }
+      await addDoc(
+        collection(db, "companies", companyId, "audit"),
+        expenseLogs
+      );
       alert(
         `successfully  ${updateData?.id ? "Edit " : "Create "} ${
           isModalOpen.type

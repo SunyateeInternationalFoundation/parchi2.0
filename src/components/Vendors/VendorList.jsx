@@ -1,9 +1,11 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   getDocs,
   query,
+  serverTimestamp,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -119,13 +121,21 @@ const VendorList = () => {
     navigator(vendorId);
   }
 
-  async function onHandleDeleteVendor(vendorId) {
+  async function onHandleDeleteVendor(vendorId, name) {
     try {
       const confirmDelete = window.confirm(
         "Are you sure you want to delete this Vendor?"
       );
       if (!confirmDelete) return;
-      await deleteDoc(doc(db, "vendors", vendorId));
+      const vendorRef = doc(db, "vendors", vendorId);
+      await deleteDoc(vendorRef);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: vendorRef,
+        date: serverTimestamp(),
+        section: "Vendor",
+        action: "Delete",
+        description: `${name} removed`,
+      });
       setVendors((val) => val.filter((ele) => ele.id !== vendorId));
     } catch (error) {
       console.log("🚀 ~ onHandleDeleteVendor ~ error:", error);
@@ -156,7 +166,7 @@ const VendorList = () => {
         )}
         <div>Vendor</div>
       </div>
-      <div className="container">
+      <div className="container2">
         <nav className="flex pb-3 px-5">
           <div className="space-x-4 w-full">
             <div
@@ -257,7 +267,9 @@ const VendorList = () => {
                       >
                         <div
                           className="text-red-500 flex items-center justify-center"
-                          onClick={() => onHandleDeleteVendor(vendor.id)}
+                          onClick={() =>
+                            onHandleDeleteVendor(vendor.id, vendor.name)
+                          }
                         >
                           <RiDeleteBin6Line />
                         </div>

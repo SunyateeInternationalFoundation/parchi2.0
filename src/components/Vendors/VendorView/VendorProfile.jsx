@@ -1,14 +1,13 @@
-import { doc, updateDoc } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { useEffect, useState } from "react";
-import { FaArrowDown, FaArrowUp, FaUserEdit } from "react-icons/fa";
-import { useSelector } from "react-redux";
-import { db, storage } from "../../../firebase";
-import CreateVendor from "../CreateVendor";
-import { FaPhoneAlt } from "react-icons/fa";
-import { FaEnvelope } from "react-icons/fa";
+import { useState } from "react";
+import {
+  FaArrowDown,
+  FaArrowUp,
+  FaEnvelope,
+  FaPen,
+  FaPhoneAlt,
+} from "react-icons/fa";
 import dummy from "../../../assets/dummy.jpeg";
-import { FaPen } from "react-icons/fa";
+import CreateVendor from "../CreateVendor";
 
 const VendorProfile = ({ vendorData, refresh, expenseData }) => {
   const [isEdit, setIsEdit] = useState(false);
@@ -18,7 +17,7 @@ const VendorProfile = ({ vendorData, refresh, expenseData }) => {
   return (
     <div className="main-container">
       {vendorData.id ? (
-        <div className="container p-6">
+        <div className="container2 p-6">
           {progress > 0 && (
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div

@@ -4,6 +4,7 @@ import {
   doc,
   getDocs,
   query,
+  serverTimestamp,
   Timestamp,
   where,
 } from "firebase/firestore";
@@ -119,7 +120,14 @@ function CreateApproval({ isOpen, projectId, onClose, newApprovalAdded }) {
       };
       payload.file[fileField] = fileURL;
       const approvalsRef = collection(db, `projects/${projectId}/approvals`);
-      await addDoc(approvalsRef, payload);
+      const refer = await addDoc(approvalsRef, payload);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: refer,
+        date: serverTimestamp(),
+        section: "Project",
+        action: "Create",
+        description: `${approvalForm.name} approval created  in project`,
+      });
       newApprovalAdded();
       alert("successfully Created Approval");
       Reset();

@@ -17,7 +17,7 @@ const Profile = ({ customerData, expenseData, refresh }) => {
       {!customerData.id ? (
         <div className="text-gray-500 text-center">Loading customer...</div>
       ) : (
-        <div className="container p-6">
+        <div className="container2 p-6">
           <div className="flex items-center justify-end space-x-4">
             <button
               className="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-lg  hover:bg-gray-100 transition border border-gray-300"
@@ -56,13 +56,13 @@ const Profile = ({ customerData, expenseData, refresh }) => {
                       <h2 className="text-2xl font-semibold mb-1 break-words max-w-[200px]">
                         {customerData.name
                           ? customerData.name
-                            .split(" ")
-                            .map(
-                              (word) =>
-                                word.charAt(0).toUpperCase() +
-                                word.slice(1).toLowerCase()
-                            )
-                            .join(" ")
+                              .split(" ")
+                              .map(
+                                (word) =>
+                                  word.charAt(0).toUpperCase() +
+                                  word.slice(1).toLowerCase()
+                              )
+                              .join(" ")
                           : "N/A"}
                       </h2>
                     </div>

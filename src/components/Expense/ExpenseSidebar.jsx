@@ -2,6 +2,7 @@ import {
   addDoc,
   collection,
   doc,
+  serverTimestamp,
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
@@ -147,17 +148,33 @@ function ExpenseSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
         bookRef,
         transactionType: isModalOpen.type,
       };
+      let expenseLogs = {
+        ref: bookRef,
+        date: serverTimestamp(),
+        section: "Expense",
+        action: "Create",
+        description: "",
+      };
       if (updateData?.id) {
         await updateDoc(
           doc(db, "companies", companyId, "expenses", updateData.id),
           payload
         );
+        expenseLogs.action = "Create";
+        expenseLogs.description = `${isModalOpen.type} details updated`;
       } else {
         await addDoc(
           collection(db, "companies", companyId, "expenses"),
           payload
         );
+        expenseLogs.action = "Create";
+        expenseLogs.description = `${isModalOpen.type} details created`;
       }
+
+      await addDoc(
+        collection(db, "companies", companyId, "audit"),
+        expenseLogs
+      );
       alert(
         `successfully  ${updateData?.id ? "Edit " : "Create "} ${
           isModalOpen.type

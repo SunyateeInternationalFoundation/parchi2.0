@@ -1,4 +1,9 @@
-import { addDoc, collection, Timestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+  Timestamp,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
@@ -39,7 +44,13 @@ function SetCategory({ isOpen, onClose, onAddCategory, companyId }) {
       };
 
       const docRef = await addDoc(categoryRef, newCategory);
-
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: docRef,
+        date: serverTimestamp(),
+        section: "Inventory",
+        action: "Create",
+        description: `${formData.name} category created`,
+      });
       onAddCategory({ id: docRef.id, ...newCategory });
       onClose();
     } catch (error) {

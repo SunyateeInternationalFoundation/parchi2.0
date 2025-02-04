@@ -1,9 +1,11 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   getDocs,
   query,
+  serverTimestamp,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -147,7 +149,16 @@ const Stocks = ({ projectDetails }) => {
     try {
       if (!window.confirm("Are you sure you want to delete this stock?"))
         return;
-      await deleteDoc(doc(db, "companies", companyId, "stocks", stockId));
+
+      const stockRef = doc(db, "companies", companyId, "stocks", stockId);
+      await deleteDoc(stockRef);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: stockRef,
+        date: serverTimestamp(),
+        section: "Inventory",
+        action: "Delete",
+        description: `${isModalOpen.type} deleted from stocks`,
+      });
       setStocks((prev) => prev.filter((stock) => stock.id !== stockId));
     } catch (error) {
       console.log("🚀 ~ onDeleteStock ~ error:", error);
@@ -155,7 +166,7 @@ const Stocks = ({ projectDetails }) => {
   }
   return (
     <div className="main-container" style={{ height: "80vh" }}>
-      <div className="container">
+      <div className="container2">
         <nav className="flex items-center  mb-4 px-5">
           <div className="space-x-4 w-full flex items-center">
             <div className="flex items-center space-x-4  border px-5  py-3 rounded-md w-full">

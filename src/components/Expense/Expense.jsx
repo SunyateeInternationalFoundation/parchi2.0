@@ -1,4 +1,5 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -6,6 +7,7 @@ import {
   getDocs,
   orderBy,
   query,
+  serverTimestamp,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -162,11 +164,20 @@ function Expense() {
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
-  async function onDeleteExpense(expenseId) {
+  async function onDeleteExpense(expenseId, type) {
     try {
       if (!window.confirm("Are you sure you want to delete this expense?"))
         return;
-      await deleteDoc(doc(db, "companies", companyId, "expenses", expenseId));
+
+      const expenseRef = doc(db, "companies", companyId, "expenses", expenseId);
+      await deleteDoc(expenseRef);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: expenseRef,
+        date: serverTimestamp(),
+        section: "Expense",
+        action: "Delete",
+        description: `${type} deleted`,
+      });
       setExpenses((prev) => prev.filter((expense) => expense.id !== expenseId));
     } catch (error) {
       console.log("🚀 ~ onDeleteExpense ~ error:", error);
@@ -211,7 +222,7 @@ function Expense() {
           </div>
         </div>
         <div className="flex justify-center items-center">
-          <div className="container">
+          <div className="container2">
             <nav className="flex items-center  mb-4 px-5">
               <div className="space-x-4 w-full flex items-center">
                 <div className="flex items-center space-x-4  border px-5  py-3 rounded-md w-full">
@@ -353,7 +364,10 @@ function Expense() {
                             className="px-5 py-3   text-center"
                             onClick={(e) => {
                               e.stopPropagation();
-                              onDeleteExpense(expense.id);
+                              onDeleteExpense(
+                                expense.id,
+                                expense.transactionType
+                              );
                             }}
                           >
                             <div className=" flex items-center justify-center">

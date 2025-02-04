@@ -198,7 +198,7 @@ const Payment = ({ projectDetails }) => {
         </div>
       </div>
       <div className="flex justify-center items-center">
-        <div className="container">
+        <div className="container2">
           <nav className="flex items-center  mb-4 px-5">
             <div className="space-x-4 w-full flex items-center">
               <div className="flex items-center space-x-4  border px-5  py-3 rounded-md w-full">

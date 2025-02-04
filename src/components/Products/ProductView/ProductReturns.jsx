@@ -1,7 +1,12 @@
 import PropTypes from "prop-types";
-import FormatTimestamp from "../../../constants/FormatTimestamp";
 import { useEffect, useState } from "react";
-import { LuChevronLeft, LuChevronRight, LuChevronsLeft, LuChevronsRight } from "react-icons/lu";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
+import FormatTimestamp from "../../../constants/FormatTimestamp";
 
 function ProductReturns({ returns }) {
   const [currentPage, setCurrentPage] = useState(0);
@@ -24,7 +29,7 @@ function ProductReturns({ returns }) {
 
   return (
     <div className="main-container" style={{ height: "80vh" }}>
-      <div className="container">
+      <div className="container2">
         <div>
           <div
             className="border-b overflow-y-auto py-5"
@@ -69,50 +74,50 @@ function ProductReturns({ returns }) {
 
         {/* Pagination Controls */}
         <div className="flex items-center flex-wrap gap-2 justify-between  p-5">
-            <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
-              {currentPage + 1} of {totalPages || 1} row(s) selected.
-            </div>
-            <div className="flex flex-wrap items-center gap-6">
-              <div className="flex items-center gap-2">
-                <button
-                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                  onClick={() => setCurrentPage(0)}
-                  disabled={currentPage <= 0}
-                >
-                  <div className="flex justify-center">
-                    <LuChevronsLeft className="text-sm" />
-                  </div>
-                </button>
-                <button
-                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                  onClick={() => setCurrentPage((val) => val - 1)}
-                  disabled={currentPage <= 0}
-                >
-                  <div className="flex justify-center">
-                    <LuChevronLeft className="text-sm" />
-                  </div>
-                </button>
-                <button
-                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                  onClick={() => setCurrentPage((val) => val + 1)}
-                  disabled={currentPage + 1 >= totalPages}
-                >
-                  <div className="flex justify-center">
-                    <LuChevronRight className="text-sm" />
-                  </div>
-                </button>
-                <button
-                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                  onClick={() => setCurrentPage(totalPages - 1)}
-                  disabled={currentPage + 1 >= totalPages}
-                >
-                  <div className="flex justify-center">
-                    <LuChevronsRight />
-                  </div>
-                </button>
-              </div>
+          <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+            {currentPage + 1} of {totalPages || 1} row(s) selected.
+          </div>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2">
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(0)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val - 1)}
+                disabled={currentPage <= 0}
+              >
+                <div className="flex justify-center">
+                  <LuChevronLeft className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage((val) => val + 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronRight className="text-sm" />
+                </div>
+              </button>
+              <button
+                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                onClick={() => setCurrentPage(totalPages - 1)}
+                disabled={currentPage + 1 >= totalPages}
+              >
+                <div className="flex justify-center">
+                  <LuChevronsRight />
+                </div>
+              </button>
             </div>
           </div>
+        </div>
       </div>
     </div>
   );

@@ -5,11 +5,11 @@ import {
   doc,
   getDocs,
   query,
+  serverTimestamp,
   Timestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
-import { IoSearch } from "react-icons/io5";
 import {
   deleteObject,
   getDownloadURL,
@@ -114,6 +114,13 @@ const Documents = () => {
         parentId: currentFolder?.id || null,
         createdAt: Timestamp.now(),
       });
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: folderRef,
+        date: serverTimestamp(),
+        section: "Staff&Payout",
+        action: "Create",
+        description: `${folderName} folder created`,
+      });
       setEditingItem(folderRef.id);
       const newFolder = {
         id: folderRef.id,
@@ -170,6 +177,13 @@ const Documents = () => {
               collection(companyRef, "files"),
               fileData
             );
+            await addDoc(collection(db, "companies", companyId, "audit"), {
+              ref: fileRef,
+              date: serverTimestamp(),
+              section: "Staff&Payout",
+              action: "Create",
+              description: `${fileData.name} file uploaded`,
+            });
             const newFile = { ...fileData, id: fileRef.id };
 
             setFiles((prev) => [...prev, newFile]);
@@ -214,6 +228,13 @@ const Documents = () => {
         item.id
       );
       await updateDoc(itemRef, { name: newName });
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: itemRef,
+        date: serverTimestamp(),
+        section: "Staff&Payout",
+        action: "Update",
+        description: `${newName} ${item.type} name updated`,
+      });
       if (item.type === "folder") {
         setFolders((prev) =>
           prev.map((folder) =>
@@ -249,7 +270,13 @@ const Documents = () => {
         item.id
       );
       await deleteDoc(itemRef);
-
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: itemRef,
+        date: serverTimestamp(),
+        section: "Staff&Payout",
+        action: "Delete",
+        description: `${item.name} ${item.type} deleted`,
+      });
       if (item.type === "folder") {
         setFolders((prev) => prev.filter((folder) => folder.id !== item.id));
       } else {
@@ -271,7 +298,7 @@ const Documents = () => {
   return (
     <div className="main-container">
       <h1 className="text-2xl font-bold mt-4 py-3">Documents</h1>
-      <div className="container p-5 " style={{ minHeight: "70vh" }}>
+      <div className="container2 p-5 " style={{ minHeight: "70vh" }}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             {currentPath.length > 0 && (

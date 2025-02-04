@@ -9,7 +9,7 @@ import {
   where,
 } from "firebase/firestore";
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import { serverTimestamp, useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { db } from "../../../../firebase";
@@ -99,7 +99,14 @@ function InventoryAddSideBar({ projectId, isOpen, onClose, isMaterialAdd }) {
         remainingQuantity: +quantity,
       };
       const materialRef = collection(projectRef, "materials");
-      await addDoc(materialRef, payload);
+      const ref = await addDoc(materialRef, payload);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: ref,
+        date: serverTimestamp(),
+        section: "Project",
+        action: "Create",
+        description: `${selectedItem.name} created from inventory in project`,
+      });
       await updateDoc(inventoryRef, {
         stock: newStockQuantity,
       });

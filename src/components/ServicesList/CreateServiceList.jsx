@@ -1,4 +1,10 @@
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
@@ -61,15 +67,35 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
         ...formData,
         companyRef,
       };
-
+      let serviceRef;
+      let payloadLog = {
+        ref: serviceRef,
+        date: serverTimestamp(),
+        section: "Subscription Plan",
+        action: "Create",
+        description: `${formData.serviceName} created`,
+      };
       if (service) {
-        await updateDoc(doc(db, "services", service.id), payload);
+        serviceRef = doc(db, "services", service.id);
+        await updateDoc(serviceRef, payload);
+        payloadLog.ref = serviceRef;
+        payloadLog.action = "Update";
+        payloadLog.description = `${formData.serviceName} updated`;
         alert("Successfully updated the service");
       } else {
-        await addDoc(collection(db, "services"), payload);
+        serviceRef = await addDoc(collection(db, "services"), payload);
+        payloadLog.ref = serviceRef;
         alert("Successfully created the service");
       }
-
+      await addDoc(
+        collection(
+          db,
+          "companies",
+          userDetails.companies[userDetails.selectedCompanyIndex].companyId,
+          "audit"
+        ),
+        payloadLog
+      );
       ResetForm();
       refresh();
       onClose();

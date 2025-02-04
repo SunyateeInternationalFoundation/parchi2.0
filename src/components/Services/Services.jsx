@@ -1,9 +1,11 @@
 import {
+  addDoc,
   collection,
   doc,
   getDocs,
   orderBy,
   query,
+  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -92,7 +94,16 @@ function Services() {
   async function onUpdateStatus(id, newStatus) {
     try {
       const serviceDoc = doc(db, "companies", companyId, "services", id);
+      const data = services.find((d) => d.id === id);
       await updateDoc(serviceDoc, { status: newStatus });
+
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: serviceDoc,
+        date: serverTimestamp(),
+        section: "Subscription",
+        action: "Update",
+        description: `${data.serviceNo} status updated by ${data.createdBy}`,
+      });
       setServices((pre) =>
         pre.map((service) =>
           service.id === id ? { ...service, status: newStatus } : service
@@ -330,7 +341,7 @@ function Services() {
           </div> */}
         </div>
       </div>
-      <div className="container">
+      <div className="container2">
         <nav className="flex items-center mb-4 px-5">
           <div className="space-x-4 w-full flex items-center">
             <div

@@ -3,7 +3,7 @@ import { MdDateRange } from "react-icons/md";
 function ProjectView({ project }) {
   return (
     <div className="main-container" style={{ width: "100%" }}>
-      <div className="container  px-6 py-4  flex">
+      <div className="container2  px-6 py-4  flex">
         <div className="uppercase rounded-lg border text-6xl bg-[rgb(159,142,247)] flex justify-center items-center w-40 h-40">
           {project.name?.slice(0, 2)}
         </div>

@@ -1,4 +1,11 @@
-import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  serverTimestamp,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import {
@@ -73,15 +80,30 @@ const ProductList = () => {
     }
   };
 
-  const handleDelete = async (productId) => {
+  const handleDelete = async (productId, name) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this product? This action cannot be undone."
     );
     if (!confirmDelete) return;
 
     try {
-      await deleteDoc(
-        doc(db, "companies", companyDetails.companyId, "products", productId)
+      const productRef = doc(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "products",
+        productId
+      );
+      await deleteDoc(productRef);
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        {
+          ref: productRef,
+          date: serverTimestamp(),
+          section: "Inventory",
+          action: "Delete",
+          description: `${name} removed from inventory`,
+        }
       );
       fetchProducts();
     } catch (error) {
@@ -136,7 +158,7 @@ const ProductList = () => {
   return (
     <div className="main-container" style={{ height: "81vh" }}>
       <div className="flex justify-center items-center">
-        <div className="container">
+        <div className="container2">
           <div className="flex justify-between items-center px-5 ">
             <div className="flex justify-between items-center space-x-5 w-1/2">
               <div
@@ -286,7 +308,7 @@ const ProductList = () => {
                               className="text-red-500 hover:text-red-700"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleDelete(product.id);
+                                handleDelete(product.id, product.name);
                               }}
                             >
                               🗑️
