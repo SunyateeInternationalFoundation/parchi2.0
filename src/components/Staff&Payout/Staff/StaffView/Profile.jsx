@@ -102,7 +102,11 @@ const Profile = ({ staffData, refresh }) => {
                     </label>
                     <div className="block w-full border border-gray-300 p-2 rounded-md bg-white focus:ring focus:ring-purple-200">
                       {" "}
-                      {staffData.joiningDate || "N/A"}
+                      {staffData.dateOfJoining
+                        ? new Date(
+                            staffData.dateOfJoining.seconds * 1000
+                          ).toLocaleDateString()
+                        : "N/A"}
                     </div>
                   </div>
                   <div>

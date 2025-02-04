@@ -301,38 +301,55 @@ const Dashboard = () => {
 
       const fetchedExpenses = expenseSnapshot.docs.map((doc) => ({
         id: doc.id,
+        transactionType: doc.data().transactionType,
         amount: doc.data().amount,
       }));
       const fetchedInvoices = invoiceSnapshot.docs.map((doc) => ({
         id: doc.id,
+        transactionType: "income",
         amount: doc.data().total,
       }));
       const fetchedServices = serviceSnapshot.docs.map((doc) => ({
         id: doc.id,
+        transactionType: "income",
         amount: doc.data().total,
       }));
       const fetchedPos = posSnapshot.docs.map((doc) => ({
         id: doc.id,
+        transactionType: "income",
         amount: doc.data().total,
       }));
       const fetchedPo = poSnapshot.docs.map((doc) => ({
         id: doc.id,
+        transactionType: "expense",
         amount: doc.data().total,
       }));
-      const totalExpense = [...fetchedPo, ...fetchedExpenses].reduce(
-        (acc, item) => acc + item.amount,
-        0
-      );
-      const totalIncome = [
+
+
+      let expensesAmount = {
+        income: 0,
+        expense: 0
+      }
+
+
+      const temp = [
         ...fetchedInvoices,
         ...fetchedServices,
         ...fetchedPos,
-      ].reduce((acc, item) => acc + item.amount, 0);
+        ...fetchedPo,
+        ...fetchedExpenses
+      ].forEach((ele) => {
+        if (ele.transactionType === "income") {
+          expensesAmount.income += ele.amount;
+        } else if (ele.transactionType === "expense") {
+          expensesAmount.expense += ele.amount;
+        }
+      });
 
-      const totalBalance = totalIncome - totalExpense;
+      const totalBalance = expensesAmount.income - expensesAmount.expense;
+
       setExpenseAmount({
-        expense: totalExpense,
-        income: totalIncome,
+        ...expensesAmount,
         balance: totalBalance,
       });
     } catch (error) {
@@ -447,9 +464,8 @@ const Dashboard = () => {
                       <span>Create</span>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className={`h-4 w-4 transition-transform ${
-                          isOpen ? "rotate-0" : "-rotate-90"
-                        }`}
+                        className={`h-4 w-4 transition-transform ${isOpen ? "rotate-0" : "-rotate-90"
+                          }`}
                         viewBox="0 0 512 512"
                       >
                         <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" />
