@@ -32,10 +32,23 @@ function Payout() {
         where("companyRef", "==", companyRef)
       );
       const getData = await getDocs(q);
-      const staffData = getData.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      let customData = {}
+      const staffData = getData.docs.map((doc) => {
+        const data = doc.data()
+        const id = doc.id;
+        customData[id] = {
+          name: data.name,
+          idNo: data.idNo,
+          phone: data.phone,
+          paymentDetails: +data.paymentDetails,
+          isDailyWages: data.isDailyWages,
+        }
+        return {
+          id,
+          ...data
+        }
+      });
+      memoData.current = customData;
       setStaffData(staffData);
 
     } catch (error) {
@@ -73,31 +86,20 @@ function Payout() {
         "staffAttendance"
       );
       const staffAttendanceData = await getDocs(staffAttendanceRef);
-      let customData = {}
+      let customData = memoData.current
       staffAttendanceData.docs.forEach((doc) => {
         const { date, staffs } = doc.data();
         for (let staff of staffs) {
           const key = DateFormate(date);
 
-          if (!customData[staff.id]) {
-            const staffDetails = staffData.find(ele => ele.id == staff.id)
-            const monthYear = key.split("-")
-            let salaryPerDay = +staffDetails.paymentDetails;
-            if (!staffDetails.isDailyWages) {
-              salaryPerDay = +staffDetails.paymentDetails / getDaysInMonth(monthYear[1], monthYear[0] - 1);
-            }
-            customData[staff.id] = {
-              name: staffDetails.name,
-              idNo: staffDetails.idNo,
-              phone: staffDetails.phone,
-              paymentDetails: +staffDetails.paymentDetails,
-              isDailyWages: staffDetails.isDailyWages,
-              salaryPerDay,
-            }
-          }
           if (!customData[staff.id][key]) {
+            const monthYear = key.split("-")
+            let salaryPerDay = +customData[staff.id].paymentDetails;
+            if (!customData[staff.id].isDailyWages) {
+              salaryPerDay = +customData[staff.id].paymentDetails / getDaysInMonth(monthYear[1], monthYear[0] - 1);
+            }
             customData[staff.id][key] = {
-              payout: 0,
+              payout: salaryPerDay,
               allowance: 0,
               overTime: 0,
               deduction: 0,
@@ -114,16 +116,16 @@ function Payout() {
           }
 
           const obj = {
-            payout: customData[staff.id][key]?.payout + customData[staff.id].salaryPerDay,
+            payout: (+customData[staff.id][key]?.payout || 0),
             allowance: +((staff?.adjustments?.allowance?.amount * staff?.adjustments?.allowance?.hours) || 0),
             overTime: +((staff?.adjustments?.overTime?.amount * staff?.adjustments?.overTime?.hours) || 0),
             deduction: +((staff?.adjustments?.deduction?.amount * staff?.adjustments?.deduction?.hours) || 0),
             lateFine: +((staff?.adjustments?.lateFine?.amount * staff?.adjustments?.lateFine?.hours) || 0),
           }
 
-          const daySalary = customData[staff.id].salaryPerDay * staff.shift;
+          const daySalary = obj.payout * staff.shift;
 
-          const extraShiftAmount = (staff.shift !== 0.5 ? daySalary - customData[staff.id].salaryPerDay : 0)
+          const extraShiftAmount = (staff.shift !== 0.5 ? daySalary - obj.payout : 0)
           const halfShiftAmount = (staff.shift == 0.5 ? obj.payout / 2 : 0)
 
           const total = (daySalary + obj.allowance + obj.overTime - obj.deduction - obj.lateFine || 0)
@@ -142,6 +144,7 @@ function Payout() {
 
       });
       memoData.current = customData;
+      console.log("🚀 ~ fetchStaffAttendance ~ customData:", customData)
     } catch (error) {
       console.log("🚀 ~ fetchStaffData ~ error:", error);
     } finally {
