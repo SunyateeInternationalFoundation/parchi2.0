@@ -87,16 +87,18 @@ function PaymentsDeductions({ onClose, staff, addPaymentDeductionToStaff }) {
 
   return (
     <div
-      className={`fixed inset-0 z-100 flex justify-end bg-black bg-opacity-25 transition-opacity ${staff.id ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+      className={`fixed inset-0 z-100 flex justify-end bg-black bg-opacity-25 transition-opacity ${
+        staff.id ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
       onClick={() => {
         onClose();
         onReset();
       }}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform min-h-screen ${staff.id ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={`bg-white  pt-2 transform transition-transform min-h-screen ${
+          staff.id ? "translate-x-0" : "translate-x-full"
+        }`}
         style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -134,10 +136,11 @@ function PaymentsDeductions({ onClose, staff, addPaymentDeductionToStaff }) {
                     />
                     <label
                       htmlFor={shift}
-                      className={`inline-block px-5 py-2 cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow-md ${selectedShift === shift
-                        ? "border-blue-700  bg-blue-700 text-white "
-                        : "bg-white text-blue-900 border-blue-700"
-                        }`}
+                      className={`inline-block px-5 py-2 cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow-md ${
+                        selectedShift === shift
+                          ? "border-blue-700  bg-blue-700 text-white "
+                          : "bg-white text-blue-900 border-blue-700"
+                      }`}
                     >
                       {shift} Shift
                     </label>
@@ -164,10 +167,11 @@ function PaymentsDeductions({ onClose, staff, addPaymentDeductionToStaff }) {
                     />
                     <label
                       htmlFor={time}
-                      className={`inline-block px-5 py-2 cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow-md  border-green-700 ${selectedTiming.type === time
-                        ? "bg-green-700 text-white "
-                        : "bg-white text-green-900 "
-                        }`}
+                      className={`inline-block px-5 py-2 cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow-md  border-green-700 ${
+                        selectedTiming.type === time
+                          ? "bg-green-700 text-white "
+                          : "bg-white text-green-900 "
+                      }`}
                     >
                       {time.toUpperCase()}
                     </label>
@@ -178,7 +182,7 @@ function PaymentsDeductions({ onClose, staff, addPaymentDeductionToStaff }) {
                 <input
                   type="number"
                   placeholder="Hours"
-                  className="w-full border border-gray-300 p-2 rounded-l-lg focus:outline-none "
+                  className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none "
                   value={selectedTiming.hours || ""}
                   onChange={(e) =>
                     setSelectedTiming((val) => ({
@@ -187,10 +191,11 @@ function PaymentsDeductions({ onClose, staff, addPaymentDeductionToStaff }) {
                     }))
                   }
                 />
+                <p className="font-semibold m-2">X</p>
                 <input
                   type="number"
                   placeholder="Amount"
-                  className="w-full border border-gray-300 p-2 rounded-r-lg focus:outline-none "
+                  className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none "
                   value={selectedTiming.amount || ""}
                   onChange={(e) =>
                     setSelectedTiming((val) => ({
@@ -198,6 +203,13 @@ function PaymentsDeductions({ onClose, staff, addPaymentDeductionToStaff }) {
                       amount: +e.target.value,
                     }))
                   }
+                />
+                <p className="font-bold m-2">=</p>
+                <input
+                  type="number"
+                  placeholder="Total"
+                  className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none "
+                  value={selectedTiming.amount * selectedTiming.hours}
                 />
               </div>
             </div>
@@ -220,10 +232,11 @@ function PaymentsDeductions({ onClose, staff, addPaymentDeductionToStaff }) {
                     />
                     <label
                       htmlFor={items}
-                      className={`inline-block px-5 py-2 border-green-700  cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow-md ${selectedAllowance.type === items
-                        ? " bg-green-700 text-white "
-                        : "bg-white text-green-900 "
-                        }`}
+                      className={`inline-block px-5 py-2 border-green-700  cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow-md ${
+                        selectedAllowance.type === items
+                          ? " bg-green-700 text-white "
+                          : "bg-white text-green-900 "
+                      }`}
                     >
                       {items.toUpperCase()}
                     </label>
@@ -235,7 +248,7 @@ function PaymentsDeductions({ onClose, staff, addPaymentDeductionToStaff }) {
                   type="number"
                   placeholder="Hours"
                   value={selectedAllowance.hours || ""}
-                  className="w-full border border-gray-300 p-2 rounded-l-lg focus:outline-none "
+                  className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none "
                   onChange={(e) =>
                     setSelectedAllowance((val) => ({
                       ...val,
@@ -243,17 +256,25 @@ function PaymentsDeductions({ onClose, staff, addPaymentDeductionToStaff }) {
                     }))
                   }
                 />
+                <p className="font-semibold m-2">X</p>
                 <input
                   type="number"
                   placeholder="Amount"
                   value={selectedAllowance.amount || ""}
-                  className="w-full border border-gray-300 p-2 rounded-r-lg focus:outline-none "
+                  className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none "
                   onChange={(e) =>
                     setSelectedAllowance((val) => ({
                       ...val,
                       amount: +e.target.value,
                     }))
                   }
+                />
+                <p className="font-bold m-2">=</p>
+                <input
+                  type="number"
+                  placeholder="Total"
+                  className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none "
+                  value={selectedAllowance.amount * selectedAllowance.hours}
                 />
               </div>
             </div>
@@ -262,9 +283,7 @@ function PaymentsDeductions({ onClose, staff, addPaymentDeductionToStaff }) {
             className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
             style={{ height: "8vh" }}
           >
-            <button
-              className="w-full btn-add" onClick={onSubmit}
-            >
+            <button className="w-full btn-add" onClick={onSubmit}>
               Save
             </button>
           </div>

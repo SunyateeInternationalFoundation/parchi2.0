@@ -357,7 +357,7 @@ const InvoiceList = () => {
               style={{ minHeight: "92vh", width: "100%" }}
               className="overflow-hidden"
             >
-              <div className="pt-2">
+              <div className="pt-6">
                 {invoicePaginationData.length > 0 ? (
                   <Handsontable
                     columns={columns}

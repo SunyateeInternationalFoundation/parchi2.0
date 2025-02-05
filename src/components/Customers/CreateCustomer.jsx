@@ -17,13 +17,7 @@ import {
   updateCustomerDetails,
 } from "../../store/CustomerSlice";
 
-const CreateCustomer = ({
-  isOpen,
-  onClose,
-  customerData,
-  onCustomerAdded,
-  refresh,
-}) => {
+const CreateCustomer = ({ isOpen, onClose, customerData, refresh }) => {
   const userDetails = useSelector((state) => state.users);
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
@@ -146,7 +140,6 @@ const CreateCustomer = ({
       refresh();
       setFileName("");
       onClose();
-      onCustomerAdded();
     } catch (error) {
       console.error("Error saving customer:", error);
     }

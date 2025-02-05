@@ -80,9 +80,9 @@ const LandingPage = () => {
         const q = query(userRef, where("phone", "==", phoneNumber));
         const userData = await getDocs(q);
         if (userData.docs.length != 0) {
-          setIsLogin(true)
+          setIsLogin(true);
         } else {
-          setIsLogin(false)
+          setIsLogin(false);
         }
       }
       configureRecaptcha();
@@ -95,7 +95,7 @@ const LandingPage = () => {
         );
         setConfirmationResult(authResult);
         setIsOtpStage(true);
-        setCountdown(60);
+        setCountdown;
         setIsResendAllowed(false);
       } catch (error) {
         console.error("Error during phone number sign-in:", error);
@@ -120,7 +120,6 @@ const LandingPage = () => {
         let asVendorData = [];
         let asCustomerData = [];
         let isCompanyProfileDone = false;
-
 
         if (!isLogin) {
           user = {
@@ -221,7 +220,7 @@ const LandingPage = () => {
       }
     }
   };
-
+  console.log("confirmation result", confirmationResult);
   return (
     <div className="h-screen">
       <nav className="text-white py-3 w-full ">

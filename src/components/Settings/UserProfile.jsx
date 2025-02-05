@@ -1,8 +1,17 @@
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { db, storage } from "../../firebase";
+import { auth, db, storage } from "../../firebase";
 import { updateUserDetails } from "../../store/UserSlice";
 const Prefix = () => {
   const dispatch = useDispatch();
@@ -15,7 +24,11 @@ const Prefix = () => {
     photoURL: "",
     email: "",
   });
+  const [isOtpStage, setIsOtpStage] = useState(false);
+  const [confirmationResult, setConfirmationResult] = useState(null);
+  const [otp, setOtp] = useState("");
 
+  const [newPhoneNumber, setNewPhoneNumber] = useState("");
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
@@ -38,6 +51,81 @@ const Prefix = () => {
 
     fetchUserDetails();
   }, [userId]);
+
+  const configureRecaptcha = () => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        {
+          size: "invisible",
+          callback: (response) => {
+            console.log("ReCAPTCHA verified:", response);
+          },
+          "expired-callback": () => {
+            console.log("reCAPTCHA expired");
+          },
+        }
+      );
+    }
+  };
+
+  const handleVerifyClick = async () => {
+    if (!formData.phone || formData.phone.length !== 10) {
+      alert("Please enter a valid 10-digit phone number");
+      return;
+    }
+
+    if (formData.phone === userDetails.phone) {
+      alert("This is your current phone number");
+      return;
+    }
+
+    try {
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("phone", "==", formData.phone));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        alert("This phone number is already registered");
+        return;
+      }
+
+      configureRecaptcha();
+      const appVerifier = window.recaptchaVerifier;
+      const authResult = await signInWithPhoneNumber(
+        auth,
+        `+91${formData.phone}`,
+        appVerifier
+      );
+
+      setConfirmationResult(authResult);
+      setIsOtpStage(true);
+      setNewPhoneNumber(formData.phone);
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      alert("Failed to send OTP. Please try again.");
+    }
+  };
+
+  const handleOtpSubmit = async () => {
+    if (!otp || otp.length !== 6) {
+      alert("Please enter a valid 6-digit OTP");
+      return;
+    }
+
+    try {
+      await confirmationResult.confirm(otp);
+      alert("Phone number verified successfully!");
+      setIsOtpStage(false);
+
+      await handleSave();
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      alert("Invalid OTP. Please try again.");
+      setOtp("");
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -86,12 +174,16 @@ const Prefix = () => {
   const handleSave = async () => {
     try {
       const { id, ...payload } = formData;
-      await updateDoc(doc(db, "users", userId), payload);
+      await updateDoc(doc(db, "users", userId), {
+        ...payload,
+        phone_number: `+91${payload.phone}`,
+      });
       dispatch(
         updateUserDetails({
           name: payload.displayName,
           phone: payload.phone,
           email: payload.email,
+          phone_number: `+91${payload.phone}`,
         })
       );
       alert("Details saved successfully! ");
@@ -162,17 +254,56 @@ const Prefix = () => {
               <label className=" text-sm space-y-1 text-gray-600">
                 Phone Number
               </label>
-              <div>
-                <input
-                  type="text"
-                  name="phone"
-                  placeholder="Phone Number"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="input-tag w-full"
-                />
+
+              <div className="flex">
+                <div className="relative w-full">
+                  <input
+                    type="text"
+                    name="phone"
+                    placeholder="Phone Number"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="border px-5 py-3 rounded-l-lg w-full"
+                    disabled={isOtpStage}
+                  />
+                </div>
+                <div className="w-1/4">
+                  <button
+                    className={`border px-5 py-3 rounded-r-lg font-semibold rounded-e-md w-full ${
+                      isOtpStage
+                        ? "bg-gray-300"
+                        : "hover:text-white hover:bg-black"
+                    }`}
+                    onClick={handleVerifyClick}
+                    disabled={isOtpStage}
+                  >
+                    {isOtpStage ? "Verified" : "Verify"}
+                  </button>
+                </div>
               </div>
+
+              {isOtpStage && (
+                <div className="flex my-5">
+                  <div className="relative w-full">
+                    <input
+                      type="text"
+                      placeholder="Enter OTP"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      className="border px-4 py-2 rounded-md flex-1"
+                      maxLength="6"
+                    />
+                    <button
+                      onClick={handleOtpSubmit}
+                      className="bg-blue-500 text-white px-4 py-2 ml-2 rounded-md"
+                    >
+                      Verify OTP
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
+            <div id="recaptcha-container"></div>
             <div>
               <label className=" text-sm space-y-1 text-gray-600">Email</label>
               <div>
