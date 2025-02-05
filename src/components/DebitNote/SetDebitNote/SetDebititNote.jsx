@@ -205,15 +205,16 @@ const SetDebitNote = () => {
         address: companyDetails.address ?? "",
         city: companyDetails.city ?? "",
         zipCode: companyDetails.zipCode ?? "",
-        phoneNo: phoneNo,
+        phoneNo: companyDetails.phone ?? "",
+        email: companyDetails.email ?? "",
       };
 
       const createdBy = debitNoteId
         ? { ...baseCreatedBy, who: formData.createdBy.who }
         : {
-            ...baseCreatedBy,
-            who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
-          };
+          ...baseCreatedBy,
+          who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+        };
       const payload = {
         ...restForm,
         ...rest,
@@ -287,8 +288,8 @@ const SetDebitNote = () => {
 
       alert(
         "Successfully " +
-          (debitNoteId ? "Updated" : "Created") +
-          " the DebitNote"
+        (debitNoteId ? "Updated" : "Created") +
+        " the DebitNote"
       );
 
       const redirect =

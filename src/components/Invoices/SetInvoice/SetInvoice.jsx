@@ -222,7 +222,8 @@ const SetInvoice = () => {
         address: companyDetails.address ?? "",
         city: companyDetails.city ?? "",
         zipCode: companyDetails.zipCode ?? "",
-        phoneNo: phoneNo,
+        phoneNo: companyDetails.phone ?? "",
+        email: companyDetails.email ?? "",
       };
 
       const createdBy = invoiceId
