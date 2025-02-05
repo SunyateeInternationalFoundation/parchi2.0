@@ -80,8 +80,9 @@ const LandingPage = () => {
         const q = query(userRef, where("phone", "==", phoneNumber));
         const userData = await getDocs(q);
         if (userData.docs.length != 0) {
-          alert("This Mobile is already exists");
-          return;
+          setIsLogin(true)
+        } else {
+          setIsLogin(false)
         }
       }
       configureRecaptcha();
@@ -119,6 +120,8 @@ const LandingPage = () => {
         let asVendorData = [];
         let asCustomerData = [];
         let isCompanyProfileDone = false;
+
+
         if (!isLogin) {
           user = {
             uid: authUser.uid,
@@ -224,28 +227,26 @@ const LandingPage = () => {
       <nav className="text-white py-3 w-full ">
         <div className="  flex justify-between  items-center px-4">
           <div className="text-2xl font-bold text-blue-600">Sunya</div>
-          <div className="space-x-4">
+          {/* <div className="space-x-4">
             <button
-              className={`px-4 py-2 font-medium rounded-md transition ${
-                isLogin
-                  ? "bg-blue-500 text-white"
-                  : "bg-white text-blue-600 hover:bg-blue-500 hover:text-white"
-              }`}
+              className={`px-4 py-2 font-medium rounded-md transition ${isLogin
+                ? "bg-blue-500 text-white"
+                : "bg-white text-blue-600 hover:bg-blue-500 hover:text-white"
+                }`}
               onClick={() => setIsLogin(true)}
             >
               Login
             </button>
             <button
-              className={`px-4 py-2 font-medium rounded-md transition ${
-                !isLogin
-                  ? "bg-blue-500 text-white"
-                  : "bg-white text-blue-600 hover:bg-blue-500 hover:text-white"
-              }`}
+              className={`px-4 py-2 font-medium rounded-md transition ${!isLogin
+                ? "bg-blue-500 text-white"
+                : "bg-white text-blue-600 hover:bg-blue-500 hover:text-white"
+                }`}
               onClick={() => setIsLogin(false)}
             >
               Register
             </button>
-          </div>
+          </div> */}
         </div>
       </nav>
       <div
