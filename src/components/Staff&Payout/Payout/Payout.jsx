@@ -190,12 +190,15 @@ function Payout() {
   const handleWhatsAppShare = async () => {
     try {
       const doc = new jsPDF("p", "pt", "a4");
+
       doc.html(printRef.current, {
         callback: function (doc) {
           doc.save(`${selectedData?.name}'s payout.pdf`);
         },
         x: 0,
         y: 0,
+        width: 600,
+        windowWidth: printRef.current.scrollWidth,
       });
 
       // const doc = new jsPDF("p", "pt", "a4");
