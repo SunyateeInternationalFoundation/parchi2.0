@@ -1,11 +1,12 @@
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import jsPDF from "jspdf";
 import { useEffect, useRef, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 import { IoPrintOutline } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { useReactToPrint } from "react-to-print";
-import { db } from "../../../firebase";
+import { db, storage } from "../../../firebase";
 
 function Payout() {
   const [loading, setLoading] = useState(!true);
@@ -36,10 +37,23 @@ function Payout() {
         where("companyRef", "==", companyRef)
       );
       const getData = await getDocs(q);
-      const staffData = getData.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      let customData = {}
+      const staffData = getData.docs.map((doc) => {
+        const data = doc.data()
+        const id = doc.id;
+        customData[id] = {
+          name: data.name,
+          idNo: data.idNo,
+          phone: data.phone,
+          paymentDetails: +data.paymentDetails,
+          isDailyWages: data.isDailyWages,
+        }
+        return {
+          id,
+          ...data
+        }
+      });
+      memoData.current = customData;
       setStaffData(staffData);
     } catch (error) {
       console.log("🚀 ~ fetchStaffData ~ error:", error);
@@ -67,7 +81,6 @@ function Payout() {
 
   async function fetchStaffAttendance() {
     setLoading(true);
-
     try {
       const staffAttendanceRef = collection(
         db,
@@ -76,32 +89,21 @@ function Payout() {
         "staffAttendance"
       );
       const staffAttendanceData = await getDocs(staffAttendanceRef);
-      let customData = {};
+      let customData = memoData.current;
+
       staffAttendanceData.docs.forEach((doc) => {
         const { date, staffs } = doc.data();
-        for (let staff of staffs) {
-          const key = DateFormate(date);
+        const key = DateFormate(date);
+        const [month, year] = key.split("-").map(Number);
 
-          if (!customData[staff.id]) {
-            const staffDetails = staffData.find((ele) => ele.id == staff.id);
-            const monthYear = key.split("-");
-            let salaryPerDay = +staffDetails.paymentDetails;
-            if (!staffDetails.isDailyWages) {
-              salaryPerDay =
-                +staffDetails.paymentDetails /
-                getDaysInMonth(monthYear[1], monthYear[0] - 1);
-            }
-            customData[staff.id] = {
-              name: staffDetails.name,
-              idNo: staffDetails.idNo,
-              phone: staffDetails.phone,
-              paymentDetails: +staffDetails.paymentDetails,
-              isDailyWages: staffDetails.isDailyWages,
-              salaryPerDay,
-            };
-          }
+        staffs.forEach((staff) => {
           if (!customData[staff.id][key]) {
+            const salaryPerDay = customData[staff.id].isDailyWages
+              ? +customData[staff.id].paymentDetails
+              : +customData[staff.id].paymentDetails / getDaysInMonth(year, month - 1);
+
             customData[staff.id][key] = {
+              salaryPerDay,
               payout: 0,
               allowance: 0,
               overTime: 0,
@@ -110,64 +112,44 @@ function Payout() {
               total: 0,
               extraShiftAmount: 0,
               halfShiftAmount: 0,
+              noLeaves: 0,
+              noPresent: 0,
+              noAbsent: 0,
+              noHolidays: 0,
+              workingDates: getDaysInMonth(year, month - 1),
             };
           }
 
-          if (staff.status == "absent") {
+          const staffData = customData[staff.id][key];
+
+          if (staff.status === "absent") {
+            staffData.noAbsent += 1;
             return;
           }
 
-          const obj = {
-            payout:
-              customData[staff.id][key]?.payout +
-              customData[staff.id].salaryPerDay,
-            allowance: +(
-              staff?.adjustments?.allowance?.amount *
-                staff?.adjustments?.allowance?.hours || 0
-            ),
-            overTime: +(
-              staff?.adjustments?.overTime?.amount *
-                staff?.adjustments?.overTime?.hours || 0
-            ),
-            deduction: +(
-              staff?.adjustments?.deduction?.amount *
-                staff?.adjustments?.deduction?.hours || 0
-            ),
-            lateFine: +(
-              staff?.adjustments?.lateFine?.amount *
-                staff?.adjustments?.lateFine?.hours || 0
-            ),
-          };
+          const adjustments = staff.adjustments || {};
+          const getAmount = (type) => +(adjustments[type]?.amount * adjustments[type]?.hours || 0);
 
-          const daySalary = customData[staff.id].salaryPerDay * staff.shift;
+          const daySalary = staffData.salaryPerDay * staff.shift;
+          const extraShiftAmount = staff.shift !== 0.5 ? daySalary - staffData.salaryPerDay : 0;
+          const halfShiftAmount = staff.shift === 0.5 ? staffData.salaryPerDay / 2 : 0;
+          const total = daySalary + getAmount("allowance") + getAmount("overTime") - getAmount("deduction") - getAmount("lateFine");
 
-          const extraShiftAmount =
-            staff.shift !== 0.5
-              ? daySalary - customData[staff.id].salaryPerDay
-              : 0;
-          const halfShiftAmount = staff.shift == 0.5 ? obj.payout / 2 : 0;
-
-          const total =
-            daySalary +
-              obj.allowance +
-              obj.overTime -
-              obj.deduction -
-              obj.lateFine || 0;
-
-          customData[staff.id][key] = {
-            payout: obj.payout,
-            allowance: customData[staff.id][key]?.allowance + obj.allowance,
-            overTime: customData[staff.id][key]?.overTime + obj.overTime,
-            deduction: customData[staff.id][key]?.deduction + obj.deduction,
-            lateFine: customData[staff.id][key]?.lateFine + obj.lateFine,
-            total: +customData[staff.id][key]?.total + +total,
-            extraShiftAmount:
-              +customData[staff.id][key]?.extraShiftAmount + +extraShiftAmount,
-            halfShiftAmount:
-              +customData[staff.id][key]?.halfShiftAmount + +halfShiftAmount,
-          };
-        }
+          Object.assign(staffData, {
+            payout: staffData.payout + staffData.salaryPerDay,
+            allowance: staffData.allowance + getAmount("allowance"),
+            overTime: staffData.overTime + getAmount("overTime"),
+            deduction: staffData.deduction + getAmount("deduction"),
+            lateFine: staffData.lateFine + getAmount("lateFine"),
+            total: staffData.total + total,
+            extraShiftAmount: staffData.extraShiftAmount + extraShiftAmount,
+            halfShiftAmount: staffData.halfShiftAmount + halfShiftAmount,
+            noLeaves: staffData.noLeaves + (staff.status === "leave" ? 1 : 0),
+            noPresent: staffData.noPresent + (staff.status === "present" ? 1 : 0),
+          });
+        });
       });
+
       memoData.current = customData;
     } catch (error) {
       console.log("🚀 ~ fetchStaffData ~ error:", error);
@@ -184,73 +166,75 @@ function Payout() {
       idNo: memoData.current[id].idNo,
       phone: memoData.current[id].phone,
     });
+    console.log("🚀 ~ onSelectStaff ~ memoData.current:", memoData.current[id][date])
     selectDate.current = date;
   }
 
   const handleWhatsAppShare = async () => {
     try {
-      const doc = new jsPDF("p", "pt", "a4");
+      // const doc = new jsPDF("p", "pt", "a4");
 
+      // doc.html(printRef.current, {
+      //   callback: function (doc) {
+      //     doc.save(`${selectedData?.name}'s payout.pdf`);
+      //   },
+      //   x: 0,
+      //   y: 0,
+      //   width: 600,
+      //   windowWidth: printRef.current.scrollWidth,
+      // });
+
+      const doc = new jsPDF("p", "pt", "a4");
       doc.html(printRef.current, {
-        callback: function (doc) {
-          doc.save(`${selectedData?.name}'s payout.pdf`);
+        callback: async function (doc) {
+          const pdfBlob = doc.output("blob");
+          const fileName = `payout/${selectedData?.name}.pdf`;
+          const fileRef = ref(storage, fileName);
+
+          await uploadBytes(fileRef, pdfBlob);
+          const downloadURL = await getDownloadURL(fileRef);
+          const mobileNumber = selectedData?.phone;
+
+          const url =
+            import.meta.env.VITE_FIREBASE_WHATSAPP_URL + "91" + mobileNumber;
+          const token = import.meta.env.VITE_FIREBASE_WHATSAPP_TOKEN;
+          try {
+            const response = await fetch(url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json-patch+json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                template_name: "invoice_pdf",
+                broadcast_name: "invoice_pdf",
+                parameters: [
+                  {
+                    name: "pdflink",
+                    value: downloadURL,
+                  },
+                  {
+                    name: "name",
+                    value: "payout",
+                  },
+                ],
+              }),
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+            alert("payout As Send to " + selectedData?.name + ".");
+          } catch (err) {
+            console.log("🚀 ~ err:", err);
+          }
         },
         x: 0,
         y: 0,
         width: 600,
         windowWidth: printRef.current.scrollWidth,
       });
-
-      // const doc = new jsPDF("p", "pt", "a4");
-      // doc.html(printRef.current, {
-      //   callback: async function (doc) {
-      //     const pdfBlob = doc.output("blob");
-      //     const fileName = `payout/${selectedData?.name}.pdf`;
-      //     const fileRef = ref(storage, fileName);
-
-      //     await uploadBytes(fileRef, pdfBlob);
-      //     const downloadURL = await getDownloadURL(fileRef);
-      //     console.log("🚀 ~ downloadURL:", downloadURL)
-      //     const mobileNumber = selectedData?.phone;
-
-      //     const url =
-      //       import.meta.env.VITE_FIREBASE_WHATSAPP_URL + "91" + mobileNumber;
-      //     const token = import.meta.env.VITE_FIREBASE_WHATSAPP_TOKEN;
-      //     try {
-      //       const response = await fetch(url, {
-      //         method: "POST",
-      //         headers: {
-      //           "Content-Type": "application/json-patch+json",
-      //           Authorization: `Bearer ${token}`,
-      //         },
-      //         body: JSON.stringify({
-      //           template_name: "invoice_pdf",
-      //           broadcast_name: "invoice_pdf",
-      //           parameters: [
-      //             {
-      //               name: "pdflink",
-      //               value: downloadURL,
-      //             },
-      //             {
-      //               name: "name",
-      //               value: "payout",
-      //             },
-      //           ],
-      //         }),
-      //       });
-
-      //       if (!response.ok) {
-      //         throw new Error(`HTTP error! Status: ${response.status}`);
-      //       }
-      //       const data = await response.json();
-      //       alert("payout As Send to " + selectedData?.name + ".");
-      //     } catch (err) {
-      //       console.log("🚀 ~ err:", err);
-      //     }
-      //   },
-      //   x: 0,
-      //   y: 0,
-      // });
     } catch (error) {
       console.error("Error uploading or sharing the PDF:", error);
     }
@@ -336,8 +320,8 @@ function Payout() {
         style={{ height: "82vh" }}
       >
         {selectedData && (
-          <div className="w-full bg-white rounded-lg">
-            <div className="flex space-x-4 border-b p-3">
+          <div className="container2" style={{ minHeight: "82vh" }}>
+            <div className="flex space-x-4 border-b px-5 pb-3">
               <button
                 className="px-4 py-1 text-gray-600  rounded-md flex items-center  border hover:bg-black hover:text-white"
                 onClick={handleWhatsAppShare}
@@ -375,6 +359,17 @@ function Payout() {
                 </div>
               </div>
               <div className="w-full">
+
+                <div className="flex justify-between">
+
+                  <div className=" mb-2">
+                    Total Working Days
+                  </div>
+                  <div className=" mb-2">
+                    {selectedData.noPresent}/{selectedData.workingDates}
+                  </div>
+                </div>
+
                 <h2 className="text-lg font-semibold mb-2">
                   Recent Transactions (+)
                 </h2>

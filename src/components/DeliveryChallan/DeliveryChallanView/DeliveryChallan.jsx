@@ -353,6 +353,8 @@ const DeliveryChallan = ({ deliveryChallan, bankDetails, selectTemplate }) => {
                 {deliveryChallan.createdBy?.address} <br />
                 {deliveryChallan.createdBy?.city} <br />
                 {deliveryChallan.createdBy?.zipCode} <br />
+                Mobile:{deliveryChallan.createdBy?.phoneNo} <br />
+                Email:{deliveryChallan.createdBy?.email} <br />
               </div>
               <div className="mt-8">
                 <div className="mb-2.5">
@@ -470,8 +472,8 @@ const DeliveryChallan = ({ deliveryChallan, bankDetails, selectTemplate }) => {
             If you have any questions concerning this deliveryChallan, use the
             following contact information:
           </div>
-          <div className="text-xs text-gray-800 mt-2">{userDetails.email}</div>
-          <div className="text-xs text-gray-800 mt-1">{userDetails.phone}</div>
+          <div className="text-xs text-gray-800 mt-2">{deliveryChallan.createdBy?.email} </div>
+          <div className="text-xs text-gray-800 mt-1">{deliveryChallan.createdBy?.phoneNo}</div>
           <div className="mt-8 text-xs text-gray-800">© 2025 Sunya</div>
         </div>
       </div>

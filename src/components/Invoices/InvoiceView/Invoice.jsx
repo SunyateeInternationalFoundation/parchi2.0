@@ -447,6 +447,8 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
                   {invoice.createdBy?.address} <br />
                   {invoice.createdBy?.city} <br />
                   {invoice.createdBy?.zipCode} <br />
+                  Mobile: {invoice.createdBy?.phoneNo} <br />
+                  Email: {invoice.createdBy?.email} 
                 </div>
                 <div className="mt-8">
                   <div className="mb-2.5">
@@ -571,10 +573,10 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
               following contact information:
             </div>
             <div className="text-xs text-gray-800 mt-2">
-              {userDetails.email}
+            {invoice.createdBy?.email} 
             </div>
             <div className="text-xs text-gray-800 mt-1">
-              {userDetails.phone}
+            {invoice.createdBy?.phoneNo}
             </div>
             <div className="mt-8 text-xs text-gray-800">
               © 2025 {invoice?.createdBy?.name}

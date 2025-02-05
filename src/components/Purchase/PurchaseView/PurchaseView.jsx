@@ -349,6 +349,8 @@ function PurchaseView({ purchase, bankDetails, selectTemplate }) {
                 {purchase.createdBy?.address} <br />
                 {purchase.createdBy?.city} <br />
                 {purchase.createdBy?.zipCode} <br />
+                Mobile:{purchase.createdBy?.phoneNo} <br />
+                Email:{purchase.createdBy?.email}
               </div>
               <div className="mt-8">
                 <div className="mb-2.5">
@@ -472,8 +474,8 @@ function PurchaseView({ purchase, bankDetails, selectTemplate }) {
             If you have any questions concerning this purchase, use the
             following contact information:
           </div>
-          <div className="text-xs text-gray-800 mt-2">{userDetails.email}</div>
-          <div className="text-xs text-gray-800 mt-1">{userDetails.phone}</div>
+          <div className="text-xs text-gray-800 mt-2">{purchase.createdBy?.email}</div>
+          <div className="text-xs text-gray-800 mt-1">{purchase.createdBy?.phoneNo}</div>
           <div className="mt-8 text-xs text-gray-800">© 2025 Sunya</div>
         </div>
       </div>
