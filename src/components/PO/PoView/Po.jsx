@@ -282,12 +282,10 @@ function Po({ Po, bankDetails, selectTemplate }) {
   ];
 
   const handleViewTemplate = () => {
-    const serializableInvoice = JSON.parse(JSON.stringify(Po));
-    const serializableBankDetails = JSON.parse(JSON.stringify(bankDetails));
 
     const state = {
-      invoice: serializableInvoice,
-      bankDetails: serializableBankDetails,
+      dataSet: Po,
+      bankDetails: bankDetails,
     };
 
     const encodedState = btoa(JSON.stringify(state));

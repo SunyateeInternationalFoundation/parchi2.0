@@ -22,17 +22,6 @@ import { useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 import { db } from "../../../firebase";
-import Template1 from "../../Templates/Template1";
-import Template10 from "../../Templates/Template10";
-import Template11 from "../../Templates/Template11";
-import Template2 from "../../Templates/Template2";
-import Template3 from "../../Templates/Template3";
-import Template4 from "../../Templates/Template4";
-import Template5 from "../../Templates/Template5";
-import Template6 from "../../Templates/Template6";
-import Template7 from "../../Templates/Template7";
-import Template8 from "../../Templates/Template8";
-import Template9 from "../../Templates/Template9";
 import Template2Inch from "../../Templates/pos/Template2Inch";
 import Template3Inch from "../../Templates/pos/Template3Inch";
 
@@ -64,47 +53,10 @@ function POSViewHome({ POS, bankDetails, selectTemplate }) {
   });
 
   const templatesComponents = {
-    template0: (
+    template2In: (
       <Template3Inch ref={POSRef} dataSet={POS} bankDetails={bankDetails} />
     ),
-    template1: (
-      <Template1 ref={POSRef} dataSet={POS} bankDetails={bankDetails} />
-    ),
-
-    template2: (
-      <Template2 ref={POSRef} dataSet={POS} bankDetails={bankDetails} />
-    ),
-
-    template3: (
-      <Template3 ref={POSRef} dataSet={POS} bankDetails={bankDetails} />
-    ),
-
-    template4: (
-      <Template4 ref={POSRef} dataSet={POS} bankDetails={bankDetails} />
-    ),
-    template5: (
-      <Template5 ref={POSRef} dataSet={POS} bankDetails={bankDetails} />
-    ),
-
-    template6: (
-      <Template6 ref={POSRef} dataSet={POS} bankDetails={bankDetails} />
-    ),
-    template7: (
-      <Template7 ref={POSRef} dataSet={POS} bankDetails={bankDetails} />
-    ),
-    template8: (
-      <Template8 ref={POSRef} dataSet={POS} bankDetails={bankDetails} />
-    ),
-    template9: (
-      <Template9 ref={POSRef} dataSet={POS} bankDetails={bankDetails} />
-    ),
-    template10: (
-      <Template10 ref={POSRef} dataSet={POS} bankDetails={bankDetails} />
-    ),
-    template11: (
-      <Template11 ref={POSRef} dataSet={POS} bankDetails={bankDetails} />
-    ),
-    template12: (
+    template3In: (
       <Template2Inch ref={POSRef} dataSet={POS} bankDetails={bankDetails} />
     ),
   };
@@ -138,6 +90,7 @@ function POSViewHome({ POS, bankDetails, selectTemplate }) {
       y: 0,
     });
   };
+
   const handleDelete = async () => {
     try {
       if (!POS.id || !companyId) {
@@ -207,12 +160,10 @@ function POSViewHome({ POS, bankDetails, selectTemplate }) {
     },
   ];
   const handleViewTemplate = () => {
-    const serializableInvoice = JSON.parse(JSON.stringify(POS));
-    const serializableBankDetails = JSON.parse(JSON.stringify(bankDetails));
 
     const state = {
-      invoice: serializableInvoice,
-      bankDetails: serializableBankDetails,
+      dataSet: POS,
+      bankDetails: bankDetails,
     };
 
     const encodedState = btoa(JSON.stringify(state));
@@ -221,6 +172,7 @@ function POSViewHome({ POS, bankDetails, selectTemplate }) {
 
     window.open(url, "_blank");
   };
+
   return (
     <div className="bg-white mt-3 rounded-lg shadow-md overflow-hidden">
       <div className=" flex justify-between bg-white mt-3 border-b rounded-t-lg px-5 py-4">

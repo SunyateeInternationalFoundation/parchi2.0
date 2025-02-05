@@ -331,14 +331,10 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
       label: "PRICE",
     },
   ];
-  console.log("invoice", invoice);
   const handleViewTemplate = () => {
-    const serializableInvoice = JSON.parse(JSON.stringify(invoice));
-    const serializableBankDetails = JSON.parse(JSON.stringify(bankDetails));
-
     const state = {
-      invoice: serializableInvoice,
-      bankDetails: serializableBankDetails,
+      dataSet: invoice,
+      bankDetails: bankDetails,
     };
 
     const encodedState = btoa(JSON.stringify(state));

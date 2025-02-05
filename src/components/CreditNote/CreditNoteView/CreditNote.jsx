@@ -244,12 +244,10 @@ const CreditNote = ({ creditNote, bankDetails, selectTemplate }) => {
     },
   ];
   const handleViewTemplate = () => {
-    const serializableInvoice = JSON.parse(JSON.stringify(creditNote));
-    const serializableBankDetails = JSON.parse(JSON.stringify(bankDetails));
 
     const state = {
-      invoice: serializableInvoice,
-      bankDetails: serializableBankDetails,
+      dataSet: creditNote,
+      bankDetails: bankDetails,
     };
 
     const encodedState = btoa(JSON.stringify(state));

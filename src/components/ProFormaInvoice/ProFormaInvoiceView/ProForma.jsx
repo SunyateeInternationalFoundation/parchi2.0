@@ -242,12 +242,10 @@ function ProForma({ proForma, bankDetails, selectTemplate }) {
     },
   ];
   const handleViewTemplate = () => {
-    const serializableInvoice = JSON.parse(JSON.stringify(proForma));
-    const serializableBankDetails = JSON.parse(JSON.stringify(bankDetails));
 
     const state = {
-      invoice: serializableInvoice,
-      bankDetails: serializableBankDetails,
+      dataSet: proForma,
+      bankDetails: bankDetails,
     };
 
     const encodedState = btoa(JSON.stringify(state));

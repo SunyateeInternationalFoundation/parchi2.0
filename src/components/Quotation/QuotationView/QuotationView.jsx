@@ -243,12 +243,9 @@ function QuotationView({ quotation, bankDetails, selectTemplate }) {
     },
   ];
   const handleViewTemplate = () => {
-    const serializableInvoice = JSON.parse(JSON.stringify(quotation));
-    const serializableBankDetails = JSON.parse(JSON.stringify(bankDetails));
-
     const state = {
-      invoice: serializableInvoice,
-      bankDetails: serializableBankDetails,
+      dataSet: quotation,
+      bankDetails: bankDetails,
     };
 
     const encodedState = btoa(JSON.stringify(state));

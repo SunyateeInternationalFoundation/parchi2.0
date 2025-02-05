@@ -5,7 +5,7 @@ import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../../../firebase";
-import SelectTemplateSideBar from "../../Templates/SelectTemplateSideBar";
+import SelectPOSTemplateSideBar from "../../Templates/SelectPOSTemplateSideBar";
 import POSViewHome from "./POSViewHome";
 
 function POSView() {
@@ -13,7 +13,7 @@ function POSView() {
   const [POS, setPOS] = useState({});
   const userDetails = useSelector((state) => state.users);
   const [bankDetails, setBankDetails] = useState({});
-  const [selectTemplate, setSelectTemplate] = useState("template0");
+  const [selectTemplate, setSelectTemplate] = useState("template2In");
   const [isSelectTemplateOpen, setIsSelectTemplateOpen] = useState(false);
 
   let companyId;
@@ -134,7 +134,7 @@ function POSView() {
           selectTemplate={selectTemplate}
         />
       </div>
-      <SelectTemplateSideBar
+      <SelectPOSTemplateSideBar
         isOpen={isSelectTemplateOpen}
         onClose={() => setIsSelectTemplateOpen(false)}
         preSelectedTemplate={selectTemplate}

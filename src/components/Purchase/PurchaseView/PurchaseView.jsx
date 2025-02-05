@@ -242,12 +242,10 @@ function PurchaseView({ purchase, bankDetails, selectTemplate }) {
     },
   ];
   const handleViewTemplate = () => {
-    const serializableInvoice = JSON.parse(JSON.stringify(purchase));
-    const serializableBankDetails = JSON.parse(JSON.stringify(bankDetails));
 
     const state = {
-      invoice: serializableInvoice,
-      bankDetails: serializableBankDetails,
+      dataSet: purchase,
+      bankDetails: bankDetails,
     };
 
     const encodedState = btoa(JSON.stringify(state));
