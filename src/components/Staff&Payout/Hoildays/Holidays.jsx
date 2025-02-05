@@ -31,7 +31,7 @@ const Holidays = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
-
+  const [editHoliday, setEditHoliday] = useState({});
   const userDetails = useSelector((state) => state.users);
   const companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
@@ -77,7 +77,14 @@ const Holidays = () => {
   const handleAddHoliday = (newData) => {
     setHoliday((prev) => [...prev, newData]);
   };
-
+  const handleEditHoliday = (updatedHoliday) => {
+    console.log("updated", updatedHoliday);
+    setHoliday((prev) =>
+      prev.map((h) =>
+        h.id === updatedHoliday.id ? { ...h, ...updatedHoliday } : h
+      )
+    );
+  };
   async function OnDeleteHoliday(holidayId, name) {
     try {
       const confirm = window.confirm(
@@ -155,6 +162,10 @@ const Holidays = () => {
                       <tr
                         key={holiday.id}
                         className="border-b border-gray-200 text-center cursor-pointer"
+                        onClick={() => {
+                          setIsSidebarOpen(true);
+                          setEditHoliday(holiday);
+                        }}
                       >
                         <td className="px-8 py-3 text-start">
                           <FormatTimestamp timestamp={holiday.createdAt} />
@@ -244,6 +255,8 @@ const Holidays = () => {
           onClose={() => setIsSidebarOpen(false)}
           onAddHoliday={handleAddHoliday}
           companyId={companyId}
+          editHoliday={editHoliday}
+          handleEditHoliday={handleEditHoliday}
         />
       )}
     </div>

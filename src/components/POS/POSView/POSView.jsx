@@ -13,7 +13,7 @@ function POSView() {
   const [POS, setPOS] = useState({});
   const userDetails = useSelector((state) => state.users);
   const [bankDetails, setBankDetails] = useState({});
-  const [selectTemplate, setSelectTemplate] = useState("template1");
+  const [selectTemplate, setSelectTemplate] = useState("template0");
   const [isSelectTemplateOpen, setIsSelectTemplateOpen] = useState(false);
 
   let companyId;

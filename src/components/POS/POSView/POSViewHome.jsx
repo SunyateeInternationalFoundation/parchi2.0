@@ -34,6 +34,7 @@ import Template7 from "../../Templates/Template7";
 import Template8 from "../../Templates/Template8";
 import Template9 from "../../Templates/Template9";
 import Template2Inch from "../../Templates/pos/Template2Inch";
+import Template3Inch from "../../Templates/pos/Template3Inch";
 
 function POSViewHome({ POS, bankDetails, selectTemplate }) {
   const navigate = useNavigate();
@@ -63,6 +64,9 @@ function POSViewHome({ POS, bankDetails, selectTemplate }) {
   });
 
   const templatesComponents = {
+    template0: (
+      <Template3Inch ref={POSRef} dataSet={POS} bankDetails={bankDetails} />
+    ),
     template1: (
       <Template1 ref={POSRef} dataSet={POS} bankDetails={bankDetails} />
     ),

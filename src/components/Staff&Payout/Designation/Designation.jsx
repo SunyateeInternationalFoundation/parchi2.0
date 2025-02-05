@@ -373,6 +373,7 @@ const AddDesignationModal = ({
           const staffRef = doc(db, "staff", staff.id);
           await updateDoc(staffRef, { designation: designationName });
         }
+
         handleEditDesignation({ id: docRef.id, ...payload });
         payloadLog.ref = docRef;
         payloadLog.action = "Update";
@@ -382,6 +383,7 @@ const AddDesignationModal = ({
           createdAt: Timestamp.fromDate(new Date()),
           ...payload,
         });
+
         onAddDesignation({
           id: docRef.id,
           createdAt: Timestamp.fromDate(new Date()),

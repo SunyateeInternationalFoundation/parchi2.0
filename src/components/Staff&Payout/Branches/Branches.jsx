@@ -345,6 +345,20 @@ const AddBranchModal = ({
         companyRef: companyRef,
       };
       let branchRef;
+
+      const q = editBranch?.id
+        ? query(
+            collection(db, "staff"),
+            where("companyRef", "==", companyRef),
+            where("branch", "==", editBranch.branchName)
+          )
+        : query(collection(db, "staff"), where("companyRef", "==", companyRef));
+
+      const getData = await getDocs(q);
+      const staffData = getData.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       let payloadLog = {
         ref: branchRef,
         date: serverTimestamp(),
@@ -359,6 +373,12 @@ const AddBranchModal = ({
           updatedAt: Timestamp.fromDate(new Date()),
           ...payload,
         });
+
+        for (const staff of staffData) {
+          const staffRef = doc(db, "staff", staff.id);
+          await updateDoc(staffRef, { branch: branchName });
+        }
+
         payloadLog.ref = branchRef;
         payloadLog.action = "Update";
         payloadLog.description = `${branchName} branch updated`;
