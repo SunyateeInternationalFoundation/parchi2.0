@@ -120,10 +120,12 @@ const Template6 = forwardRef((props, ref) => {
                 </td>
                 <td className="border border-black pl-1">{item.tax}%</td>
                 <td className="border border-black pl-1">
-                  {item.cgstAmount.toFixed(2)} {/* Assuming cgstAmount is available in item */}
+                  {item.cgstAmount.toFixed(2)}{" "}
+                  {/* Assuming cgstAmount is available in item */}
                 </td>
                 <td className="border border-black pl-1">
-                  {item.sgstAmount.toFixed(2)} {/* Assuming sgstAmount is available in item */}
+                  {item.sgstAmount.toFixed(2)}{" "}
+                  {/* Assuming sgstAmount is available in item */}
                 </td>
                 <td className="border border-black  pl-1">
                   {item.totalAmount.toFixed(2)}

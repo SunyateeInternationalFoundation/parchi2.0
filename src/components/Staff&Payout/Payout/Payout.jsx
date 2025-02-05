@@ -1,11 +1,11 @@
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import jsPDF from "jspdf";
 import { useEffect, useRef, useState } from "react";
+import { FaWhatsapp } from "react-icons/fa";
 import { IoPrintOutline } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { useReactToPrint } from "react-to-print";
 import { db } from "../../../firebase";
-
 
 function Payout() {
   const [loading, setLoading] = useState(!true);
@@ -13,10 +13,14 @@ function Payout() {
   const userDetails = useSelector((state) => state.users);
   const companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  const memoData = useRef({})
-  const selectDate = useRef(`${String(new Date().getMonth() + 1).padStart(2, "0")}-${new Date().getFullYear()}`)
-  const [selectedData, setSelectedData] = useState(null)
-
+  const memoData = useRef({});
+  const selectDate = useRef(
+    `${String(new Date().getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${new Date().getFullYear()}`
+  );
+  const [selectedData, setSelectedData] = useState(null);
 
   const printRef = useRef();
   const reactToPrintFn = useReactToPrint({
@@ -37,7 +41,6 @@ function Payout() {
         ...doc.data(),
       }));
       setStaffData(staffData);
-
     } catch (error) {
       console.log("🚀 ~ fetchStaffData ~ error:", error);
     } finally {
@@ -73,18 +76,20 @@ function Payout() {
         "staffAttendance"
       );
       const staffAttendanceData = await getDocs(staffAttendanceRef);
-      let customData = {}
+      let customData = {};
       staffAttendanceData.docs.forEach((doc) => {
         const { date, staffs } = doc.data();
         for (let staff of staffs) {
           const key = DateFormate(date);
 
           if (!customData[staff.id]) {
-            const staffDetails = staffData.find(ele => ele.id == staff.id)
-            const monthYear = key.split("-")
+            const staffDetails = staffData.find((ele) => ele.id == staff.id);
+            const monthYear = key.split("-");
             let salaryPerDay = +staffDetails.paymentDetails;
             if (!staffDetails.isDailyWages) {
-              salaryPerDay = +staffDetails.paymentDetails / getDaysInMonth(monthYear[1], monthYear[0] - 1);
+              salaryPerDay =
+                +staffDetails.paymentDetails /
+                getDaysInMonth(monthYear[1], monthYear[0] - 1);
             }
             customData[staff.id] = {
               name: staffDetails.name,
@@ -93,7 +98,7 @@ function Payout() {
               paymentDetails: +staffDetails.paymentDetails,
               isDailyWages: staffDetails.isDailyWages,
               salaryPerDay,
-            }
+            };
           }
           if (!customData[staff.id][key]) {
             customData[staff.id][key] = {
@@ -104,29 +109,50 @@ function Payout() {
               lateFine: 0,
               total: 0,
               extraShiftAmount: 0,
-              halfShiftAmount: 0
-            }
+              halfShiftAmount: 0,
+            };
           }
 
-
           if (staff.status == "absent") {
-            return
+            return;
           }
 
           const obj = {
-            payout: customData[staff.id][key]?.payout + customData[staff.id].salaryPerDay,
-            allowance: +((staff?.adjustments?.allowance?.amount * staff?.adjustments?.allowance?.hours) || 0),
-            overTime: +((staff?.adjustments?.overTime?.amount * staff?.adjustments?.overTime?.hours) || 0),
-            deduction: +((staff?.adjustments?.deduction?.amount * staff?.adjustments?.deduction?.hours) || 0),
-            lateFine: +((staff?.adjustments?.lateFine?.amount * staff?.adjustments?.lateFine?.hours) || 0),
-          }
+            payout:
+              customData[staff.id][key]?.payout +
+              customData[staff.id].salaryPerDay,
+            allowance: +(
+              staff?.adjustments?.allowance?.amount *
+                staff?.adjustments?.allowance?.hours || 0
+            ),
+            overTime: +(
+              staff?.adjustments?.overTime?.amount *
+                staff?.adjustments?.overTime?.hours || 0
+            ),
+            deduction: +(
+              staff?.adjustments?.deduction?.amount *
+                staff?.adjustments?.deduction?.hours || 0
+            ),
+            lateFine: +(
+              staff?.adjustments?.lateFine?.amount *
+                staff?.adjustments?.lateFine?.hours || 0
+            ),
+          };
 
           const daySalary = customData[staff.id].salaryPerDay * staff.shift;
 
-          const extraShiftAmount = (staff.shift !== 0.5 ? daySalary - customData[staff.id].salaryPerDay : 0)
-          const halfShiftAmount = (staff.shift == 0.5 ? obj.payout / 2 : 0)
+          const extraShiftAmount =
+            staff.shift !== 0.5
+              ? daySalary - customData[staff.id].salaryPerDay
+              : 0;
+          const halfShiftAmount = staff.shift == 0.5 ? obj.payout / 2 : 0;
 
-          const total = (daySalary + obj.allowance + obj.overTime - obj.deduction - obj.lateFine || 0)
+          const total =
+            daySalary +
+              obj.allowance +
+              obj.overTime -
+              obj.deduction -
+              obj.lateFine || 0;
 
           customData[staff.id][key] = {
             payout: obj.payout,
@@ -135,11 +161,12 @@ function Payout() {
             deduction: customData[staff.id][key]?.deduction + obj.deduction,
             lateFine: customData[staff.id][key]?.lateFine + obj.lateFine,
             total: +customData[staff.id][key]?.total + +total,
-            extraShiftAmount: +customData[staff.id][key]?.extraShiftAmount + +extraShiftAmount,
-            halfShiftAmount: +customData[staff.id][key]?.halfShiftAmount + +halfShiftAmount
-          }
+            extraShiftAmount:
+              +customData[staff.id][key]?.extraShiftAmount + +extraShiftAmount,
+            halfShiftAmount:
+              +customData[staff.id][key]?.halfShiftAmount + +halfShiftAmount,
+          };
         }
-
       });
       memoData.current = customData;
     } catch (error) {
@@ -150,19 +177,28 @@ function Payout() {
   }
 
   function onSelectStaff(id, date = selectDate.current) {
-    setSelectedData({ id, ...memoData.current[id][date], name: memoData.current[id].name, idNo: memoData.current[id].idNo, phone: memoData.current[id].phone })
-    selectDate.current = date
+    setSelectedData({
+      id,
+      ...memoData.current[id][date],
+      name: memoData.current[id].name,
+      idNo: memoData.current[id].idNo,
+      phone: memoData.current[id].phone,
+    });
+    selectDate.current = date;
   }
 
   const handleWhatsAppShare = async () => {
     try {
       const doc = new jsPDF("p", "pt", "a4");
+
       doc.html(printRef.current, {
         callback: function (doc) {
           doc.save(`${selectedData?.name}'s payout.pdf`);
         },
         x: 0,
         y: 0,
+        width: 600,
+        windowWidth: printRef.current.scrollWidth,
       });
 
       // const doc = new jsPDF("p", "pt", "a4");
@@ -228,9 +264,7 @@ function Payout() {
     if (staffData.length > 0) {
       fetchStaffAttendance();
     }
-  }, [staffData])
-
-
+  }, [staffData]);
 
   return (
     <div className="flex  overflow-hidden" style={{ height: "82vh" }}>
@@ -261,11 +295,13 @@ function Payout() {
                   staffData.map((staff) => (
                     <tr
                       key={staff.id}
-                      className={"border-b border-gray-200 text-center cursor-pointer " + (selectedData?.idNo == staff?.idNo && " bg-blue-100")}
+                      className={
+                        "border-b border-gray-200 text-center cursor-pointer " +
+                        (selectedData?.idNo == staff?.idNo && " bg-blue-100")
+                      }
                       onClick={() => {
-                        onSelectStaff(staff.id)
-                      }
-                      }
+                        onSelectStaff(staff.id);
+                      }}
                     >
                       <td className="px-8 py-4 text-start w-24">
                         {staff.idNo}
@@ -273,17 +309,19 @@ function Payout() {
                       <td className="px-8 py-4 text-start w-24">
                         {staff.name}
                       </td>
+                      <td className="px-5 py-4 ">{staff.phone}</td>
                       <td className="px-5 py-4 ">
-                        {staff.phone}
-                      </td>
-                      <td className="px-5 py-4 ">
-                        {staff.paymentDetails}{staff.isDailyWages ? "/perDay" : "/perMonth"}
+                        {staff.paymentDetails}
+                        {staff.isDailyWages ? "/perDay" : "/perMonth"}
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="h-10 text-center py-4 hover:bg-white">
+                    <td
+                      colSpan="4"
+                      className="h-10 text-center py-4 hover:bg-white"
+                    >
                       <div> No Staff Found</div>
                     </td>
                   </tr>
@@ -293,16 +331,19 @@ function Payout() {
           </div>
         )}
       </div>
-      <div className="w-full flex justify-center overflow-y-auto px-10 py-5" style={{ height: "82vh" }}>
-        {selectedData &&
+      <div
+        className="w-full flex justify-center overflow-y-auto px-10 py-5"
+        style={{ height: "82vh" }}
+      >
+        {selectedData && (
           <div className="w-full bg-white rounded-lg">
             <div className="flex space-x-4 border-b p-3">
-              {/* <button
+              <button
                 className="px-4 py-1 text-gray-600  rounded-md flex items-center  border hover:bg-black hover:text-white"
                 onClick={handleWhatsAppShare}
               >
                 <FaWhatsapp /> &nbsp; Share on WhatsApp
-              </button> */}
+              </button>
               <button
                 className="px-4 py-1 text-gray-600 rounded-md flex items-center  border hover:bg-black hover:text-white"
                 onClick={() => reactToPrintFn()}
@@ -310,19 +351,22 @@ function Payout() {
                 <IoPrintOutline /> &nbsp; Print
               </button>
             </div>
-            <div className="w-full p-5" ref={printRef} >
+            <div className="w-full p-5" ref={printRef}>
               <div className="flex items-center w-full">
                 <div className="w-full">
-                  <div className="text-2xl font-bold">{selectedData?.name}
+                  <div className="text-2xl font-bold">{selectedData?.name}</div>
+                  <div className="text-gray-500 text-sm">
+                    IdNo: {selectedData?.idNo}
                   </div>
-                  <div className="text-gray-500 text-sm">IdNo: {selectedData?.idNo}</div>
                 </div>
 
                 <div className="w-full py-3 flex justify-center ">
                   <input
                     type="month"
                     className=" input-tag w-96"
-                    defaultValue={`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`}
+                    defaultValue={`${new Date().getFullYear()}-${String(
+                      new Date().getMonth() + 1
+                    ).padStart(2, "0")}`}
                     onChange={(e) => {
                       const date = e.target.value.split("-");
                       onSelectStaff(selectedData.id, `${date[1]}-${date[0]}`);
@@ -331,7 +375,9 @@ function Payout() {
                 </div>
               </div>
               <div className="w-full">
-                <h2 className="text-lg font-semibold mb-2">Recent Transactions (+)</h2>
+                <h2 className="text-lg font-semibold mb-2">
+                  Recent Transactions (+)
+                </h2>
                 <div className=" mb-4">
                   <div className="flex justify-between py-3 border-b">
                     <span>Payout</span>
@@ -373,7 +419,7 @@ function Payout() {
               </div>
             </div>
           </div>
-        }
+        )}
       </div>
     </div>
   );

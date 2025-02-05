@@ -92,10 +92,12 @@ const Template3 = forwardRef((props, ref) => {
                 <td className="py-2 pl-1">{item.sellingPrice.toFixed(1)}</td>
                 <td className="py-2 pl-1">{item.netAmount.toFixed(2)}</td>
                 <td className="py-2 pl-1">
-                  {item.cgstAmount.toFixed(2)} {/* Assuming cgstAmount is available in item */}
+                  {item.cgstAmount.toFixed(2)}{" "}
+                  {/* Assuming cgstAmount is available in item */}
                 </td>
                 <td className="py-2 pl-1">
-                  {item.sgstAmount.toFixed(2)} {/* Assuming sgstAmount is available in item */}
+                  {item.sgstAmount.toFixed(2)}{" "}
+                  {/* Assuming sgstAmount is available in item */}
                 </td>
                 <td className="py-2 pl-1">{item.totalAmount.toFixed(2)}</td>
               </tr>

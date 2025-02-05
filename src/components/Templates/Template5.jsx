@@ -29,12 +29,19 @@ const Template5 = forwardRef((props, ref) => {
               {dataSet?.createdBy?.name}
             </h1>
             <div>
-              <div className=" font-bold ">
-                {dataSet?.createdBy?.name} {dataSet?.type}
+              <div className="font-bold">
+                {dataSet?.createdBy?.name} {dataSet?.type}{" "}
               </div>
-              {/* <p><span></span>GSTIN: 4828E9B55BD92X6</p>
-            <p>State: Ontario, Toronto</p>
-            <p>PAN: BSDF4O7ERPCRM</p> */}
+              {/* <p><span></span>GSTIN: 4828E9B55BD92X6</p> */}
+              <p>
+                {" "}
+                <span className="font-bold">Email: </span>{" "}
+                {dataSet?.createdBy?.email}
+              </p>
+              <p>
+                <span className="font-bold">Phone: </span>{" "}
+                {dataSet?.createdBy?.phoneNo}
+              </p>
             </div>
           </div>
           <div className="text-right">
@@ -126,11 +133,21 @@ const Template5 = forwardRef((props, ref) => {
                 <td className="pt-2 pb-2 pl-1">{item.name}</td>
                 <td className="pt-2 pb-2 pl-1">{item.tax}%</td>
                 <td className="pt-2 pb-2 pl-1">{item.discount.toFixed(1)}</td>
-                <td className="pt-2 pb-2 pl-1">{item.sellingPrice.toFixed(1)}</td>
+                <td className="pt-2 pb-2 pl-1">
+                  {item.sellingPrice.toFixed(1)}
+                </td>
                 <td className="pt-2 pb-2 pl-1">{item.quantity}</td>
-                <td className="pt-2 pb-2 pl-1">{item.cgstAmount.toFixed(2)}</td> {/* Assuming cgstAmount is available in item */}
-                <td className="pt-2 pb-2 pl-1">{item.sgstAmount.toFixed(2)}</td> {/* Assuming sgstAmount is available in item */}
-                <td className="pt-2 pb-2 pl-1">{item.totalAmount.toFixed(2)}</td>
+                <td className="pt-2 pb-2 pl-1">
+                  {item.cgstAmount.toFixed(2)}
+                </td>{" "}
+                {/* Assuming cgstAmount is available in item */}
+                <td className="pt-2 pb-2 pl-1">
+                  {item.sgstAmount.toFixed(2)}
+                </td>{" "}
+                {/* Assuming sgstAmount is available in item */}
+                <td className="pt-2 pb-2 pl-1">
+                  {item.totalAmount.toFixed(2)}
+                </td>
               </tr>
             ))}
           </tbody>
