@@ -33,6 +33,7 @@ import Template6 from "../../Templates/Template6";
 import Template7 from "../../Templates/Template7";
 import Template8 from "../../Templates/Template8";
 import Template9 from "../../Templates/Template9";
+import Template2Inch from "../../Templates/pos/Template2Inch";
 import Template3Inch from "../../Templates/pos/Template3Inch";
 
 function POSViewHome({ POS, bankDetails, selectTemplate }) {
@@ -102,6 +103,9 @@ function POSViewHome({ POS, bankDetails, selectTemplate }) {
     ),
     template11: (
       <Template11 ref={POSRef} dataSet={POS} bankDetails={bankDetails} />
+    ),
+    template12: (
+      <Template2Inch ref={POSRef} dataSet={POS} bankDetails={bankDetails} />
     ),
   };
 
