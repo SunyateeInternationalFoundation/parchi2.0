@@ -1,150 +1,13 @@
-import React from "react";
-import { forwardRef } from "react";
-import { Timestamp } from "firebase/firestore";
-import { GiKingJuMask } from "react-icons/gi";
+import React, { forwardRef } from "react";
 
-function Template2Inch() {
-  const date = Timestamp.fromDate(new Date());
-  const dataSet = {
-    id: "OHo4nmA95a0xPkRR88b5",
-    notes: "",
-    shippingCharges: 0,
-    dueDate: {
-      seconds: 1738643469,
-      nanoseconds: 647000000,
-    },
-    subTotal: 900000.5,
-    mode: "Cash",
-    withoutT_SAmount: 9.5,
-    packagingCharges: 0,
-    extraDiscountType: true,
-    products: [
-      {
-        discountType: true,
-        quantity: 1,
-        purchasePriceTaxType: true,
-        purchasePrice: 0,
-        tax: 5,
-        sellingPrice: 10,
-        description: "",
-        sellingPriceTaxType: true,
-        discount: 5,
-        name: "lays",
-        returnQty: 0,
-      },
-    ],
-    prefix: "POS",
-    terms: "",
-    tcs: {
-      isTcsApplicable: false,
-    },
-    tds: {
-      isTcsApplicable: false,
-    },
-    createdBy: {
-      name: "Rakesh Company",
-      address: "502-Rajaushpa Building, wipro cirlce Nanakramaguda",
-      city: "Hyderabad",
-      zipCode: "500014",
-      who: "owner",
-      phoneNo: "6303396201",
-    },
-    book: {},
-    paymentStatus: "UnPaid",
-    tax: 5,
-    date: {
-      seconds: 1738643469,
-      nanoseconds: 647000000,
-    },
-    extraDiscount: 0,
-    total: 9.5,
-    attachments: [],
-    warehouse: {},
-    discount: 0,
-    type: "POS",
-    no: "0001",
-    userTo: {
-      gstNumber: "",
-      city: "",
-      phone: "7674917417",
-      address: "10142 Samoa Ave, Petaluma",
-      zipCode: "",
-      name: "ramu sif",
-    },
-    items: [
-      {
-        discountType: true,
-        quantity: 2,
-        purchasePriceTaxType: true,
-        purchasePrice: 0,
-        tax: 5,
-        sellingPrice: 1000,
-        description: "",
-        sellingPriceTaxType: false,
-        discount: 5,
-        name: "lays",
-        returnQty: 0,
-        sgst: 2.5,
-        cgst: 2.5,
-        taxAmount: 0.47500000000000003,
-        sgstAmount: 0.23750000000000002,
-        cgstAmount: 0.23750000000000002,
-        totalAmount: 9.5,
-        netAmount: 9.5,
-      },
-      {
-        discountType: true,
-        quantity: 1,
-        purchasePriceTaxType: true,
-        purchasePrice: 0,
-        tax: 5,
-        sellingPrice: 10,
-        description: "",
-        sellingPriceTaxType: true,
-        discount: 5,
-        name: "chips with masala",
-        returnQty: 0,
-        sgst: 2.5,
-        cgst: 2.5,
-        taxAmount: 0.47500000000000003,
-        sgstAmount: 0.23750000000000002,
-        cgstAmount: 0.23750000000000002,
-        totalAmount: 9.5,
-        netAmount: 9.5,
-      },
-
-      {
-        discountType: true,
-        quantity: 1,
-        purchasePriceTaxType: true,
-        purchasePrice: 0,
-        tax: 5,
-        sellingPrice: 10,
-        description: "",
-        sellingPriceTaxType: true,
-        discount: 5,
-        name: "bingo",
-        returnQty: 0,
-        sgst: 2.5,
-        cgst: 2.5,
-        taxAmount: 0.47500000000000003,
-        sgstAmount: 0.23750000000000002,
-        cgstAmount: 0.23750000000000002,
-        totalAmount: 9.5,
-        netAmount: 9.5,
-      },
-    ],
-    totalTaxableAmount: 9.5,
-    totalSgstAmount_2_5: 0.23750000000000002,
-    totalCgstAmount_2_5: 0.23750000000000002,
-    totalSgstAmount_6: 0,
-    totalCgstAmount_6: 0,
-    totalSgstAmount_9: 0,
-    totalCgstAmount_9: 0,
-  };
+const Template2Inch = forwardRef((props, ref) => {
+  const { dataSet, bankDetails } = props;
+  if (Object.keys(dataSet).length === 0) {
+    return;
+  }
 
   return (
-    <div className="w-[288px] mx-auto border p-4 text-xs font-mono">
+    <div className="w-[288px] mx-auto border p-4 text-xs font-mono bg-white" ref={ref}>
       <div className="text-center">
         <h2 className=" text-sm">{dataSet.createdBy.name}</h2>
         <p>Welcome to {dataSet.createdBy.name} Hyderabad - Nanakraguda!</p>
@@ -285,10 +148,10 @@ function Template2Inch() {
         <p className="flex justify-start">
           <span className="">Bank Details</span>
         </p>
-        <p>Bank : {}</p>
-        <p>Account : {}</p>
-        <p>IFSC Code : {}</p>
-        <p>Branch : {}</p>
+        <p>Bank : { }</p>
+        <p>Account : { }</p>
+        <p>IFSC Code : { }</p>
+        <p>Branch : { }</p>
       </div>
 
       <hr className="my-2 border-t border-dashed" />
@@ -299,5 +162,7 @@ function Template2Inch() {
     </div>
   );
 }
+)
+Template2Inch.displayName = "Template2Inch";
 
 export default Template2Inch;

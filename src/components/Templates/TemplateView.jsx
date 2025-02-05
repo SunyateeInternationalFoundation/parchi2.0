@@ -11,60 +11,70 @@ import Template6 from "./Template6";
 import Template7 from "./Template7";
 import Template8 from "./Template8";
 import Template9 from "./Template9";
+import Template2Inch from "./pos/Template2Inch";
+import Template3Inch from "./pos/Template3Inch";
 
 function TemplateView() {
   const { templateId } = useParams();
   const query = new URLSearchParams(useLocation().search);
   const encodedState = query.get("state");
   const decodedState = atob(encodedState);
-  const { invoice, bankDetails } = JSON.parse(decodedState);
+  const { dataSet, bankDetails } = JSON.parse(decodedState);
 
   const invoiceRef = useRef();
   const templatesComponents = {
     template1: (
-      <Template1 ref={invoiceRef} dataSet={invoice} bankDetails={bankDetails} />
+      <Template1 ref={invoiceRef} dataSet={dataSet} bankDetails={bankDetails} />
     ),
 
     template2: (
-      <Template2 ref={invoiceRef} dataSet={invoice} bankDetails={bankDetails} />
+      <Template2 ref={invoiceRef} dataSet={dataSet} bankDetails={bankDetails} />
     ),
 
     template3: (
-      <Template3 ref={invoiceRef} dataSet={invoice} bankDetails={bankDetails} />
+      <Template3 ref={invoiceRef} dataSet={dataSet} bankDetails={bankDetails} />
     ),
 
     template4: (
-      <Template4 ref={invoiceRef} dataSet={invoice} bankDetails={bankDetails} />
+      <Template4 ref={invoiceRef} dataSet={dataSet} bankDetails={bankDetails} />
     ),
     template5: (
-      <Template5 ref={invoiceRef} dataSet={invoice} bankDetails={bankDetails} />
+      <Template5 ref={invoiceRef} dataSet={dataSet} bankDetails={bankDetails} />
     ),
 
     template6: (
-      <Template6 ref={invoiceRef} dataSet={invoice} bankDetails={bankDetails} />
+      <Template6 ref={invoiceRef} dataSet={dataSet} bankDetails={bankDetails} />
     ),
     template7: (
-      <Template7 ref={invoiceRef} dataSet={invoice} bankDetails={bankDetails} />
+      <Template7 ref={invoiceRef} dataSet={dataSet} bankDetails={bankDetails} />
     ),
     template8: (
-      <Template8 ref={invoiceRef} dataSet={invoice} bankDetails={bankDetails} />
+      <Template8 ref={invoiceRef} dataSet={dataSet} bankDetails={bankDetails} />
     ),
     template9: (
-      <Template9 ref={invoiceRef} dataSet={invoice} bankDetails={bankDetails} />
+      <Template9 ref={invoiceRef} dataSet={dataSet} bankDetails={bankDetails} />
     ),
     template10: (
       <Template10
         ref={invoiceRef}
-        dataSet={invoice}
+        dataSet={dataSet}
         bankDetails={bankDetails}
       />
     ),
     template11: (
       <Template11
         ref={invoiceRef}
-        dataSet={invoice}
+        dataSet={dataSet}
         bankDetails={bankDetails}
       />
+    ),
+    template2In: (
+      <Template3Inch ref={invoiceRef}
+        dataSet={dataSet} bankDetails={bankDetails} />
+    ),
+    template3In: (
+      <Template2Inch ref={invoiceRef}
+        dataSet={dataSet} bankDetails={bankDetails} />
     ),
   };
   return (

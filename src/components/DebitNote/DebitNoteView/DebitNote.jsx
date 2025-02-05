@@ -352,12 +352,9 @@ function DebitNote({ debitNote, bankDetails, selectTemplate }) {
     },
   ];
   const handleViewTemplate = () => {
-    const serializableInvoice = JSON.parse(JSON.stringify(debitNote));
-    const serializableBankDetails = JSON.parse(JSON.stringify(bankDetails));
-
     const state = {
-      invoice: serializableInvoice,
-      bankDetails: serializableBankDetails,
+      dataSet: debitNote,
+      bankDetails: bankDetails,
     };
 
     const encodedState = btoa(JSON.stringify(state));

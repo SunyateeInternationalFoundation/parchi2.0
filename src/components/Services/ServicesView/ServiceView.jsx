@@ -333,10 +333,9 @@ function ServiceView() {
     },
   ];
   const handleViewTemplate = () => {
-    const serializableInvoice = JSON.parse(JSON.stringify(service));
 
     const state = {
-      invoice: serializableInvoice,
+      dataSet: service,
     };
 
     const encodedState = btoa(JSON.stringify(state));
