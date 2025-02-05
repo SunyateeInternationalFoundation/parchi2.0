@@ -1,14 +1,8 @@
 import PropTypes from "prop-types";
 import { forwardRef } from "react";
-import { useSelector } from "react-redux";
 
 const Template1 = forwardRef((props, ref) => {
   const { dataSet, bankDetails } = props;
-  const userDetails = useSelector((state) => state.users);
-  const companyDetails =
-    userDetails.companies[userDetails.selectedCompanyIndex];
-
-  console.log("companydetails", companyDetails);
   if (Object.keys(dataSet).length === 0) {
     return;
   }
@@ -24,7 +18,7 @@ const Template1 = forwardRef((props, ref) => {
 
     return `${getDate}/${getMonth}/${getFullYear}`;
   }
-  console.log("dataset", dataSet);
+
   return (
     <div
       className=" bg-white border border-gray-300 rounded-md shadow-md overflow-y-auto"
@@ -36,8 +30,7 @@ const Template1 = forwardRef((props, ref) => {
             <div className="text-lg font-bold text-start">
               {dataSet?.createdBy?.name}
             </div>
-            <div>Mobile : {companyDetails?.phone}</div>
-            <div>Email : {companyDetails?.email}</div>
+            <div>Mobile : {dataSet?.createdBy?.phoneNo}</div>
           </div>
           <div>
             <h3 className="font-bold uppercase">TAX {dataSet?.type}</h3>

@@ -126,11 +126,21 @@ const Template5 = forwardRef((props, ref) => {
                 <td className="pt-2 pb-2 pl-1">{item.name}</td>
                 <td className="pt-2 pb-2 pl-1">{item.tax}%</td>
                 <td className="pt-2 pb-2 pl-1">{item.discount.toFixed(1)}</td>
-                <td className="pt-2 pb-2 pl-1">{item.sellingPrice.toFixed(1)}</td>
+                <td className="pt-2 pb-2 pl-1">
+                  {item.sellingPrice.toFixed(1)}
+                </td>
                 <td className="pt-2 pb-2 pl-1">{item.quantity}</td>
-                <td className="pt-2 pb-2 pl-1">{item.cgstAmount.toFixed(2)}</td> {/* Assuming cgstAmount is available in item */}
-                <td className="pt-2 pb-2 pl-1">{item.sgstAmount.toFixed(2)}</td> {/* Assuming sgstAmount is available in item */}
-                <td className="pt-2 pb-2 pl-1">{item.totalAmount.toFixed(2)}</td>
+                <td className="pt-2 pb-2 pl-1">
+                  {item.cgstAmount.toFixed(2)}
+                </td>{" "}
+                {/* Assuming cgstAmount is available in item */}
+                <td className="pt-2 pb-2 pl-1">
+                  {item.sgstAmount.toFixed(2)}
+                </td>{" "}
+                {/* Assuming sgstAmount is available in item */}
+                <td className="pt-2 pb-2 pl-1">
+                  {item.totalAmount.toFixed(2)}
+                </td>
               </tr>
             ))}
           </tbody>
