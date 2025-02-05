@@ -31,6 +31,7 @@ const Template1 = forwardRef((props, ref) => {
               {dataSet?.createdBy?.name}
             </div>
             <div>Mobile : {dataSet?.createdBy?.phoneNo}</div>
+            <div>Email : {dataSet?.createdBy?.email}</div>
           </div>
           <div>
             <h3 className="font-bold uppercase">TAX {dataSet?.type}</h3>
