@@ -466,6 +466,8 @@ function ServiceView() {
                   {service.createdBy?.address} <br />
                   {service.createdBy?.city} <br />
                   {service.createdBy?.zipCode} <br />
+                  Mobile:{service.createdBy?.phoneNo} <br />
+                  Email:{service.createdBy?.email}
                 </div>
                 <div className="mt-8">
                   <div className="mb-2.5">
@@ -580,10 +582,10 @@ function ServiceView() {
               following contact information:
             </div>
             <div className="text-xs text-gray-800 mt-2">
-              {userDetails.email}
+            {service.createdBy?.email}
             </div>
             <div className="text-xs text-gray-800 mt-1">
-              {userDetails.phone}
+            {service.createdBy?.phoneNo}
             </div>
             <div className="mt-8 text-xs text-gray-800">
               © 2025 {service?.createdBy?.name}

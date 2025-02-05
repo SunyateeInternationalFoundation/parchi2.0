@@ -267,6 +267,8 @@ function POSViewHome({ POS, bankDetails, selectTemplate }) {
                 {POS.createdBy?.address} <br />
                 {POS.createdBy?.city} <br />
                 {POS.createdBy?.zipCode} <br />
+                Mobile:{POS.createdBy?.phoneNo} <br />
+                Email:{POS.createdBy?.email}
               </div>
               <div className="mt-8">
                 <div className="mb-2.5">
@@ -382,8 +384,8 @@ function POSViewHome({ POS, bankDetails, selectTemplate }) {
             If you have any questions concerning this POS, use the following
             contact information:
           </div>
-          <div className="text-xs text-gray-800 mt-2">{userDetails.email}</div>
-          <div className="text-xs text-gray-800 mt-1">{userDetails.phone}</div>
+          <div className="text-xs text-gray-800 mt-2">{POS.createdBy?.email}</div>
+          <div className="text-xs text-gray-800 mt-1">{POS.createdBy?.phoneNo}</div>
           <div className="mt-8 text-xs text-gray-800">
             © 2025 {POS.createdBy?.name}
           </div>

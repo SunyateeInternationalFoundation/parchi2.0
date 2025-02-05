@@ -348,6 +348,8 @@ function QuotationView({ quotation, bankDetails, selectTemplate }) {
                 {quotation.createdBy?.address} <br />
                 {quotation.createdBy?.city} <br />
                 {quotation.createdBy?.zipCode} <br />
+                Mobile: {quotation.createdBy?.phoneNo} <br />
+                Email: {quotation.createdBy?.email} 
               </div>
               <div className="mt-8">
                 <div className="mb-2.5">
@@ -471,8 +473,8 @@ function QuotationView({ quotation, bankDetails, selectTemplate }) {
             If you have any questions concerning this quotation, use the
             following contact information:
           </div>
-          <div className="text-xs text-gray-800 mt-2">{userDetails.email}</div>
-          <div className="text-xs text-gray-800 mt-1">{userDetails.phone}</div>
+          <div className="text-xs text-gray-800 mt-2">{quotation.createdBy?.email} </div>
+          <div className="text-xs text-gray-800 mt-1"> {quotation.createdBy?.phoneNo}</div>
           <div className="mt-8 text-xs text-gray-800">
             © 2025 {quotation?.createdBy?.name}
           </div>
