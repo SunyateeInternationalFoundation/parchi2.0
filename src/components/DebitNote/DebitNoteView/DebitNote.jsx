@@ -459,6 +459,8 @@ function DebitNote({ debitNote, bankDetails, selectTemplate }) {
                 {debitNote.createdBy?.address} <br />
                 {debitNote.createdBy?.city} <br />
                 {debitNote.createdBy?.zipCode} <br />
+                Mobile: {debitNote.createdBy?.phoneNo} <br />
+                Email: {debitNote.createdBy?.email}
               </div>
               <div className="mt-8">
                 <div className="mb-2.5">
@@ -574,8 +576,8 @@ function DebitNote({ debitNote, bankDetails, selectTemplate }) {
             If you have any questions concerning this debitNote, use the
             following contact information:
           </div>
-          <div className="text-xs text-gray-800 mt-2">{userDetails.email}</div>
-          <div className="text-xs text-gray-800 mt-1">{userDetails.phone}</div>
+          <div className="text-xs text-gray-800 mt-2">{debitNote.createdBy?.email}</div>
+          <div className="text-xs text-gray-800 mt-1">{debitNote.createdBy?.phoneNo}</div>
           <div className="mt-8 text-xs text-gray-800">
             © 2025 {debitNote.createdBy?.name}
           </div>

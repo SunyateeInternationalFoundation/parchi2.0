@@ -389,6 +389,8 @@ function Po({ Po, bankDetails, selectTemplate }) {
                 {Po.createdBy?.address} <br />
                 {Po.createdBy?.city} <br />
                 {Po.createdBy?.zipCode} <br />
+                Mobile:{Po.createdBy?.phoneNo} <br />
+                Email:{Po.createdBy?.email}
               </div>
               <div className="mt-8">
                 <div className="mb-2.5">
@@ -504,8 +506,8 @@ function Po({ Po, bankDetails, selectTemplate }) {
             If you have any questions concerning this Po, use the following
             contact information:
           </div>
-          <div className="text-xs text-gray-800 mt-2">{userDetails.email}</div>
-          <div className="text-xs text-gray-800 mt-1">{userDetails.phone}</div>
+          <div className="text-xs text-gray-800 mt-2">{Po.createdBy?.email}</div>
+          <div className="text-xs text-gray-800 mt-1">{Po.createdBy?.phoneNo}</div>
           <div className="mt-8 text-xs text-gray-800">
             © 2025 {Po.createdBy?.name}
           </div>

@@ -352,6 +352,8 @@ const CreditNote = ({ creditNote, bankDetails, selectTemplate }) => {
                 {creditNote.createdBy?.address} <br />
                 {creditNote.createdBy?.city} <br />
                 {creditNote.createdBy?.zipCode} <br />
+                Mobile:{creditNote.createdBy?.phoneNo} <br />
+                Email:{creditNote.createdBy?.email}
               </div>
               <div className="mt-8">
                 <div className="mb-2.5">
@@ -467,8 +469,8 @@ const CreditNote = ({ creditNote, bankDetails, selectTemplate }) => {
             If you have any questions concerning this creditNote, use the
             following contact information:
           </div>
-          <div className="text-xs text-gray-800 mt-2">{userDetails.email}</div>
-          <div className="text-xs text-gray-800 mt-1">{userDetails.phone}</div>
+          <div className="text-xs text-gray-800 mt-2">{creditNote.createdBy?.email}</div>
+          <div className="text-xs text-gray-800 mt-1">{creditNote.createdBy?.phoneNo}</div>
           <div className="mt-8 text-xs text-gray-800">© 2025 Sunya</div>
         </div>
       </div>
