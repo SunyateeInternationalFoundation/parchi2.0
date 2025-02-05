@@ -382,7 +382,7 @@ const CustomerList = () => {
               setIsModalOpen(false);
               setSelectedCustomer(null);
             }}
-            onCustomerAdded={fetchCustomers}
+            refresh={fetchCustomers}
             customerData={selectedCustomer}
           />
         </div>

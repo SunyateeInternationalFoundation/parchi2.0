@@ -218,7 +218,7 @@ const LandingPage = () => {
       }
     }
   };
-
+  console.log("confirmation result", confirmationResult);
   return (
     <div className="h-screen">
       <nav className="text-white py-3 w-full ">
