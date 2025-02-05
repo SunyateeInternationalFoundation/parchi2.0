@@ -72,7 +72,7 @@ const Template11 = forwardRef((props, ref) => {
                 <p>{dataSet?.createdBy.address}</p>
                 <p> {dataSet?.createdBy.city}</p>
                 <p> {dataSet?.createdBy.zipCode}</p>
-                <p>{dataSet?.createdBy.phone}</p>
+                <p>{dataSet?.createdBy.phoneNo}</p>
                 <p>{dataSet?.createdBy.email}</p>
               </div>
             </div>

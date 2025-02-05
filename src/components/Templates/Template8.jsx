@@ -37,6 +37,7 @@ const Template8 = forwardRef((props, ref) => {
                 <p>{dataSet?.createdBy.city}</p>
                 <p>{dataSet?.createdBy.zipCode}</p>
                 <p>Mobile: {dataSet?.createdBy.phoneNo}</p>
+                <p>Email: {dataSet?.createdBy.email}</p>
               </p>
             </div>
           </div>
