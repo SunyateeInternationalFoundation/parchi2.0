@@ -23,7 +23,7 @@ const VendorDashboard = () => {
       img: Purchase,
       link: "purchase",
       total: 0,
-      collectionName: "purchase",
+      collectionName: "purchases",
     },
     {
       name: "Purchase-Order",
