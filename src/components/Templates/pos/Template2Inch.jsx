@@ -5,28 +5,32 @@ const Template2Inch = forwardRef((props, ref) => {
   if (Object.keys(dataSet).length === 0) {
     return;
   }
+  function DateFormate(timestamp) {
+    const milliseconds =
+      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
+    const date = new Date(milliseconds);
+    const getDate = String(date.getDate()).padStart(2, "0");
+    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
+    const getFullYear = date.getFullYear();
 
+    return `${getDate}/${getMonth}/${getFullYear}`;
+  }
   return (
     <div className="w-[288px] mx-auto border p-4 text-xs font-mono bg-white" ref={ref}>
       <div className="text-center">
-        <h2 className=" text-sm">{dataSet.createdBy.name}</h2>
-        <p>Welcome to {dataSet.createdBy.name} Hyderabad - Nanakraguda!</p>
-        <p>EVERY DAY 10:00 AM - 11:00 PM</p>
-        <p>RESTAURANT 09:30 AM - 10:15 PM</p>
+        <h2 className="text-2xl">{dataSet.createdBy.name}</h2>
+
+        <p>Welcome to {dataSet.createdBy.name} {dataSet.createdBy.address} - {dataSet.createdBy.city}!</p>
       </div>
 
-      <hr className="my-2 border-t border-dashed" />
+      <hr className="my-2 border-t-2 border-dashed" />
       <p className="text-center">Original for Recipient</p>
 
       <div className="mt-2">
         <p>{dataSet.createdBy.name}.</p>
-        <p>Plot no 25,26(P) and 29(P) Hitec Main Rd</p>
         <p>{dataSet.createdBy.address}</p>
-        {/* <p>Serilingampally Mandal, Ranga Reddy Dst</p> */}
-        <p>Hyderabad 500081</p>
-        <p>State: TELANGANA</p>
-        <p>State Code: 36</p>
-        <p>GSTIN: 36AADCI3006N1ZL</p>
+        <p>{dataSet.createdBy.city} {dataSet.createdBy.zipCode}</p>
+        {/* <p>GSTIN: 36AADCI3006N1ZL</p> */}
       </div>
 
       {/* <hr className="my-2 border-t border-dashed" /> */}
@@ -34,13 +38,16 @@ const Template2Inch = forwardRef((props, ref) => {
       <p className="mt -1 text-center">Tax Invoice</p>
       <div className="mt-2">
         <p>
-          <span className="">Date:</span> 09/08/2018
+          <span className="">Date:</span>{DateFormate(dataSet.dueDate)}
         </p>
         <p>
-          <span className="">Number:</span> S50117A000060936
+          <span className="">Number:</span> {dataSet.no}
         </p>
         <p>
-          <span className="">Place of Supply:</span> TELANGANA
+          <span className="">Place of Supply:</span>
+          <p>{dataSet?.userTo.address}</p>
+          <p> {dataSet?.userTo.city}</p>
+          <p> {dataSet?.userTo.zipCode}</p>
         </p>
       </div>
 

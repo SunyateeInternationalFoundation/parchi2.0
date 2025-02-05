@@ -37,18 +37,18 @@ function POSView() {
       let totalCgstAmount_9 = 0;
       let tax = 0;
       const POSRef = doc(db, "companies", companyId, "pos", id);
-      const { customerDetails, posNo, ...resData } = (
+      const { customerDetails, posNo, prefix, ...resData } = (
         await getDoc(POSRef)
       ).data();
+
       const POSData = {
         id,
         ...resData,
         type: "POS",
-        no: posNo,
+        no: prefix + "-" + posNo,
         userTo: customerDetails,
         items: resData.products.map((item) => {
           let discount = +item.discount || 0;
-
           if (item.discountType) {
             discount = (+item.sellingPrice / 100) * item.discount;
           }
@@ -61,7 +61,6 @@ function POSView() {
           const cgstAmount = netAmount * (cgst / 100);
           tax += item.tax || 0;
           item.returnQty = 0;
-
           totalTaxableAmount += netAmount * item.quantity;
           totalSgstAmount_2_5 += sgst === 2.5 ? sgstAmount * item.quantity : 0;
           totalCgstAmount_2_5 += cgst === 2.5 ? cgstAmount * item.quantity : 0;
@@ -110,7 +109,7 @@ function POSView() {
           <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500  text-gray-500" />
         </Link>
         <h1 className="text-xl font-bold pe-4 w-full">
-          {POS.prefix}-{POS.no}
+          {POS.no}
         </h1>
         <div className="flex justify-end w-full">
           <button

@@ -45,7 +45,7 @@ const Template1 = forwardRef((props, ref) => {
           </div>
           <div>
             <div>
-              <strong>{dataSet?.type} # :</strong> {dataSet?.no}
+              <strong>{dataSet?.type} # :</strong>{dataSet?.prefix}- {dataSet?.no}
             </div>
             <div>
               <strong>{dataSet?.type} Date :</strong>{" "}
@@ -98,10 +98,10 @@ const Template1 = forwardRef((props, ref) => {
                   {!removedColumn[dataSet?.type.toLowerCase()]?.includes(
                     "QUANTITY"
                   ) && (
-                    <td className="border border-black pt-2 pb-2 pl-1">
-                      {item.quantity}
-                    </td>
-                  )}
+                      <td className="border border-black pt-2 pb-2 pl-1">
+                        {item.quantity}
+                      </td>
+                    )}
                   <td className="border border-black pt-2 pb-2 pl-1">
                     {item.sellingPrice.toFixed(1)}
                   </td>

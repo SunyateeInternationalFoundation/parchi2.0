@@ -111,7 +111,7 @@ function POSViewHome({ POS, bankDetails, selectTemplate }) {
         date: serverTimestamp(),
         section: "POS",
         action: "Delete",
-        description: `${POS.prefix}-${POS.no} deleted by ${POS.createdBy.who}`,
+        description: `${POS.no} deleted by ${POS.createdBy.who}`,
       });
       navigate("/pos");
     } catch (error) {
@@ -259,16 +259,15 @@ function POSViewHome({ POS, bankDetails, selectTemplate }) {
             <div className="flex-none md:text-end">
               <div className="text-4xl font-semibold text-gray-900">POS #</div>
               <div className="mt-1.5 text-xl  text-gray-600">
-                {" "}
-                {POS.prefix}-{POS.no}
+                {POS.no}
               </div>
               <div className="mt-4  text-gray-600">
                 {POS.createdBy?.name} <br />
+                Mobile:{POS.createdBy?.phoneNo} <br />
+                Email:{POS.createdBy?.email} <br />
                 {POS.createdBy?.address} <br />
                 {POS.createdBy?.city} <br />
                 {POS.createdBy?.zipCode} <br />
-                Mobile:{POS.createdBy?.phoneNo} <br />
-                Email:{POS.createdBy?.email}
               </div>
               <div className="mt-8">
                 <div className="mb-2.5">
