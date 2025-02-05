@@ -29,12 +29,19 @@ const Template5 = forwardRef((props, ref) => {
               {dataSet?.createdBy?.name}
             </h1>
             <div>
-              <div className=" font-bold ">
-                {dataSet?.createdBy?.name} {dataSet?.type}
+              <div className="font-bold">
+                {dataSet?.createdBy?.name} {dataSet?.type}{" "}
               </div>
-              {/* <p><span></span>GSTIN: 4828E9B55BD92X6</p>
-            <p>State: Ontario, Toronto</p>
-            <p>PAN: BSDF4O7ERPCRM</p> */}
+              {/* <p><span></span>GSTIN: 4828E9B55BD92X6</p> */}
+              <p>
+                {" "}
+                <span className="font-bold">Email: </span>{" "}
+                {dataSet?.createdBy?.email}
+              </p>
+              <p>
+                <span className="font-bold">Phone: </span>{" "}
+                {dataSet?.createdBy?.phoneNo}
+              </p>
             </div>
           </div>
           <div className="text-right">

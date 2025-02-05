@@ -222,16 +222,16 @@ const SetInvoice = () => {
         address: companyDetails.address ?? "",
         city: companyDetails.city ?? "",
         zipCode: companyDetails.zipCode ?? "",
-        phoneNo: companyDetails?.phone,
-        email: companyDetails?.email,
+        phoneNo: companyDetails.phone ?? "",
+        email: companyDetails.email ?? "",
       };
 
       const createdBy = invoiceId
         ? { ...baseCreatedBy, who: formData.createdBy.who }
         : {
-          ...baseCreatedBy,
-          who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
-        };
+            ...baseCreatedBy,
+            who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+          };
 
       const payload = {
         ...restForm,

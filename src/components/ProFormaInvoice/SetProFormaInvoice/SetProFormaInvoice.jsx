@@ -207,15 +207,16 @@ const SetProFormaInvoice = () => {
         address: companyDetails.address ?? "",
         city: companyDetails.city ?? "",
         zipCode: companyDetails.zipCode ?? "",
-        phoneNo: phoneNo,
+        phoneNo: companyDetails.phone ?? "",
+        email: companyDetails.email ?? "",
       };
 
       const createdBy = proFormaId
         ? { ...baseCreatedBy, who: formData.createdBy.who }
         : {
-            ...baseCreatedBy,
-            who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
-          };
+          ...baseCreatedBy,
+          who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+        };
 
       const payload = {
         ...restForm,
@@ -294,8 +295,8 @@ const SetProFormaInvoice = () => {
 
       alert(
         "Successfully " +
-          (proFormaId ? "Updated" : "Created") +
-          " the ProForma Invoice"
+        (proFormaId ? "Updated" : "Created") +
+        " the ProForma Invoice"
       );
       const redirect =
         (userDetails.selectedDashboard === "staff"

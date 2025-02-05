@@ -145,7 +145,8 @@ function RenewalService() {
           address: companyDetails.address ?? "",
           city: companyDetails.city ?? "",
           zipCode: companyDetails.zipCode ?? "",
-          phoneNo: phoneNo,
+          phoneNo: companyDetails.phone ?? "",
+          email: companyDetails.email ?? "",
           who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
         },
         customerDetails: {
@@ -550,7 +551,7 @@ function RenewalService() {
                             formatDate(
                               new Date(
                                 formData.date?.seconds * 1000 +
-                                  formData.date?.nanoseconds / 1000000
+                                formData.date?.nanoseconds / 1000000
                               ),
                               "PPP"
                             )
@@ -566,7 +567,7 @@ function RenewalService() {
                           selected={
                             new Date(
                               formData.date?.seconds * 1000 +
-                                formData.date?.nanoseconds / 1000000
+                              formData.date?.nanoseconds / 1000000
                             )
                           }
                           onSelect={(val) => {
@@ -591,14 +592,14 @@ function RenewalService() {
                           className={cn(
                             "w-full flex justify-between items-center input-tag bg-gray-100 cursor-not-allowed",
                             !formData.dueDate?.seconds &&
-                              "text-muted-foreground"
+                            "text-muted-foreground"
                           )}
                         >
                           {formData.dueDate?.seconds ? (
                             formatDate(
                               new Date(
                                 formData.dueDate?.seconds * 1000 +
-                                  formData.dueDate?.nanoseconds / 1000000
+                                formData.dueDate?.nanoseconds / 1000000
                               ),
                               "PPP"
                             )
@@ -788,14 +789,14 @@ function RenewalService() {
                           className={cn(
                             "w-full flex justify-between items-center input-tag ",
                             !membershipStartDate?.seconds &&
-                              "text-muted-foreground"
+                            "text-muted-foreground"
                           )}
                         >
                           {membershipStartDate?.seconds ? (
                             formatDate(
                               new Date(
                                 membershipStartDate?.seconds * 1000 +
-                                  membershipStartDate?.nanoseconds / 1000000
+                                membershipStartDate?.nanoseconds / 1000000
                               ),
                               "PPP"
                             )
@@ -811,7 +812,7 @@ function RenewalService() {
                           selected={
                             new Date(
                               membershipStartDate?.seconds * 1000 +
-                                membershipStartDate?.nanoseconds / 1000000
+                              membershipStartDate?.nanoseconds / 1000000
                             )
                           }
                           onSelect={(val) => {
