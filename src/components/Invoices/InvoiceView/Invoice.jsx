@@ -25,6 +25,7 @@ import { TbEdit } from "react-icons/tb";
 import { useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
+import man from "../../../assets/dashboard/man.png";
 import { db, storage } from "../../../firebase";
 import Template1 from "../../Templates/Template1";
 import Template10 from "../../Templates/Template10";
@@ -44,6 +45,9 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
 
   const print = searchParams.get("print");
   const userDetails = useSelector((state) => state.users);
+
+  const companyDetails =
+    userDetails.companies[userDetails.selectedCompanyIndex];
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
     companyId =
@@ -418,9 +422,20 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
           <div className="p-5 bg-white rounded-lg">
             <div className="flex gap-6 flex-col md:flex-row pt-8">
               <div className="flex-1">
-                <span className="text-3xl font-bold text-primary-600">
-                  {invoice.createdBy?.name}
-                </span>
+                <div className="border rounded-full w-[89px] h-[89px] shadow flex items-center justify-center">
+                  {companyDetails.companyLogo ? (
+                    <img
+                      src={companyDetails.companyLogo}
+                      className="rounded-md object-cover w-[89px] h-[89px]"
+                    />
+                  ) : (
+                    <img
+                      src={man}
+                      className="rounded-full object-cover w-[89px] h-[89px]"
+                    />
+                  )}
+                </div>
+
                 <div className="mt-5">
                   <div className="text-lg font-semibold text-gray-900">
                     Billing To:
@@ -448,7 +463,8 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
                   {invoice.createdBy?.city} <br />
                   {invoice.createdBy?.zipCode} <br />
                   Mobile: {invoice.createdBy?.phoneNo} <br />
-                  Email: {invoice.createdBy?.email} 
+                  Email: {invoice.createdBy?.email} <br />
+                  GST: {companyDetails?.gst}
                 </div>
                 <div className="mt-8">
                   <div className="mb-2.5">
@@ -573,10 +589,10 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
               following contact information:
             </div>
             <div className="text-xs text-gray-800 mt-2">
-            {invoice.createdBy?.email} 
+              {invoice.createdBy?.email}
             </div>
             <div className="text-xs text-gray-800 mt-1">
-            {invoice.createdBy?.phoneNo}
+              {invoice.createdBy?.phoneNo}
             </div>
             <div className="mt-8 text-xs text-gray-800">
               © 2025 {invoice?.createdBy?.name}
