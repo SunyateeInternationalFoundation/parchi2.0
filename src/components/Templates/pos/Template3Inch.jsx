@@ -9,7 +9,7 @@ const Template3Inch = forwardRef((props, ref) => {
     return
   }
   return (
-    <div className="w-[288px] mx-auto border p-4 bg-white">
+    <div className="w-[288px] mx-auto border p-4 bg-white" ref={ref}>
       <div className="text-center">
         <h2 className="font-bold text-lg">{dataSet.createdBy.name}</h2>
         <p>
