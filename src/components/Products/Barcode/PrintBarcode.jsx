@@ -180,11 +180,9 @@ function PrintBarcode() {
         date: serverTimestamp(),
         section: "Inventory",
         action: "Print",
-        description: `Total ${
-          totalQuantity.current
-        } Quantity Barcode Printed by ${
-          userDetails.selectedDashboard === "staff" ? "staff" : "owner"
-        }`,
+        description: `Total ${totalQuantity.current
+          } Quantity Barcode Printed by ${userDetails.selectedDashboard === "staff" ? "staff" : "owner"
+          }`,
       };
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "audit"),
@@ -297,8 +295,8 @@ function PrintBarcode() {
                       val.length > 0
                         ? val
                         : selectedCategory == "all"
-                        ? products
-                        : []
+                          ? products
+                          : []
                     );
                   }}
                   onBlur={() => {
@@ -526,7 +524,7 @@ function PrintBarcode() {
                       return (
                         <div
                           key={`${product.id}-${i} `}
-                          className="uppercase  text-center "
+                          className="uppercase  text-center"
                           style={{
                             height:
                               selectSheetDetails.sheetData.dimensions[1] + "in",
@@ -542,7 +540,7 @@ function PrintBarcode() {
                             <div>{product.name}</div>
                           )}
                           {selectSheetDetails.isPrice && (
-                            <div className="">₹{product.sellingPrice}</div>
+                            <div className="text-xs">₹{product.sellingPrice}</div>
                           )}
                           <div className="flex justify-center">
                             <div className="flex  justify-center w-32">

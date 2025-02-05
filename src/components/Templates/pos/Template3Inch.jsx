@@ -1,6 +1,6 @@
 import { Timestamp } from "firebase/firestore";
 import React from "react";
-function Template3Inch() {
+function Template3Inch({ dataSet1, bankDetails1 }) {
   const date = Timestamp.fromDate(new Date());
   const dataSet = {
     id: "OHo4nmA95a0xPkRR88b5",
@@ -75,11 +75,52 @@ function Template3Inch() {
         purchasePriceTaxType: true,
         purchasePrice: 0,
         tax: 5,
-        sellingPrice: 10,
+        sellingPrice: 1000,
         description: "",
         sellingPriceTaxType: true,
         discount: 5,
         name: "lays",
+        returnQty: 0,
+        sgst: 2.5,
+        cgst: 2.5,
+        taxAmount: 0.47500000000000003,
+        sgstAmount: 0.23750000000000002,
+        cgstAmount: 0.23750000000000002,
+        totalAmount: 9.5,
+        netAmount: 9.5,
+      },
+      {
+        discountType: true,
+        quantity: 1,
+        purchasePriceTaxType: true,
+        purchasePrice: 0,
+        tax: 5,
+        sellingPrice: 10,
+        description: "",
+        sellingPriceTaxType: true,
+        discount: 5,
+        name: "chips with masala",
+        returnQty: 0,
+        sgst: 2.5,
+        cgst: 2.5,
+        taxAmount: 0.47500000000000003,
+        sgstAmount: 0.23750000000000002,
+        cgstAmount: 0.23750000000000002,
+        totalAmount: 9.5,
+        netAmount: 9.5,
+      },
+
+      {
+        discountType: true,
+        quantity: 1,
+        purchasePriceTaxType: true,
+        purchasePrice: 0,
+        tax: 5,
+        sellingPrice: 10,
+        description: "",
+        sellingPriceTaxType: true,
+        discount: 5,
+        name: "bingo",
         returnQty: 0,
         sgst: 2.5,
         cgst: 2.5,
@@ -134,12 +175,25 @@ function Template3Inch() {
 
       {/* Mapped Items list */}
       <div className="mt-4">
+        {/* Headings */}
+        <div className="flex justify-around font-bold border-b pb-1">
+          <span className="w-1/6">Qnty</span>
+          <span className="w-1/3">Item</span>
+          <span className="w-1/3 ">Price</span>
+          <span className="w-1/6 ">Total</span>
+        </div>
+
+        {/* Items */}
         {dataSet.items.map((item, index) => (
-          <div key={index} className="flex justify-between">
-            <p>
-              {item.quantity} {item.name}
-            </p>
-            <span>${(item.sellingPrice * item.quantity).toFixed(2)}</span>
+          <div key={index} className="flex justify-around text-sm">
+            <span className="w-1/6">{item.quantity}</span>
+            <span className="w-1/3">{item.name}</span>
+            <span className="w-1/3 flex flex-col justify-end">
+              {item.sellingPrice.toFixed(2)}
+            </span>
+            <span className="w-1/6 text-right">
+              {(item.sellingPrice * item.quantity).toFixed(2)}
+            </span>
           </div>
         ))}
       </div>
@@ -179,10 +233,10 @@ function Template3Inch() {
         <p className="flex justify-start">
           <span className="font-semibold">Bank Details</span>
         </p>
-        <p>Bank : {}</p>
-        <p>Account : {}</p>
-        <p>IFSC Code : {}</p>
-        <p>Branch : {}</p>
+        <p>Bank : { }</p>
+        <p>Account : { }</p>
+        <p>IFSC Code : { }</p>
+        <p>Branch : { }</p>
       </div>
 
       {/* Authorized Signature Section */}

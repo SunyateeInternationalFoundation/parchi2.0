@@ -736,7 +736,7 @@ function SetForm(props) {
                             formatDate(
                               new Date(
                                 formData.date?.seconds * 1000 +
-                                  formData.date?.nanoseconds / 1000000
+                                formData.date?.nanoseconds / 1000000
                               ),
                               "PPP"
                             )
@@ -752,7 +752,7 @@ function SetForm(props) {
                           selected={
                             new Date(
                               formData.date?.seconds * 1000 +
-                                formData.date?.nanoseconds / 1000000
+                              formData.date?.nanoseconds / 1000000
                             )
                           }
                           onSelect={(val) => {
@@ -779,14 +779,14 @@ function SetForm(props) {
                           className={cn(
                             "w-full flex justify-between   items-center input-tag ",
                             !formData.dueDate?.seconds &&
-                              "text-muted-foreground"
+                            "text-muted-foreground"
                           )}
                         >
                           {formData.dueDate?.seconds ? (
                             formatDate(
                               new Date(
                                 formData.dueDate?.seconds * 1000 +
-                                  formData.dueDate?.nanoseconds / 1000000
+                                formData.dueDate?.nanoseconds / 1000000
                               ),
                               "PPP"
                             )
@@ -802,7 +802,7 @@ function SetForm(props) {
                           selected={
                             new Date(
                               formData.dueDate?.seconds * 1000 +
-                                formData.dueDate?.nanoseconds / 1000000
+                              formData.dueDate?.nanoseconds / 1000000
                             )
                           }
                           onSelect={(val) => {
@@ -893,8 +893,8 @@ function SetForm(props) {
                         val.length > 0
                           ? val
                           : selectedCategory == "all"
-                          ? products
-                          : []
+                            ? products
+                            : []
                       );
                     }}
                     onBlur={() => {
@@ -1159,7 +1159,7 @@ function SetForm(props) {
                     }}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder=" Select WareHouse" />
+                      <SelectValue placeholder="Select Shipping From" />
                     </SelectTrigger>
                     <SelectContent>
                       {warehouses.map((warehouse) => (

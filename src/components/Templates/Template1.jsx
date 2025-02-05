@@ -1,8 +1,14 @@
 import PropTypes from "prop-types";
 import { forwardRef } from "react";
+import { useSelector } from "react-redux";
 
 const Template1 = forwardRef((props, ref) => {
   const { dataSet, bankDetails } = props;
+  const userDetails = useSelector((state) => state.users);
+  const companyDetails =
+    userDetails.companies[userDetails.selectedCompanyIndex];
+
+  console.log("companydetails", companyDetails);
   if (Object.keys(dataSet).length === 0) {
     return;
   }
@@ -18,7 +24,7 @@ const Template1 = forwardRef((props, ref) => {
 
     return `${getDate}/${getMonth}/${getFullYear}`;
   }
-
+  console.log("dataset", dataSet);
   return (
     <div
       className=" bg-white border border-gray-300 rounded-md shadow-md overflow-y-auto"
@@ -30,7 +36,8 @@ const Template1 = forwardRef((props, ref) => {
             <div className="text-lg font-bold text-start">
               {dataSet?.createdBy?.name}
             </div>
-            <div>Mobile : {dataSet?.createdBy?.phoneNo}</div>
+            <div>Mobile : {companyDetails?.phone}</div>
+            <div>Email : {companyDetails?.email}</div>
           </div>
           <div>
             <h3 className="font-bold uppercase">TAX {dataSet?.type}</h3>
@@ -97,10 +104,10 @@ const Template1 = forwardRef((props, ref) => {
                   {!removedColumn[dataSet?.type.toLowerCase()]?.includes(
                     "QUANTITY"
                   ) && (
-                      <td className="border border-black pt-2 pb-2 pl-1">
-                        {item.quantity}
-                      </td>
-                    )}
+                    <td className="border border-black pt-2 pb-2 pl-1">
+                      {item.quantity}
+                    </td>
+                  )}
                   <td className="border border-black pt-2 pb-2 pl-1">
                     {item.sellingPrice.toFixed(1)}
                   </td>
@@ -108,10 +115,12 @@ const Template1 = forwardRef((props, ref) => {
                     {item.tax}%
                   </td>
                   <td className="border border-black pt-2 pb-2 pl-1">
-                    {item.cgstAmount.toFixed(2)} {/* Assuming cgstAmount is available in item */}
+                    {item.cgstAmount.toFixed(2)}{" "}
+                    {/* Assuming cgstAmount is available in item */}
                   </td>
                   <td className="border border-black pt-2 pb-2 pl-1">
-                    {item.sgstAmount.toFixed(2)} {/* Assuming sgstAmount is available in item */}
+                    {item.sgstAmount.toFixed(2)}{" "}
+                    {/* Assuming sgstAmount is available in item */}
                   </td>
                   <td className="border border-black pt-2 pb-2 pl-1">
                     {item.totalAmount.toFixed(2)}
