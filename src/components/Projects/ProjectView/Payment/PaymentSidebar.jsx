@@ -137,7 +137,8 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
     }
   }, [updateData]);
 
-  async function onSubmit() {
+  async function onSubmit(e) {
+    e.preventDefault();
     try {
       const companyRef = doc(db, "companies", companyId);
 
@@ -183,8 +184,7 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
         expenseLogs
       );
       alert(
-        `successfully  ${updateData?.id ? "Edit " : "Create "} ${
-          isModalOpen.type
+        `successfully  ${updateData?.id ? "Edit " : "Create "} ${isModalOpen.type
         }`
       );
 
@@ -198,18 +198,16 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        isModalOpen.isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isModalOpen.isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={() => {
         onClose();
         ResetForm();
       }}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform  ${
-          isModalOpen.isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`bg-white  pt-2 transform transition-transform  ${isModalOpen.isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -252,7 +250,7 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
                         formatDate(
                           new Date(
                             formData.date?.seconds * 1000 +
-                              formData.date?.nanoseconds / 1000000
+                            formData.date?.nanoseconds / 1000000
                           ),
                           "PPP"
                         )
@@ -268,7 +266,7 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
                       selected={
                         new Date(
                           formData.date?.seconds * 1000 +
-                            formData.date?.nanoseconds / 1000000
+                          formData.date?.nanoseconds / 1000000
                         )
                       }
                       onSelect={(val) => {
