@@ -136,6 +136,13 @@ function TaskSideBar({
     e.preventDefault();
     try {
       const projectRef = doc(db, "projects", projectId);
+      let payloadTask = {
+        ref: "",
+        date: serverTimestamp(),
+        section: "Project",
+        action: "Create",
+        description: `${formData.name} task created`,
+      };
       if (typeOf === "CreateTask") {
         const payload = {
           ...formData,
@@ -145,21 +152,7 @@ function TaskSideBar({
         const taskRef = collection(db, "projects", projectId, "tasks");
         const ref = await addDoc(taskRef, payload);
 
-        await addDoc(
-          collection(
-            db,
-            "companies",
-            userDetails.companies[userDetails.selectedCompanyIndex].companyId,
-            "audit"
-          ),
-          {
-            ref: ref,
-            date: serverTimestamp(),
-            section: "Project",
-            action: "Create",
-            description: `${formData.name} milestone created`,
-          }
-        );
+        payloadTask.ref = ref;
         alert("Successfully Created the Task");
         ResetForm();
       } else {
@@ -175,8 +168,20 @@ function TaskSideBar({
           };
         }
         await updateDoc(taskRef, payload);
+        payloadTask.ref = taskRef;
+        payloadTask.action = "Update";
+        payloadTask.description = `${formData.name} task updated`;
         alert("Successfully Updated");
       }
+      await addDoc(
+        collection(
+          db,
+          "companies",
+          userDetails.companies[userDetails.selectedCompanyIndex].companyId,
+          "audit"
+        ),
+        payloadTask
+      );
       fetchTaskData();
       onClose();
     } catch (error) {

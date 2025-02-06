@@ -1,8 +1,12 @@
 import PropTypes from "prop-types";
 import { forwardRef } from "react";
+import { useSelector } from "react-redux";
 
 const Template11 = forwardRef((props, ref) => {
   const { dataSet } = props;
+  const userDetails = useSelector((state) => state.users);
+  const companyDetails =
+    userDetails.companies[userDetails.selectedCompanyIndex];
   if (!Object.keys(dataSet).length === 0) {
     return;
   }
@@ -29,7 +33,16 @@ const Template11 = forwardRef((props, ref) => {
             </h1>
             <div>
               <span className="text-3xl font-bold text-primary-600">
-                {dataSet?.createdBy?.name}
+                <div className="border w-[89px] h-[89px] shadow flex items-center justify-center">
+                  {companyDetails?.companyLogo ? (
+                    <img
+                      src={companyDetails?.companyLogo}
+                      className="rounded-md object-cover w-[89px] h-[89px]"
+                    />
+                  ) : (
+                    <>{dataSet?.createdBy?.name}</>
+                  )}
+                </div>
               </span>
             </div>
           </header>
@@ -37,13 +50,18 @@ const Template11 = forwardRef((props, ref) => {
           <section className="grid grid-cols-2 gap-8 mb-3">
             <div>
               <h2 className="text-sm font-bold text-gray-600 uppercase">
-                {dataSet?.type} NUMBER
+                {dataSet?.type} NUMBER #
               </h2>
               <p className="text-sm text-gray-700 bg-blue-100 w-fit pe-3">
-                {dataSet?.no}
+                {dataSet?.prefix}- {dataSet?.no}
               </p>
             </div>
+
             <div>
+              <h2 className="text-sm font-bold text-gray-600 uppercase">GST</h2>
+              <p className="text-sm text-gray-700 bg-blue-100 w-fit pe-3">
+                {companyDetails?.gst}
+              </p>
               <h2 className="text-sm font-bold text-gray-600">DATE OF ISSUE</h2>
               <p className="text-sm text-gray-700 bg-blue-100 w-fit pe-3">
                 {" "}
@@ -115,10 +133,10 @@ const Template11 = forwardRef((props, ref) => {
                     {item.quantity}
                   </td>
                   <td className="bg-blue-100 p-2 text-sm text-gray-700">
-                    {item.cgstAmount.toFixed(2)} 
+                    {item.cgstAmount.toFixed(2)}
                   </td>
                   <td className="bg-blue-100 p-2 text-sm text-gray-700">
-                    {item.sgstAmount.toFixed(2)} 
+                    {item.sgstAmount.toFixed(2)}
                   </td>
                   <td className="bg-blue-100 p-2 text-sm text-gray-700">
                     {item.totalAmount.toFixed(2)}

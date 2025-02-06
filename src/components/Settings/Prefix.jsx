@@ -1,4 +1,11 @@
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { db } from "../../firebase";
@@ -71,7 +78,15 @@ const Prefix = () => {
       }, {});
 
       const data = { prefix };
-      await updateDoc(doc(db, "companies", companyId), data);
+      const ref = doc(db, "companies", companyId);
+      await updateDoc(ref, data);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: ref,
+        date: serverTimestamp(),
+        section: "settings",
+        action: "Update",
+        description: "prefix details updated",
+      });
       alert("Details saved successfully!");
       setFormData(updatedFormData);
     } catch (error) {

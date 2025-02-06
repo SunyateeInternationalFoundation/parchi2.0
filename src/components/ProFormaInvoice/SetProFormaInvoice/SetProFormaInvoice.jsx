@@ -214,9 +214,9 @@ const SetProFormaInvoice = () => {
       const createdBy = proFormaId
         ? { ...baseCreatedBy, who: formData.createdBy.who }
         : {
-          ...baseCreatedBy,
-          who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
-        };
+            ...baseCreatedBy,
+            who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+          };
 
       const payload = {
         ...restForm,
@@ -242,7 +242,7 @@ const SetProFormaInvoice = () => {
         date: serverTimestamp(),
         section: "ProForma Invoice",
         action: "Create",
-        description: `${prefix}-${no} updated by ${payload.createdBy.who}`,
+        description: `${prefix}-${no} created by ${payload.createdBy.who}`,
       };
 
       if (proFormaId) {
@@ -256,6 +256,7 @@ const SetProFormaInvoice = () => {
           await updateDoc(proFormaRef, payload);
         payloadLog.ref = proFormaRef;
         payloadLog.action = "Update";
+        payloadLog.description = `${prefix}-${no} created by ${payload.createdBy.who}`;
       } else {
         proFormaRef = await addDoc(
           collection(
@@ -267,7 +268,6 @@ const SetProFormaInvoice = () => {
           payload
         );
         payloadLog.ref = proFormaRef;
-        payloadLog.action = "Create";
       }
 
       await addDoc(
@@ -295,8 +295,8 @@ const SetProFormaInvoice = () => {
 
       alert(
         "Successfully " +
-        (proFormaId ? "Updated" : "Created") +
-        " the ProForma Invoice"
+          (proFormaId ? "Updated" : "Created") +
+          " the ProForma Invoice"
       );
       const redirect =
         (userDetails.selectedDashboard === "staff"

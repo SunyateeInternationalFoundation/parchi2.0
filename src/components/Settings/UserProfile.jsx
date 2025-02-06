@@ -1,15 +1,17 @@
-import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { PhoneAuthProvider, RecaptchaVerifier, signInWithPhoneNumber, updatePhoneNumber } from "firebase/auth";
 import {
+  addDoc,
   collection,
   doc,
   getDoc,
   getDocs,
   query,
+  serverTimestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { auth, db, storage } from "../../firebase";
 import { updateUserDetails } from "../../store/UserSlice";
@@ -27,8 +29,7 @@ const Prefix = () => {
   const [isOtpStage, setIsOtpStage] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [otp, setOtp] = useState("");
-
-  const [newPhoneNumber, setNewPhoneNumber] = useState("");
+  const isVerify = useRef(true);
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
@@ -90,7 +91,9 @@ const Prefix = () => {
         alert("This phone number is already registered");
         return;
       }
-
+      if (window.recaptchaVerifier) {
+        delete window.recaptchaVerifier;
+      }
       configureRecaptcha();
       const appVerifier = window.recaptchaVerifier;
       const authResult = await signInWithPhoneNumber(
@@ -101,7 +104,6 @@ const Prefix = () => {
 
       setConfirmationResult(authResult);
       setIsOtpStage(true);
-      setNewPhoneNumber(formData.phone);
     } catch (error) {
       console.error("Error sending OTP:", error);
       alert("Failed to send OTP. Please try again.");
@@ -115,11 +117,19 @@ const Prefix = () => {
     }
 
     try {
-      await confirmationResult.confirm(otp);
-      alert("Phone number verified successfully!");
-      setIsOtpStage(false);
+      const credential = PhoneAuthProvider.credential(
+        confirmationResult.verificationId,
+        otp
+      );
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        // await linkWithCredential(currentUser, credential);
+        await updatePhoneNumber(currentUser, credential);
+        alert("Phone number verified successfully!");
+        setIsOtpStage(false);
 
-      await handleSave();
+        isVerify.current = true
+      }
     } catch (error) {
       console.error("Error verifying OTP:", error);
       alert("Invalid OTP. Please try again.");
@@ -134,8 +144,13 @@ const Prefix = () => {
       if (!/^\d{0,10}$/.test(value)) {
         return;
       }
-    }
+      if (value == userDetails.phone) {
+        isVerify.current = true;
+      } else {
+        isVerify.current = false;
+      }
 
+    }
     setFormData({ ...formData, [name]: value });
   };
 
@@ -173,11 +188,31 @@ const Prefix = () => {
 
   const handleSave = async () => {
     try {
+      if (!isVerify.current) {
+        alert("Please Verify the Mobile Number");
+        return
+      }
       const { id, ...payload } = formData;
+
       await updateDoc(doc(db, "users", userId), {
         ...payload,
         phone_number: `+91${payload.phone}`,
       });
+      await addDoc(
+        collection(
+          db,
+          "companies",
+          userDetails.companies[userDetails.selectedCompanyIndex].companyId,
+          "audit"
+        ),
+        {
+          ref: doc(db, "users", userId),
+          date: serverTimestamp(),
+          section: "settings",
+          action: "Update",
+          description: "user profile details updated",
+        }
+      );
       dispatch(
         updateUserDetails({
           name: payload.displayName,
@@ -264,20 +299,16 @@ const Prefix = () => {
                     value={formData.phone}
                     onChange={handleChange}
                     className="border px-5 py-3 rounded-l-lg w-full"
-                    disabled={isOtpStage}
                   />
                 </div>
-                <div className="w-1/4">
+                <div className="w-1/5">
                   <button
-                    className={`border px-5 py-3 rounded-r-lg font-semibold rounded-e-md w-full ${
-                      isOtpStage
-                        ? "bg-gray-300"
-                        : "hover:text-white hover:bg-black"
-                    }`}
+                    className={`border px-5 py-3 rounded-r-lg font-semibold rounded-e-md w-full  ${isVerify.current ? "bg-gray-100 cursor-not-allowed" : "hover:text-white hover:bg-black cursor-pointer"
+                      }`}
+                    disabled={isVerify.current}
                     onClick={handleVerifyClick}
-                    disabled={isOtpStage}
                   >
-                    {isOtpStage ? "Verified" : "Verify"}
+                    {isVerify.current ? "Verified" : "Verify"}
                   </button>
                 </div>
               </div>
@@ -303,7 +334,7 @@ const Prefix = () => {
                 </div>
               )}
             </div>
-            <div id="recaptcha-container"></div>
+
             <div>
               <label className=" text-sm space-y-1 text-gray-600">Email</label>
               <div>
@@ -330,6 +361,7 @@ const Prefix = () => {
           </div>
         </div>
       </div>
+      <div id="recaptcha-container"></div>
     </div>
   );
 };

@@ -93,7 +93,7 @@ const WeekOff = () => {
           date: serverTimestamp(),
           section: "Staff&Payout",
           action: "Update",
-          description: `staff weekoff updated`,
+          description: "staff weekoff updated",
         }
       );
       setTempStaff((val) => ({ ...val, [staff.id]: staff.weekOff }));
@@ -114,7 +114,7 @@ const WeekOff = () => {
           date: serverTimestamp(),
           section: "Staff&Payout",
           action: "Update",
-          description: `company weekoff updated`,
+          description: "company weekoff updated",
         }
       );
       dispatch(
@@ -154,7 +154,7 @@ const WeekOff = () => {
           date: serverTimestamp(),
           section: "Staff&Payout",
           action: "Update",
-          description: `calender updated`,
+          description: " calender updated",
         }
       );
       setIsCalendarMonth(value);

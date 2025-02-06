@@ -1,8 +1,12 @@
 import PropTypes from "prop-types";
 import { forwardRef } from "react";
+import { useSelector } from "react-redux";
 
 const Template6 = forwardRef((props, ref) => {
   const { dataSet } = props;
+  const userDetails = useSelector((state) => state.users);
+  const companyDetails =
+    userDetails.companies[userDetails.selectedCompanyIndex];
   if (!Object.keys(dataSet).length === 0) {
     return;
   }
@@ -23,7 +27,19 @@ const Template6 = forwardRef((props, ref) => {
     >
       <div ref={ref} style={{ minWidth: "595px", padding: "20px" }}>
         <div className="flex justify-between items-center pb-4 mb-3">
-          <h1 className="text-3xl font-bold ">{dataSet?.createdBy?.name}</h1>
+          <h1 className="text-3xl font-bold ">
+            {" "}
+            <div className="border w-[89px] h-[89px] shadow flex items-center justify-center">
+              {companyDetails?.companyLogo ? (
+                <img
+                  src={companyDetails?.companyLogo}
+                  className="rounded-md object-cover w-[89px] h-[89px]"
+                />
+              ) : (
+                <>{dataSet?.createdBy?.name}</>
+              )}
+            </div>
+          </h1>
           <div className="text-end">
             <div className=" font-bold text-gray-800">
               Tax {dataSet?.type}/Bill of Supply/Cash Memo
@@ -74,12 +90,16 @@ const Template6 = forwardRef((props, ref) => {
               {dataSet?.userTo.city}
             </p>
             <p>
-              <span className="font-bold">{dataSet?.type} Number : </span>
-              {dataSet?.no}
+              <span className="font-bold">{dataSet?.type} Number #: </span>
+              {dataSet?.prefix}- {dataSet?.no}
             </p>
             <p>
               <span className="font-bold">{dataSet?.type} Date : </span>
               {DateFormate(dataSet?.date)}
+            </p>
+            <p>
+              <span className="font-bold">GST : </span>
+              {companyDetails?.gst}
             </p>
           </div>
         </div>

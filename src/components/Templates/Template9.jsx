@@ -1,8 +1,12 @@
 import PropTypes from "prop-types";
 import { forwardRef } from "react";
+import { useSelector } from "react-redux";
 
 const Template9 = forwardRef((props, ref) => {
   const { dataSet } = props;
+  const userDetails = useSelector((state) => state.users);
+  const companyDetails =
+    userDetails.companies[userDetails.selectedCompanyIndex];
   if (!Object.keys(dataSet).length === 0) {
     return;
   }
@@ -25,7 +29,16 @@ const Template9 = forwardRef((props, ref) => {
         {/* Header */}
         <div className="flex justify-between items-center pb-4">
           <h1 className="text-3xl font-bold text-green-500">
-            {dataSet?.createdBy?.name}
+            <div className="border w-[89px] h-[89px] shadow flex items-center justify-center">
+              {companyDetails?.companyLogo ? (
+                <img
+                  src={companyDetails?.companyLogo}
+                  className="rounded-md object-cover w-[89px] h-[89px]"
+                />
+              ) : (
+                <>{dataSet?.createdBy?.name}</>
+              )}
+            </div>
           </h1>
           <h1 className="text-xl">{dataSet?.type}</h1>
         </div>
@@ -33,8 +46,13 @@ const Template9 = forwardRef((props, ref) => {
           <div className="text-end grid grid-cols-2 w-1/3">
             <span className="font-bold"> Date:</span>
             <span>{DateFormate(dataSet?.dueDate)}</span>
-            <span className="font-bold">{dataSet?.type} No:</span>
-            <span> #{dataSet?.no}</span>
+            <span className="font-bold">{dataSet?.type} No #:</span>
+            <span>
+              {" "}
+              {dataSet?.prefix}- {dataSet?.no}
+            </span>
+            <span className="font-bold">GST :</span>
+            <span>{companyDetails?.gst}</span>
           </div>
         </div>
 
@@ -83,8 +101,14 @@ const Template9 = forwardRef((props, ref) => {
                   <td className="pt-2 pb-2 pl-1">{item.name}</td>
                   <td className="pt-2 pb-2 pl-1">{item.description}</td>
                   <td className="pt-2 pb-2 pl-1">{item.quantity}</td>
-                  <td className="pt-2 pb-2 pl-1">{item.cgstAmount.toFixed(2)}</td> {/* Assuming cgstAmount is available in item */}
-                  <td className="pt-2 pb-2 pl-1">{item.sgstAmount.toFixed(2)}</td> {/* Assuming sgstAmount is available in item */}
+                  <td className="pt-2 pb-2 pl-1">
+                    {item.cgstAmount.toFixed(2)}
+                  </td>{" "}
+                  {/* Assuming cgstAmount is available in item */}
+                  <td className="pt-2 pb-2 pl-1">
+                    {item.sgstAmount.toFixed(2)}
+                  </td>{" "}
+                  {/* Assuming sgstAmount is available in item */}
                   <td className="text-end pt-2 pb-2 pr-1">
                     {item.totalAmount.toFixed(2)}
                   </td>

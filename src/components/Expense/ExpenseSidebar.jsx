@@ -149,26 +149,25 @@ function ExpenseSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
         transactionType: isModalOpen.type,
       };
       let expenseLogs = {
-        ref: bookRef,
+        ref: "",
         date: serverTimestamp(),
         section: "Expense",
         action: "Create",
-        description: "",
+        description: `${isModalOpen.type} details created`,
       };
+      let ref = "";
       if (updateData?.id) {
-        await updateDoc(
-          doc(db, "companies", companyId, "expenses", updateData.id),
-          payload
-        );
-        expenseLogs.action = "Create";
+        ref = doc(db, "companies", companyId, "expenses", updateData.id);
+        await updateDoc(ref, payload);
+        expenseLogs.ref = ref;
+        expenseLogs.action = "Update";
         expenseLogs.description = `${isModalOpen.type} details updated`;
       } else {
-        await addDoc(
+        ref = await addDoc(
           collection(db, "companies", companyId, "expenses"),
           payload
         );
-        expenseLogs.action = "Create";
-        expenseLogs.description = `${isModalOpen.type} details created`;
+        expenseLogs.ref = ref;
       }
 
       await addDoc(

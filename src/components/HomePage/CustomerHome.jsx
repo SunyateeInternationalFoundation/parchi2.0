@@ -80,7 +80,6 @@ function CustomerHome() {
             );
             const getData = await getDocs(q);
             count += getData.size;
-            console.log("🚀 ~ fetchCountData ~ count:", count);
             continue;
           }
           const invoiceRef = collection(

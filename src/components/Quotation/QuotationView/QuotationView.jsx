@@ -195,7 +195,7 @@ function QuotationView({ quotation, bankDetails, selectTemplate }) {
       await addDoc(collection(db, "companies", companyId, "audit"), {
         ref: quotationDocRef,
         date: serverTimestamp(),
-        section: "Invoice",
+        section: "Quotation",
         action: "Delete",
         description: `${quotation.prefix}-${quotation.no} deleted by ${quotation.createdBy.who}`,
       });

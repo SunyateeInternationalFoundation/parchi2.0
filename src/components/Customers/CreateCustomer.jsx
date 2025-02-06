@@ -99,8 +99,8 @@ const CreateCustomer = ({ isOpen, onClose, customerData, refresh }) => {
         ref: customersRef,
         date: serverTimestamp(),
         section: "Customer",
-        action: "Update",
-        description: "",
+        action: "Create",
+        description: `${formData.name} details created`,
       };
       if (customerData?.id) {
         customersRef = doc(db, "customers", customerData.id);
@@ -108,7 +108,7 @@ const CreateCustomer = ({ isOpen, onClose, customerData, refresh }) => {
         await updateDoc(customersRef, rest);
         customerLogs.action = "Update";
         customerLogs.description = `${customerData.name} details updated`;
-
+        customerLogs.ref = customersRef;
         dispatch(
           updateCustomerDetails({
             id,
@@ -123,8 +123,7 @@ const CreateCustomer = ({ isOpen, onClose, customerData, refresh }) => {
           companyRef: companyRef,
           createdAt: Timestamp.fromDate(new Date()),
         });
-        customerLogs.action = "Create";
-        customerLogs.description = `${formData.name} details created`;
+        customerLogs.ref = newCustomer;
 
         const payload = {
           id: newCustomer.id,

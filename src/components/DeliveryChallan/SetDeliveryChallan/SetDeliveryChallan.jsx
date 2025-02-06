@@ -214,9 +214,9 @@ const SetDeliveryChallan = () => {
       const createdBy = deliverychallanId
         ? { ...baseCreatedBy, who: formData.createdBy.who }
         : {
-          ...baseCreatedBy,
-          who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
-        };
+            ...baseCreatedBy,
+            who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+          };
       const payload = {
         ...restForm,
         ...rest,
@@ -242,7 +242,7 @@ const SetDeliveryChallan = () => {
         date: serverTimestamp(),
         section: "Delivery Challan",
         action: "Create",
-        description: `${prefix}-${no} updated by ${payload.createdBy.who}`,
+        description: `${prefix}-${no} created by ${payload.createdBy.who}`,
       };
       if (deliverychallanId) {
         deliveryChallanRef = doc(
@@ -256,6 +256,7 @@ const SetDeliveryChallan = () => {
 
         payloadLog.ref = deliveryChallanRef;
         payloadLog.action = "Update";
+        payloadLog.description = `${prefix}-${no} updated by ${payload.createdBy.who}`;
       } else {
         deliveryChallanRef = await addDoc(
           collection(
@@ -267,7 +268,6 @@ const SetDeliveryChallan = () => {
           payload
         );
         payloadLog.ref = deliveryChallanRef;
-        payloadLog.action = "Create";
       }
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "audit"),
@@ -294,8 +294,8 @@ const SetDeliveryChallan = () => {
 
       alert(
         "Successfully " +
-        (deliverychallanId ? "Updated" : "Created") +
-        " the DeliveryChallan"
+          (deliverychallanId ? "Updated" : "Created") +
+          " the DeliveryChallan"
       );
       const redirect =
         (userDetails.selectedDashboard === "staff"

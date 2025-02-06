@@ -59,7 +59,6 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.invoice;
-
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [totalTax, setTotalTax] = useState(0);
   const invoiceRef = useRef();

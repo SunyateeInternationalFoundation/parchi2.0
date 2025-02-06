@@ -97,7 +97,7 @@ function TransferSidebar({
         date: serverTimestamp(),
         section: "Inventory",
         action: "Create",
-        description: "",
+        description: `${formData.name} transfer created`,
       };
 
       let docId = "";
@@ -123,8 +123,6 @@ function TransferSidebar({
         );
         docId = newDocRef.id;
         transferLog.ref = newDocRef;
-        transferLog.action = "Create";
-        transferLog.description = `${formData.name} transfer created`;
       }
       await addDoc(
         collection(db, "companies", companyId, "audit"),

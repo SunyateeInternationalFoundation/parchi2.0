@@ -210,9 +210,9 @@ const SetPO = () => {
       const createdBy = poId
         ? { ...baseCreatedBy, who: formData.createdBy.who }
         : {
-          ...baseCreatedBy,
-          who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
-        };
+            ...baseCreatedBy,
+            who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+          };
       const payload = {
         ...restForm,
         ...rest,
@@ -237,20 +237,20 @@ const SetPO = () => {
         date: serverTimestamp(),
         section: "PO",
         action: "Create",
-        description: `${prefix}-${no} updated by ${payload.createdBy.who}`,
+        description: `${prefix}-${no} created by ${payload.createdBy.who}`,
       };
       if (poId) {
         poRef = doc(db, "companies", companyDetails.companyId, "po", poId);
         await updateDoc(poRef, payload);
         payloadLog.ref = poRef;
         payloadLog.action = "Update";
+        payloadLog.description = `${prefix}-${no} updated by ${payload.createdBy.who}`;
       } else {
         poRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "po"),
           payload
         );
         payloadLog.ref = poRef;
-        payloadLog.action = "Create";
       }
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "audit"),
