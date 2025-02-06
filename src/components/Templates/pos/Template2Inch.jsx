@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
 
 const Template2Inch = forwardRef((props, ref) => {
-  const { dataSet, bankDetails } = props;
+  const { dataSet, size } = props;
   if (Object.keys(dataSet).length === 0) {
     return;
   }
@@ -16,7 +16,7 @@ const Template2Inch = forwardRef((props, ref) => {
     return `${getDate}/${getMonth}/${getFullYear}`;
   }
   return (
-    <div className="w-[288px] mx-auto border p-4 text-xs font-mono bg-white" ref={ref}>
+    <div className={`w-[${size}in] mx-auto border p-4 text-xs font-mono bg-white`} ref={ref}>
       <div className="text-center">
         <h2 className="text-2xl">{dataSet.createdBy.name}</h2>
 
@@ -27,7 +27,9 @@ const Template2Inch = forwardRef((props, ref) => {
       <p className="text-center">Original for Recipient</p>
 
       <div className="mt-2">
-        <p>{dataSet.createdBy.name}.</p>
+        <p>{dataSet.createdBy.name},</p>
+        <p>{dataSet.createdBy.email}</p>
+        <p>{dataSet.createdBy.phone}</p>
         <p>{dataSet.createdBy.address}</p>
         <p>{dataSet.createdBy.city} {dataSet.createdBy.zipCode}</p>
         {/* <p>GSTIN: 36AADCI3006N1ZL</p> */}
@@ -45,35 +47,33 @@ const Template2Inch = forwardRef((props, ref) => {
         </p>
         <p>
           <span className="">Place of Supply:</span>
+          <p>{dataSet?.userTo.name}</p>
+          <p>{dataSet?.userTo.phone}</p>
           <p>{dataSet?.userTo.address}</p>
           <p> {dataSet?.userTo.city}</p>
           <p> {dataSet?.userTo.zipCode}</p>
         </p>
       </div>
 
-      {/* <hr className="my-2 border-t border-dashed" /> */}
 
       <div className="mt-2">
-        {/* <div className="flex justify-between font-semibold">
-          <span>Item</span>
-        </div> */}
 
         {dataSet.items.map((item, index) => (
           <div key={index} className="mt-2">
-            {/* Product Name */}
             <div className="flex justify-between">
               <span>{item.name}</span>
             </div>
 
-            {/* Quantity * Price Calculation */}
             <p className="flex justify-between text-xs">
               <span>
                 ({item.quantity} pcs * {item.sellingPrice.toFixed(2)})
               </span>
-              <span>{(item.quantity * item.sellingPrice).toFixed(2)}</span>
+              <span>{item.totalAmount.toFixed(2)}</span>
             </p>
 
-            {/* CGST and SGST */}
+            <p className="text-xs">
+              Discount {item.discountType ? `${item.discount}%` : `₹${item.discount}`}
+            </p>
             <p className="text-xs">
               {item.sellingPriceTaxType ? "incl" : "excl"}. CGST {item.cgst}%
             </p>
@@ -91,6 +91,31 @@ const Template2Inch = forwardRef((props, ref) => {
         </p>
 
         <div className="grid grid-cols-2 gap-1 text-xs mt-2">
+          {dataSet.shippingCharges > 0 && (
+            <>
+              <p className="text-gray-600">Shipping Charges:</p>
+              <p className="text-gray-800 font-medium">
+                ₹{dataSet.shippingCharges}
+              </p>
+            </>
+          )}
+
+          {dataSet.packagingCharges > 0 && (
+            <>
+              <p className="text-gray-600">Packaging Charges:</p>
+              <p className="text-gray-800 font-medium">
+                ₹{dataSet.packagingCharges}
+              </p>
+            </>
+          )}
+          {dataSet.extraDiscount > 0 && (
+            <>
+              <p className="text-gray-600">Extra Discount:</p>
+              <p className="text-gray-800 font-medium">
+                {dataSet.extraDiscountType ? `${dataSet.extraDiscount}%` : `₹${dataSet.extraDiscount}`}
+              </p>
+            </>
+          )}
           {dataSet.totalCgstAmount_9 > 0 && (
             <>
               <p className="text-gray-600">CGST 9.0%:</p>
@@ -151,18 +176,7 @@ const Template2Inch = forwardRef((props, ref) => {
           <span className="ml-2">₹{dataSet.total.toFixed(2)}</span>
         </p>
       </div>
-      <div className="my-4 py-2 border-b border-t border-dashed">
-        <p className="flex justify-start">
-          <span className="">Bank Details</span>
-        </p>
-        <p>Bank : { }</p>
-        <p>Account : { }</p>
-        <p>IFSC Code : { }</p>
-        <p>Branch : { }</p>
-      </div>
-
       <hr className="my-2 border-t border-dashed" />
-
       <div className="text-center font-bold">
         <p>THANK YOU!</p>
       </div>
