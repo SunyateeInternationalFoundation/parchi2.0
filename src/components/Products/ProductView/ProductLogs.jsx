@@ -14,6 +14,9 @@ function ProductLogs({ logs }) {
   const [paginationData, setPaginationData] = useState([]);
 
   useEffect(() => {
+    if (!logs?.id) {
+      return;
+    }
     // Calculate total pages based on logs length
     setTotalPages(Math.ceil(logs.length / 10));
     // Set initial pagination data
@@ -21,6 +24,9 @@ function ProductLogs({ logs }) {
   }, [logs]);
 
   useEffect(() => {
+    if (!logs?.id) {
+      return;
+    }
     // Update pagination data when currentPage changes
     const startIndex = currentPage * 10;
     const endIndex = startIndex + 10;

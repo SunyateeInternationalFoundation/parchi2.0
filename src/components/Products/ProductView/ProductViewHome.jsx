@@ -9,7 +9,12 @@ import {
 import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { db } from "../../../firebase";
 import ProductLogs from "./ProductLogs";
 import ProductReturns from "./ProductReturns";
@@ -18,15 +23,17 @@ import Stocks from "./Stocks";
 import Transfers from "./Transfers";
 
 function ProductViewHome() {
-  const [activeTab, setActiveTab] = useState("Product");
   const { id: productId } = useParams();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const tab = searchParams.get("tab");
   const userDetails = useSelector((state) => state.users);
   const companyDetails =
     userDetails.companies[userDetails.selectedCompanyIndex];
-  const [product, setProduct] = useState(null);
-  const [returns, setReturns] = useState(null);
-  const [logs, setLogs] = useState(null);
-  const [transfers, setTransfers] = useState(null);
+  const [product, setProduct] = useState({});
+  const [returns, setReturns] = useState({});
+  const [logs, setLogs] = useState({});
+  const [transfers, setTransfers] = useState({});
 
   const fetchProduct = async () => {
     try {
@@ -80,6 +87,9 @@ function ProductViewHome() {
     }
   };
   useEffect(() => {
+    if (!tab) {
+      navigate("?tab=Product");
+    }
     fetchProduct();
   }, [productId, companyDetails.companyId]);
 
@@ -107,16 +117,16 @@ function ProductViewHome() {
           <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500 text-gray-500" />
         </Link>
         <nav className="flex space-x-4">
-          {tabs.map((tab) => (
+          {tabs.map((t) => (
             <button
-              key={tab.name}
+              key={t.name}
               className={
                 "p-4 font-semibold text-gray-500 " +
-                (activeTab === tab.name ? " border-b-4 border-blue-500 " : "")
+                (tab === t.name ? " border-b-4 border-blue-500 " : "")
               }
-              onClick={() => setActiveTab(tab.name)}
+              onClick={() => navigate("?tab=" + t.name)}
             >
-              {tab.name}
+              {t.name}
             </button>
           ))}
         </nav>
@@ -124,8 +134,7 @@ function ProductViewHome() {
 
       <div className="w-full">
         {tabs.map(
-          (tab) =>
-            activeTab === tab.name && <div key={tab.name}>{tab.component}</div>
+          (t) => tab === t.name && <div key={t.name}>{t.component}</div>
         )}
       </div>
     </div>

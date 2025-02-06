@@ -31,7 +31,7 @@ import {
 } from "../../../UI/select";
 import TaskSideBar from "./TaskSideBar";
 
-function Tasks() {
+function Tasks({ projectName }) {
   const { id } = useParams();
   const projectId = id;
   const userDetails = useSelector((state) => state.users);
@@ -102,7 +102,7 @@ function Tasks() {
           date: serverTimestamp(),
           section: "Project",
           action: "Update",
-          description: `${value} task updated`,
+          description: `${value} task updated in ${projectName}`,
         }
       );
       const modifiedData = tasksDetails.map((task) => {
@@ -205,7 +205,6 @@ function Tasks() {
           [selectedTask.id]: fetchTaskMessages,
         }));
       });
-
     } catch (error) {
       console.log("🚀 ~ fetchTaskMessagesData ~ error:", error);
     }
@@ -395,14 +394,14 @@ function Tasks() {
                           className={cn(
                             "w-full flex justify-between items-center input-tag ",
                             !selectedTask.startDate?.seconds &&
-                            "text-muted-foreground"
+                              "text-muted-foreground"
                           )}
                         >
                           {selectedTask.startDate?.seconds ? (
                             formatDate(
                               new Date(
                                 selectedTask.startDate?.seconds * 1000 +
-                                selectedTask.startDate?.nanoseconds / 1000000
+                                  selectedTask.startDate?.nanoseconds / 1000000
                               ),
                               "PPP"
                             )
@@ -418,7 +417,7 @@ function Tasks() {
                           selected={
                             new Date(
                               selectedTask.startDate?.seconds * 1000 +
-                              selectedTask.startDate?.nanoseconds / 1000000
+                                selectedTask.startDate?.nanoseconds / 1000000
                             )
                           }
                           onSelect={(val) => {
@@ -443,14 +442,14 @@ function Tasks() {
                           className={cn(
                             "w-full flex justify-between items-center input-tag ",
                             !selectedTask.endDate?.seconds &&
-                            "text-muted-foreground"
+                              "text-muted-foreground"
                           )}
                         >
                           {selectedTask.endDate?.seconds ? (
                             formatDate(
                               new Date(
                                 selectedTask.endDate?.seconds * 1000 +
-                                selectedTask.endDate?.nanoseconds / 1000000
+                                  selectedTask.endDate?.nanoseconds / 1000000
                               ),
                               "PPP"
                             )
@@ -466,7 +465,7 @@ function Tasks() {
                           selected={
                             new Date(
                               selectedTask.endDate?.seconds * 1000 +
-                              selectedTask.endDate?.nanoseconds / 1000000
+                                selectedTask.endDate?.nanoseconds / 1000000
                             )
                           }
                           onSelect={(val) => {
@@ -549,7 +548,7 @@ function Tasks() {
                           <div className="text-xs text-gray-500">
                             {new Date(
                               item.createdAt.seconds * 1000 +
-                              item.createdAt.nanoseconds / 1000000
+                                item.createdAt.nanoseconds / 1000000
                             ).toLocaleString()}
                           </div>
                         </div>
@@ -638,6 +637,7 @@ function Tasks() {
             fetchTaskData={fetchTaskData}
             typeOf={sideBarType}
             taskId={selectedTask.id}
+            projectName={projectName}
           />
         </div>
       )}

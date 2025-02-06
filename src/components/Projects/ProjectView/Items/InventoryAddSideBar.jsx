@@ -21,7 +21,13 @@ import {
   SelectValue,
 } from "../../../UI/select";
 
-function InventoryAddSideBar({ projectId, isOpen, onClose, isMaterialAdd }) {
+function InventoryAddSideBar({
+  projectId,
+  isOpen,
+  onClose,
+  isMaterialAdd,
+  projectName,
+}) {
   const [itemList, setItemList] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState("");
@@ -105,7 +111,7 @@ function InventoryAddSideBar({ projectId, isOpen, onClose, isMaterialAdd }) {
         date: serverTimestamp(),
         section: "Project",
         action: "Create",
-        description: `${selectedItem.name} created from inventory in project`,
+        description: `${selectedItem.name} created from inventory in ${projectName}`,
       });
       await updateDoc(inventoryRef, {
         stock: newStockQuantity,

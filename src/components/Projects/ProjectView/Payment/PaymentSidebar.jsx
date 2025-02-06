@@ -25,7 +25,13 @@ import {
   SelectValue,
 } from "../../../UI/select";
 
-function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh, projectName }) {
+function PaymentSidebar({
+  isModalOpen,
+  onClose,
+  userDataSet,
+  refresh,
+  projectName,
+}) {
   const { id } = useParams();
   const { updateData } = isModalOpen;
   const [filterUser, setFilterUser] = useState("Customer");
@@ -164,14 +170,14 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh, projectNam
         date: serverTimestamp(),
         section: "Project",
         action: "Create",
-        description: `${isModalOpen.type} details created in project ${projectName}`,
+        description: `${isModalOpen.type} details created in ${projectName}`,
       };
       if (updateData?.id) {
         const ref = doc(db, "companies", companyId, "expenses", updateData.id);
         await updateDoc(ref, payload);
         expenseLogs.ref = ref;
         expenseLogs.action = "Update";
-        expenseLogs.description = `${isModalOpen.type} details updated in project`;
+        expenseLogs.description = `${isModalOpen.type} details updated in ${projectName}`;
       } else {
         const ref = await addDoc(
           collection(db, "companies", companyId, "expenses"),

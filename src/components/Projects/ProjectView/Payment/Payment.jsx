@@ -98,7 +98,7 @@ const Payment = ({ projectDetails }) => {
       setLoading(false);
     }
   }
-
+  console.log("projectDetails", projectDetails);
   const fetch_Cus_Vend_Staff_data = async (collectionName) => {
     setLoading(true);
     try {
@@ -424,6 +424,7 @@ const Payment = ({ projectDetails }) => {
           });
         }}
         refresh={fetchExpenses}
+        projectName={projectDetails.name}
       />
     </div>
   );

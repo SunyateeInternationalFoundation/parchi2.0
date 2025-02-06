@@ -10,7 +10,12 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { db } from "../../../../firebase";
 import Attendance from "./Attendance";
 import Payments from "./Payments";
@@ -20,6 +25,9 @@ import StaffDocuments from "./StaffDocuments";
 
 function StaffView() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const tab = searchParams.get("tab");
   const userDetails = useSelector((state) => state.users);
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
@@ -77,6 +85,9 @@ function StaffView() {
   };
 
   useEffect(() => {
+    if (!tab) {
+      navigate("?tab=Profile");
+    }
     async function fetchProjectList() {
       try {
         const ProjectRef = collection(db, `/projects`);
@@ -118,18 +129,18 @@ function StaffView() {
             <button
               className={
                 "px-4 py-3" +
-                (activeTab === "Profile" && " border-b-4 border-blue-700")
+                (tab === "Profile" && " border-b-4 border-blue-700")
               }
-              onClick={() => setActiveTab("Profile")}
+              onClick={() => navigate("?tab=Profile")}
             >
               Profile
             </button>
             <button
               className={
                 "px-4 py-3" +
-                (activeTab === "Projects" && " border-b-4 border-blue-700")
+                (tab === "Projects" && " border-b-4 border-blue-700")
               }
-              onClick={() => setActiveTab("Projects")}
+              onClick={() => navigate("?tab=Projects")}
             >
               Projects
             </button>
@@ -146,18 +157,18 @@ function StaffView() {
             <button
               className={
                 "px-4 py-3" +
-                (activeTab === "Attendance" && " border-b-4 border-blue-700")
+                (tab === "Attendance" && " border-b-4 border-blue-700")
               }
-              onClick={() => setActiveTab("Attendance")}
+              onClick={() => navigate("?tab=Attendance")}
             >
               Attendance
             </button>
             <button
               className={
                 "px-4 py-3" +
-                (activeTab === "Documents" && " border-b-4 border-blue-700")
+                (tab === "Documents" && " border-b-4 border-blue-700")
               }
-              onClick={() => setActiveTab("Documents")}
+              onClick={() => navigate("?tab=Documents")}
             >
               Documents
             </button>
@@ -167,27 +178,27 @@ function StaffView() {
 
       <hr />
       <div className="w-full">
-        {activeTab === "Profile" && (
+        {tab === "Profile" && (
           <div>
             <Profile staffData={staffData} refresh={fetchStaffData} />
           </div>
         )}
-        {activeTab === "Projects" && (
+        {tab === "Projects" && (
           <div>
             <Projects projectsData={projectsData} />
           </div>
         )}
-        {activeTab === "Payments" && (
+        {tab === "Payments" && (
           <div>
             <Payments />
           </div>
         )}
-        {activeTab === "Attendance" && (
+        {tab === "Attendance" && (
           <div>
             <Attendance attendanceData={attendanceData} />
           </div>
         )}
-        {activeTab === "Documents" && (
+        {tab === "Documents" && (
           <div>
             <StaffDocuments staffData={staffData} />
           </div>

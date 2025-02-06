@@ -104,8 +104,7 @@ const CompanyProfile = () => {
   const handleSave = async () => {
     try {
       const { id, ...payload } = formData;
-      const { altContact, website, userName, userRef, ...rest } =
-        payload;
+      const { altContact, website, userName, userRef, ...rest } = payload;
       const ref = doc(db, "companies", companyId);
       await updateDoc(ref, payload);
       await addDoc(collection(db, "companies", companyId, "audit"), {

@@ -33,6 +33,7 @@ function TaskSideBar({
   fetchTaskData,
   taskId,
   projectId,
+  projectName,
 }) {
   const userDetails = useSelector((state) => state.users);
   const [formData, setFormData] = useState({
@@ -141,7 +142,7 @@ function TaskSideBar({
         date: serverTimestamp(),
         section: "Project",
         action: "Create",
-        description: `${formData.name} task created`,
+        description: `${formData.name} task created in ${projectName}`,
       };
       if (typeOf === "CreateTask") {
         const payload = {
@@ -170,7 +171,7 @@ function TaskSideBar({
         await updateDoc(taskRef, payload);
         payloadTask.ref = taskRef;
         payloadTask.action = "Update";
-        payloadTask.description = `${formData.name} task updated`;
+        payloadTask.description = `${formData.name} task updated in ${projectName}`;
         alert("Successfully Updated");
       }
       await addDoc(

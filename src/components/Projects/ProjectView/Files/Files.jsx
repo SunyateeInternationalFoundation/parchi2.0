@@ -27,7 +27,7 @@ import {
   SelectValue,
 } from "../../../UI/select";
 
-const Files = () => {
+const Files = ({ projectName }) => {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [files, setFiles] = useState([]);
@@ -142,7 +142,7 @@ const Files = () => {
         date: serverTimestamp(),
         section: "Project",
         action: "Create",
-        description: `${formData.name} file created`,
+        description: `${formData.name} file created in ${projectName}`,
       });
       setFormData({
         name: "",

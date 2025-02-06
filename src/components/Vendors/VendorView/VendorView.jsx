@@ -9,7 +9,12 @@ import {
 import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { db } from "../../../firebase";
 import VendorBills from "./VendorBills";
 import VendorProfile from "./VendorProfile";
@@ -18,6 +23,9 @@ import VendorServices from "./VendorServices";
 
 function VendorView() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const tab = searchParams.get("tab");
   const userDetails = useSelector((state) => state.users);
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
@@ -147,6 +155,9 @@ function VendorView() {
   }
 
   useEffect(() => {
+    if (!tab) {
+      navigate("?tab=Profile");
+    }
     fetchExpenses();
     fetchVendorData();
     fetchPOList();
@@ -163,28 +174,26 @@ function VendorView() {
         <nav className="flex space-x-4">
           <button
             className={
-              "px-4 py-3" +
-              (activeTab === "Profile" && " border-b-4 border-blue-700")
+              "px-4 py-3" + (tab === "Profile" && " border-b-4 border-blue-700")
             }
-            onClick={() => setActiveTab("Profile")}
+            onClick={() => navigate("?tab=Profile")}
           >
             Profile
           </button>
           <button
             className={
               "px-4  py-3" +
-              (activeTab === "Projects" && " border-b-4 border-blue-700")
+              (tab === "Projects" && " border-b-4 border-blue-700")
             }
-            onClick={() => setActiveTab("Projects")}
+            onClick={() => navigate("?tab=Projects")}
           >
             Projects
           </button>
           <button
             className={
-              "px-4  py-3" +
-              (activeTab === "Bills" && " border-b-4 border-blue-700")
+              "px-4  py-3" + (tab === "Bills" && " border-b-4 border-blue-700")
             }
-            onClick={() => setActiveTab("Bills")}
+            onClick={() => navigate("?tab=Bills")}
           >
             Purchase
           </button>
@@ -192,7 +201,7 @@ function VendorView() {
       </header>
       <hr />
       <div className="w-full">
-        {activeTab === "Profile" && (
+        {tab === "Profile" && (
           <div>
             <VendorProfile
               vendorData={vendorData}
@@ -201,17 +210,17 @@ function VendorView() {
             />
           </div>
         )}
-        {activeTab === "Projects" && (
+        {tab === "Projects" && (
           <div>
             <VendorProject projectsData={vendorsProjectsData} />
           </div>
         )}
-        {activeTab === "Services" && (
+        {tab === "Services" && (
           <div>
             <VendorServices />
           </div>
         )}
-        {activeTab === "Bills" && (
+        {tab === "Bills" && (
           <div>
             <VendorBills purchasesData={vendorsPOData} />
           </div>

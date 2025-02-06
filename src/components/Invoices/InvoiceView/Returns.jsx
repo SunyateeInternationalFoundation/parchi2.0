@@ -29,6 +29,9 @@ function Returns({ invoice }) {
   const [paginationData, setPaginationData] = useState([]);
 
   useEffect(() => {
+    if (!invoice?.id) {
+      return;
+    }
     setProducts([...invoice.items]);
     setTotalPages(Math.ceil(invoice.items.length / 10));
     setPaginationData(invoice.items.slice(0, 10));

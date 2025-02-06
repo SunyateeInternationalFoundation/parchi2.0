@@ -17,6 +17,9 @@ function Transfers({ transfersData, refreshTransfersData, productDetails }) {
   const [paginationData, setPaginationData] = useState([]);
 
   useEffect(() => {
+    if (!transfersData?.id) {
+      return;
+    }
     // Calculate total pages based on transfersData length
     setTotalPages(Math.ceil(transfersData.length / 10));
     // Set initial pagination data
@@ -25,6 +28,9 @@ function Transfers({ transfersData, refreshTransfersData, productDetails }) {
 
   useEffect(() => {
     // Update pagination data when currentPage changes
+    if (!transfersData?.id) {
+      return;
+    }
     const startIndex = currentPage * 10;
     const endIndex = startIndex + 10;
     setPaginationData(transfersData.slice(startIndex, endIndex));

@@ -21,7 +21,13 @@ import {
   SelectValue,
 } from "../../../UI/select";
 
-function CreateApproval({ isOpen, projectId, onClose, newApprovalAdded }) {
+function CreateApproval({
+  isOpen,
+  projectId,
+  onClose,
+  newApprovalAdded,
+  projectName,
+}) {
   const userDetails = useSelector((state) => state.users);
 
   // const companyId =
@@ -126,7 +132,7 @@ function CreateApproval({ isOpen, projectId, onClose, newApprovalAdded }) {
         date: serverTimestamp(),
         section: "Project",
         action: "Create",
-        description: `${approvalForm.name} approval created in project`,
+        description: `${approvalForm.name} approval created in ${projectName}`,
       });
       newApprovalAdded();
       alert("successfully Created Approval");
