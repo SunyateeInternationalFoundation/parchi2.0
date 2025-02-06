@@ -9,7 +9,6 @@ import {
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
 import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
