@@ -414,6 +414,7 @@ const Payment = ({ projectDetails }) => {
       </div>
       <PaymentSidebar
         isModalOpen={isModalOpen}
+        projectName={projectDetails.name}
         userDataSet={userDataSet}
         onClose={() => {
           setIsModalOpen({

@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from "../../../UI/select";
 
-function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
+function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh, projectName }) {
   const { id } = useParams();
   const { updateData } = isModalOpen;
   const [filterUser, setFilterUser] = useState("Customer");
@@ -164,7 +164,7 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
         date: serverTimestamp(),
         section: "Project",
         action: "Create",
-        description: `${isModalOpen.type} details created in project`,
+        description: `${isModalOpen.type} details created in project ${projectName}`,
       };
       if (updateData?.id) {
         const ref = doc(db, "companies", companyId, "expenses", updateData.id);

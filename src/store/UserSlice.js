@@ -132,7 +132,9 @@ const userSlice = createSlice({
         panNumber,
         gst,
         email,
+        companyLogo,
       } = action.payload;
+
       const updatedCompanies = state.companies;
       state.companies[state.selectedCompanyIndex].isCalendarMonth =
         isCalendarMonth;
@@ -146,6 +148,7 @@ const userSlice = createSlice({
       state.companies[state.selectedCompanyIndex].panNumber = panNumber;
       state.companies[state.selectedCompanyIndex].gst = gst;
       state.companies[state.selectedCompanyIndex].email = email;
+      state.companies[state.selectedCompanyIndex].companyLogo = companyLogo;
       updatedCompanies[state.selectedCompanyIndex] = {
         ...updatedCompanies[state.selectedCompanyIndex],
         isCalendarMonth,
@@ -159,6 +162,7 @@ const userSlice = createSlice({
         panNumber,
         gst,
         email,
+        companyLogo,
       };
       const updatedData = { ...state, companies: updatedCompanies };
       localStorage.setItem("user", JSON.stringify(updatedData));

@@ -34,26 +34,26 @@ const CompanyProfile = () => {
     zipCode: "",
   });
 
-  useEffect(() => {
-    const fetchCompanyDetails = async () => {
-      try {
-        const companyDocRef = doc(db, "companies", companyId);
-        const companySnapshot = await getDoc(companyDocRef);
+  const fetchCompanyDetails = async () => {
+    try {
+      const companyDocRef = doc(db, "companies", companyId);
+      const companySnapshot = await getDoc(companyDocRef);
 
-        if (companySnapshot.exists()) {
-          const companyData = {
-            id: companySnapshot.id,
-            ...companySnapshot.data(),
-          };
-          setFormData(companyData);
-        } else {
-          console.error("No such document!");
-        }
-      } catch (error) {
-        console.error("Error fetching company:", error);
+      if (companySnapshot.exists()) {
+        const companyData = {
+          id: companySnapshot.id,
+          ...companySnapshot.data(),
+        };
+        setFormData(companyData);
+      } else {
+        console.error("No such document!");
       }
-    };
+    } catch (error) {
+      console.error("Error fetching company:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchCompanyDetails();
   }, [companyId]);
 
@@ -104,7 +104,7 @@ const CompanyProfile = () => {
   const handleSave = async () => {
     try {
       const { id, ...payload } = formData;
-      const { companyLogo, altContact, website, userName, userRef, ...rest } =
+      const { altContact, website, userName, userRef, ...rest } =
         payload;
       const ref = doc(db, "companies", companyId);
       await updateDoc(ref, payload);

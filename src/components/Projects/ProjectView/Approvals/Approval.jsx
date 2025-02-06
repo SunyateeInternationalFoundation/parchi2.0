@@ -38,7 +38,6 @@ const Approval = () => {
       ...doc.data(),
     }));
 
-    console.log("🚀 ~ approvalsData ~ approvalsData:", approvalsData);
     setApprovals(approvalsData);
     setTotalPages(Math.ceil(approvalsData.length / 10));
     setPaginationData(approvalsData.slice(0, 10));
@@ -71,9 +70,8 @@ const Approval = () => {
               <button
                 key={category}
                 onClick={() => setFilter(category)}
-                className={`px-5  py-3 text-gray-600  rounded-md border hover:bg-black hover:text-white ${
-                  filter === category && "bg-black text-white"
-                }`}
+                className={`px-5  py-3 text-gray-600  rounded-md border hover:bg-black hover:text-white ${filter === category && "bg-black text-white"
+                  }`}
               >
                 {category}
               </button>

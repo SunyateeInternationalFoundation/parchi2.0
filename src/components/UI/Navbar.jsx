@@ -162,8 +162,8 @@ const Navbar = () => {
                 <span className="font-medium">
                   {userDetails.selectedDashboard
                     ? dashboardOptions.find(
-                        (opt) => opt.value === userDetails.selectedDashboard
-                      )?.label
+                      (opt) => opt.value === userDetails.selectedDashboard
+                    )?.label
                     : "Select Dashboard"}
                 </span>
                 <svg
@@ -227,10 +227,9 @@ const Navbar = () => {
                   <div
                     key={option.value}
                     className={`flex items-center space-x-2 p-2 rounded-xl cursor-pointer transition-all duration-300 
-                      ${
-                        userDetails.selectedDashboard === option.value
-                          ? "bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-500"
-                          : "hover:bg-gray-50 border-2 border-transparent"
+                      ${userDetails.selectedDashboard === option.value
+                        ? "bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-500"
+                        : "hover:bg-gray-50 border-2 border-transparent"
                       }`}
                     onClick={() => onSwitchDashboard(option.value)}
                   >
@@ -324,7 +323,7 @@ const Navbar = () => {
               <>
                 <div className="pb-2 space-y-2">
                   <div>{userDetails.name}</div>
-                  <div>FREE</div>
+                  {/* <div>FREE</div> */}
                 </div>
                 <hr />
                 <div className="py-2 space-y-2">
@@ -337,12 +336,12 @@ const Navbar = () => {
                     <span>{userDetails.email}</span>
                   </div>
                 </div>
-                <button
+                {/* <button
                   className="bg-sky-200 rounded w-full p-2 my-2"
                   onClick={handleEditClick}
                 >
                   Edit Profile
-                </button>
+                </button> */}
                 <button
                   className="flex items-center space-x-2 text-gray-600 hover:text-black my-2"
                   onClick={() => {
