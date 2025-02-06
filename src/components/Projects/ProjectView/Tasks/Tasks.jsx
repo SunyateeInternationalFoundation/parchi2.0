@@ -3,6 +3,7 @@ import {
   collection,
   doc,
   getDocs,
+  onSnapshot,
   orderBy,
   query,
   Timestamp,
@@ -82,19 +83,6 @@ function Tasks() {
     fetchTaskData();
   }, []);
 
-  function DateFormate(timestamp, formate = "dd/mm/yyyy") {
-    const milliseconds =
-      timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
-    const date = new Date(milliseconds);
-    const getDate = String(date.getDate()).padStart(2, "0");
-    const getMonth = String(date.getMonth() + 1).padStart(2, "0");
-    const getFullYear = date.getFullYear();
-
-    return formate === "yyyy-mm-dd"
-      ? `${getFullYear}-${getMonth}-${getDate}`
-      : `${getDate}/${getMonth}/${getFullYear}`;
-  }
-
   async function modifiedTask(field, value) {
     try {
       const taskRef = doc(db, "projects", projectId, "tasks", selectedTask.id);
@@ -137,11 +125,6 @@ function Tasks() {
       };
 
       await addDoc(collection(taskRef, "taskMessages"), payloadTaskMSG);
-
-      setTaskMessagesData((val) => ({
-        ...val,
-        [selectedTask.id]: [...val[selectedTask.id], payloadTaskMSG],
-      }));
       if (progressRange !== 0 && !isProgressOpen) {
         await updateDoc(taskRef, {
           progressPercentage: +(
@@ -178,42 +161,39 @@ function Tasks() {
     filterTasksData();
   }, [filter]);
 
-  useEffect(() => {
-    async function fetchTaskMessagesData() {
-      if (!selectedTask.id) {
-        return;
-      }
-      try {
-        const q = query(
-          collection(
-            db,
-            "projects",
-            projectId,
-            "tasks",
-            selectedTask.id,
-            "taskMessages"
-          ),
-          orderBy("createdAt", "asc")
-        );
-        const getData = await getDocs(q);
-
-        const fetchTaskMessages = getData.docs.map((doc) => ({
+  async function fetchTaskMessagesData() {
+    if (!selectedTask.id) {
+      return;
+    }
+    try {
+      const q = query(
+        collection(
+          db,
+          "projects",
+          projectId,
+          "tasks",
+          selectedTask.id,
+          "taskMessages"
+        ),
+        orderBy("createdAt", "asc")
+      );
+      onSnapshot(q, (snapshot) => {
+        const fetchTaskMessages = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-
         setTaskMessagesData((val) => ({
           ...val,
           [selectedTask.id]: fetchTaskMessages,
         }));
-      } catch (error) {
-        console.log("🚀 ~ fetchTaskMessagesData ~ error:", error);
-      }
+      });
+
+    } catch (error) {
+      console.log("🚀 ~ fetchTaskMessagesData ~ error:", error);
     }
+  }
+  useEffect(() => {
     fetchTaskMessagesData();
-    setInterval(() => {
-      fetchTaskMessagesData();
-    }, 2000);
     setProgressRange(0);
     setIsProgressOpen(false);
     setTaskMessage("");
@@ -397,14 +377,14 @@ function Tasks() {
                           className={cn(
                             "w-full flex justify-between items-center input-tag ",
                             !selectedTask.startDate?.seconds &&
-                              "text-muted-foreground"
+                            "text-muted-foreground"
                           )}
                         >
                           {selectedTask.startDate?.seconds ? (
                             formatDate(
                               new Date(
                                 selectedTask.startDate?.seconds * 1000 +
-                                  selectedTask.startDate?.nanoseconds / 1000000
+                                selectedTask.startDate?.nanoseconds / 1000000
                               ),
                               "PPP"
                             )
@@ -420,7 +400,7 @@ function Tasks() {
                           selected={
                             new Date(
                               selectedTask.startDate?.seconds * 1000 +
-                                selectedTask.startDate?.nanoseconds / 1000000
+                              selectedTask.startDate?.nanoseconds / 1000000
                             )
                           }
                           onSelect={(val) => {
@@ -445,14 +425,14 @@ function Tasks() {
                           className={cn(
                             "w-full flex justify-between items-center input-tag ",
                             !selectedTask.endDate?.seconds &&
-                              "text-muted-foreground"
+                            "text-muted-foreground"
                           )}
                         >
                           {selectedTask.endDate?.seconds ? (
                             formatDate(
                               new Date(
                                 selectedTask.endDate?.seconds * 1000 +
-                                  selectedTask.endDate?.nanoseconds / 1000000
+                                selectedTask.endDate?.nanoseconds / 1000000
                               ),
                               "PPP"
                             )
@@ -468,7 +448,7 @@ function Tasks() {
                           selected={
                             new Date(
                               selectedTask.endDate?.seconds * 1000 +
-                                selectedTask.endDate?.nanoseconds / 1000000
+                              selectedTask.endDate?.nanoseconds / 1000000
                             )
                           }
                           onSelect={(val) => {
@@ -551,7 +531,7 @@ function Tasks() {
                           <div className="text-xs text-gray-500">
                             {new Date(
                               item.createdAt.seconds * 1000 +
-                                item.createdAt.nanoseconds / 1000000
+                              item.createdAt.nanoseconds / 1000000
                             ).toLocaleString()}
                           </div>
                         </div>
