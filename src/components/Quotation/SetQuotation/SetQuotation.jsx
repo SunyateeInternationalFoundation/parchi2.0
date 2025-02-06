@@ -216,9 +216,9 @@ const SetQuotation = () => {
       const createdBy = quotationId
         ? { ...baseCreatedBy, who: formData.createdBy.who }
         : {
-          ...baseCreatedBy,
-          who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
-        };
+            ...baseCreatedBy,
+            who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+          };
       const payload = {
         ...restForm,
         ...rest,
@@ -243,26 +243,26 @@ const SetQuotation = () => {
         date: serverTimestamp(),
         section: "Quotation",
         action: "Create",
-        description: `${prefix}-${no} updated by ${payload.createdBy.who}`,
+        description: `${prefix}-${no} created by ${payload.createdBy.who}`,
       };
       if (quotationId) {
-        (quotationRef = doc(
+        quotationRef = doc(
           db,
           "companies",
           companyDetails.companyId,
           "quotations",
           quotationId
-        )),
-          await updateDoc(quotationRef, payload);
+        );
+        await updateDoc(quotationRef, payload);
         payloadLog.ref = quotationRef;
         payloadLog.action = "Update";
+        payloadLog.description = `${prefix}-${no} updated by ${payload.createdBy.who}`;
       } else {
         quotationRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "quotations"),
           payload
         );
         payloadLog.ref = quotationRef;
-        payloadLog.action = "Create";
       }
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "audit"),
@@ -289,8 +289,8 @@ const SetQuotation = () => {
 
       alert(
         "Successfully " +
-        (quotationId ? "Updated" : "Created") +
-        " the quotation"
+          (quotationId ? "Updated" : "Created") +
+          " the quotation"
       );
       const redirect =
         (userDetails.selectedDashboard === "staff"

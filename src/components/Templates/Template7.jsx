@@ -1,8 +1,12 @@
 import PropTypes from "prop-types";
 import { forwardRef } from "react";
+import { useSelector } from "react-redux";
 
 const Template7 = forwardRef((props, ref) => {
   const { dataSet } = props;
+  const userDetails = useSelector((state) => state.users);
+  const companyDetails =
+    userDetails.companies[userDetails.selectedCompanyIndex];
   if (!Object.keys(dataSet).length === 0) {
     return;
   }
@@ -27,15 +31,27 @@ const Template7 = forwardRef((props, ref) => {
           <div>
             <h1 className=" text-gray-800">
               <span className="font-bold">{dataSet?.type} No:</span> #
-              {dataSet?.no}
+              {dataSet?.prefix}- {dataSet?.no}
             </h1>
             <p className="text-gray-600">
               <span className="font-bold"> Date:</span>{" "}
               {DateFormate(dataSet?.dueDate)}
             </p>
+            <p className="text-gray-600">
+              <span className="font-bold"> GST:</span> {companyDetails?.gst}
+            </p>
           </div>
           <h1 className="text-3xl font-bold text-green-500">
-            {dataSet?.createdBy?.name}
+            <div className="border w-[89px] h-[89px] shadow flex items-center justify-center">
+              {companyDetails?.companyLogo ? (
+                <img
+                  src={companyDetails?.companyLogo}
+                  className="rounded-md object-cover w-[89px] h-[89px]"
+                />
+              ) : (
+                <>{dataSet?.createdBy?.name}</>
+              )}
+            </div>
           </h1>
           {/* <img src="/ivonne-logo.png" alt="Ivonne Logo" className="h-12" /> */}
         </div>
@@ -88,12 +104,22 @@ const Template7 = forwardRef((props, ref) => {
                   <td className="pt-2 pb-2 pl-1">{item.name}</td>
                   <td className="pt-2 pb-2 pl-1">{item.tax}%</td>
                   <td className="pt-2 pb-2 pl-1">{item.discount.toFixed(1)}</td>
-                  <td className="pt-2 pb-2 pl-1">{item.sellingPrice.toFixed(1)}</td>
+                  <td className="pt-2 pb-2 pl-1">
+                    {item.sellingPrice.toFixed(1)}
+                  </td>
                   <td className="pt-2 pb-2 pl-1">{item.quantity}</td>
                   <td className="pt-2 pb-2 pl-1">{item.tax}%</td>
-                  <td className="pt-2 pb-2 pl-1">{item.cgstAmount.toFixed(2)}</td> {/* Assuming cgstAmount is available in item */}
-                  <td className="pt-2 pb-2 pl-1">{item.sgstAmount.toFixed(2)}</td> {/* Assuming sgstAmount is available in item */}
-                  <td className="pt-2 pb-2 pl-1">{item.totalAmount.toFixed(2)}</td>
+                  <td className="pt-2 pb-2 pl-1">
+                    {item.cgstAmount.toFixed(2)}
+                  </td>{" "}
+                  {/* Assuming cgstAmount is available in item */}
+                  <td className="pt-2 pb-2 pl-1">
+                    {item.sgstAmount.toFixed(2)}
+                  </td>{" "}
+                  {/* Assuming sgstAmount is available in item */}
+                  <td className="pt-2 pb-2 pl-1">
+                    {item.totalAmount.toFixed(2)}
+                  </td>
                 </tr>
               ))}
             </tbody>

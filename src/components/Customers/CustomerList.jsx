@@ -173,7 +173,7 @@ const CustomerList = () => {
         date: serverTimestamp(),
         section: "Customer",
         action: "Delete",
-        description: `${name} removed`,
+        description: `${name} customer removed`,
       });
       dispatch(deleteCustomerDetails(customerId));
     } catch (error) {

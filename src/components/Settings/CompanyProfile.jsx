@@ -1,4 +1,11 @@
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -99,7 +106,15 @@ const CompanyProfile = () => {
       const { id, ...payload } = formData;
       const { companyLogo, altContact, website, userName, userRef, ...rest } =
         payload;
-      await updateDoc(doc(db, "companies", companyId), payload);
+      const ref = doc(db, "companies", companyId);
+      await updateDoc(ref, payload);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: ref,
+        date: serverTimestamp(),
+        section: "settings",
+        action: "Update",
+        description: "company details updated",
+      });
       alert("Details saved successfully! ");
       dispatch(updateCompanyDetails(rest));
     } catch (e) {

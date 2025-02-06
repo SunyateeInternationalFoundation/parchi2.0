@@ -5,6 +5,7 @@ import {
   getDocs,
   orderBy,
   query,
+  serverTimestamp,
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
@@ -98,7 +99,24 @@ function Tasks() {
   async function modifiedTask(field, value) {
     try {
       const taskRef = doc(db, "projects", projectId, "tasks", selectedTask.id);
+
       await updateDoc(taskRef, { [field]: value });
+      await addDoc(
+        collection(
+          db,
+          "companies",
+          userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+            .companyDetails.companyId,
+          "audit"
+        ),
+        {
+          ref: taskRef,
+          date: serverTimestamp(),
+          section: "Project",
+          action: "Update",
+          description: `${value} task updated`,
+        }
+      );
       const modifiedData = tasksDetails.map((task) => {
         if (selectedTask.id === task.id) {
           task[field] = value;

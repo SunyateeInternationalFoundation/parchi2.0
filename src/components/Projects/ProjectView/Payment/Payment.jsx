@@ -1,9 +1,11 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   getDocs,
   query,
+  serverTimestamp,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -156,11 +158,20 @@ const Payment = ({ projectDetails }) => {
     setSearchTerm(e.target.value);
   };
 
-  async function onDeleteExpense(expenseId) {
+  async function onDeleteExpense(expenseId, name) {
     try {
       if (!window.confirm("Are you sure you want to delete this expense?"))
         return;
-      await deleteDoc(doc(db, "companies", companyId, "expenses", expenseId));
+
+      const ref = doc(db, "companies", companyId, "expenses", expenseId);
+      await deleteDoc(ref);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: ref,
+        date: serverTimestamp(),
+        section: "Project",
+        action: "Delete",
+        description: `${name} expense deleted in payment`,
+      });
       setExpenses((prev) => prev.filter((expense) => expense.id !== expenseId));
     } catch (error) {
       console.log("🚀 ~ onDeleteExpense ~ error:", error);
@@ -334,7 +345,7 @@ const Payment = ({ projectDetails }) => {
                           className="px-5 py-3   text-center"
                           onClick={(e) => {
                             e.stopPropagation();
-                            onDeleteExpense(expense.id);
+                            onDeleteExpense(expense.id, expense.toWhom.name);
                           }}
                         >
                           <div className=" flex items-center justify-center">

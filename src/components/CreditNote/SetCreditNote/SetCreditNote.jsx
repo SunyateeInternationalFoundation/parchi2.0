@@ -214,9 +214,9 @@ const SetCreditNote = () => {
       const createdBy = creditNoteId
         ? { ...baseCreatedBy, who: formData.createdBy.who }
         : {
-          ...baseCreatedBy,
-          who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
-        };
+            ...baseCreatedBy,
+            who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+          };
       const payload = {
         ...restForm,
         ...rest,
@@ -241,7 +241,7 @@ const SetCreditNote = () => {
         date: serverTimestamp(),
         section: "Credit Note",
         action: "Create",
-        description: `${prefix}-${no} updated by ${payload.createdBy.who}`,
+        description: `${prefix}-${no} created by ${payload.createdBy.who}`,
       };
       if (creditNoteId) {
         creditNoteRef = doc(
@@ -254,13 +254,13 @@ const SetCreditNote = () => {
         await updateDoc(creditNoteRef, payload);
         payloadLog.ref = creditNoteRef;
         payloadLog.action = "Update";
+        payloadLog.description = `${prefix}-${no} updated by ${payload.createdBy.who}`;
       } else {
         creditNoteRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "creditNote"),
           payload
         );
         payloadLog.ref = creditNoteRef;
-        payloadLog.action = "Create";
       }
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "audit"),
@@ -299,8 +299,8 @@ const SetCreditNote = () => {
 
       alert(
         "Successfully " +
-        (creditNoteId ? "Updated" : "Created") +
-        " the CreditNote"
+          (creditNoteId ? "Updated" : "Created") +
+          " the CreditNote"
       );
 
       const redirect =

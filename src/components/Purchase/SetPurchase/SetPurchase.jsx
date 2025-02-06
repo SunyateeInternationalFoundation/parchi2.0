@@ -208,9 +208,9 @@ const SetPurchase = () => {
       const createdBy = purchaseId
         ? { ...baseCreatedBy, who: formData.createdBy.who }
         : {
-          ...baseCreatedBy,
-          who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
-        };
+            ...baseCreatedBy,
+            who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+          };
       const payload = {
         ...restForm,
         ...rest,
@@ -235,26 +235,26 @@ const SetPurchase = () => {
         date: serverTimestamp(),
         section: "Purchase",
         action: "Create",
-        description: `${prefix}-${no} updated by ${payload.createdBy.who}`,
+        description: `${prefix}-${no} created by ${payload.createdBy.who}`,
       };
       if (purchaseId) {
-        (purchaseRef = doc(
+        purchaseRef = doc(
           db,
           "companies",
           companyDetails.companyId,
           "purchases",
           purchaseId
-        )),
-          await updateDoc(purchaseRef, payload);
+        );
+        await updateDoc(purchaseRef, payload);
         payloadLog.ref = purchaseRef;
         payloadLog.action = "Update";
+        payloadLog.description = `${prefix}-${no} updated by ${payload.createdBy.who}`;
       } else {
         purchaseRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "purchases"),
           payload
         );
         payloadLog.ref = purchaseRef;
-        payloadLog.action = "Create";
       }
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "audit"),

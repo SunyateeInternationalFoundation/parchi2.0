@@ -1,10 +1,12 @@
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import {
+  addDoc,
   collection,
   doc,
   getDoc,
   getDocs,
   query,
+  serverTimestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -178,6 +180,21 @@ const Prefix = () => {
         ...payload,
         phone_number: `+91${payload.phone}`,
       });
+      await addDoc(
+        collection(
+          db,
+          "companies",
+          userDetails.companies[userDetails.selectedCompanyIndex].companyId,
+          "audit"
+        ),
+        {
+          ref: doc(db, "users", userId),
+          date: serverTimestamp(),
+          section: "settings",
+          action: "Update",
+          description: "user profile details updated",
+        }
+      );
       dispatch(
         updateUserDetails({
           name: payload.displayName,

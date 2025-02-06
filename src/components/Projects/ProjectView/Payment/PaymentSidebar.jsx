@@ -163,7 +163,7 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
         date: serverTimestamp(),
         section: "Project",
         action: "Create",
-        description: "",
+        description: `${isModalOpen.type} details created in project`,
       };
       if (updateData?.id) {
         const ref = doc(db, "companies", companyId, "expenses", updateData.id);
@@ -177,8 +177,6 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
           payload
         );
         expenseLogs.ref = ref;
-        expenseLogs.action = "Create";
-        expenseLogs.description = `${isModalOpen.type} details updated in project`;
       }
       await addDoc(
         collection(db, "companies", companyId, "audit"),

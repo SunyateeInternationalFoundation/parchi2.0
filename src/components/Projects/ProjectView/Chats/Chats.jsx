@@ -6,10 +6,12 @@ import {
   getDocs,
   orderBy,
   query,
+  serverTimestamp,
   Timestamp,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { db } from "../../../../firebase";
 import CreateGroupSideBar from "./CreateGroupSideBar";
@@ -17,7 +19,10 @@ import CreateGroupSideBar from "./CreateGroupSideBar";
 const Chats = () => {
   const { id } = useParams();
   const projectId = id;
-
+  const userDetails = useSelector((state) => state.users);
+  const companyId =
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+      .companyDetails.companyId;
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
@@ -152,6 +157,13 @@ const Chats = () => {
   const handleGroupCreate = async (groupData) => {
     try {
       const newGroupRef = await addDoc(collection(db, "groups"), groupData);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: newGroupRef,
+        date: serverTimestamp(),
+        section: "Project",
+        action: "Create",
+        description: `${groupData.groupName} group created in project`,
+      });
       const newGroup = { id: newGroupRef.id, ...groupData };
       setGroups((prevGroups) => [...prevGroups, newGroup]);
       alert("Group added successfully!");

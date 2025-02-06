@@ -1,7 +1,12 @@
 import PropTypes from "prop-types";
 import { forwardRef } from "react";
+import { useSelector } from "react-redux";
 
 const Template1 = forwardRef((props, ref) => {
+  const userDetails = useSelector((state) => state.users);
+  const companyDetails =
+    userDetails.companies[userDetails.selectedCompanyIndex];
+
   const { dataSet, bankDetails } = props;
   if (Object.keys(dataSet).length === 0) {
     return;
@@ -28,7 +33,16 @@ const Template1 = forwardRef((props, ref) => {
         <div className="flex justify-between">
           <div>
             <div className="text-lg font-bold text-start">
-              {dataSet?.createdBy?.name}
+              <div className="border w-[89px] h-[89px] shadow flex items-center justify-center">
+                {companyDetails?.companyLogo ? (
+                  <img
+                    src={companyDetails?.companyLogo}
+                    className="rounded-md object-cover w-[89px] h-[89px]"
+                  />
+                ) : (
+                  <>{dataSet?.createdBy?.name}</>
+                )}
+              </div>
             </div>
             <div>Mobile : {dataSet?.createdBy?.phoneNo}</div>
             <div>Email : {dataSet?.createdBy?.email}</div>
@@ -45,7 +59,12 @@ const Template1 = forwardRef((props, ref) => {
           </div>
           <div>
             <div>
-              <strong>{dataSet?.type} # :</strong>{dataSet?.prefix}- {dataSet?.no}
+              <strong>{dataSet?.type} # :</strong>
+              {dataSet?.prefix}- {dataSet?.no}
+            </div>
+            <div>
+              <strong>GST :</strong>
+              {companyDetails?.gst}
             </div>
             <div>
               <strong>{dataSet?.type} Date :</strong>{" "}
@@ -98,10 +117,10 @@ const Template1 = forwardRef((props, ref) => {
                   {!removedColumn[dataSet?.type.toLowerCase()]?.includes(
                     "QUANTITY"
                   ) && (
-                      <td className="border border-black pt-2 pb-2 pl-1">
-                        {item.quantity}
-                      </td>
-                    )}
+                    <td className="border border-black pt-2 pb-2 pl-1">
+                      {item.quantity}
+                    </td>
+                  )}
                   <td className="border border-black pt-2 pb-2 pl-1">
                     {item.sellingPrice.toFixed(1)}
                   </td>

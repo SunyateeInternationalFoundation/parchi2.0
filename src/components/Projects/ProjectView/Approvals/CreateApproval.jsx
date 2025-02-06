@@ -126,7 +126,7 @@ function CreateApproval({ isOpen, projectId, onClose, newApprovalAdded }) {
         date: serverTimestamp(),
         section: "Project",
         action: "Create",
-        description: `${approvalForm.name} approval created  in project`,
+        description: `${approvalForm.name} approval created in project`,
       });
       newApprovalAdded();
       alert("successfully Created Approval");

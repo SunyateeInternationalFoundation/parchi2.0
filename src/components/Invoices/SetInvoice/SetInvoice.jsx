@@ -259,7 +259,7 @@ const SetInvoice = () => {
         date: serverTimestamp(),
         section: "Invoice",
         action: "Create",
-        description: `${prefix}-${no} updated by ${payload.createdBy.who}`,
+        description: `${prefix}-${no} created by ${payload.createdBy.who}`,
       };
       if (invoiceId) {
         invoiceRef = doc(
@@ -272,13 +272,13 @@ const SetInvoice = () => {
         await updateDoc(invoiceRef, payload);
         payloadLog.ref = invoiceRef;
         payloadLog.action = "Update";
+        payloadLog.description = `${prefix}-${no} created by ${payload.createdBy.who}`;
       } else {
         invoiceRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "invoices"),
           payload
         );
         payloadLog.ref = invoiceRef;
-        payloadLog.action = "Create";
       }
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "audit"),

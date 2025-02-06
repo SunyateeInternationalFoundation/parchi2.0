@@ -134,7 +134,7 @@ const VendorList = () => {
         date: serverTimestamp(),
         section: "Vendor",
         action: "Delete",
-        description: `${name} removed`,
+        description: `${name} vendor removed`,
       });
       setVendors((val) => val.filter((ele) => ele.id !== vendorId));
     } catch (error) {

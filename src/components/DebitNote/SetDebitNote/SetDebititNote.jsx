@@ -212,9 +212,9 @@ const SetDebitNote = () => {
       const createdBy = debitNoteId
         ? { ...baseCreatedBy, who: formData.createdBy.who }
         : {
-          ...baseCreatedBy,
-          who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
-        };
+            ...baseCreatedBy,
+            who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+          };
       const payload = {
         ...restForm,
         ...rest,
@@ -239,7 +239,7 @@ const SetDebitNote = () => {
         date: serverTimestamp(),
         section: "Debit Note",
         action: "Create",
-        description: `${prefix}-${no} updated by ${payload.createdBy.who}`,
+        description: `${prefix}-${no} created by ${payload.createdBy.who}`,
       };
       if (debitNoteId) {
         debitNoteRef = doc(
@@ -252,13 +252,13 @@ const SetDebitNote = () => {
         await updateDoc(debitNoteRef, payload);
         payloadLog.ref = debitNoteRef;
         payloadLog.action = "Update";
+        payloadLog.description = `${prefix}-${no} updated by ${payload.createdBy.who}`;
       } else {
         debitNoteRef = await addDoc(
           collection(db, "companies", companyDetails.companyId, "debitNote"),
           payload
         );
         payloadLog.ref = debitNoteRef;
-        payloadLog.action = "Create";
       }
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "audit"),
@@ -288,8 +288,8 @@ const SetDebitNote = () => {
 
       alert(
         "Successfully " +
-        (debitNoteId ? "Updated" : "Created") +
-        " the DebitNote"
+          (debitNoteId ? "Updated" : "Created") +
+          " the DebitNote"
       );
 
       const redirect =
