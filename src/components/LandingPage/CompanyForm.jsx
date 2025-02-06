@@ -60,6 +60,7 @@ const CompanyForm = ({ userRef }) => {
         setCompanyData({
           companyId: companyRef.id,
           ...formData,
+          createdAt: JSON.stringify(formData.createdAt),
           isCompanyProfileDone: true,
         })
       );
@@ -81,32 +82,28 @@ const CompanyForm = ({ userRef }) => {
     <div className="shadow-md py-5 w-full md:w-1/2 h-auto rounded-lg bg-white p-5 mx-auto">
       <div className="flex justify-between items-center mb-8">
         <div
-          className={`flex-1 border-t-2 ${
-            isActive === "user" || isActive === "company"
-              ? "border-green-500"
-              : "border-gray-300"
-          }`}
+          className={`flex-1 border-t-2 ${isActive === "user" || isActive === "company"
+            ? "border-green-500"
+            : "border-gray-300"
+            }`}
         ></div>
         <div
-          className={`flex items-center justify-center w-10 h-10 rounded-full ${
-            isActive === "user" || isActive === "company"
-              ? "bg-green-500 text-white"
-              : "border-2 border-gray-300 text-gray-500"
-          }`}
+          className={`flex items-center justify-center w-10 h-10 rounded-full ${isActive === "user" || isActive === "company"
+            ? "bg-green-500 text-white"
+            : "border-2 border-gray-300 text-gray-500"
+            }`}
         >
           1
         </div>
         <div
-          className={`flex-1 border-t-2 ${
-            isActive === "company" ? "border-green-500" : "border-gray-300"
-          }`}
+          className={`flex-1 border-t-2 ${isActive === "company" ? "border-green-500" : "border-gray-300"
+            }`}
         ></div>
         <div
-          className={`flex items-center justify-center w-10 h-10 rounded-full ${
-            isActive === "company"
-              ? "bg-green-500 text-white"
-              : "border-2 border-gray-300 text-gray-500"
-          }`}
+          className={`flex items-center justify-center w-10 h-10 rounded-full ${isActive === "company"
+            ? "bg-green-500 text-white"
+            : "border-2 border-gray-300 text-gray-500"
+            }`}
         >
           2
         </div>
@@ -121,11 +118,10 @@ const CompanyForm = ({ userRef }) => {
               <button
                 key={option.id}
                 type="button"
-                className={`flex flex-col items-center justify-center p-4 border-2 rounded-lg ${
-                  formData.nature === option.id
-                    ? "border-blue-600 bg-blue-100"
-                    : "border-gray-300"
-                } hover:shadow-md`}
+                className={`flex flex-col items-center justify-center p-4 border-2 rounded-lg ${formData.nature === option.id
+                  ? "border-blue-600 bg-blue-100"
+                  : "border-gray-300"
+                  } hover:shadow-md`}
                 onClick={() => handleSelectBusinessNature(option.id)}
               >
                 <div className="text-blue-600">{option.icon}</div>
@@ -141,11 +137,10 @@ const CompanyForm = ({ userRef }) => {
               Skip for Now
             </button>
             <button
-              className={`px-4 py-2 rounded-md ${
-                formData.nature
-                  ? "bg-blue-600 text-white hover:bg-blue-700"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
-              }`}
+              className={`px-4 py-2 rounded-md ${formData.nature
+                ? "bg-blue-600 text-white hover:bg-blue-700"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
               onClick={() => setIsActive("company")}
               disabled={!formData.nature}
             >

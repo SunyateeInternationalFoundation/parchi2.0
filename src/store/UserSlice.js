@@ -69,6 +69,7 @@ const userSlice = createSlice({
         isCompanyProfileDone,
         selectedStaffCompanyIndex,
       } = action.payload;
+      console.log("🚀 ~ action.payload:", action.payload)
       localStorage.setItem("user", JSON.stringify(action.payload));
       state.userId = userId;
       state.name = name;

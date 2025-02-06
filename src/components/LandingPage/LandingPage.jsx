@@ -152,10 +152,11 @@ const LandingPage = () => {
           const vendorsQ = query(vendorsRef, where("phone", "==", user.phone));
           const company = await getDocs(q);
           companiesData = company.docs.map((doc) => {
-            const { userRef, ...rest } = doc.data();
+            const { userRef, createdAt, ...rest } = doc.data();
             return {
               companyId: doc.id,
               ...rest,
+              createdAt: JSON.stringify(createdAt)
             };
           });
           const asCustomer = await getDocs(customersQ);

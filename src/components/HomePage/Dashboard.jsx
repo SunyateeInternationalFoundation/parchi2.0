@@ -359,7 +359,7 @@ const Dashboard = () => {
   useEffect(() => {
     fetchCountData();
     fetchExpenseData();
-  }, []);
+  }, [companyDetails]);
 
   return (
     <div className="flex bg-white h-full">

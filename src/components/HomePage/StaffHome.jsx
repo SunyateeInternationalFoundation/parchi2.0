@@ -69,12 +69,13 @@ const StaffHome = () => {
       if (!staffSnapshot.empty) {
         const staffDoc = await Promise.all(
           staffSnapshot.docs.map(async (doc) => {
-            const { companyRef, ...data } = doc.data();
+            const { companyRef, dateOfJoining, ...data } = doc.data();
             const companyDoc = await getDoc(companyRef);
             const { userRef, ...companyData } = companyDoc.data();
             return {
               id: doc.id,
               ...data,
+              dateOfJoining: JSON.stringify(dateOfJoining),
               companyDetails: {
                 companyId: companyDoc.id,
                 ...companyData,
