@@ -1,8 +1,12 @@
 import PropTypes from "prop-types";
 import { forwardRef } from "react";
+import { useSelector } from "react-redux";
 
 const Template10 = forwardRef((props, ref) => {
   const { dataSet } = props;
+  const userDetails = useSelector((state) => state.users);
+  const companyDetails =
+    userDetails.companies[userDetails.selectedCompanyIndex];
   if (!Object.keys(dataSet).length === 0) {
     return;
   }
@@ -28,7 +32,16 @@ const Template10 = forwardRef((props, ref) => {
         </div>
         <div className="flex justify-between items-center pb-4">
           <h1 className="text-3xl font-bold text-blue-500">
-            {dataSet?.createdBy?.name}
+            <div className="border w-[89px] h-[89px] shadow flex items-center justify-center">
+              {companyDetails?.companyLogo ? (
+                <img
+                  src={companyDetails?.companyLogo}
+                  className="rounded-md object-cover w-[89px] h-[89px]"
+                />
+              ) : (
+                <>{dataSet?.createdBy?.name}</>
+              )}
+            </div>
           </h1>
           <div>
             <h3 className="font-bold">Sold By: {dataSet?.userTo?.name}</h3>
@@ -41,8 +54,14 @@ const Template10 = forwardRef((props, ref) => {
             <p>{dataSet?.userTo.email}</p>
           </div>
           <div>
-            <h1 className="font-bold">{dataSet?.type} No:</h1>
-            <div> #{dataSet?.no}</div>
+            <div>
+              <span className="font-bold">{dataSet?.type} No #:</span>
+              {dataSet?.prefix}- {dataSet?.no}
+            </div>
+            <div>
+              <span className="font-bold">GST:</span>
+              {companyDetails?.gst}
+            </div>
           </div>
         </div>
 
@@ -120,10 +139,10 @@ const Template10 = forwardRef((props, ref) => {
                     {item.discountType && "%"}
                   </td>
                   <td className="text-end pt-2 pb-2 pr-1">
-                    {item.cgstAmount.toFixed(2)} 
+                    {item.cgstAmount.toFixed(2)}
                   </td>
                   <td className="text-end pt-2 pb-2 pr-1">
-                    {item.sgstAmount.toFixed(2)} 
+                    {item.sgstAmount.toFixed(2)}
                   </td>
                   <td className="text-end    pt-2 pb-2 pr-1">
                     {item.totalAmount.toFixed(2)}

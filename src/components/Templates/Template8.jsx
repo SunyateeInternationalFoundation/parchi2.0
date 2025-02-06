@@ -1,8 +1,12 @@
 import PropTypes from "prop-types";
 import { forwardRef } from "react";
+import { useSelector } from "react-redux";
 
 const Template8 = forwardRef((props, ref) => {
   const { dataSet, bankDetails } = props;
+  const userDetails = useSelector((state) => state.users);
+  const companyDetails =
+    userDetails.companies[userDetails.selectedCompanyIndex];
   if (!Object.keys(dataSet).length === 0) {
     return;
   }
@@ -26,7 +30,16 @@ const Template8 = forwardRef((props, ref) => {
           {/* Header */}
           <div className="relative flex justify-center items-center border-b border-black px-2 pb-4">
             <div className="absolute text-3xl left-1  w-30 font-bold text-green-500">
-              {dataSet?.createdBy?.name}
+              <div className="border w-[89px] h-[89px] shadow flex items-center justify-center">
+                {companyDetails?.companyLogo ? (
+                  <img
+                    src={companyDetails?.companyLogo}
+                    className="rounded-md object-cover w-[89px] h-[89px]"
+                  />
+                ) : (
+                  <>{dataSet?.createdBy?.name}</>
+                )}
+              </div>
             </div>
             <div className="text-center w-full">
               <p className="text-gray-800">
@@ -56,7 +69,12 @@ const Template8 = forwardRef((props, ref) => {
               </h3>
               <div className="grid grid-cols-2">
                 <div>{dataSet?.type} #:</div>
-                <div> {dataSet?.no}</div>
+                <div>
+                  {" "}
+                  {dataSet?.prefix}- {dataSet?.no}
+                </div>
+                <div>GST:</div>
+                <div> {companyDetails?.gst}</div>
                 <div>{dataSet?.type} Date:</div>
                 <div> {DateFormate(dataSet?.date)}</div>
                 <div>Due Date:</div>

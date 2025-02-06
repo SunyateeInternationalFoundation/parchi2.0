@@ -178,6 +178,7 @@ function CreateProduct() {
           ref: productDocRef,
         };
         await addDoc(collection(productDocRef, "logs"), productPayloadLogs);
+        productLogs.ref = productDocRef;
         productLogs.action = "Update";
         productLogs.description = `${name} product updated`;
         alert("Product successfully updated.");
@@ -230,8 +231,7 @@ function CreateProduct() {
           productPayloadLogs
         );
         alert("Product successfully created.");
-        productLogs.action = "Create";
-        productLogs.description = `${name} product created`;
+        productLogs.ref = productRef;
       }
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "audit"),

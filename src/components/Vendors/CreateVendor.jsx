@@ -95,8 +95,8 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded, vendorData }) => {
         ref: vendorsRef,
         date: serverTimestamp(),
         section: "Vendor",
-        action: "",
-        description: "",
+        action: "Create",
+        description: `${formData.name} details created`,
       };
       if (vendorData?.id) {
         const { id, ...rest } = formData;
@@ -104,14 +104,14 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded, vendorData }) => {
         await updateDoc(vendorRef, rest);
         vendorLogs.action = "Update";
         vendorLogs.description = `${vendorData.name} details updated`;
+        vendorLogs.ref = vendorRef;
       } else {
-        await addDoc(collection(db, "vendors"), {
+        const ref = await addDoc(collection(db, "vendors"), {
           ...formData,
           companyRef: doc(db, "companies", companyId),
           createdAt: serverTimestamp(),
         });
-        vendorLogs.action = "Create";
-        vendorLogs.description = `${formData.name} details created`;
+        vendorLogs.ref = ref;
       }
 
       await addDoc(collection(db, "companies", companyId, "audit"), vendorLogs);

@@ -1,5 +1,18 @@
-import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  serverTimestamp,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
+import {
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronsLeft,
+  LuChevronsRight,
+} from "react-icons/lu";
 import { MdDelete } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -7,7 +20,6 @@ import { db } from "../../../../firebase";
 import InventoryAddSideBar from "./InventoryAddSideBar";
 import ItemView from "./ItemView";
 import QuickAddSideBar from "./QuickAddSideBar";
-import { LuChevronLeft, LuChevronRight, LuChevronsLeft, LuChevronsRight } from "react-icons/lu";
 
 function Items() {
   const { id } = useParams();
@@ -25,8 +37,7 @@ function Items() {
     qty: 0,
     price: 0,
   });
-  
- 
+
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
@@ -53,8 +64,8 @@ function Items() {
       });
 
       setItemsData(data);
-      setTotalPages(Math.ceil(data.length / 10)); 
-      setPaginationData(data.slice(0, 10)); 
+      setTotalPages(Math.ceil(data.length / 10));
+      setPaginationData(data.slice(0, 10));
     } catch (error) {
       console.log("🚀 ~ fetchMaterials ~ error:", error);
     } finally {
@@ -67,19 +78,26 @@ function Items() {
   }, []);
 
   useEffect(() => {
-    
     setPaginationData(itemsData.slice(currentPage * 10, currentPage * 10 + 10));
-    setTotalPages(Math.ceil(itemsData.length / 10)); 
+    setTotalPages(Math.ceil(itemsData.length / 10));
   }, [itemsData, currentPage]);
 
-  async function OnDeleteItem(e, itemId) {
+  async function OnDeleteItem(e, itemId, name) {
     e.stopPropagation();
     try {
       const confirm = window.confirm(`Are you sure wanted to delete the  item`);
       if (!confirm) {
         return;
       }
-      await deleteDoc(doc(db, "materials", itemId));
+      const ref = doc(db, "materials", itemId);
+      await deleteDoc(ref);
+      await addDoc(collection(db, "companies", companyId, "audit"), {
+        ref: ref,
+        date: serverTimestamp(),
+        section: "Project",
+        action: "Delete",
+        description: `${name} item deleted`,
+      });
       setItemsData((val) => val.filter((ele) => ele.id !== itemId));
     } catch (error) {
       console.log("🚀 ~ OnDeleteItem ~ error:", error);
@@ -199,7 +217,7 @@ function Items() {
                         className="px-5 py-3 text-start text-red-700 text-2xl"
                         onClick={(e) => {
                           e.preventDefault();
-                          OnDeleteItem(e, item.id);
+                          OnDeleteItem(e, item.id, item.name);
                         }}
                       >
                         <MdDelete />
@@ -216,51 +234,51 @@ function Items() {
               </tbody>
             </table>
           </div>
-        <div className="flex items-center flex-wrap gap-2 justify-between p-5">
-          <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
-            {currentPage + 1} of {totalPages || 1} row(s) selected.
-          </div>
-          <div className="flex flex-wrap items-center gap-6">
-            <div className="flex items-center gap-2">
-              <button
-                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                onClick={() => setCurrentPage(0)}
-                disabled={currentPage <= 0}
-              >
-                <div className="flex justify-center">
-                  <LuChevronsLeft className="text-sm" />
-                </div>
-              </button>
-              <button
-                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                onClick={() => setCurrentPage((val) => val - 1)}
-                disabled={currentPage <= 0}
-              >
-                <div className="flex justify-center">
-                  <LuChevronLeft className="text-sm" />
-                </div>
-              </button>
-              <button
-                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                onClick={() => setCurrentPage((val) => val + 1)}
-                disabled={currentPage + 1 >= totalPages}
-              >
-                <div className="flex justify-center">
-                  <LuChevronRight className="text-sm" />
-                </div>
-              </button>
-              <button
-                className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
-                onClick={() => setCurrentPage(totalPages - 1)}
-                disabled={currentPage + 1 >= totalPages}
-              >
-                <div className="flex justify-center">
-                  <LuChevronsRight />
-                </div>
-              </button>
+          <div className="flex items-center flex-wrap gap-2 justify-between p-5">
+            <div className="flex-1 text-sm text-muted-foreground whitespace-nowrap">
+              {currentPage + 1} of {totalPages || 1} row(s) selected.
+            </div>
+            <div className="flex flex-wrap items-center gap-6">
+              <div className="flex items-center gap-2">
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage(0)}
+                  disabled={currentPage <= 0}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronsLeft className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage((val) => val - 1)}
+                  disabled={currentPage <= 0}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronLeft className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage((val) => val + 1)}
+                  disabled={currentPage + 1 >= totalPages}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronRight className="text-sm" />
+                  </div>
+                </button>
+                <button
+                  className="h-8 w-8 border rounded-lg border-[rgb(132,108,249)] text-[rgb(132,108,249)] hover:text-white hover:bg-[rgb(132,108,249)]"
+                  onClick={() => setCurrentPage(totalPages - 1)}
+                  disabled={currentPage + 1 >= totalPages}
+                >
+                  <div className="flex justify-center">
+                    <LuChevronsRight />
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
         </div>
       </div>
       {isSideBarOpen &&

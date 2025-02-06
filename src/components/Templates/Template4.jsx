@@ -1,8 +1,12 @@
 import PropTypes from "prop-types";
 import { forwardRef } from "react";
+import { useSelector } from "react-redux";
 
 const Template4 = forwardRef((props, ref) => {
   const { dataSet } = props;
+  const userDetails = useSelector((state) => state.users);
+  const companyDetails =
+    userDetails.companies[userDetails.selectedCompanyIndex];
   if (Object.keys(dataSet).length === 0) {
     return;
   }
@@ -26,7 +30,16 @@ const Template4 = forwardRef((props, ref) => {
           {/* Header */}
           <div className="text-center">
             <h1 className="text-2xl font-bold bg-gray-100 border-black py-1  border-b">
-              {dataSet?.createdBy?.name}
+              <div className="border w-[89px] h-[89px] shadow flex items-center justify-center">
+                {companyDetails?.companyLogo ? (
+                  <img
+                    src={companyDetails?.companyLogo}
+                    className="rounded-md object-cover w-[89px] h-[89px]"
+                  />
+                ) : (
+                  <>{dataSet?.createdBy?.name}</>
+                )}
+              </div>
             </h1>
             <p className=" border-black py-2 border-b ">
               {dataSet?.createdBy.address} {dataSet?.createdBy.city}
@@ -53,7 +66,11 @@ const Template4 = forwardRef((props, ref) => {
             </div>
             <div className="border-s border-black bg-gray-100 p-2 w-3/4">
               <p>
-                <strong>{dataSet?.type} No:</strong> {dataSet?.no}
+                <strong>{dataSet?.type} No #:</strong> {dataSet?.prefix}-{" "}
+                {dataSet?.no}
+              </p>
+              <p>
+                <strong>GST:</strong> {companyDetails?.gst}
               </p>
               <p>
                 <strong>Date:</strong> {DateFormate(dataSet?.dueDate)}

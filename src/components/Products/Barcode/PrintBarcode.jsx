@@ -150,15 +150,23 @@ function PrintBarcode() {
 
   async function updateProductBarcode() {
     try {
-      await updateDoc(
-        doc(
-          db,
-          "companies",
-          companyDetails.companyId,
-          "products",
-          editProduct.id
-        ),
-        { barcode: newBarcode }
+      const ref = doc(
+        db,
+        "companies",
+        companyDetails.companyId,
+        "products",
+        editProduct.id
+      );
+      await updateDoc(ref, { barcode: newBarcode });
+      await addDoc(
+        collection(db, "companies", companyDetails.companyId, "audit"),
+        {
+          ref: ref,
+          date: serverTimestamp(),
+          section: "Inventory",
+          action: "Update",
+          description: `${newBarcode} barcode updated`,
+        }
       );
       setIsModelOpen(false);
       setEditProduct("");
@@ -180,9 +188,11 @@ function PrintBarcode() {
         date: serverTimestamp(),
         section: "Inventory",
         action: "Print",
-        description: `Total ${totalQuantity.current
-          } Quantity Barcode Printed by ${userDetails.selectedDashboard === "staff" ? "staff" : "owner"
-          }`,
+        description: `Total ${
+          totalQuantity.current
+        } Quantity Barcode Printed by ${
+          userDetails.selectedDashboard === "staff" ? "staff" : "owner"
+        }`,
       };
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "audit"),
@@ -295,8 +305,8 @@ function PrintBarcode() {
                       val.length > 0
                         ? val
                         : selectedCategory == "all"
-                          ? products
-                          : []
+                        ? products
+                        : []
                     );
                   }}
                   onBlur={() => {
@@ -540,7 +550,9 @@ function PrintBarcode() {
                             <div>{product.name}</div>
                           )}
                           {selectSheetDetails.isPrice && (
-                            <div className="text-xs">₹{product.sellingPrice}</div>
+                            <div className="text-xs">
+                              ₹{product.sellingPrice}
+                            </div>
                           )}
                           <div className="flex justify-center">
                             <div className="flex  justify-center w-32">

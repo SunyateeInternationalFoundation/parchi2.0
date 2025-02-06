@@ -1,8 +1,12 @@
 import PropTypes from "prop-types";
 import { forwardRef } from "react";
+import { useSelector } from "react-redux";
 
 const Template2 = forwardRef(function Template2(props, ref) {
   const { dataSet, bankDetails } = props;
+  const userDetails = useSelector((state) => state.users);
+  const companyDetails =
+    userDetails.companies[userDetails.selectedCompanyIndex];
   if (Object.keys(dataSet).length === 0) {
     return;
   }
@@ -25,14 +29,28 @@ const Template2 = forwardRef(function Template2(props, ref) {
         <div className="flex justify-between items-center border-b pb-4 mb-6">
           <div>
             <span className="text-3xl font-bold text-primary-600">
-              {dataSet?.createdBy?.name}
+              <div className="border w-[89px] h-[89px] shadow flex items-center justify-center">
+                {companyDetails?.companyLogo ? (
+                  <img
+                    src={companyDetails?.companyLogo}
+                    className="rounded-md object-cover w-[89px] h-[89px]"
+                  />
+                ) : (
+                  <>{dataSet?.createdBy?.name}</>
+                )}
+              </div>
             </span>
           </div>
           <div className="text-right">
-            <h1 className="text-xl font-bold uppercase"># {dataSet?.type}</h1>
+            <h1 className="text-xl font-bold uppercase"> {dataSet?.type} </h1>
             <p>
-              {dataSet?.type}:{" "}
-              <span className="font-medium">{dataSet?.no}</span>
+              {dataSet?.type} #:{" "}
+              <span className="font-medium">
+                {dataSet?.prefix}- {dataSet?.no}
+              </span>
+            </p>
+            <p>
+              GST :<span className="font-medium">{companyDetails?.gst}</span>
             </p>
             <p>
               Date:{" "}
