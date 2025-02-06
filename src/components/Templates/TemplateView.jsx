@@ -12,7 +12,6 @@ import Template7 from "./Template7";
 import Template8 from "./Template8";
 import Template9 from "./Template9";
 import Template2Inch from "./pos/Template2Inch";
-import Template3Inch from "./pos/Template3Inch";
 
 function TemplateView() {
   const { templateId } = useParams();
@@ -69,12 +68,12 @@ function TemplateView() {
       />
     ),
     template2In: (
-      <Template3Inch ref={invoiceRef}
-        dataSet={dataSet} bankDetails={bankDetails} />
+      <Template2Inch ref={invoiceRef}
+        dataSet={dataSet} size={2} />
     ),
     template3In: (
       <Template2Inch ref={invoiceRef}
-        dataSet={dataSet} bankDetails={bankDetails} />
+        dataSet={dataSet} size={3} />
     ),
   };
   return (

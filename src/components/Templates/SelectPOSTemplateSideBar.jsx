@@ -1,7 +1,8 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
-import posTemplate from "../../assets/templates/posTemplate.png";
+import posTemplateImg2inch from "../../assets/templates/posTemplateImg2inch.png";
+import posTemplateImg3inch from "../../assets/templates/posTemplateImg3inch.png";
 function SelectPOSTemplateSideBar({
   isOpen,
   onClose,
@@ -10,8 +11,8 @@ function SelectPOSTemplateSideBar({
 }) {
   const [selectTemplate, setSelectTemplate] = useState(preSelectedTemplate);
   const templatesImg = [
-    { id: "template2In", img: posTemplate, name: "2 Inch" },
-    { id: "template3In", img: posTemplate, name: "3 Inch" },
+    { id: "template2In", img: posTemplateImg2inch, name: "2 Inch" },
+    { id: "template3In", img: posTemplateImg3inch, name: "3 Inch" },
   ];
 
   return (
