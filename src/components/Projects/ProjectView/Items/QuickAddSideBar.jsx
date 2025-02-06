@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { db } from "../../../../firebase";
 
-function QuickAddSideBar({ isOpen, onClose, isMaterialAdd }) {
+function QuickAddSideBar({ isOpen, onClose, isMaterialAdd, projectName }) {
   const { id } = useParams();
   const projectId = id;
   const [formData, setFormData] = useState({
@@ -108,7 +108,7 @@ function QuickAddSideBar({ isOpen, onClose, isMaterialAdd }) {
         date: serverTimestamp(),
         section: "Project",
         action: "Create",
-        description: `${formData.itemName} created from Quick add in project`,
+        description: `${formData.itemName} created from Quick add in ${projectName}`,
       });
       const productPayloadLogs = {
         date: payloadInventory.createdAt,

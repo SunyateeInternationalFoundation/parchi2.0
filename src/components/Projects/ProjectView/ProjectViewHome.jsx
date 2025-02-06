@@ -85,22 +85,22 @@ function ProjectViewHome() {
     {
       name: "Milestones",
       icon: <BsCalendar4 />,
-      component: <Milestone />,
+      component: <Milestone projectName={project.name} />,
     },
     {
       name: "Tasks",
       icon: <FaTasks />,
-      component: <Tasks />,
+      component: <Tasks projectName={project.name} />,
     },
     {
       name: "Files",
       icon: <BsFolderPlus />,
-      component: <Files />,
+      component: <Files projectName={project.name} />,
     },
     {
       name: "Approvals",
       icon: <BsFileEarmarkCheck />,
-      component: <Approval />,
+      component: <Approval projectName={project.name} />,
     },
     // {
     //   name: "Chat",
@@ -116,7 +116,7 @@ function ProjectViewHome() {
     {
       name: "Items",
       icon: <HiOutlineShoppingCart />,
-      component: <Items />,
+      component: <Items projectName={project.name} />,
     },
   ];
 

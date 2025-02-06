@@ -30,7 +30,7 @@ const StaffDocuments = (StaffData) => {
   const userDetails = useSelector((state) => state.users);
   const companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
-  const staffId = StaffData?.staffData?.id;
+
   const [folders, setFolders] = useState([]);
   const [files, setFiles] = useState([]);
   const [currentPath, setCurrentPath] = useState([]);
@@ -43,7 +43,10 @@ const StaffDocuments = (StaffData) => {
   const [uploadProgress, setUploadProgress] = useState(null);
   const [editingItem, setEditingItem] = useState(null); // Track which item is being edited
   const [newName, setNewName] = useState("");
-  const staffRef = doc(db, "staff", staffId);
+
+  const staffId = StaffData?.staffData?.id;
+
+  const staffRef = staffId ? doc(db, "staff", staffId) : "";
 
   useEffect(() => {
     fetchFoldersAndFiles();

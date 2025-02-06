@@ -12,7 +12,7 @@ import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { db } from "../../../../firebase"; // Ensure Firebase is initialized and configured
-const Milestone = () => {
+const Milestone = ({ projectName }) => {
   const [milestones, setMilestones] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -84,6 +84,7 @@ const Milestone = () => {
           onClose={() => setIsModalOpen(false)}
           onAddMilestone={handleAddMilestone}
           projectId={projectId}
+          projectName={projectName}
         />
       )}
     </div>
@@ -120,7 +121,12 @@ const MilestoneCard = ({ milestone }) => {
     </div>
   );
 };
-const AddMilestoneModal = ({ onClose, onAddMilestone, projectId }) => {
+const AddMilestoneModal = ({
+  onClose,
+  onAddMilestone,
+  projectId,
+  projectName,
+}) => {
   const [milestoneName, setMilestoneName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const userDetails = useSelector((state) => state.users);
@@ -148,7 +154,7 @@ const AddMilestoneModal = ({ onClose, onAddMilestone, projectId }) => {
         date: serverTimestamp(),
         section: "Project",
         action: "Create",
-        description: `${newMilestone.name} milestone created`,
+        description: `${newMilestone.name} milestone created in ${projectName}`,
       });
       onAddMilestone({ id: docRef.id, ...newMilestone });
       onClose();

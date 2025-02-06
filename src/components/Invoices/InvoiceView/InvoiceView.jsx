@@ -10,7 +10,12 @@ import { useEffect, useState } from "react";
 import { CiSettings } from "react-icons/ci";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { db } from "../../../firebase";
 import SelectTemplateSideBar from "../../Templates/SelectTemplateSideBar";
 import Invoice from "./Invoice";
@@ -19,8 +24,10 @@ import ReturnsHistory from "./ReturnsHistory";
 
 function InvoiceView() {
   const { id } = useParams();
-
-  const [activeTab, setActiveTab] = useState("Invoice");
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const tab = searchParams.get("tab");
+  // const [activeTab, setActiveTab] = useState("Invoice");
   const [invoice, setInvoice] = useState({});
   const userDetails = useSelector((state) => state.users);
   const [bankDetails, setBankDetails] = useState({});
@@ -147,13 +154,20 @@ function InvoiceView() {
   const [isSelectTemplateOpen, setIsSelectTemplateOpen] = useState(false);
 
   const [selectTemplate, setSelectTemplate] = useState("template1");
-  useEffect(() => {
-    fetchReturnData();
-  }, [companyId]);
+  // useEffect(() => {
+  //   fetchReturnData();
+  // }, [companyId]);
 
   useEffect(() => {
     fetchInvoices();
   }, [returnData]);
+
+  useEffect(() => {
+    if (!tab) {
+      navigate("?tab=Invoice");
+    }
+    fetchReturnData();
+  }, [companyId]);
 
   return (
     <div className=" pb-5 bg-gray-100" style={{ width: "100%" }}>
@@ -169,29 +183,27 @@ function InvoiceView() {
           <button
             className={
               "p-4 font-semibold text-gray-500 " +
-              (activeTab === "Invoice" ? " border-b-4 border-blue-500 " : "")
+              (tab === "Invoice" ? " border-b-4 border-blue-500 " : "")
             }
-            onClick={() => setActiveTab("Invoice")}
+            onClick={() => navigate("?tab=Invoice")}
           >
             Invoice View
           </button>
           <button
             className={
               "p-4 font-semibold text-gray-500 " +
-              (activeTab === "Returns" ? " border-b-4 border-blue-500 " : "")
+              (tab === "Returns" ? " border-b-4 border-blue-500 " : "")
             }
-            onClick={() => setActiveTab("Returns")}
+            onClick={() => navigate("?tab=Returns")}
           >
             Returns
           </button>
           <button
             className={
               "p-4 font-semibold text-gray-500 " +
-              (activeTab === "ReturnsHistory"
-                ? " border-b-4 border-blue-500 "
-                : "")
+              (tab === "ReturnsHistory" ? " border-b-4 border-blue-500 " : "")
             }
-            onClick={() => setActiveTab("ReturnsHistory")}
+            onClick={() => navigate("?tab=ReturnsHistory")}
           >
             Return History
           </button>
@@ -210,7 +222,7 @@ function InvoiceView() {
       </header>
 
       <div className="w-full ">
-        {activeTab === "Invoice" && (
+        {tab === "Invoice" && (
           <div>
             <Invoice
               invoice={invoice}
@@ -219,12 +231,12 @@ function InvoiceView() {
             />
           </div>
         )}
-        {activeTab === "Returns" && (
+        {tab === "Returns" && (
           <div>
             <Returns invoice={invoice} />
           </div>
         )}
-        {activeTab === "ReturnsHistory" && (
+        {tab === "Returns" && (
           <div>
             <ReturnsHistory products={returnData} refresh={fetchReturnData} />
           </div>

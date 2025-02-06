@@ -6,6 +6,9 @@ const ProductView = ({ productData }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!productData?.id) {
+      return;
+    }
     setLoading(true);
     setProduct(productData);
     setLoading(false);

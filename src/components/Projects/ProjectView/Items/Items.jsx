@@ -21,7 +21,7 @@ import InventoryAddSideBar from "./InventoryAddSideBar";
 import ItemView from "./ItemView";
 import QuickAddSideBar from "./QuickAddSideBar";
 
-function Items() {
+function Items({ projectName }) {
   const { id } = useParams();
   const projectId = id;
   const userDetails = useSelector((state) => state.users);
@@ -96,7 +96,7 @@ function Items() {
         date: serverTimestamp(),
         section: "Project",
         action: "Delete",
-        description: `${name} item deleted`,
+        description: `${name} item deleted in ${projectName}`,
       });
       setItemsData((val) => val.filter((ele) => ele.id !== itemId));
     } catch (error) {
@@ -290,6 +290,7 @@ function Items() {
                 setIsSideBarOpen(false);
               }}
               isMaterialAdd={fetchMaterials}
+              projectName={projectName}
             />
           </div>
         ) : (
@@ -301,6 +302,7 @@ function Items() {
                 setIsSideBarOpen(false);
               }}
               isMaterialAdd={fetchMaterials}
+              projectName={projectName}
             />
           </div>
         ))}
@@ -313,6 +315,7 @@ function Items() {
             }}
             ItemData={viewItemData}
             onRefresh={fetchMaterials}
+            projectName={projectName}
           />
         </div>
       )}

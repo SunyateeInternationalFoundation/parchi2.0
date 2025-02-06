@@ -25,7 +25,13 @@ import {
   SelectValue,
 } from "../../../UI/select";
 
-function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
+function PaymentSidebar({
+  isModalOpen,
+  onClose,
+  userDataSet,
+  refresh,
+  projectName,
+}) {
   const { id } = useParams();
   const { updateData } = isModalOpen;
   const [filterUser, setFilterUser] = useState("Customer");
@@ -164,14 +170,14 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
         date: serverTimestamp(),
         section: "Project",
         action: "Create",
-        description: `${isModalOpen.type} details created in project`,
+        description: `${isModalOpen.type} details created in ${projectName}`,
       };
       if (updateData?.id) {
         const ref = doc(db, "companies", companyId, "expenses", updateData.id);
         await updateDoc(ref, payload);
         expenseLogs.ref = ref;
         expenseLogs.action = "Update";
-        expenseLogs.description = `${isModalOpen.type} details updated in project`;
+        expenseLogs.description = `${isModalOpen.type} details updated in ${projectName}`;
       } else {
         const ref = await addDoc(
           collection(db, "companies", companyId, "expenses"),
@@ -184,7 +190,8 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
         expenseLogs
       );
       alert(
-        `successfully  ${updateData?.id ? "Edit " : "Create "} ${isModalOpen.type
+        `successfully  ${updateData?.id ? "Edit " : "Create "} ${
+          isModalOpen.type
         }`
       );
 
@@ -198,16 +205,18 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isModalOpen.isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
+        isModalOpen.isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
       onClick={() => {
         onClose();
         ResetForm();
       }}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform  ${isModalOpen.isOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={`bg-white  pt-2 transform transition-transform  ${
+          isModalOpen.isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
         style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -250,7 +259,7 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
                         formatDate(
                           new Date(
                             formData.date?.seconds * 1000 +
-                            formData.date?.nanoseconds / 1000000
+                              formData.date?.nanoseconds / 1000000
                           ),
                           "PPP"
                         )
@@ -266,7 +275,7 @@ function PaymentSidebar({ isModalOpen, onClose, userDataSet, refresh }) {
                       selected={
                         new Date(
                           formData.date?.seconds * 1000 +
-                          formData.date?.nanoseconds / 1000000
+                            formData.date?.nanoseconds / 1000000
                         )
                       }
                       onSelect={(val) => {

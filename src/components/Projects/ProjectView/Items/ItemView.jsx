@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { db } from "../../../../firebase";
 
-function ItemView({ isOpen, onClose, ItemData, onRefresh }) {
+function ItemView({ isOpen, onClose, ItemData, onRefresh, projectName }) {
   const [modifiedItemData, setModifiedItemData] = useState(ItemData);
   const [usedItemQty, setUsedItemQty] = useState(0);
   const [loading, setLoading] = useState(true);

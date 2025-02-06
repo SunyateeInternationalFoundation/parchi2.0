@@ -14,6 +14,9 @@ function ProductReturns({ returns }) {
   const [paginationData, setPaginationData] = useState([]);
 
   useEffect(() => {
+    if (!returns?.id) {
+      return;
+    }
     // Calculate total pages based on returns length
     setTotalPages(Math.ceil(returns.length / 10));
     // Set initial pagination data
@@ -22,6 +25,9 @@ function ProductReturns({ returns }) {
 
   useEffect(() => {
     // Update pagination data when currentPage changes
+    if (!returns?.id) {
+      return;
+    }
     const startIndex = currentPage * 10;
     const endIndex = startIndex + 10;
     setPaginationData(returns.slice(startIndex, endIndex));

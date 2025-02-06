@@ -13,7 +13,7 @@ import FormatTimestamp from "../../../../constants/FormatTimestamp";
 import { db } from "../../../../firebase"; // Ensure Firebase is configured correctly
 import CreateApproval from "./CreateApproval";
 
-const Approval = () => {
+const Approval = ({ projectName }) => {
   const { id } = useParams();
   const projectId = id;
   const [approvals, setApprovals] = useState([]);
@@ -237,6 +237,7 @@ const Approval = () => {
               setIsSideBarOpen(false);
             }}
             newApprovalAdded={fetchApprovals}
+            projectName={projectName}
           />
         </div>
       )}

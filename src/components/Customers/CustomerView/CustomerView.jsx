@@ -9,7 +9,12 @@ import {
 import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { db } from "../../../firebase";
 import Bills from "./Bills";
 import Profile from "./Profile";
@@ -18,6 +23,9 @@ import Services from "./Services";
 
 function CustomerView() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const tab = searchParams.get("tab");
   const userDetails = useSelector((state) => state.users);
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
@@ -28,7 +36,7 @@ function CustomerView() {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   }
-  const [activeTab, setActiveTab] = useState("Profile");
+
   const [customersInvoicesData, setCustomersInvoicesData] = useState([]);
   const [customersServicesData, setCustomersServicesData] = useState([]);
   const [customersProjectsData, setCustomersProjectsData] = useState([]);
@@ -182,6 +190,9 @@ function CustomerView() {
     }
   }
   useEffect(() => {
+    if (!tab) {
+      navigate("?tab=Profile");
+    }
     fetchExpenses();
     fetchServicesList();
     fetchCustomerData();
@@ -200,36 +211,36 @@ function CustomerView() {
           <button
             className={
               "px-4 py-4 font-semibold text-gray-500 " +
-              (activeTab === "Profile" && " border-b-4 border-blue-500")
+              (tab === "Profile" && " border-b-4 border-blue-500")
             }
-            onClick={() => setActiveTab("Profile")}
+            onClick={() => navigate("?tab=Profile")}
           >
             Profile
           </button>
           <button
             className={
               "px-4 py-4 font-semibold text-gray-500 " +
-              (activeTab === "Projects" && " border-b-4 border-blue-500")
+              (tab === "Projects" && " border-b-4 border-blue-500")
             }
-            onClick={() => setActiveTab("Projects")}
+            onClick={() => navigate("?tab=Projects")}
           >
             Projects
           </button>
           <button
             className={
               "px-4 py-4 font-semibold text-gray-500 " +
-              (activeTab === "Services" && " border-b-4 border-blue-500")
+              (tab === "Services" && " border-b-4 border-blue-500")
             }
-            onClick={() => setActiveTab("Services")}
+            onClick={() => navigate("?tab=Services")}
           >
             Subscription
           </button>
           <button
             className={
               "px-4 py-4 font-semibold text-gray-500 " +
-              (activeTab === "Bills" && " border-b-4 border-blue-500")
+              (tab === "Bills" && " border-b-4 border-blue-500")
             }
-            onClick={() => setActiveTab("Bills")}
+            onClick={() => navigate("?tab=Bills")}
           >
             Sales
           </button>
@@ -239,7 +250,7 @@ function CustomerView() {
 
       <hr />
       <div className="w-full">
-        {activeTab === "Profile" && (
+        {tab === "Profile" && (
           <div>
             <Profile
               customerData={customerData}
@@ -248,17 +259,17 @@ function CustomerView() {
             />
           </div>
         )}
-        {activeTab === "Projects" && (
+        {tab === "Projects" && (
           <div>
             <Projects projectsData={customersProjectsData} />
           </div>
         )}
-        {activeTab === "Services" && (
+        {tab === "Services" && (
           <div>
             <Services servicesList={customersServicesData} />
           </div>
         )}
-        {activeTab === "Bills" && (
+        {tab === "Bills" && (
           <div>
             <Bills salesData={customersInvoicesData} />
           </div>
