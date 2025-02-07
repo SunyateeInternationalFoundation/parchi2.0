@@ -28,11 +28,7 @@ const Navbar = () => {
       userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
         ?.companyDetails.name ?? "";
   }
-
-
   const navigate = useNavigate();
-
-
   return (
     <>
       <header className="border-b border-gray-300" style={{ height: "8vh" }}>

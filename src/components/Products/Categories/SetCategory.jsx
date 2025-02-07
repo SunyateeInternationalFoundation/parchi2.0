@@ -62,15 +62,13 @@ function SetCategory({ isOpen, onClose, onAddCategory, companyId }) {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={onClose}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform overflow-y-auto ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`bg-white  pt-2 transform transition-transform overflow-y-auto ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >

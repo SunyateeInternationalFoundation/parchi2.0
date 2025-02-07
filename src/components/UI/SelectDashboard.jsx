@@ -90,14 +90,14 @@ function SelectDashboard({ isOpen, onClose }) {
     }
     return (
         <div
-            className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+            className={`fixed inset-0 z-50 flex justify-end pt-[8vh] bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
                 }`}
             onClick={onClose}
         >
             <div
-                className={`bg-white w-1/2 p-3 pt-2 transform transition-transform overflow-y-auto ${isOpen ? "translate-x-0" : "translate-x-full"
+                className={`bg-white w-1/3 p-3 pt-2 transform transition-transform overflow-y-auto ${isOpen ? "translate-x-0" : "translate-x-full"
                     }`}
-                style={{ maxHeight: "100vh" }}
+                style={{ maxHeight: "92vh" }}
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex justify-between border-b">
@@ -107,37 +107,26 @@ function SelectDashboard({ isOpen, onClose }) {
                     </button>
                 </div>
 
-                <div className=" flex justify-between bg-white rounded-t-lg px-5 py-4">
-                    <button
-                        className={
-                            "btn-outline-black " + (activeTab == "business" && " bg-black text-white")
-                        }
-                        onClick={() => {
-                            setActiveTab("business")
-                        }}
-                    >
-                        Business Dashboard
-                    </button>
-                    <button
-                        className={
-                            "btn-outline-black " + (activeTab == "staff" && " bg-black text-white")
-                        }
-                        onClick={() => {
-                            setActiveTab("staff")
-                        }}
-                    >
-                        Staff Dashboard
-                    </button>
-                    <button
-                        className={
-                            "btn-outline-black " + (activeTab == "vendor_customer " && " bg-black text-white")
-                        }
-                        onClick={() => {
-                            setActiveTab("vendor_customer")
-                        }}
-                    >
-                        Vendor/Customer Dashboard
-                    </button>
+
+                <div className="flex flex-wrap rounded-md bg-white border mt-3  w-full shadow-sm">
+                    {["business", "staff", "vendor_customer"].map((option) => (
+                        <label key={option} className="flex-1 text-center">
+                            <input
+                                type="radio"
+                                name="radio"
+                                value={option}
+                                checked={activeTab === option}
+                                onChange={() => setActiveTab(option)}
+                                className="hidden"
+                            />
+                            <span
+                                className={`flex cursor-pointer items-center justify-center rounded-md p-2 transition-all duration-150 ${activeTab === option ? "bg-black font-semibold text-white" : "text-gray-700"
+                                    }`}
+                            >
+                                {option}
+                            </span>
+                        </label>
+                    ))}
                 </div>
                 {activeTab == "business" &&
                     <table className="min-w-full divide-y divide-gray-200">
@@ -242,7 +231,7 @@ function SelectDashboard({ isOpen, onClose }) {
                     </table>
                 }
                 {activeTab == "vendor_customer" &&
-                    <div className="flex space-x-9 p-5 text-lg">
+                    <div className="flex space-x-5  py-5 text-lg">
                         <div className=" border h-60 w-full rounded-md hover:shadow hover:bg-blue-100 flex justify-center items-center" onClick={() => {
                             onSwitchCompany(0, "customer");
                             onClose()
