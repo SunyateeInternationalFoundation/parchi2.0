@@ -83,7 +83,7 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
         payloadLog.description = `${formData.serviceName} updated`;
         alert("Successfully updated the service");
       } else {
-        serviceRef = await addDoc(collection(db, "services"), payload);
+        serviceRef = await addDoc(collection(db, "services"), { ...payload, createdAt: serverTimestamp() });
         payloadLog.ref = serviceRef;
         alert("Successfully created the service");
       }
@@ -106,15 +106,13 @@ const CreateServiceList = ({ isOpen, onClose, refresh, service }) => {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={onClose}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform  ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`bg-white  pt-2 transform transition-transform  ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >

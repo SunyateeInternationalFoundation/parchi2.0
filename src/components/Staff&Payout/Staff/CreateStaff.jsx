@@ -154,7 +154,7 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
         payloadLog.description = `${formData.name} staff details updated`;
       } else {
         const companyRef = doc(db, "companies", companyId);
-        const payload = { ...formData, companyRef, status: "Active" };
+        const payload = { ...formData, companyRef, status: "Active", createdAt: serverTimestamp(), };
         staffsRef = await addDoc(collection(db, "staff"), payload);
         payloadLog.ref = staffsRef;
         alert("Successfully Created Staff");
@@ -168,15 +168,13 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
   }
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={onClose}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform  ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`bg-white  pt-2 transform transition-transform  ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -284,14 +282,14 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
                     className={cn(
                       "w-full flex justify-between items-center input-tag ",
                       !formData.dateOfJoining?.seconds &&
-                        "text-muted-foreground"
+                      "text-muted-foreground"
                     )}
                   >
                     {formData.dateOfJoining?.seconds ? (
                       formatDate(
                         new Date(
                           formData.dateOfJoining?.seconds * 1000 +
-                            formData.dateOfJoining?.nanoseconds / 1000000
+                          formData.dateOfJoining?.nanoseconds / 1000000
                         ),
                         "PPP"
                       )
@@ -307,7 +305,7 @@ function CreateStaff({ isOpen, onClose, staffAdded, staffData }) {
                     selected={
                       new Date(
                         formData.dateOfJoining?.seconds * 1000 +
-                          formData.dateOfJoining?.nanoseconds / 1000000
+                        formData.dateOfJoining?.nanoseconds / 1000000
                       )
                     }
                     onSelect={(val) => {
