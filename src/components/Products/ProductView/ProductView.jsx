@@ -129,7 +129,7 @@ const ProductView = ({ productData }) => {
                     <img
                       src={product.imageUrl}
                       alt={product?.name || "Product"}
-                      className="w-32 h-32 rounded-md object-cover"
+                      className="w-32 h-32 rounded-md object-contain"
                     />
                   ) : (
                     <div className="bg-red-400 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold">

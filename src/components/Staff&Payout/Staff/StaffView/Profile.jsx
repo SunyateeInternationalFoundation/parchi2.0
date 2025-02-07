@@ -14,11 +14,10 @@ const Profile = ({ staffData, refresh }) => {
         <div className="container2 p-6">
           <div className="flex items-center justify-end space-x-4">
             <span
-              className={`text-xs px-3 py-1.5 rounded-lg font-medium shadow-sm border flex items-center justify-center ${
-                staffData.status === "Active"
+              className={`text-xs px-3 py-1.5 rounded-lg font-medium shadow-sm border flex items-center justify-center ${staffData.status === "Active"
                   ? "bg-green-100 text-green-600 border-green-300"
                   : "bg-red-100 text-red-600 border-red-300"
-              }`}
+                }`}
             >
               {staffData.status === "Active" ? "Active" : "Inactive"}
             </span>
@@ -40,7 +39,7 @@ const Profile = ({ staffData, refresh }) => {
                   <img
                     src={staffData.profileImage}
                     alt="Profile"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 ) : (
                   <span className="bg-white text-purple-600 w-full h-full flex items-center justify-center text-4xl font-bold">
@@ -55,13 +54,13 @@ const Profile = ({ staffData, refresh }) => {
                   <h2 className="text-2xl font-semibold mb-2.5 break-words max-w-[200px]">
                     {staffData.name
                       ? staffData.name
-                          .split(" ")
-                          .map(
-                            (word) =>
-                              word.charAt(0).toUpperCase() +
-                              word.slice(1).toLowerCase()
-                          )
-                          .join(" ")
+                        .split(" ")
+                        .map(
+                          (word) =>
+                            word.charAt(0).toUpperCase() +
+                            word.slice(1).toLowerCase()
+                        )
+                        .join(" ")
                       : "N/A"}
                   </h2>
                   <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium shadow-sm flex items-center justify-center">
@@ -104,8 +103,8 @@ const Profile = ({ staffData, refresh }) => {
                       {" "}
                       {staffData.dateOfJoining
                         ? new Date(
-                            staffData.dateOfJoining.seconds * 1000
-                          ).toLocaleDateString()
+                          staffData.dateOfJoining.seconds * 1000
+                        ).toLocaleDateString()
                         : "N/A"}
                     </div>
                   </div>
@@ -119,9 +118,8 @@ const Profile = ({ staffData, refresh }) => {
                     <label className="text-sm text-gray-500">
                       Payment Details
                     </label>
-                    <div className="block w-full border border-gray-300 p-2 rounded-md bg-white focus:ring focus:ring-purple-200">{`${
-                      staffData.isDailyWages ? "Daily Pay" : "Monthly Pay"
-                    }`}</div>
+                    <div className="block w-full border border-gray-300 p-2 rounded-md bg-white focus:ring focus:ring-purple-200">{`${staffData.isDailyWages ? "Daily Pay" : "Monthly Pay"
+                      }`}</div>
                     <div>
                       <label className="text-sm text-gray-500">Branch</label>
                       <div className="block w-full border border-gray-300 p-2 rounded-md bg-white focus:ring focus:ring-purple-200">

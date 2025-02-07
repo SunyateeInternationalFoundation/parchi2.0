@@ -246,7 +246,7 @@ const Prefix = () => {
                 <img
                   src={formData.photoURL}
                   alt="Profile"
-                  className="w-36 h-36 bg-gray-200 border border-dashed border-gray-400 flex items-center justify-center rounded relative object-cover"
+                  className="w-36 h-36 bg-gray-200 border border-dashed border-gray-400 flex items-center justify-center rounded relative object-contain"
                 />
               ) : (
                 <label

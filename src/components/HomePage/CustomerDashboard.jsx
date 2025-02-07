@@ -25,7 +25,7 @@ const CustomerDashboard = ({ amount, icons }) => {
                     ) : ( */}
                     <img
                       src={man}
-                      className="rounded-full object-cover w-[89px] h-[89px]"
+                      className="rounded-full object-contain w-[89px] h-[89px]"
                     />
                     {/* )} */}
                   </div>
@@ -77,7 +77,7 @@ const CustomerDashboard = ({ amount, icons }) => {
                   <div className="flex items-center">
                     <img
                       src={item.img}
-                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-cover w-[70px] h-[70px] "
+                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-contain w-[70px] h-[70px] "
                     />
                   </div>
                   <div className="ps-5">

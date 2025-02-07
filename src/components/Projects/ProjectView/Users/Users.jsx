@@ -204,7 +204,7 @@ function Users() {
                                 <img
                                   src={vendor.profileImage}
                                   alt="Profile"
-                                  className="mt-2 w-10 h-10 rounded-full object-cover"
+                                  className="mt-2 w-10 h-10 rounded-full object-contain"
                                 />
                               ) : (
                                 <span className="bg-purple-500 text-white rounded-full h-10 w-10 flex items-center justify-center font-semibold">

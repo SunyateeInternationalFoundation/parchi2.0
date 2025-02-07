@@ -35,18 +35,16 @@ function SelectTemplateSideBar({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={() => {
         onClose();
         setSelectTemplate(preSelectedTemplate);
       }}
     >
       <div
-        className={`bg-white w-1/2 p-3 pt-2 transform transition-transform overflow-y-auto ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`bg-white w-1/2 p-3 pt-2 transform transition-transform overflow-y-auto ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ maxHeight: "100vh" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -79,7 +77,7 @@ function SelectTemplateSideBar({
                 <img
                   src={template.img}
                   alt="template"
-                  className="object-cover border-2 rounded-lg cursor-pointer  w-full items-center  h-60 "
+                  className="object-contain border-2 rounded-lg cursor-pointer  w-full items-center  h-60 "
                 />
               </div>
             ))}

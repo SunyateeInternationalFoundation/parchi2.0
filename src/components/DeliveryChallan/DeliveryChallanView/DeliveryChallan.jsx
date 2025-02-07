@@ -330,12 +330,12 @@ const DeliveryChallan = ({ deliveryChallan, bankDetails, selectTemplate }) => {
                 {companyDetails.companyLogo ? (
                   <img
                     src={companyDetails.companyLogo}
-                    className="rounded-md object-cover w-[89px] h-[89px]"
+                    className="rounded-md object-contain w-[89px] h-[89px]"
                   />
                 ) : (
                   <img
                     src={man}
-                    className="rounded-full object-cover w-[89px] h-[89px]"
+                    className="rounded-full object-contain w-[89px] h-[89px]"
                   />
                 )}
               </div>

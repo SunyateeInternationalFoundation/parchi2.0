@@ -60,7 +60,7 @@ function SelectPOSTemplateSideBar({
                   <img
                     src={template.img}
                     alt="template"
-                    className="object-cover rounded-lg cursor-pointer  w-full items-center  h-64 "
+                    className="object-contain rounded-lg cursor-pointer  w-full items-center  h-64 "
                   />
                 </div>
                 <div className="border-t text-center">{template.name}</div>

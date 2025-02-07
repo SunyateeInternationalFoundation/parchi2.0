@@ -373,16 +373,16 @@ const Dashboard = () => {
             <div className="shadow border rounded-2xl">
               <div className="flex items-center justify-between border px-6 py-2 rounded-t-2xl">
                 <div className="flex items-center w-3/4 space-x-4">
-                  <div className="border rounded-full w-[89px] h-[89px] shadow flex items-center justify-center">
+                  <div className="border  w-[89px] h-[89px] shadow flex items-center justify-center">
                     {companyDetails.companyLogo ? (
                       <img
                         src={companyDetails.companyLogo}
-                        className="rounded-full object-cover w-[89px] h-[89px]"
+                        className="rounded-md object-contain w-[89px] h-[89px]"
                       />
                     ) : (
                       <img
                         src={man}
-                        className="rounded-full object-cover w-[89px] h-[89px]"
+                        className="rounded-full object-contain w-[89px] h-[89px]"
                       />
                     )}
                   </div>
@@ -499,7 +499,7 @@ const Dashboard = () => {
                   <div className="flex items-center justify-center">
                     <img
                       src={item.img}
-                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-cover w-[60px] h-[60px]"
+                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-contain w-[60px] h-[60px]"
                     />
                   </div>
                   <div className="text-center font-inria-sans text-[16px] py-2">
@@ -520,7 +520,7 @@ const Dashboard = () => {
                   <div className="flex items-center justify-center">
                     <img
                       src={item.img}
-                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-cover w-[60px] h-[60px]"
+                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-contain w-[60px] h-[60px]"
                     />
                   </div>
                   <div className="text-center">{item.name}</div>
@@ -559,7 +559,7 @@ const Dashboard = () => {
                 <div className="bg-[#F0F4F8] rounded-t-2xl text-white flex justify-center items-center h-[99px]">
                   <img
                     src={item.img}
-                    className="object-cover w-[56px] h-[56px]"
+                    className="object-contain w-[56px] h-[56px]"
                   />
                 </div>
                 <div className="rounded-b-2xl text-center px-4 py-2 text-[14px]">

@@ -47,7 +47,7 @@ const VendorProfile = ({ vendorData, refresh, expenseData }) => {
                       <img
                         src={vendorData.profileImage}
                         alt="Profile"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                     ) : (
                       <span className="bg-white text-purple-600 w-full h-full flex items-center justify-center text-4xl font-bold">
@@ -66,13 +66,13 @@ const VendorProfile = ({ vendorData, refresh, expenseData }) => {
                       <h2 className="text-2xl font-semibold mb-2.5 break-words max-w-[200px]">
                         {vendorData.name
                           ? vendorData.name
-                              .split(" ")
-                              .map(
-                                (word) =>
-                                  word.charAt(0).toUpperCase() +
-                                  word.slice(1).toLowerCase()
-                              )
-                              .join(" ")
+                            .split(" ")
+                            .map(
+                              (word) =>
+                                word.charAt(0).toUpperCase() +
+                                word.slice(1).toLowerCase()
+                            )
+                            .join(" ")
                           : "N/A"}
                       </h2>
                     </div>

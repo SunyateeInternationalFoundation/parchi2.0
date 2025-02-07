@@ -325,16 +325,16 @@ const CreditNote = ({ creditNote, bankDetails, selectTemplate }) => {
         <div className="p-5 bg-white rounded-lg">
           <div className="flex gap-6 flex-col md:flex-row pt-8">
             <div className="flex-1">
-              <div className="border rounded-full w-[89px] h-[89px] shadow flex items-center justify-center">
+              <div className="border rounded-md w-[89px] h-[89px] shadow flex items-center justify-center">
                 {companyDetails.companyLogo ? (
                   <img
                     src={companyDetails.companyLogo}
-                    className="rounded-md object-cover w-[89px] h-[89px]"
+                    className="rounded-md object-contain w-[89px] h-[89px]"
                   />
                 ) : (
                   <img
                     src={man}
-                    className="rounded-full object-cover w-[89px] h-[89px]"
+                    className="rounded-full object-contain w-[89px] h-[89px]"
                   />
                 )}
               </div>

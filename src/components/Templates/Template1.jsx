@@ -37,7 +37,7 @@ const Template1 = forwardRef((props, ref) => {
                 {companyDetails?.companyLogo ? (
                   <img
                     src={companyDetails?.companyLogo}
-                    className="rounded-md object-cover w-[89px] h-[89px]"
+                    className="rounded-md object-contain w-[89px] h-[89px]"
                   />
                 ) : (
                   <>{dataSet?.createdBy?.name}</>
@@ -117,10 +117,10 @@ const Template1 = forwardRef((props, ref) => {
                   {!removedColumn[dataSet?.type.toLowerCase()]?.includes(
                     "QUANTITY"
                   ) && (
-                    <td className="border border-black pt-2 pb-2 pl-1">
-                      {item.quantity}
-                    </td>
-                  )}
+                      <td className="border border-black pt-2 pb-2 pl-1">
+                        {item.quantity}
+                      </td>
+                    )}
                   <td className="border border-black pt-2 pb-2 pl-1">
                     {item.sellingPrice.toFixed(1)}
                   </td>

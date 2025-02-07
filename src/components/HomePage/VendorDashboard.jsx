@@ -178,7 +178,7 @@ const VendorDashboard = () => {
                   <div className="flex items-center">
                     <img
                       src={item.img}
-                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-cover w-[70px] h-[70px] "
+                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-contain w-[70px] h-[70px] "
                     />
                   </div>
                   <div className="ps-5">

@@ -92,7 +92,7 @@ const BusinessCard = () => {
             <img
               src={formData.companyLogo}
               alt="Company Logo"
-              className="w-64 h-64 rounded-full mb-4 border-4 border-gray-300 shadow-lg"
+              className=" object-contain rounded-md mb-4 border-2 border-gray-300 shadow"
             />
           )}
         </div>

@@ -194,7 +194,7 @@ function Staff() {
                           <img
                             src={staff.profileImage}
                             alt="Profile"
-                            className="mt-2 w-10 h-10 rounded-full object-cover"
+                            className="mt-2 w-10 h-10 rounded-full object-contain"
                           />
                         ) : (
                           <span className="bg-purple-500 uppercase text-white rounded-full h-10 w-10 flex items-center justify-center font-semibold">
@@ -215,11 +215,10 @@ function Staff() {
                         onClick={(e) => e.stopPropagation()}
                       >
                         <div
-                          className={` text-center flex justify-center items-center h-8 overflow-hidden w-28  rounded-lg text-xs  ${
-                            staff.status === "Active"
+                          className={` text-center flex justify-center items-center h-8 overflow-hidden w-28  rounded-lg text-xs  ${staff.status === "Active"
                               ? "bg-green-100"
                               : "bg-red-100"
-                          }`}
+                            }`}
                         >
                           <Select
                             value={staff.status}
