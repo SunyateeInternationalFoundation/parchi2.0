@@ -178,15 +178,15 @@ function Users() {
             <div style={{ height: "96vh" }}>
               <div style={{ height: "92vh" }}>
                 <table className="w-full border-collapse text-start">
-                  <thead className=" bg-white">
+                  <thead className="bg-white">
                     <tr className="border-b">
-                      <td className="px-8 py-1 text-gray-400 font-semibold text-start ">
+                      <td className="px-8 py-1 text-gray-400 font-semibold text-start w-1/3">
                         Name
                       </td>
-                      <td className="px-5 py-1 text-gray-400 font-semibold text-center">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-center w-1/3">
                         Contact Info
                       </td>
-                      <td className="px-5 py-1 text-gray-400 font-semibold text-start">
+                      <td className="px-5 py-1 text-gray-400 font-semibold text-start w-1/3">
                         Email Id
                       </td>
                     </tr>
@@ -196,9 +196,9 @@ function Users() {
                       modifiedProjectData.map((vendor) => (
                         <tr
                           key={vendor.id}
-                          className="border-b border-gray-200 text-center "
+                          className="border-b border-gray-200 text-center"
                         >
-                          <td className="px-8 py-3 font-bold">
+                          <td className="px-8 py-3 font-bold w-1/3">
                             <div className="flex items-center space-x-3">
                               {vendor.profileImage ? (
                                 <img
@@ -219,22 +219,18 @@ function Users() {
                             </div>
                           </td>
 
-                          <td className="px-5 py-3 font-bold  text-center">
+                          <td className="px-5 py-3 font-bold text-center w-1/3">
                             {vendor.phone || "N/A"}
                           </td>
 
-                          <td className="px-5 py-3 text-start">
+                          <td className="px-5 py-3 text-start w-1/3">
                             {vendor.email || ""}
                           </td>
-
-                          {/* <td className="px-5 py-3 text-center">
-                          {vendor?.amount?.toFixed(2) || ""}
-                        </td> */}
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="6" className="h-24 text-center py-4">
+                        <td colSpan="3" className="h-24 text-center py-4">
                           No {activeNav} found
                         </td>
                       </tr>

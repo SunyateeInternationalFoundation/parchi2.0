@@ -26,6 +26,8 @@ function AddAttendanceSidebar({
   markedAttendance,
   onUpdateAttendance,
 }) {
+  const [open, setOpen] = useState(false);
+
   const userDetails = useSelector((state) => state.users);
   const [activePaymentDeductionsStaff, setActivePaymentDeductionsStaff] =
     useState("");
@@ -190,7 +192,8 @@ function AddAttendanceSidebar({
           >
             <div>
               <label className="text-sm block font-semibold mt-2">Date</label>
-              <Popover>
+
+              <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                   <button
                     className={cn(
@@ -222,11 +225,16 @@ function AddAttendanceSidebar({
                       )
                     }
                     onSelect={(val) => {
-                      setAttendanceForm((pre) => ({
-                        ...pre,
-                        date: Timestamp.fromDate(new Date(val)),
-                      }));
+                      if (val <= new Date()) {
+                        // Allow only past and present dates
+                        setAttendanceForm((pre) => ({
+                          ...pre,
+                          date: Timestamp.fromDate(new Date(val)),
+                        }));
+                        setOpen(false); // Close the calendar after selecting a date
+                      }
                     }}
+                    disabled={{ after: new Date() }} // Disable future dates
                     initialFocus
                     required
                   />
