@@ -366,7 +366,7 @@ const StaffDashboard = ({ checkPermission, staffDetails }) => {
             <div className="shadow border rounded-2xl">
               <div className="flex items-center justify-between border px-6 py-2 rounded-t-2xl">
                 <div className="flex items-center w-3/4 space-x-4">
-                  <div className="border rounded-full w-[89px] h-[89px] shadow flex items-center justify-center">
+                  <div className="border  w-[89px] h-[89px] shadow flex items-center justify-center">
                     <img
                       src={man}
                       className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-contain w-[89px] h-[89px]"
@@ -451,8 +451,9 @@ const StaffDashboard = ({ checkPermission, staffDetails }) => {
                       <span>Create</span>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className={`h-4 w-4 transition-transform ${isOpen ? "rotate-0" : "-rotate-90"
-                          }`}
+                        className={`h-4 w-4 transition-transform ${
+                          isOpen ? "rotate-0" : "-rotate-90"
+                        }`}
                         viewBox="0 0 512 512"
                       >
                         <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" />

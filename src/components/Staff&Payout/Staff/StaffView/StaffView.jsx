@@ -39,7 +39,6 @@ function StaffView() {
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   }
 
-  const [activeTab, setActiveTab] = useState("Profile");
   const [projectsData, setProjectsData] = useState([]);
   const [staffData, setStaffData] = useState([]);
   const [attendanceData, setAttendanceData] = useState([]);

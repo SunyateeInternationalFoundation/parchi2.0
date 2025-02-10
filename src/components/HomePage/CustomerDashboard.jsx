@@ -14,7 +14,7 @@ const CustomerDashboard = ({ amount, icons }) => {
             <div className=" border rounded-2xl bg-white">
               <div className="flex items-center justify-between border px-6 py-4 rounded-2xl shadow">
                 <div className="flex items-center w-3/4 space-x-4 ">
-                  <div className="border rounded-full w-[89px] h-[89px] shadow flex items-center justify-center">
+                  <div className="border  w-[89px] h-[89px] shadow flex items-center justify-center">
                     {/* {userDetails.companyLogo ? (
                       <img
                         src={userDetails.companyLogo}

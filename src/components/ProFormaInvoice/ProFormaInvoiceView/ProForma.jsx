@@ -322,7 +322,7 @@ function ProForma({ proForma, bankDetails, selectTemplate }) {
           <div className="flex gap-6 flex-col md:flex-row pt-8">
             <div className="flex-1">
               <Link href="#">
-                <div className="border rounded-full w-[89px] h-[89px] shadow flex items-center justify-center">
+                <div className="border  w-[89px] h-[89px] shadow flex items-center justify-center">
                   {companyDetails.companyLogo ? (
                     <img
                       src={companyDetails.companyLogo}
