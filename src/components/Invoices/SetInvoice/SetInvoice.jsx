@@ -229,9 +229,9 @@ const SetInvoice = () => {
       const createdBy = invoiceId
         ? { ...baseCreatedBy, who: formData.createdBy.who }
         : {
-            ...baseCreatedBy,
-            who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
-          };
+          ...baseCreatedBy,
+          who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+        };
 
       const payload = {
         ...restForm,
@@ -326,7 +326,7 @@ const SetInvoice = () => {
           : "/invoice/") + invoiceRef.id;
 
       if (isPrint) {
-        navigate(redirect + "?print=true");
+        navigate(redirect + "?tab=Invoice&print=true");
       } else {
         navigate(redirect);
       }
