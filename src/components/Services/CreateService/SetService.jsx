@@ -52,7 +52,6 @@ function SetService() {
   } else {
     companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   }
-  const phoneNo = userDetails.phone;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [prefix, setPrefix] = useState("");
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);

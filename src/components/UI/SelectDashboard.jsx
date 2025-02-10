@@ -131,14 +131,14 @@ function SelectDashboard({ isOpen, onClose }) {
                 {activeTab == "business" &&
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
-                            <tr>
+                            {/* <tr>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Logo
                                 </th>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Name
                                 </th>
-                            </tr>
+                            </tr> */}
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                             {companiesList?.length > 0 &&
@@ -179,14 +179,14 @@ function SelectDashboard({ isOpen, onClose }) {
                 {activeTab == "staff" &&
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
-                            <tr>
+                            {/* <tr>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Logo
                                 </th>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Name
                                 </th>
-                            </tr>
+                            </tr> */}
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                             {staffDetails?.length > 0 &&
@@ -202,6 +202,7 @@ function SelectDashboard({ isOpen, onClose }) {
                                                     selectedStaffCompanyIndex: index,
                                                 })
                                             );
+                                            navigate(`/staff`);
                                             onClose();
                                         }}
                                     >

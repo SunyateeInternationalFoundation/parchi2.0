@@ -424,7 +424,6 @@ const Payment = ({ projectDetails }) => {
           });
         }}
         refresh={fetchExpenses}
-        projectName={projectDetails.name}
       />
     </div>
   );

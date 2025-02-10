@@ -551,7 +551,7 @@ function RenewalService() {
                             formatDate(
                               new Date(
                                 formData.date?.seconds * 1000 +
-                                  formData.date?.nanoseconds / 1000000
+                                formData.date?.nanoseconds / 1000000
                               ),
                               "PPP"
                             )
@@ -567,7 +567,7 @@ function RenewalService() {
                           selected={
                             new Date(
                               formData.date?.seconds * 1000 +
-                                formData.date?.nanoseconds / 1000000
+                              formData.date?.nanoseconds / 1000000
                             )
                           }
                           onSelect={(val) => {
@@ -592,14 +592,14 @@ function RenewalService() {
                           className={cn(
                             "w-full flex justify-between items-center input-tag bg-gray-100 cursor-not-allowed",
                             !formData.dueDate?.seconds &&
-                              "text-muted-foreground"
+                            "text-muted-foreground"
                           )}
                         >
                           {formData.dueDate?.seconds ? (
                             formatDate(
                               new Date(
                                 formData.dueDate?.seconds * 1000 +
-                                  formData.dueDate?.nanoseconds / 1000000
+                                formData.dueDate?.nanoseconds / 1000000
                               ),
                               "PPP"
                             )
@@ -789,14 +789,14 @@ function RenewalService() {
                           className={cn(
                             "w-full flex justify-between items-center input-tag ",
                             !membershipStartDate?.seconds &&
-                              "text-muted-foreground"
+                            "text-muted-foreground"
                           )}
                         >
                           {membershipStartDate?.seconds ? (
                             formatDate(
                               new Date(
                                 membershipStartDate?.seconds * 1000 +
-                                  membershipStartDate?.nanoseconds / 1000000
+                                membershipStartDate?.nanoseconds / 1000000
                               ),
                               "PPP"
                             )
@@ -812,7 +812,7 @@ function RenewalService() {
                           selected={
                             new Date(
                               membershipStartDate?.seconds * 1000 +
-                                membershipStartDate?.nanoseconds / 1000000
+                              membershipStartDate?.nanoseconds / 1000000
                             )
                           }
                           onSelect={(val) => {
@@ -1081,30 +1081,28 @@ function RenewalService() {
           </div>
         </div>
       </div>
-      <div className="flex justify-end sticky bottom-0 bg-white p-2 pe-10 border-t mt-5">
-        <div className="flex justify-end sticky bottom-0 space-x-4 bg-white p-2 pe-10 border-t mt-5">
-          <button
-            className="btn-outline-black "
-            onClick={() => {
-              navigate("./../");
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            className=" bg-[#442799] text-white text-center px-5 py-3 pt-2 font-semibold rounded-md"
-            onClick={() => onSetService(true)}
-          >
-            <span className="text-lg">+</span> Renewal & Print
-          </button>
-          <button
-            className="rounded-lg  bg-[#442799] text-white text-center   px-5 py-3 pt-2 font-semibold rounded-md"
-            onClick={() => onSetService()}
-          >
-            <span className="text-lg">+</span>
-            Renewal
-          </button>
-        </div>
+      <div className="flex justify-end sticky bottom-0 space-x-4 bg-white p-2 pe-10 border-t ">
+        <button
+          className="btn-outline-black "
+          onClick={() => {
+            navigate("./../");
+          }}
+        >
+          Cancel
+        </button>
+        <button
+          className=" bg-[#442799] text-white text-center px-5 py-3 pt-2 font-semibold rounded-md"
+          onClick={() => onSetService(true)}
+        >
+          <span className="text-lg">+</span> Renewal & Print
+        </button>
+        <button
+          className="rounded-lg  bg-[#442799] text-white text-center   px-5 py-3 pt-2 font-semibold rounded-md"
+          onClick={() => onSetService()}
+        >
+          <span className="text-lg">+</span>
+          Renewal
+        </button>
       </div>
     </div>
   );
