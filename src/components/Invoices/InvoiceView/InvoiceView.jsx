@@ -27,7 +27,6 @@ function InvoiceView() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const tab = searchParams.get("tab");
-  // const [activeTab, setActiveTab] = useState("Invoice");
   const [invoice, setInvoice] = useState({});
   const userDetails = useSelector((state) => state.users);
   const [bankDetails, setBankDetails] = useState({});
@@ -170,49 +169,32 @@ function InvoiceView() {
   }, [companyId]);
 
   return (
-    <div className=" pb-5 bg-gray-100" style={{ width: "100%" }}>
-      <header className="flex items-center bg-white  px-3 space-x-3">
+    <div className="pb-5 bg-gray-100" style={{ width: "100%" }}>
+      <header className="flex items-center bg-white px-3 space-x-3">
         <Link className="flex items-center" to={"./../"}>
-          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500  text-gray-500" />
+          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500 text-gray-500" />
         </Link>
         <h1 className="text-xl font-bold pe-4">
           {invoice.prefix}-{invoice.no}
         </h1>
 
         <nav className="flex space-x-4 w-full">
-          <button
-            className={
-              "p-4 font-semibold text-gray-500 " +
-              (tab === "Invoice" ? " border-b-4 border-blue-500 " : "")
-            }
-            onClick={() => navigate("?tab=Invoice")}
-          >
-            Invoice View
-          </button>
-          <button
-            className={
-              "p-4 font-semibold text-gray-500 " +
-              (tab === "Returns" ? " border-b-4 border-blue-500 " : "")
-            }
-            onClick={() => navigate("?tab=Returns")}
-          >
-            Returns
-          </button>
-          <button
-            className={
-              "p-4 font-semibold text-gray-500 " +
-              (tab === "ReturnsHistory" ? " border-b-4 border-blue-500 " : "")
-            }
-            onClick={() => navigate("?tab=ReturnsHistory")}
-          >
-            Return History
-          </button>
+          {["Invoice", "Returns", "ReturnsHistory"].map((tabName) => (
+            <button
+              key={tabName}
+              className={
+                "p-4 " +
+                (tab === tabName ? "border-b-4 border-blue-500" : "")
+              }
+              onClick={() => navigate(`?tab=${tabName}`)}
+            >
+              {tabName.replace(/([A-Z])/g, " $1").trim()}
+            </button>
+          ))}
         </nav>
         <div className="flex justify-end w-full">
           <button
-            className={
-              "px-4 py-2 flex items-center text-blue-500 border-2 rounded-md hover:bg-blue-500 hover:text-white"
-            }
+            className="px-4 py-2 flex items-center text-blue-500 border-2 rounded-md hover:bg-blue-500 hover:text-white"
             onClick={() => setIsSelectTemplateOpen(true)}
           >
             <CiSettings className="w-6 h-6" />
@@ -221,25 +203,17 @@ function InvoiceView() {
         </div>
       </header>
 
-      <div className="w-full ">
+      <div className="w-full">
         {tab === "Invoice" && (
-          <div>
-            <Invoice
-              invoice={invoice}
-              bankDetails={bankDetails}
-              selectTemplate={selectTemplate}
-            />
-          </div>
+          <Invoice
+            invoice={invoice}
+            bankDetails={bankDetails}
+            selectTemplate={selectTemplate}
+          />
         )}
-        {tab === "Returns" && (
-          <div>
-            <Returns invoice={invoice} />
-          </div>
-        )}
-        {tab === "Returns" && (
-          <div>
-            <ReturnsHistory products={returnData} refresh={fetchReturnData} />
-          </div>
+        {tab === "Returns" && <Returns invoice={invoice} />}
+        {tab === "ReturnsHistory" && (
+          <ReturnsHistory products={returnData} refresh={fetchReturnData} />
         )}
       </div>
       <hr />

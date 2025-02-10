@@ -29,7 +29,7 @@ const ProductHome = () => {
   const renderTabButton = (tabName, label) => (
     <button
       className={
-        "p-4 font-semibold text-gray-500 " +
+        "p-4  " +
         (tab === tabName ? " border-b-4 border-blue-500 " : "")
       }
       onClick={() => navigate("?tab=" + tabName)}

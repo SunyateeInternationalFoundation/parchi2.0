@@ -690,7 +690,6 @@ function SetForm(props) {
                               className="flex flex-col px-4 py-2 text-gray-800 hover:bg-blue-50 cursor-pointer transition-all duration-150 ease-in-out"
                             >
                               <span className="font-medium text-sm">
-                                Name:
                                 <span className="font-semibold">
                                   {item.name}
                                 </span>

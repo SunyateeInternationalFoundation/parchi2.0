@@ -19,7 +19,6 @@ import { db } from "../../../firebase";
 import ProductLogs from "./ProductLogs";
 import ProductReturns from "./ProductReturns";
 import ProductView from "./ProductView";
-import Stocks from "./Stocks";
 import Transfers from "./Transfers";
 
 function ProductViewHome() {
@@ -33,7 +32,7 @@ function ProductViewHome() {
   const [product, setProduct] = useState({});
   const [returns, setReturns] = useState({});
   const [logs, setLogs] = useState({});
-  const [transfers, setTransfers] = useState({});
+  const [transfers, setTransfers] = useState([]);
 
   const fetchProduct = async () => {
     try {
@@ -97,7 +96,7 @@ function ProductViewHome() {
     { name: "Product", component: <ProductView productData={product} /> },
     { name: "Logs", component: <ProductLogs logs={logs} /> },
     { name: "Returns", component: <ProductReturns returns={returns} /> },
-    { name: "Stocks", component: <Stocks stocks={[]} /> },
+    // { name: "Stocks", component: <Stocks stocks={[]} /> },
     {
       name: "Transfers",
       component: (
@@ -121,7 +120,7 @@ function ProductViewHome() {
             <button
               key={t.name}
               className={
-                "p-4 font-semibold text-gray-500 " +
+                "p-4  " +
                 (tab === t.name ? " border-b-4 border-blue-500 " : "")
               }
               onClick={() => navigate("?tab=" + t.name)}

@@ -13,7 +13,6 @@ const ProductView = ({ productData }) => {
     setProduct(productData);
     setLoading(false);
   }, [productData]);
-  console.log("produt", productData);
 
   const subTotal = product?.sellingPrice * product?.stock;
   const taxAmount = (subTotal * product?.tax) / 100;

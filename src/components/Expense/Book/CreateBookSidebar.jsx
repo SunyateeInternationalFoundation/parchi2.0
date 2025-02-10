@@ -67,15 +67,13 @@ function CreateBookSidebar({ onClose, isOpen, refresh }) {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={onClose}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform  ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`bg-white  pt-2 transform transition-transform  ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ width: "500px", height: "100vh" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -158,7 +156,7 @@ function CreateBookSidebar({ onClose, isOpen, refresh }) {
                 }
               />
             </div>
-            <div className="space-y-1">
+            {/* <div className="space-y-1">
               <label className="text-sm text-gray-600 ">
                 Confirm Bank Account{" "}
                 {confirmAccount !== formData.accountNo && (
@@ -173,7 +171,7 @@ function CreateBookSidebar({ onClose, isOpen, refresh }) {
                 placeholder="Confirm Bank Account"
                 onChange={(e) => setConfirmAccount(e.target.value)}
               />
-            </div>
+            </div> */}
             <div className="space-y-1">
               <label className="text-sm text-gray-600 ">Bank IFSC Code</label>
               <input

@@ -201,79 +201,37 @@ function CustomerView() {
   }, []);
 
   return (
-    <div className=" bg-gray-100" style={{ width: "100%" }}>
-      <header className="flex items-center bg-white  px-3 space-x-3 ">
+    <div className="bg-gray-100 w-full">
+      <header className="flex items-center bg-white px-3 space-x-3">
         <Link className="flex items-center" to={"./../"}>
-          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500  text-gray-500" />
+          <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500 text-gray-500" />
         </Link>
-        <h1 className="text-xl font-bold pe-4">{customerData.name}</h1>
-        <nav className="flex space-x-4 ">
-          <button
-            className={
-              "px-4 py-4 font-semibold text-gray-500 " +
-              (tab === "Profile" && " border-b-4 border-blue-500")
-            }
-            onClick={() => navigate("?tab=Profile")}
-          >
-            Profile
-          </button>
-          <button
-            className={
-              "px-4 py-4 font-semibold text-gray-500 " +
-              (tab === "Projects" && " border-b-4 border-blue-500")
-            }
-            onClick={() => navigate("?tab=Projects")}
-          >
-            Projects
-          </button>
-          <button
-            className={
-              "px-4 py-4 font-semibold text-gray-500 " +
-              (tab === "Services" && " border-b-4 border-blue-500")
-            }
-            onClick={() => navigate("?tab=Services")}
-          >
-            Subscription
-          </button>
-          <button
-            className={
-              "px-4 py-4 font-semibold text-gray-500 " +
-              (tab === "Bills" && " border-b-4 border-blue-500")
-            }
-            onClick={() => navigate("?tab=Bills")}
-          >
-            Sales
-          </button>
+        <h1 className="text-xl font-bold pe-4 text-nowrap w-24 text-ellipsis overflow-hidden">{customerData.name}</h1>
+        <nav className="flex space-x-4">
+          {["Profile", "Projects", "Services", "Bills"].map((item) => (
+            <button
+              key={item}
+              className={`px-4 py-4  ${tab === item && "border-b-4 border-blue-500"
+                }`}
+              onClick={() => navigate(`?tab=${item}`)}
+            >
+              {item}
+            </button>
+          ))}
         </nav>
       </header>
       <hr />
-
-      <hr />
       <div className="w-full">
         {tab === "Profile" && (
-          <div>
-            <Profile
-              customerData={customerData}
-              refresh={fetchCustomerData}
-              expenseData={expenseData}
-            />
-          </div>
+          <Profile
+            customerData={customerData}
+            refresh={fetchCustomerData}
+            expenseData={expenseData}
+          />
         )}
-        {tab === "Projects" && (
-          <div>
-            <Projects projectsData={customersProjectsData} />
-          </div>
-        )}
-        {tab === "Services" && (
-          <div>
-            <Services servicesList={customersServicesData} />
-          </div>
-        )}
-        {tab === "Bills" && (
-          <div>
-            <Bills salesData={customersInvoicesData} />
-          </div>
-        )}
+        {tab === "Projects" && <Projects projectsData={customersProjectsData} />}
+        {tab === "Services" && <Services servicesList={customersServicesData} />}
+        {tab === "Bills" && <Bills salesData={customersInvoicesData} />}
       </div>
     </div>
   );

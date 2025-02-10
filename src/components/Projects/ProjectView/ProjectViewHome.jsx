@@ -150,7 +150,7 @@ function ProjectViewHome() {
             <button
               key={item.name}
               className={
-                "p-4 flex items-center space-x-1 font-semibold text-gray-500 " +
+                "p-4 flex items-center space-x-1 " +
                 (tab === item.name ? " border-b-4 border-blue-500 " : "")
               }
               onClick={() => {

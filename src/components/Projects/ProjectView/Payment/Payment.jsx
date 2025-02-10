@@ -234,7 +234,7 @@ const Payment = ({ projectDetails }) => {
                 <SelectContent className="h-18">
                   <SelectItem value="All"> All</SelectItem>
                   <SelectItem value="Customer">Customer</SelectItem>
-                  <SelectItem value="Vendors">Vendors</SelectItem>
+                  <SelectItem value="Vendor">Vendor</SelectItem>
                   <SelectItem value="Staff">Staff</SelectItem>
                 </SelectContent>
               </Select>

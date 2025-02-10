@@ -75,8 +75,8 @@ function ProjectView({ projectDetails, refreshProject }) {
     setProject(projectDetails);
     setTotalPersons(
       (projectDetails?.vendorRef?.length || 0) +
-        (projectDetails?.customerRef?.length || 0) +
-        (projectDetails?.staffRef?.length || 0)
+      (projectDetails?.customerRef?.length || 0) +
+      (projectDetails?.staffRef?.length || 0)
     );
     fetchIncomeAndExpense();
   }, [projectDetails?.id]);
@@ -186,8 +186,8 @@ function ProjectView({ projectDetails, refreshProject }) {
                   (project?.priority == "Low"
                     ? "bg-green-100"
                     : project?.priority == "Medium"
-                    ? "bg-blue-100"
-                    : "bg-red-100")
+                      ? "bg-blue-100"
+                      : "bg-red-100")
                 }
               >
                 {project?.priority}
@@ -199,8 +199,8 @@ function ProjectView({ projectDetails, refreshProject }) {
                   (project?.status == "Completed"
                     ? "bg-green-100"
                     : project?.status == "On-Going"
-                    ? "bg-blue-100"
-                    : "bg-red-100")
+                      ? "bg-blue-100"
+                      : "bg-red-100")
                 }
               >
                 <Select
@@ -292,23 +292,22 @@ function ProjectView({ projectDetails, refreshProject }) {
                   <div className="font-semibold text-sm">{totalPersons}</div>
                 </div>
               </div>
-              <div>
-                <div>
+              {/* 
                   <div className="relative w-max-content flex -space-x-3 avatarGroup items-center">
                     <span className="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full ring-1 ring-white ring-offset-[2px] ring-offset-white hover:z-10">
-                      {/* <img className="aspect-square h-full w-full" src="/_next/static/media/avatar-5.55d8974c.jpg"> */}
+                      <img className="aspect-square h-full w-full" src="/_next/static/media/avatar-5.55d8974c.jpg">
                       <span className="flex h-full w-full items-center justify-center rounded-full bg-muted text-sm bg-red-200">
                         A
                       </span>
                     </span>
                     <span className="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full ring-1 ring-white ring-offset-[2px] ring-offset-white hover:z-10">
-                      {/* <img className="aspect-square h-full w-full" src="/_next/static/media/avatar-6.513b01f7.jpg"> */}
+                      <img className="aspect-square h-full w-full" src="/_next/static/media/avatar-6.513b01f7.jpg">
                       <span className="flex h-full w-full items-center justify-center rounded-full bg-muted text-sm bg-blue-200">
                         B
                       </span>
                     </span>
                     <span className="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full ring-1 ring-white ring-offset-[2px] ring-offset-white hover:z-10">
-                      {/* <img className="aspect-square h-full w-full" src="/_next/static/media/avatar-7.82cf057d.jpg"> */}
+                      <img className="aspect-square h-full w-full" src="/_next/static/media/avatar-7.82cf057d.jpg">
                       <span className="flex h-full w-full items-center justify-center rounded-full bg-muted text-sm bg-green-300">
                         C
                       </span>
@@ -319,8 +318,7 @@ function ProjectView({ projectDetails, refreshProject }) {
                       </span>
                     </span>
                   </div>
-                </div>
-              </div>
+               */}
             </div>
           </div>
         </div>

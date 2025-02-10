@@ -37,7 +37,7 @@ function App() {
         {isAuthenticated && usersDetails.selectedDashboard === "" && (
           <>
             <Route path="/*" element={<Home />}></Route>
-            <Route path="/template/:templateId" element={<TemplateView />} />
+
           </>
         )}
         {isAuthenticated && usersDetails.selectedDashboard === "customer" && (
@@ -49,6 +49,7 @@ function App() {
         {isAuthenticated && usersDetails.selectedDashboard === "staff" && (
           <Route path="/staff/*" element={<StaffHome />}></Route>
         )}
+        {isAuthenticated && <Route path="/template/:templateId" element={<TemplateView />} />}
       </Routes>
     </div>
   );

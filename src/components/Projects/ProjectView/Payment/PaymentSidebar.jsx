@@ -515,7 +515,7 @@ function PaymentSidebar({
             style={{ height: "6vh" }}
           >
             <button type="submit" className="w-full btn-add">
-              Create {isModalOpen.type}
+              {updateData?.id ? "Edit" : "Create"} {isModalOpen.type}
             </button>
           </div>
         </form>
