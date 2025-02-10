@@ -150,6 +150,7 @@ const InvoiceList = () => {
       filteredInvoices.slice(currentPage * 10, currentPage * 10 + 10)
     );
   }, [currentPage, invoices, searchTerm, filterStatus]);
+
   const columns = [
     {
       title: "Date",
@@ -226,8 +227,8 @@ const InvoiceList = () => {
           (value === "Paid"
             ? "bg-green-100"
             : value === "Pending"
-            ? "bg-yellow-100"
-            : "bg-red-100");
+              ? "bg-yellow-100"
+              : "bg-red-100");
         select.onchange = async (e) => {
           const newStatus = e.target.value;
           await handleStatusChange(
@@ -372,13 +373,13 @@ const InvoiceList = () => {
                     <div className="w-full flex justify-center">
                       {(userDetails.selectedDashboard === "" ||
                         role?.create) && (
-                        <Link
-                          className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-                          to="create-invoice"
-                        >
-                          + Create Invoice
-                        </Link>
-                      )}
+                          <Link
+                            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                            to="create-invoice"
+                          >
+                            + Create Invoice
+                          </Link>
+                        )}
                     </div>
                   </div>
                 )}
