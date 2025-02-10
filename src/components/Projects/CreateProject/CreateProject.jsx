@@ -31,6 +31,8 @@ function CreateProject() {
   const companyDetails =
     userDetails.companies[userDetails.selectedCompanyIndex];
   const navigate = useNavigate();
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [endDateOpen, setendDateOpen] = useState(false);
 
   const [projectForm, setProjectForm] = useState({
     status: "On-Going",
@@ -208,7 +210,7 @@ function CreateProject() {
                 </label>
 
                 <div>
-                  <Popover>
+                  <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
                     <PopoverTrigger asChild>
                       <button
                         className={cn(
@@ -242,6 +244,7 @@ function CreateProject() {
                         }
                         onSelect={(val) => {
                           handleDateChange("startDate", val);
+                          setStartDateOpen(false); // Close calendar after selecting a date
                         }}
                         initialFocus
                         required
@@ -254,7 +257,7 @@ function CreateProject() {
                 <label className="text-gray-600">Due Date</label>
 
                 <div>
-                  <Popover>
+                  <Popover open={endDateOpen} onOpenChange={setendDateOpen}>
                     <PopoverTrigger asChild>
                       <button
                         className={cn(
@@ -288,6 +291,7 @@ function CreateProject() {
                         }
                         onSelect={(val) => {
                           handleDateChange("dueDate", val);
+                          setendDateOpen(false); // Close calendar after selecting a date
                         }}
                         initialFocus
                       />
