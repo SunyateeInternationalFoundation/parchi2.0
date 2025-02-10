@@ -4,12 +4,13 @@ import {
   doc,
   getDocs,
   query,
+  serverTimestamp,
   Timestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
 import PropTypes from "prop-types";
-import { serverTimestamp, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { db } from "../../../../firebase";
@@ -61,7 +62,9 @@ function InventoryAddSideBar({
     }
   }, [companyId]);
 
-  const handleAddMaterial = async () => {
+  const handleAddMaterial = async (e) => {
+    e.preventDefault()
+
     if (!selectedItem || !quantity) {
       alert("Please select an item, and enter a quantity!");
       return;
@@ -156,15 +159,13 @@ function InventoryAddSideBar({
   }
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={onClose}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform  ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`bg-white  pt-2 transform transition-transform  ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >

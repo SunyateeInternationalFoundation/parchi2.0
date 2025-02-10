@@ -1,4 +1,4 @@
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { FaRegFilePdf } from "react-icons/fa";
 import {
@@ -31,7 +31,8 @@ const Approval = ({ projectName }) => {
 
   const fetchApprovals = async () => {
     const approvalsRef = collection(db, `projects/${projectId}/approvals`);
-    const snapshot = await getDocs(approvalsRef);
+    const q = query(approvalsRef, orderBy("createdAt", "desc"))
+    const snapshot = await getDocs(q);
 
     const approvalsData = snapshot.docs.map((doc) => ({
       id: doc.id,

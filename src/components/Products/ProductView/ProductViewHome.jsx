@@ -30,8 +30,8 @@ function ProductViewHome() {
   const companyDetails =
     userDetails.companies[userDetails.selectedCompanyIndex];
   const [product, setProduct] = useState({});
-  const [returns, setReturns] = useState({});
-  const [logs, setLogs] = useState({});
+  const [returns, setReturns] = useState([]);
+  const [logs, setLogs] = useState([]);
   const [transfers, setTransfers] = useState([]);
 
   const fetchProduct = async () => {
@@ -103,7 +103,7 @@ function ProductViewHome() {
         <Transfers
           transfersData={transfers}
           productDetails={product}
-          refreshTransfersData={(data) => setTransfers((val) => [data, ...val])}
+          refreshTransfersData={(data) => setTransfers(data)}
         />
       ),
     },

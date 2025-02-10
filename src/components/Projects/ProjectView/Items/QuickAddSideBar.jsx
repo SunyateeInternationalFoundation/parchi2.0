@@ -2,12 +2,9 @@ import {
   addDoc,
   collection,
   doc,
-  getDoc,
   serverTimestamp,
-  setDoc,
-  Timestamp,
+  Timestamp
 } from "firebase/firestore";
-import PropTypes from "prop-types";
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
@@ -39,7 +36,8 @@ function QuickAddSideBar({ isOpen, onClose, isMaterialAdd, projectName }) {
     });
   }
 
-  async function onSubmit() {
+  async function onSubmit(e) {
+    e.preventDefault()
     try {
       const projectRef = doc(db, "projects", projectId);
       const amount = +formData.quantity * +formData.itemPricePerPiece;
@@ -72,32 +70,14 @@ function QuickAddSideBar({ isOpen, onClose, isMaterialAdd, projectName }) {
         remainingQuantity: formData.quantity,
         barcode: formData.barcode,
       };
-      let productRef = "";
-      if (formData.barcode) {
-        const productDocRef = doc(
-          db,
-          "companies",
-          companyId,
-          "products",
-          formData.barcode
-        );
-        const docSnapshot = await getDoc(productDocRef);
-        if (docSnapshot.exists()) {
-          alert(
-            "A product with this barcode already exists.Kindly use a unique barcode."
-          );
-          return;
-        }
-        productRef = await setDoc(productDocRef, payloadInventory);
-      } else {
-        const productDocRef = collection(
-          db,
-          "companies",
-          companyId,
-          "products"
-        );
-        productRef = await addDoc(productDocRef, payloadInventory);
-      }
+
+      const productDocRef = collection(
+        db,
+        "companies",
+        companyId,
+        "products"
+      );
+      const productRef = await addDoc(productDocRef, payloadInventory);
 
       const ref = await addDoc(
         collection(db, "projects", projectId, "materials"),
@@ -117,13 +97,13 @@ function QuickAddSideBar({ isOpen, onClose, isMaterialAdd, projectName }) {
         from: "Project",
         ref: doc(db, "projects", projectId),
       };
+      console.log("🚀 ~ onSubmit ~ productPayloadLogs:", productPayloadLogs)
       await addDoc(
-        collection(db, "companies", companyId, "products", productRef, "logs"),
+        collection(db, "companies", companyId, "products", productRef.id, "logs"),
         productPayloadLogs
       );
-
       await addDoc(
-        collection(db, "companies", companyId, "products", productRef, "logs"),
+        collection(db, "companies", companyId, "products", productRef.id, "logs"),
         { ...productPayloadLogs, status: "use" }
       );
       alert("Successfully added material and inventory!");
@@ -138,15 +118,13 @@ function QuickAddSideBar({ isOpen, onClose, isMaterialAdd, projectName }) {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={onClose}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform  ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`bg-white  pt-2 transform transition-transform  ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -258,10 +236,5 @@ function QuickAddSideBar({ isOpen, onClose, isMaterialAdd, projectName }) {
     </div>
   );
 }
-QuickAddSideBar.propTypes = {
-  isOpen: PropTypes.bool,
-  onClose: PropTypes.func,
-  isMaterialAdd: PropTypes.func,
-};
 
 export default QuickAddSideBar;

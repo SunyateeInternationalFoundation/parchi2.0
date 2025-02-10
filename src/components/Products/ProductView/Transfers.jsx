@@ -10,24 +10,21 @@ import FormatTimestamp from "../../../constants/FormatTimestamp";
 import TransferSidebar from "./TransferSidebar";
 
 function Transfers({ transfersData, refreshTransfersData, productDetails }) {
-  console.log("🚀 ~ Transfers ~ transfersData:", transfersData);
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [paginationData, setPaginationData] = useState([]);
+  const [updateData, setUpdateData] = useState({});
 
   useEffect(() => {
-    if (!transfersData?.id) {
+    if (transfersData.length <= 0) {
       return;
     }
-    // Calculate total pages based on transfersData length
     setTotalPages(Math.ceil(transfersData.length / 10));
-    // Set initial pagination data
     setPaginationData(transfersData.slice(0, 10));
   }, [transfersData]);
 
   useEffect(() => {
-    // Update pagination data when currentPage changes
     if (!transfersData?.id) {
       return;
     }
@@ -72,7 +69,10 @@ function Transfers({ transfersData, refreshTransfersData, productDetails }) {
               <tbody>
                 {paginationData.length > 0 ? (
                   paginationData.map((transfer) => (
-                    <tr key={transfer.id}>
+                    <tr key={transfer.id} className="cursor-pointer" onClick={() => {
+                      setUpdateData(transfer)
+                      setIsSideBarOpen(true)
+                    }}>
                       <td className="px-8 py-3 text-start">
                         <FormatTimestamp timestamp={transfer.date} />
                       </td>
@@ -146,8 +146,10 @@ function Transfers({ transfersData, refreshTransfersData, productDetails }) {
         isSideBarOpen={isSideBarOpen}
         productDetails={productDetails}
         onClose={() => {
+          setUpdateData({})
           setIsSideBarOpen(false);
         }}
+        updateData={updateData}
         refresh={refreshTransfersData}
       />
     </div>

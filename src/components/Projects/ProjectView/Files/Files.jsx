@@ -3,10 +3,12 @@ import {
   collection,
   doc,
   getDocs,
+  orderBy,
   query,
   serverTimestamp,
   where,
 } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import {
@@ -18,7 +20,7 @@ import {
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import FormatTimestamp from "../../../../constants/FormatTimestamp";
-import { db } from "../../../../firebase";
+import { db, storage } from "../../../../firebase";
 import {
   Select,
   SelectContent,
@@ -51,8 +53,6 @@ const Files = ({ projectName }) => {
     companyId =
       userDetails.companies[userDetails.selectedCompanyIndex].companyId;
   }
-  console.log("userDetails", userDetails);
-  console.log("companyId", companyId);
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.files;
@@ -97,7 +97,9 @@ const Files = ({ projectName }) => {
   async function fetchFiles() {
     try {
       const filesRef = collection(db, "projects", projectId, "files");
-      const querySnapshot = await getDocs(filesRef);
+
+      const q = query(filesRef, orderBy("createdAt", "desc"))
+      const querySnapshot = await getDocs(q);
       const filesData = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
@@ -120,20 +122,20 @@ const Files = ({ projectName }) => {
     e.preventDefault();
 
     try {
-      // if (!formData.file) {
-      //   alert("Please upload a file!");
-      //   return;
-      // }
+      if (!formData.file) {
+        alert("Please upload a file!");
+        return;
+      }
 
-      // const storageRef = ref(storage, `files/${formData.file.name}`);
-      // await uploadBytes(storageRef, formData.file);
-      // const fileURL = await getDownloadURL(storageRef);
+      const storageRef = ref(storage, `files/${formData.file.name}`);
+      await uploadBytes(storageRef, formData.file);
+      const fileURL = await getDownloadURL(storageRef);
 
       const filesRef = collection(db, "projects", projectId, "files");
       const fileRef = await addDoc(filesRef, {
         name: formData.name,
         customerOrVendorRef: formData.customerOrVendorRef,
-        // fileURL,
+        fileURL,
         phoneNumber: formData.phoneNumber,
         createdAt: serverTimestamp(),
       });
@@ -249,15 +251,19 @@ const Files = ({ projectName }) => {
                   const phoneNumber = customer
                     ? customer.phone
                     : vendor
-                    ? vendor.phone
-                    : "N/A";
+                      ? vendor.phone
+                      : "N/A";
 
                   return (
                     <tr
                       key={file.id}
                       className="border-b border-gray-200 text-center cursor-pointer"
+
+                      onClick={() => {
+                        window.open(file.fileURL, "_blank");
+                      }}
                     >
-                      <td className="px-8 py-3 text-start flex">
+                      <td className="px-8 py-3 text-start flex items-center">
                         <img
                           src={file.fileURL}
                           alt={file.name}
@@ -383,18 +389,16 @@ const Files = ({ projectName }) => {
                   <button
                     type="button"
                     onClick={() => handleTabClick("customers")}
-                    className={`btn-outline-black ${
-                      activeTab === "customers" && "bg-black text-white"
-                    }`}
+                    className={`btn-outline-black ${activeTab === "customers" && "bg-black text-white"
+                      }`}
                   >
                     Customers
                   </button>
                   <button
                     type="button"
                     onClick={() => handleTabClick("vendors")}
-                    className={`btn-outline-black ${
-                      activeTab === "vendors" && "bg-black text-white"
-                    }`}
+                    className={`btn-outline-black ${activeTab === "vendors" && "bg-black text-white"
+                      }`}
                   >
                     Vendors
                   </button>
