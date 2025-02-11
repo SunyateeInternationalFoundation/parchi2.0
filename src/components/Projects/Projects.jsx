@@ -308,9 +308,9 @@ function Projects() {
                     ))}
                   </div>
                 ) : (
-                  <div className="w-full rounded-lg border-t border-b">
+                  <div className="w-full rounded-lg border-t border-b bg-white">
                     <table className="w-full table-auto text-lg">
-                      <thead className="bg-gray-100 shadow-sm">
+                      <thead>
                         <tr className="border-b">
                           <th className="py-4 px-6 text-left font-bold text-gray-600">
                             Project Name
@@ -336,7 +336,7 @@ function Projects() {
                         {modifiedProjectsList.map((item) => (
                           <tr
                             key={item.projectId}
-                            className="border-b hover:bg-gray-50 cursor-pointer"
+                            className="border-b cursor-pointer"
                             onClick={() => onViewProject(item)}
                           >
                             <td className="py-4 px-6 text-left">{item.name}</td>
