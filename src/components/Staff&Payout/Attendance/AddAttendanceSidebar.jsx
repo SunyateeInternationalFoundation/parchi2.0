@@ -6,6 +6,8 @@ import {
   serverTimestamp,
   setDoc,
   Timestamp,
+  query,
+  getDocs,
 } from "firebase/firestore";
 import { CalendarIcon } from "lucide-react";
 import PropTypes from "prop-types";
@@ -27,7 +29,7 @@ function AddAttendanceSidebar({
   onUpdateAttendance,
 }) {
   const [open, setOpen] = useState(false);
-
+  const [markedDates, setMarkedDates] = useState([]);
   const userDetails = useSelector((state) => state.users);
   const [activePaymentDeductionsStaff, setActivePaymentDeductionsStaff] =
     useState("");
@@ -162,6 +164,7 @@ function AddAttendanceSidebar({
     });
     setAttendanceForm((val) => ({ ...val, staffs: updatedAttendance }));
   }
+
   return (
     <div
       className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
@@ -259,7 +262,6 @@ function AddAttendanceSidebar({
                     return staffJoiningDate <= selectedDate;
                   })
                   .map((staff) => {
-                    console.log(staff);
                     return (
                       <div key={staff.id} className="border-b-2 py-2">
                         <div

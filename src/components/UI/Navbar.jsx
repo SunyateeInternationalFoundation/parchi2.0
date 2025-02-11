@@ -94,6 +94,7 @@ const Navbar = () => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (suggestions.length > 0) {
+      setSearchQuery(""); 
       navigate(suggestions[0].route);
     } else {
       alert("No matching component found");
@@ -101,7 +102,7 @@ const Navbar = () => {
   };
 
   const handleSuggestionClick = (suggestion) => {
-    setSearchQuery(suggestion.display);
+    setSearchQuery([]); 
     setSuggestions([]);
     navigate(suggestion.route);
   };
