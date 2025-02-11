@@ -1,6 +1,6 @@
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Business from "../../assets/dashboard/Business.png";
 import Credit from "../../assets/dashboard/Credit.png";
@@ -28,6 +28,7 @@ import Staff from "../../assets/dashboard/Staff.png";
 import Subscriptions from "../../assets/dashboard/Subscriptions.png";
 import Vendors from "../../assets/dashboard/Vendors.png";
 import { db } from "../../firebase";
+import { setAllCustomersDetails } from "../../store/CustomerSlice";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [expenseAmount, setExpenseAmount] = useState({
@@ -42,8 +43,10 @@ const Dashboard = () => {
     projects: 0,
   });
   const userDetails = useSelector((state) => state.users);
-  const companyDetails =
-    userDetails.companies[userDetails.selectedCompanyIndex];
+  const companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
+  const dispatch = useDispatch();
+  const createOptionsRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const icons = {
     quick: [
@@ -159,8 +162,6 @@ const Dashboard = () => {
     ],
   };
 
-  const [isOpen, setIsOpen] = useState(false);
-
   const createOptions = [
     {
       name: "Invoice",
@@ -209,6 +210,19 @@ const Dashboard = () => {
     navigate(option.link);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (createOptionsRef.current && !createOptionsRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   async function fetchCountData() {
     try {
       const companyRef = doc(db, "companies", companyDetails.companyId);
@@ -240,7 +254,22 @@ const Dashboard = () => {
         getDocs(qVendors),
         getDocs(qStaff),
       ]);
+      const customersData = await Promise.all(
+        customersSnapshot.docs.map(async (doc) => {
+          const { createdAt, companyRef, ...data } = doc.data();
 
+          const amount = await fetchTotalAmount(doc.id);
+          return {
+            id: doc.id,
+            createdAt: JSON.stringify(createdAt),
+            companyRef: JSON.stringify(companyRef),
+            ...data,
+            amount,
+          };
+        })
+      );
+
+      dispatch(setAllCustomersDetails(customersData));
       const projectsCount = projectsSnapshot.size;
       const customersCount = customersSnapshot.size;
       const vendorsCount = vendorsSnapshot.size;
@@ -356,6 +385,57 @@ const Dashboard = () => {
       console.log("🚀 ~ fetchExpenseData ~ error:", error);
     }
   }
+
+  async function fetchTotalAmount(customerId) {
+    try {
+      const invoiceRef = collection(db, "companies", companyDetails.companyId, "invoices");
+      const serviceRef = collection(db, "companies", companyDetails.companyId, "services");
+      const customerRef = doc(db, "customers", customerId);
+      const expenseRef = collection(db, "companies", companyDetails.companyId, "expenses");
+      const invoiceQ = query(
+        invoiceRef,
+        where("customerDetails.customerRef", "==", customerRef)
+      );
+      const serviceQ = query(
+        serviceRef,
+        where("customerDetails.customerRef", "==", customerRef)
+      );
+      const q = query(
+        expenseRef,
+        where("toWhom.userRef", "==", customerRef),
+        where("transactionType", "==", "income")
+      );
+      const getExpenseDocs = await getDocs(q);
+
+      let expenseAmount = 0;
+
+      getExpenseDocs.docs.forEach((doc) => {
+        const data = doc.data();
+        expenseAmount += data.amount;
+      });
+
+      const invoiceQuerySnapshot = await getDocs(invoiceQ);
+      const serviesQuerySnapshot = await getDocs(serviceQ);
+      const customersInvoicesAmount = invoiceQuerySnapshot.docs.reduce(
+        (acc, cur) => {
+          const { total } = cur.data();
+          return (acc += +total);
+        },
+        0
+      );
+      const customersServiceAmount = serviesQuerySnapshot.docs.reduce(
+        (acc, cur) => {
+          const { total } = cur.data();
+          return (acc += +total);
+        },
+        0
+      );
+      return customersInvoicesAmount + customersServiceAmount + expenseAmount;
+    } catch (error) {
+      console.log("🚀 ~ fetchInvoiceList ~ error:", error);
+    }
+    return 0;
+  }
   useEffect(() => {
     fetchCountData();
     fetchExpenseData();
@@ -456,7 +536,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="w-3/5 flex items-center justify-end">
-                  <div className="relative cursor-pointer">
+                  <div className="relative cursor-pointer" ref={createOptionsRef}>
                     <div
                       className="bg-white px-4 py-2 rounded-lg flex items-center justify-between w-[200px] text-[#0366E6] text-[14px]"
                       onClick={() => setIsOpen(!isOpen)}

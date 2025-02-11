@@ -1,6 +1,6 @@
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Credit from "../../assets/dashboard/Credit.png";
 import Customers from "../../assets/dashboard/Customers.png";
@@ -19,9 +19,12 @@ import Purchase from "../../assets/dashboard/Purchase.png";
 import Subscriptions from "../../assets/dashboard/Subscriptions.png";
 import Vendors from "../../assets/dashboard/Vendors.png";
 import { db } from "../../firebase";
+import { setAllCustomersDetails } from "../../store/CustomerSlice";
 
 const StaffDashboard = ({ checkPermission, staffDetails }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch()
+
   const defaultIcons = {
     quick: [
       // {
@@ -190,8 +193,8 @@ const StaffDashboard = ({ checkPermission, staffDetails }) => {
   const [isOpen, setIsOpen] = useState(false);
   const userDetails = useSelector((state) => state.users);
   const companyDetails =
-    userDetails.companies[userDetails.selectedCompanyIndex];
-
+    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex];
+  const companyId = companyDetails.companyDetails.companyId
   const [icons, setIcons] = useState();
 
   const [createOptions, setCreateOptions] = useState();
@@ -203,7 +206,7 @@ const StaffDashboard = ({ checkPermission, staffDetails }) => {
 
   async function fetchCountData() {
     try {
-      const companyRef = doc(db, "companies", companyDetails.companyId);
+      const companyRef = doc(db, "companies", companyId);
       const qProjects = query(
         collection(db, "projects"),
         where("companyRef", "==", companyRef)
@@ -233,6 +236,22 @@ const StaffDashboard = ({ checkPermission, staffDetails }) => {
         getDocs(qStaff),
       ]);
 
+      const customersData = await Promise.all(
+        customersSnapshot.docs.map(async (doc) => {
+          const { createdAt, companyRef, ...data } = doc.data();
+
+          const amount = await fetchTotalAmount(doc.id);
+          return {
+            id: doc.id,
+            createdAt: JSON.stringify(createdAt),
+            companyRef: JSON.stringify(companyRef),
+            ...data,
+            amount,
+          };
+        })
+      );
+
+      dispatch(setAllCustomersDetails(customersData));
       const projectsCount = projectsSnapshot.size;
       const customersCount = customersSnapshot.size;
       const vendorsCount = vendorsSnapshot.size;
@@ -249,33 +268,34 @@ const StaffDashboard = ({ checkPermission, staffDetails }) => {
       console.log("🚀 ~ fetchDashboardData ~ error:", error);
     }
   }
+
   async function fetchExpenseData() {
     try {
       const expenseRef = collection(
         db,
         "companies",
-        companyDetails.companyId,
+        companyId,
         "expenses"
       );
       const invoiceRef = collection(
         db,
         "companies",
-        companyDetails.companyId,
+        companyId,
         "invoices"
       );
       const serviceRef = collection(
         db,
         "companies",
-        companyDetails.companyId,
+        companyId,
         "services"
       );
       const posRef = collection(
         db,
         "companies",
-        companyDetails.companyId,
+        companyId,
         "pos"
       );
-      const poRef = collection(db, "companies", companyDetails.companyId, "po");
+      const poRef = collection(db, "companies", companyId, "po");
 
       const [
         expenseSnapshot,
@@ -346,6 +366,58 @@ const StaffDashboard = ({ checkPermission, staffDetails }) => {
     );
     setIcons(filterIcons);
     setCreateOptions(filterCreateOptions);
+  }
+
+
+  async function fetchTotalAmount(customerId) {
+    try {
+      const invoiceRef = collection(db, "companies", companyId, "invoices");
+      const serviceRef = collection(db, "companies", companyId, "services");
+      const customerRef = doc(db, "customers", customerId);
+      const expenseRef = collection(db, "companies", companyId, "expenses");
+      const invoiceQ = query(
+        invoiceRef,
+        where("customerDetails.customerRef", "==", customerRef)
+      );
+      const serviceQ = query(
+        serviceRef,
+        where("customerDetails.customerRef", "==", customerRef)
+      );
+      const q = query(
+        expenseRef,
+        where("toWhom.userRef", "==", customerRef),
+        where("transactionType", "==", "income")
+      );
+      const getExpenseDocs = await getDocs(q);
+
+      let expenseAmount = 0;
+
+      getExpenseDocs.docs.forEach((doc) => {
+        const data = doc.data();
+        expenseAmount += data.amount;
+      });
+
+      const invoiceQuerySnapshot = await getDocs(invoiceQ);
+      const serviesQuerySnapshot = await getDocs(serviceQ);
+      const customersInvoicesAmount = invoiceQuerySnapshot.docs.reduce(
+        (acc, cur) => {
+          const { total } = cur.data();
+          return (acc += +total);
+        },
+        0
+      );
+      const customersServiceAmount = serviesQuerySnapshot.docs.reduce(
+        (acc, cur) => {
+          const { total } = cur.data();
+          return (acc += +total);
+        },
+        0
+      );
+      return customersInvoicesAmount + customersServiceAmount + expenseAmount;
+    } catch (error) {
+      console.log("🚀 ~ fetchInvoiceList ~ error:", error);
+    }
+    return 0;
   }
 
   useEffect(() => {
@@ -451,9 +523,8 @@ const StaffDashboard = ({ checkPermission, staffDetails }) => {
                       <span>Create</span>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className={`h-4 w-4 transition-transform ${
-                          isOpen ? "rotate-0" : "-rotate-90"
-                        }`}
+                        className={`h-4 w-4 transition-transform ${isOpen ? "rotate-0" : "-rotate-90"
+                          }`}
                         viewBox="0 0 512 512"
                       >
                         <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" />

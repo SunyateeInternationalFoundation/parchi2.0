@@ -4,11 +4,9 @@ import {
   doc,
   getDoc,
   getDocs,
-  query,
   serverTimestamp,
   Timestamp,
-  updateDoc,
-  where,
+  updateDoc
 } from "firebase/firestore";
 import { CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -47,11 +45,11 @@ function TaskSideBar({
     projectRef: {},
     startDate: "",
     stat: "",
-    status: "on-Going",
+    status: "On-Going",
     milestoneRef: [],
   });
   const [milestoneData, setMilestoneData] = useState([]);
-  const [staffData, setstaffData] = useState([]);
+  const [staffData, setStaffData] = useState([]);
   const [selectStaffData, setSelectStaffData] = useState([]);
   const [selectMileStoneData, setSelectMileStoneData] = useState([]);
 
@@ -72,20 +70,16 @@ function TaskSideBar({
           }));
           setMilestoneData(MilestonesData);
         } else if (typeOf === "AddStaff") {
-          const staffRef = collection(db, "staff");
-          const companyRef = doc(
-            db,
-            "companies",
-            userDetails.companies[userDetails.selectedCompanyIndex].companyId
-          );
+          const projectStaffRefs = doc(db, 'projects', projectId)
 
-          const q = query(staffRef, where("companyRef", "==", companyRef));
-          const querySnapshot = await getDocs(q);
-          const staffsData = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setstaffData(staffsData);
+          const getDocData = (await getDoc(projectStaffRefs)).data()
+          console.log("🚀 ~ fetchData ~ getDocData:", getDocData)
+          const staffsData = await Promise.all(getDocData.staffRef.map(async (docRef) => ({
+            id: docRef.id,
+            ...((await getDoc(docRef)).data())
+          })));
+
+          setStaffData(staffsData);
         }
         if (typeOf !== "CreateTask") {
           const taskRef = doc(db, "projects", projectId, "tasks", taskId);
@@ -117,7 +111,7 @@ function TaskSideBar({
       projectRef: {},
       startDate: "",
       stat: "",
-      status: "on-Going",
+      status: "On-Going",
       milestoneRef: [],
     });
   }
@@ -149,6 +143,7 @@ function TaskSideBar({
           ...formData,
           projectRef,
           createdAt: Timestamp.fromDate(new Date()),
+          who: userDetails.selectedDashboard === "staff" ? "staff" : "owner"
         };
         const taskRef = collection(db, "projects", projectId, "tasks");
         const ref = await addDoc(taskRef, payload);
@@ -192,15 +187,13 @@ function TaskSideBar({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={onClose}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform  ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`bg-white  pt-2 transform transition-transform  ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -284,14 +277,14 @@ function TaskSideBar({
                           className={cn(
                             "w-full flex justify-between items-center input-tag ",
                             !formData.startDate?.seconds &&
-                              "text-muted-foreground"
+                            "text-muted-foreground"
                           )}
                         >
                           {formData.startDate?.seconds ? (
                             formatDate(
                               new Date(
                                 formData.startDate?.seconds * 1000 +
-                                  formData.startDate?.nanoseconds / 1000000
+                                formData.startDate?.nanoseconds / 1000000
                               ),
                               "PPP"
                             )
@@ -307,7 +300,7 @@ function TaskSideBar({
                           selected={
                             new Date(
                               formData.startDate?.seconds * 1000 +
-                                formData.startDate?.nanoseconds / 1000000
+                              formData.startDate?.nanoseconds / 1000000
                             )
                           }
                           onSelect={(val) => {
@@ -333,14 +326,14 @@ function TaskSideBar({
                           className={cn(
                             "w-full flex justify-between items-center input-tag ",
                             !formData.endDate?.seconds &&
-                              "text-muted-foreground"
+                            "text-muted-foreground"
                           )}
                         >
                           {formData.endDate?.seconds ? (
                             formatDate(
                               new Date(
                                 formData.endDate?.seconds * 1000 +
-                                  formData.endDate?.nanoseconds / 1000000
+                                formData.endDate?.nanoseconds / 1000000
                               ),
                               "PPP"
                             )
@@ -356,7 +349,7 @@ function TaskSideBar({
                           selected={
                             new Date(
                               formData.endDate?.seconds * 1000 +
-                                formData.endDate?.nanoseconds / 1000000
+                              formData.endDate?.nanoseconds / 1000000
                             )
                           }
                           onSelect={(val) => {

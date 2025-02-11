@@ -78,7 +78,8 @@ function TransferSidebar({
 
   useEffect(() => {
     if (updateData?.id) {
-      setFormData(updateData);
+      const { id, ...rest } = updateData
+      setFormData(rest);
     }
   }, [updateData]);
 
@@ -86,6 +87,7 @@ function TransferSidebar({
     try {
       e.preventDefault();
       const companyRef = doc(db, "companies", companyId);
+
       const payload = {
         ...formData,
         companyRef,
@@ -129,8 +131,8 @@ function TransferSidebar({
         transferLog
       );
       alert(`successfully  ${updateData?.id ? "Edit " : "Create "} `);
-      ResetForm({ id: docId, ...payload });
-      refresh();
+      refresh({ id: docId, ...payload });
+      ResetForm();
       onClose();
     } catch (error) {
       console.log("🚀 ~ onSubmit ~ error:", error);
@@ -139,18 +141,16 @@ function TransferSidebar({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        isSideBarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isSideBarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={() => {
         onClose();
         ResetForm();
       }}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform  ${
-          isSideBarOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`bg-white  pt-2 transform transition-transform  ${isSideBarOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -189,7 +189,7 @@ function TransferSidebar({
                         formatDate(
                           new Date(
                             formData.date?.seconds * 1000 +
-                              formData.date?.nanoseconds / 1000000
+                            formData.date?.nanoseconds / 1000000
                           ),
                           "PPP"
                         )
@@ -205,7 +205,7 @@ function TransferSidebar({
                       selected={
                         new Date(
                           formData.date?.seconds * 1000 +
-                            formData.date?.nanoseconds / 1000000
+                          formData.date?.nanoseconds / 1000000
                         )
                       }
                       onSelect={(val) => {

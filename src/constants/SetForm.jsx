@@ -16,7 +16,7 @@ import {
   uploadBytes,
 } from "firebase/storage";
 import { CalendarIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -63,11 +63,24 @@ function SetForm(props) {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSignOpen, setIsSignOpen] = useState(false);
+  const signDropdownRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (signDropdownRef.current && !signDropdownRef.current.contains(event.target)) {
+        setIsSignOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   const [isPersonDropdownVisible, setIsPersonDropdownVisible] = useState(false);
   const [productSearch, setProductSearch] = useState("");
   const [isProductDropdownVisible, setIsProductDropdownVisible] =
     useState(false);
-  const [isSignOpen, setIsSignOpen] = useState(false);
   const [isProductSelected, setIsProductSelected] = useState(false);
 
   const purchaseList = ["Purchase", "PO", "DebitNote"];
@@ -1191,12 +1204,10 @@ function SetForm(props) {
                 </div>
                 <div className="w-full text-gray-500 space-y-2">
                   <div>Sign</div>
-                  <div className="  relative">
+          <div className="relative" ref={signDropdownRef}>
                     <div
                       className="border h-12 rounded-md cursor-pointer"
-                      onClick={() => {
-                        setIsSignOpen((val) => !val);
-                      }}
+              onClick={() => setIsSignOpen(!isSignOpen)}
                     >
                       {formData.sign ? (
                         <div className="flex items-center">
