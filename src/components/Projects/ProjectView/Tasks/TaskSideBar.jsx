@@ -4,11 +4,9 @@ import {
   doc,
   getDoc,
   getDocs,
-  query,
   serverTimestamp,
   Timestamp,
-  updateDoc,
-  where,
+  updateDoc
 } from "firebase/firestore";
 import { CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -51,7 +49,7 @@ function TaskSideBar({
     milestoneRef: [],
   });
   const [milestoneData, setMilestoneData] = useState([]);
-  const [staffData, setstaffData] = useState([]);
+  const [staffData, setStaffData] = useState([]);
   const [selectStaffData, setSelectStaffData] = useState([]);
   const [selectMileStoneData, setSelectMileStoneData] = useState([]);
 
@@ -72,20 +70,16 @@ function TaskSideBar({
           }));
           setMilestoneData(MilestonesData);
         } else if (typeOf === "AddStaff") {
-          const staffRef = collection(db, "staff");
-          const companyRef = doc(
-            db,
-            "companies",
-            userDetails.companies[userDetails.selectedCompanyIndex].companyId
-          );
+          const projectStaffRefs = doc(db, 'projects', projectId)
 
-          const q = query(staffRef, where("companyRef", "==", companyRef));
-          const querySnapshot = await getDocs(q);
-          const staffsData = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setstaffData(staffsData);
+          const getDocData = (await getDoc(projectStaffRefs)).data()
+          console.log("🚀 ~ fetchData ~ getDocData:", getDocData)
+          const staffsData = await Promise.all(getDocData.staffRef.map(async (docRef) => ({
+            id: docRef.id,
+            ...((await getDoc(docRef)).data())
+          })));
+
+          setStaffData(staffsData);
         }
         if (typeOf !== "CreateTask") {
           const taskRef = doc(db, "projects", projectId, "tasks", taskId);
