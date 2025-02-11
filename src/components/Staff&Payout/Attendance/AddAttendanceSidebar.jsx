@@ -243,74 +243,96 @@ function AddAttendanceSidebar({
             </div>
             <div className="overflow-y-auto" style={{ height: "70vh" }}>
               {staffData.length > 0 ? (
-                staffData.map((staff) => (
-                  <div key={staff.id} className="border-b-2 py-2">
-                    <div
-                      className="text-sm block font-semibold mt-2 p-2 flex justify-between items-center cursor-pointer"
-                      onClick={() => {
-                        const staffAttendanceData = getAttendanceStaffData(
-                          staff.id
-                        );
-                        if (staffAttendanceData?.status !== "present") {
-                          alert("select Attendance");
-                          return;
-                        }
-                        setActivePaymentDeductionsStaff({
-                          name: staff.name,
-                          isDailyWages: staff.isDailyWages,
-                          ...staffAttendanceData,
-                        });
-                      }}
-                    >
-                      {staff.name} <FaChevronRight />
-                    </div>
-                    <div className="flex">
-                      {["present", "absent", "leave", "holiday"].map(
-                        (attendance) => (
-                          <div
-                            key={attendance}
-                            className="flex-grow text-center"
-                          >
-                            <input
-                              type="radio"
-                              name={staff.id}
-                              id={attendance + staff.id}
-                              value={attendance}
-                              onChange={(e) =>
-                                onUpdatedStaffAttendance(e.target.value, staff)
-                              }
-                              className="hidden"
-                            />
-                            <label
-                              htmlFor={attendance + staff.id}
-                              className={`inline-block px-5 py-2 cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow ${
-                                getAttendanceStaffData(staff.id)?.status ===
-                                attendance
-                                  ? " border text-white" +
-                                    ((attendance === "present" &&
-                                      " bg-green-700 ") ||
-                                      (attendance === "absent" &&
-                                        " bg-red-700 ") ||
-                                      (attendance === "leave" &&
-                                        " bg-gray-500 ") ||
-                                      (attendance === "holiday" &&
-                                        " bg-purple-800 "))
-                                  : " bg-white text-gray-600 border "
-                              }`}
-                            >
-                              {attendance}
-                            </label>
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </div>
-                ))
+                staffData
+                  .filter((staff) => {
+                    const staffJoiningDate = new Date(
+                      staff.dateOfJoining.seconds * 1000
+                    );
+                    staffJoiningDate.setHours(0, 0, 0, 0); // Reset time to 00:00:00
+
+                    const selectedDate = new Date(
+                      attendanceForm.date?.seconds * 1000 +
+                        attendanceForm.date?.nanoseconds / 1000000
+                    );
+                    selectedDate.setHours(0, 0, 0, 0); // Reset time to 00:00:00
+
+                    return staffJoiningDate <= selectedDate;
+                  })
+                  .map((staff) => {
+                    console.log(staff);
+                    return (
+                      <div key={staff.id} className="border-b-2 py-2">
+                        <div
+                          className="text-sm block font-semibold mt-2 p-2 flex justify-between items-center cursor-pointer"
+                          onClick={() => {
+                            const staffAttendanceData = getAttendanceStaffData(
+                              staff.id
+                            );
+                            if (staffAttendanceData?.status !== "present") {
+                              alert("select Attendance");
+                              return;
+                            }
+                            setActivePaymentDeductionsStaff({
+                              name: staff.name,
+                              isDailyWages: staff.isDailyWages,
+                              ...staffAttendanceData,
+                            });
+                          }}
+                        >
+                          {staff.name} <FaChevronRight />
+                        </div>
+                        <div className="flex">
+                          {["present", "absent", "leave", "holiday"].map(
+                            (attendance) => (
+                              <div
+                                key={attendance}
+                                className="flex-grow text-center"
+                              >
+                                <input
+                                  type="radio"
+                                  name={staff.id}
+                                  id={attendance + staff.id}
+                                  value={attendance}
+                                  onChange={(e) =>
+                                    onUpdatedStaffAttendance(
+                                      e.target.value,
+                                      staff
+                                    )
+                                  }
+                                  className="hidden"
+                                />
+                                <label
+                                  htmlFor={attendance + staff.id}
+                                  className={`inline-block px-5 py-2 cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow ${
+                                    getAttendanceStaffData(staff.id)?.status ===
+                                    attendance
+                                      ? " border text-white" +
+                                        ((attendance === "present" &&
+                                          " bg-green-700 ") ||
+                                          (attendance === "absent" &&
+                                            " bg-red-700 ") ||
+                                          (attendance === "leave" &&
+                                            " bg-gray-500 ") ||
+                                          (attendance === "holiday" &&
+                                            " bg-purple-800 "))
+                                      : " bg-white text-gray-600 border "
+                                  }`}
+                                >
+                                  {attendance}
+                                </label>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
               ) : (
                 <div>No Staff Found</div>
               )}
             </div>
           </div>
+
           <div
             className="w-full border-t bg-white sticky bottom-0 px-5 py-3"
             style={{ height: "8vh" }}
