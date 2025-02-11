@@ -150,7 +150,11 @@ function Transfers({ transfersData, refreshTransfersData, productDetails }) {
           setIsSideBarOpen(false);
         }}
         updateData={updateData}
-        refresh={refreshTransfersData}
+        refresh={(data) => {
+          const modifiedData = transfersData.filter(ele => ele.id !== data.id)
+          refreshTransfersData([data, ...modifiedData])
+        }
+        }
       />
     </div>
   );
