@@ -1,5 +1,5 @@
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Business from "../../assets/dashboard/Business.png";
@@ -43,9 +43,11 @@ const Dashboard = () => {
     projects: 0,
   });
   const userDetails = useSelector((state) => state.users);
-  const companyDetails =
-    userDetails.companies[userDetails.selectedCompanyIndex];
-  const dispatch = useDispatch()
+  const companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
+  const dispatch = useDispatch();
+  const createOptionsRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
+
   const icons = {
     quick: [
       {
@@ -160,8 +162,6 @@ const Dashboard = () => {
     ],
   };
 
-  const [isOpen, setIsOpen] = useState(false);
-
   const createOptions = [
     {
       name: "Invoice",
@@ -209,6 +209,19 @@ const Dashboard = () => {
     setIsOpen(false);
     navigate(option.link);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (createOptionsRef.current && !createOptionsRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   async function fetchCountData() {
     try {
@@ -523,7 +536,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="w-3/5 flex items-center justify-end">
-                  <div className="relative cursor-pointer">
+                  <div className="relative cursor-pointer" ref={createOptionsRef}>
                     <div
                       className="bg-white px-4 py-2 rounded-lg flex items-center justify-between w-[200px] text-[#0366E6] text-[14px]"
                       onClick={() => setIsOpen(!isOpen)}
