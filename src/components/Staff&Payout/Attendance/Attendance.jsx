@@ -212,19 +212,26 @@ function Attendance() {
       </div>
       <div className="container2">
         <header className="flex justify-between items-center space-x-3 px-5">
-          <div className="flex space-x-3 item-center">
-            <h1 className="text-2xl font-bold">Attendance</h1>
-            <div>
-              <label htmlFor="monthFilter">Filter by Month:</label>
+          <div className="flex items-center space-x-5">
+            <h1 className="text-3xl font-bold text-gray-800">Attendance</h1>
+            <div className="flex items-center space-x-2">
+              <label
+                htmlFor="monthFilter"
+                className="text-lg font-medium text-gray-700"
+              >
+                Filter by Month:
+              </label>
               <input
                 id="monthFilter"
                 type="month"
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
-                className=" p-1 border rounded-lg"
+                className="p-2 border border-gray-400 rounded-md text-lg focus:outline-none focus:ring-1 focus:ring-gray-500"
+                pattern="\d{4}-\d{2}" // Ensures proper format
               />
             </div>
           </div>
+
           <button className="btn-add " onClick={() => setIsSidebarOpen(true)}>
             + Add Attendance
           </button>

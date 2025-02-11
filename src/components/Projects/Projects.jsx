@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../UI/select";
+import { IoMdList } from "react-icons/io";
 
 function Projects() {
   const userDetails = useSelector((state) => state.users);
@@ -27,6 +28,7 @@ function Projects() {
     delay: 0,
     total: 0,
   });
+  const [listView, setListView] = useState(true);
   let companyId;
   if (userDetails.selectedDashboard === "staff") {
     companyId =
@@ -103,6 +105,10 @@ function Projects() {
     }
     fetchProjectsList();
   }, [companyId]);
+
+  function handleListView() {
+    setListView(!listView);
+  }
 
   function DateFormate(timestamp) {
     const milliseconds =
@@ -188,7 +194,18 @@ function Projects() {
         </div>
       </div>
       <div className="py-5 ">
-        <nav className="flex mb-4 bg-white rounded-lg shadow items-center py-3 px-5">
+        <nav className="flex mb-1 bg-white rounded-lg shadow items-center py-3 px-5">
+          <div className="mr-3 flex justify-center items-center border rounded-lg">
+            <button
+              onClick={handleListView}
+              className={`p-2 rounded-md hover:bg-gray-400 ${
+                listView ? "bg-gray-500 text-white" : "bg-white text-black"
+              }`}
+            >
+              <IoMdList className="size-8" />
+            </button>
+          </div>
+
           <div className="space-x-4 w-full flex items-center">
             <div className="flex items-center space-x-4  border  px-5  py-3  rounded-lg w-full">
               <input
@@ -234,61 +251,126 @@ function Projects() {
           ) : (
             <div>
               {modifiedProjectsList.length > 0 ? (
-                <div className="grid grid-cols-3 gap-5 ">
-                  {modifiedProjectsList.map((item) => (
-                    <div
-                      className={` bg-white border cursor-pointer rounded-lg h-56 hover:shadow-lg shadow`}
-                      onClick={() => onViewProject(item)}
-                      key={item.projectId}
-                    >
-                      <div className="p-3 h-40">
-                        <div
-                          className={
-                            "rounded-lg  w-fit p-2 text-xs " +
-                            (item.status === "Delay"
-                              ? " bg-rose-100"
-                              : item.status === "Completed"
-                              ? " bg-green-100"
-                              : " bg-[hsl(250deg_92%_70%_/10%)]")
-                          }
-                        >
-                          {item.status}
-                        </div>
-                        <div className="py-3 space-y-1">
-                          <div className="font-bold">{item.name}</div>
-                          <div className="text-xs line-clamp-3">
-                            {item.description}
+                listView ? (
+                  <div className="grid grid-cols-3 gap-5 ">
+                    {modifiedProjectsList.map((item) => (
+                      <div
+                        className={` bg-white border cursor-pointer rounded-lg h-56 hover:shadow-lg shadow`}
+                        onClick={() => onViewProject(item)}
+                        key={item.projectId}
+                      >
+                        <div className="p-3 h-40">
+                          <div
+                            className={
+                              "rounded-lg  w-fit p-2 text-xs " +
+                              (item.status === "Delay"
+                                ? " bg-rose-100"
+                                : item.status === "Completed"
+                                ? " bg-green-100"
+                                : " bg-[hsl(250deg_92%_70%_/10%)]")
+                            }
+                          >
+                            {item.status}
+                          </div>
+                          <div className="py-3 space-y-1">
+                            <div className="font-bold">{item.name}</div>
+                            <div className="text-xs line-clamp-3">
+                              {item.description}
+                            </div>
+                          </div>
+                          {isDueDateEnd(item.dueDate) && (
+                            <div className="text-xs">
+                              <i>Project due time over kindly check it</i>
+                            </div>
+                          )}
+                          <div>
+                            Team:{" "}
+                            <span className="font-bold">
+                              {item.staffRef?.length || 0}
+                            </span>
                           </div>
                         </div>
-                        {isDueDateEnd(item.dueDate) && (
-                          <div className="text-xs">
-                            <i>Project due time over kindly check it</i>
+                        <div className=" flex justify-between  border-t px-3 py-1">
+                          <div>
+                            <div className="text-gray-700 text-sm">
+                              Assigned Date :{" "}
+                            </div>
+                            <div className="font-bold">{item.startDate}</div>
                           </div>
-                        )}
-                        <div>
-                          Team:{" "}
-                          <span className="font-bold">
-                            {item.staffRef?.length || 0}
-                          </span>
+                          <div>
+                            <div className="text-gray-700 text-sm">
+                              Due Date :{" "}
+                            </div>
+                            <div className="font-bold">{item.dueDate}</div>
+                          </div>
                         </div>
                       </div>
-                      <div className=" flex justify-between  border-t px-3 py-1">
-                        <div>
-                          <div className="text-gray-700 text-sm">
-                            Assigned Date :{" "}
-                          </div>
-                          <div className="font-bold">{item.startDate}</div>
-                        </div>
-                        <div>
-                          <div className="text-gray-700 text-sm">
-                            Due Date :{" "}
-                          </div>
-                          <div className="font-bold">{item.dueDate}</div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="w-full rounded-lg border-t border-b">
+                    <table className="w-full table-auto text-lg">
+                      <thead className="bg-gray-100 shadow-sm">
+                        <tr className="border-b">
+                          <th className="py-4 px-6 text-left font-bold text-gray-600">
+                            Project Name
+                          </th>
+                          <th className="py-4 px-6 text-left font-bold text-gray-600">
+                            Description
+                          </th>
+                          <th className="py-4 px-6 text-center font-bold text-gray-600">
+                            Team Size
+                          </th>
+                          <th className="py-4 px-6 text-center font-bold text-gray-600">
+                            Assigned Date
+                          </th>
+                          <th className="py-4 px-6 text-center font-bold text-gray-600">
+                            Due Date
+                          </th>
+                          <th className="py-4 px-6 text-center font-bold text-gray-600">
+                            Status
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {modifiedProjectsList.map((item) => (
+                          <tr
+                            key={item.projectId}
+                            className="border-b hover:bg-gray-50 cursor-pointer"
+                            onClick={() => onViewProject(item)}
+                          >
+                            <td className="py-4 px-6 text-left">{item.name}</td>
+                            <td className="py-4 px-6 text-left">
+                              {item.description}
+                            </td>
+                            <td className="py-4 px-6 text-center">
+                              {item.staffRef?.length || 0}
+                            </td>
+                            <td className="py-4 px-6 text-center">
+                              {item.startDate}
+                            </td>
+                            <td className="py-4 px-6 text-center">
+                              {item.dueDate}
+                            </td>
+                            <td className="py-4 px-6 text-center">
+                              <div
+                                className={`rounded-full w-fit py-1 px-3  text-sm text-center ${
+                                  item.status === "Delay"
+                                    ? "bg-rose-100 text-rose-600"
+                                    : item.status === "Completed"
+                                    ? "bg-green-100 text-green-600"
+                                    : "bg-blue-100 text-blue-600"
+                                }`}
+                              >
+                                {item.status}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )
               ) : (
                 <div className="text-center">
                   <div className="w-full flex justify-center">
