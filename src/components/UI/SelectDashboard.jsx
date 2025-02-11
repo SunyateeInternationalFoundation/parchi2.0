@@ -90,7 +90,7 @@ function SelectDashboard({ isOpen, onClose }) {
     }
     return (
         <div
-            className={`fixed inset-0 z-50 flex justify-end pt-[8vh] bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+            className={`fixed inset-0 z-[999] flex justify-end pt-[8vh] bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
                 }`}
             onClick={onClose}
         >

@@ -9,6 +9,7 @@ import {
   serverTimestamp,
   Timestamp,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { CalendarIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -35,14 +36,13 @@ function Tasks({ projectName }) {
   const { id } = useParams();
   const projectId = id;
   const userDetails = useSelector((state) => state.users);
-
-  let role =
-    userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
+  const staffDetails = userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
+  const role =
+    staffDetails?.roles
       ?.tasks;
   const [filter, setFilter] = useState("All");
   const [tasksDetails, setTasksDetails] = useState([]);
   const [filterTasksDetails, setFilterTasksDetails] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [selectedTask, setSelectedTask] = useState({});
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const [isProgressOpen, setIsProgressOpen] = useState(false);
@@ -51,15 +51,27 @@ function Tasks({ projectName }) {
   const [sideBarType, setSideBarType] = useState("");
   const [taskMessage, setTaskMessage] = useState("");
   const [taskMessagesData, setTaskMessagesData] = useState({});
+  const containerRef = useRef(null);
 
   async function fetchTaskData() {
+
+    if (userDetails.selectedDashboard === "staff" && !staffDetails?.phone) {
+      return
+    }
     try {
       const projectRef = collection(db, "projects", projectId, "tasks");
-      const querySnapshot = await getDocs(projectRef);
+      let querySnapshot
+      if (userDetails.selectedDashboard === "staff") {
+        const q = query(projectRef, where("addedStaffs", "array-contains", staffDetails?.phone))
+        querySnapshot = await getDocs(q);
+      } else {
+        querySnapshot = await getDocs(projectRef);
+      }
       const tasksData = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
+      console.log("🚀 ~ tasksData ~ tasksData:", tasksData)
       const ProgressPercentage = tasksData.reduce(
         (sum, task) => sum + (task.progressPercentage || 0),
         0
@@ -74,20 +86,14 @@ function Tasks({ projectName }) {
         const taskData = tasksData.find((ele) => ele.id === selectedTask.id);
         setSelectedTask(taskData);
       }
-      setLoading(false);
     } catch (error) {
       console.log("🚀 ~ fetchTaskData ~ error:", error);
     }
   }
 
-  useEffect(() => {
-    fetchTaskData();
-  }, []);
-
   async function modifiedTask(field, value) {
     try {
       const taskRef = doc(db, "projects", projectId, "tasks", selectedTask.id);
-
       await updateDoc(taskRef, { [field]: value });
       await addDoc(
         collection(
@@ -128,6 +134,7 @@ function Tasks({ projectName }) {
       console.log("🚀 ~ ModifiedTask ~ error:", error);
     }
   }
+
   async function onSendProgress() {
     try {
       if (taskMessage === "") {
@@ -139,6 +146,7 @@ function Tasks({ projectName }) {
         createdAt: Timestamp.fromDate(new Date()),
         senderId: userDetails.userId,
         senderName: userDetails.name,
+        senderPhone: userDetails.phone,
         msg: taskMessage,
       };
 
@@ -167,18 +175,6 @@ function Tasks({ projectName }) {
     }
   }
 
-  useEffect(() => {
-    function filterTasksData() {
-      if (filter !== "All") {
-        const filterTasks = tasksDetails.filter((ele) => ele.status === filter);
-        setFilterTasksDetails(filterTasks);
-      } else {
-        setFilterTasksDetails(tasksDetails);
-      }
-    }
-    filterTasksData();
-  }, [filter]);
-
   async function fetchTaskMessagesData() {
     if (!selectedTask.id) {
       return;
@@ -200,6 +196,7 @@ function Tasks({ projectName }) {
           id: doc.id,
           ...doc.data(),
         }));
+        console.log("🚀 ~ fetchTaskMessages ~ fetchTaskMessages:", fetchTaskMessages)
         setTaskMessagesData((val) => ({
           ...val,
           [selectedTask.id]: fetchTaskMessages,
@@ -209,13 +206,30 @@ function Tasks({ projectName }) {
       console.log("🚀 ~ fetchTaskMessagesData ~ error:", error);
     }
   }
+
+  useEffect(() => {
+    fetchTaskData();
+  }, [staffDetails]);
+
+  useEffect(() => {
+    function filterTasksData() {
+      if (filter !== "All") {
+        const filterTasks = tasksDetails.filter((ele) => ele.status === filter);
+        setFilterTasksDetails(filterTasks);
+      } else {
+        setFilterTasksDetails(tasksDetails);
+      }
+    }
+    filterTasksData();
+  }, [filter]);
+
   useEffect(() => {
     fetchTaskMessagesData();
     setProgressRange(0);
     setIsProgressOpen(false);
     setTaskMessage("");
   }, [selectedTask]);
-  const containerRef = useRef(null);
+
 
   useEffect(() => {
     if (containerRef.current) {
@@ -393,15 +407,15 @@ function Tasks({ projectName }) {
                         <button
                           className={cn(
                             "w-full flex justify-between items-center input-tag ",
-                            !selectedTask.startDate?.seconds &&
-                              "text-muted-foreground"
+                            (!selectedTask.startDate?.seconds &&
+                              " text-muted-foreground")
                           )}
                         >
                           {selectedTask.startDate?.seconds ? (
                             formatDate(
                               new Date(
                                 selectedTask.startDate?.seconds * 1000 +
-                                  selectedTask.startDate?.nanoseconds / 1000000
+                                selectedTask.startDate?.nanoseconds / 1000000
                               ),
                               "PPP"
                             )
@@ -417,7 +431,7 @@ function Tasks({ projectName }) {
                           selected={
                             new Date(
                               selectedTask.startDate?.seconds * 1000 +
-                                selectedTask.startDate?.nanoseconds / 1000000
+                              selectedTask.startDate?.nanoseconds / 1000000
                             )
                           }
                           onSelect={(val) => {
@@ -442,14 +456,14 @@ function Tasks({ projectName }) {
                           className={cn(
                             "w-full flex justify-between items-center input-tag ",
                             !selectedTask.endDate?.seconds &&
-                              "text-muted-foreground"
+                            "text-muted-foreground"
                           )}
                         >
                           {selectedTask.endDate?.seconds ? (
                             formatDate(
                               new Date(
                                 selectedTask.endDate?.seconds * 1000 +
-                                  selectedTask.endDate?.nanoseconds / 1000000
+                                selectedTask.endDate?.nanoseconds / 1000000
                               ),
                               "PPP"
                             )
@@ -465,7 +479,7 @@ function Tasks({ projectName }) {
                           selected={
                             new Date(
                               selectedTask.endDate?.seconds * 1000 +
-                                selectedTask.endDate?.nanoseconds / 1000000
+                              selectedTask.endDate?.nanoseconds / 1000000
                             )
                           }
                           onSelect={(val) => {
@@ -538,18 +552,23 @@ function Tasks({ projectName }) {
                         <div
                           key={index}
                           className={
-                            "bg-blue-300  p-2 rounded-lg flex justify-between items-center" +
+                            "bg-blue-300  p-2 rounded-lg flex justify-between" +
                             (item.senderId == userDetails.userId
                               ? " ms-64"
                               : " me-64")
                           }
                         >
-                          <div>{item.msg}</div>
-                          <div className="text-xs text-gray-500">
-                            {new Date(
-                              item.createdAt.seconds * 1000 +
+                          <div>
+                            {item.senderId !== userDetails.userId && <div className="text-xs text-gray-500">{item.senderPhone}</div>}
+                            <div>{item.msg}</div>
+                          </div>
+                          <div className="flex items-end  text-end">
+                            <div className="text-xs text-gray-500 ">
+                              {new Date(
+                                item.createdAt.seconds * 1000 +
                                 item.createdAt.nanoseconds / 1000000
-                            ).toLocaleString()}
+                              ).toLocaleString()}
+                            </div>
                           </div>
                         </div>
                       ))

@@ -71,7 +71,7 @@ const StaffHome = () => {
           staffSnapshot.docs.map(async (doc) => {
             const { companyRef, dateOfJoining, ...data } = doc.data();
             const companyDoc = await getDoc(companyRef);
-            const { userRef, ...companyData } = companyDoc.data();
+            const { userRef, planRef, createdAt, ...companyData } = companyDoc.data();
             return {
               id: doc.id,
               ...data,
@@ -79,6 +79,7 @@ const StaffHome = () => {
               companyDetails: {
                 companyId: companyDoc.id,
                 ...companyData,
+                createdAt: JSON.stringify(createdAt)
               },
             };
           })
