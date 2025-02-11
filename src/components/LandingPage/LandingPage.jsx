@@ -10,6 +10,8 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { FaStar } from "react-icons/fa";
+import { ImQuotesLeft } from "react-icons/im";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase";
@@ -224,126 +226,213 @@ const LandingPage = () => {
   console.log("confirmation result", confirmationResult);
   return (
     <div className="h-screen">
-      <nav className="text-white py-3 w-full ">
+      {/* <nav className="text-white py-3 w-full ">
         <div className="  flex justify-between  items-center px-4">
           <div className="text-2xl font-bold text-blue-600">Sunya</div>
-          {/* <div className="space-x-4">
-            <button
-              className={`px-4 py-2 font-medium rounded-md transition ${isLogin
-                ? "bg-blue-500 text-white"
-                : "bg-white text-blue-600 hover:bg-blue-500 hover:text-white"
-                }`}
-              onClick={() => setIsLogin(true)}
-            >
-              Login
-            </button>
-            <button
-              className={`px-4 py-2 font-medium rounded-md transition ${!isLogin
-                ? "bg-blue-500 text-white"
-                : "bg-white text-blue-600 hover:bg-blue-500 hover:text-white"
-                }`}
-              onClick={() => setIsLogin(false)}
-            >
-              Register
-            </button>
-          </div> */}
         </div>
-      </nav>
+      </nav> */}
       <div
-        className="bg-gray-100 flex justify-center items-center "
-        style={{ height: "92vh" }}
+        className="bg-gray-100 flex justify-center items-center h-screen "
       >
         {!isCompanyProfileDone ? (
           <CompanyForm userRef={userDocRef} />
         ) : (
-          <div className="max-w-lg w-full h-auto bg-gray-100">
-            <div className="shadow-md py-5 w-full  rounded-lg bg-white p-3">
-              <div className="text-center mb-3 text-3xl font-bold py-3 text-blue-600">
-                Sunya
-              </div>
-              {/*<div className="flex items-center justify-center text-2xl font-bold my-6">
-            Welcome to Sunya
-          </div> */}
 
-              <div>
-                <div className="h-96 overflow-y-auto">
-                  <div>
-                    <div className="w-full">
-                      <h2 className="text-1xl text-grey-500 mb-2">
-                        Enter phone number
-                      </h2>
-                      <div className="flex items-center mb-4">
-                        <span className="px-3 py-2 bg-gray-200 border border-r-0 rounded-l-md text-gray-700">
-                          +91
-                        </span>
-                        <input
-                          type="text"
-                          maxLength="10"
-                          placeholder="Enter your mobile number"
-                          value={phoneNumber}
-                          onChange={handlePhoneNumberChange}
-                          className="px-4 py-2 border rounded-r-md w-full focus:outline-none"
-                          required
-                        />
-                        {isOtpStage && (
-                          <button
-                            type="button"
-                            className="px-3 py-2 border border-l-0 rounded-r-md text-gray-700"
-                            onClick={() => setIsOtpStage(false)}
-                          >
-                            Edit
-                          </button>
-                        )}
+
+          <div className=" bg-[hsl(250,92%,70%)]  flex  justify-center items-center h-screen w-full">
+            <div className="flex flex-col gap-4 justify-center bg-white my-10 p-10 2xl:my-20 m-4 w-fit overflow-hidden xl:w-[calc(100vw-80px)]   2xl:w-[calc(100vw-160px)]  2xl:px-20 2xl:py-12 rounded-3xl  
+    ">
+              <div className="relative  rounded-xl">
+                <div className="flex flex-col xl:flex-row items-center w-full gap-y-12">
+                  <div className="basis-full xl:basis-1/2 w-full">
+                    <div className="w-full  xl:w-[480px]  relative z-20">
+                      <div className="max-w-lg w-full h-auto ">
+                        <div className="py-5 w-full  rounded-lg  p-3">
+                          <div className="text-center mb-3 text-3xl font-bold py-3 text-[hsl(250,92%,70%)]">
+                            Sunya
+                          </div>
+                          <div className=" text-2xl font-bold my-6">
+                            Welcome to Sunya
+                          </div>
+
+                          <div>
+                            <div className="h-96 overflow-y-auto">
+                              <div>
+                                <div className="w-full">
+                                  <h2 className="text-1xl text-grey-500 mb-2">
+                                    Phone
+                                  </h2>
+                                  <div className="flex items-center mb-4">
+                                    <span className="px-3 py-3 border border-r-0 rounded-l-md text-gray-700">
+                                      +91
+                                    </span>
+                                    <input
+                                      type="text"
+                                      maxLength="10"
+                                      placeholder="Enter your Phone number"
+                                      value={phoneNumber}
+                                      onChange={handlePhoneNumberChange}
+                                      className="px-4 py-3 border rounded-r-md w-full focus:outline-none"
+                                      required
+                                    />
+                                    {isOtpStage && (
+                                      <button
+                                        type="button"
+                                        className="px-3 py-2 border border-l-0 rounded-r-md text-gray-700"
+                                        onClick={() => setIsOtpStage(false)}
+                                      >
+                                        Edit
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                              {isOtpStage && (
+                                <div>
+                                  <h2 className="text-1xl text-grey-500 mb-2">Enter OTP</h2>
+                                  <input
+                                    type="text"
+                                    placeholder="Enter OTP"
+                                    value={otp}
+                                    onChange={(e) => setOtp(e.target.value)}
+                                    className="px-4 py-2 border rounded-md w-full mb-4"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                            {isOtpStage ? (
+                              <>
+                                <button
+                                  className="bg-[hsl(250,92%,70%)] text-white px-4 py-2 rounded-md w-full"
+                                  onClick={handleOtpSubmit}
+                                >
+                                  Verify OTP
+                                </button>
+
+                                <div className="text-sm text-gray-500 mt-3">
+                                  {countdown > 0
+                                    ? `You can request another OTP in ${countdown} seconds`
+                                    : ""}
+                                </div>
+                                {countdown === 0 && (
+                                  <button
+                                    className="mt-2 text-blue-500 underline"
+                                    onClick={handleResendOtp}
+                                  >
+                                    Resend OTP
+                                  </button>
+                                )}
+                              </>
+                            ) : (
+                              <button
+                                className="bg-[hsl(250,92%,70%)] text-white px-4 py-3 rounded-md w-full mt-4"
+                                onClick={handlePhoneNumberSubmit}
+                              >
+                                Submit
+                              </button>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  {isOtpStage && (
-                    <div>
-                      <h2 className="text-1xl text-grey-500 mb-2">Enter OTP</h2>
-                      <input
-                        type="text"
-                        placeholder="Enter OTP"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
-                        className="px-4 py-2 border rounded-md w-full mb-4"
-                      />
-                    </div>
-                  )}
-                </div>
-                {isOtpStage ? (
-                  <>
-                    <button
-                      className="bg-blue-500 text-white px-4 py-2 rounded-md w-full"
-                      onClick={handleOtpSubmit}
-                    >
-                      Verify OTP
-                    </button>
-
-                    <div className="text-sm text-gray-500 mt-3">
-                      {countdown > 0
-                        ? `You can request another OTP in ${countdown} seconds`
-                        : ""}
-                    </div>
-                    {countdown === 0 && (
-                      <button
-                        className="mt-2 text-blue-500 underline"
-                        onClick={handleResendOtp}
+                  <div className="basis-full xl:basis-1/2 hidden xl:block relative w-[500px] ">
+                    <svg
+                      className="absolute top-0 -right-0 "
+                      width="1008" height="580" viewBox="0 0 1208 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <g filter="url(#filter0_f_4801_13605)">
+                        <circle cx="604" cy="565" r="404" fill="url(#paint0_radial_4801_13605)" />
+                      </g>
+                      <defs>
+                        <filter id="filter0_f_4801_13605" x="0" y="-39" width="1208" height="1208" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                          <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                          <feGaussianBlur stdDeviation="100" result="effect1_foregroundBlur_4801_13605" />
+                        </filter>
+                        <radialGradient id="paint0_radial_4801_13605" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(805.322 373.168) rotate(134.675) scale(1098.13)">
+                          <stop stopColor="#826AF9" stopOpacity="0.6" />
+                          <stop offset="1" stopColor="#826AF9" stopOpacity="0" />
+                        </radialGradient>
+                      </defs>
+                    </svg>
+                    <div className="bg-[hsl(250,92%,70%)] h-full w-full rounded-3xl rounded-tr-none  xl:p-[40px] ltr:xl:pr-10 rtl:xl:pl-14 relative  overflow-hidden">
+                      <svg
+                        className="absolute -top-[25px] -right-6 hidden lg:block [&>*]:fill-background"
+                        width="209"
+                        height="162"
+                        viewBox="0 0 209 162"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
                       >
-                        Resend OTP
-                      </button>
-                    )}
-                  </>
-                ) : (
-                  <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded-md w-full mt-4"
-                    onClick={handlePhoneNumberSubmit}
-                  >
-                    Submit
-                  </button>
-                )}
+                        <path
+                          d="M62 25H0V0H209V162H185C184.317 129.162 169.576 122.271 158.235 120.921H121.512C100.402 119.676 90.7287 104.351 90.7287 93.7286V57.8571C89.4326 35.64 71.0009 26.7357 62 25Z"
+                          fill="white"
+                        />
+                      </svg>
+
+                      <div className="text-2xl lg:text-3xl xl:text-5xl font-semibold text-white rtl:pr-18">
+                        What’s Our <span className="xl:block"></span>
+                        Clients Say...
+                      </div>
+
+                      <div className="text-xl  mt-2 text-white flex gap-1">
+                        <span className="text-lg">
+                          <ImQuotesLeft />
+                        </span>
+                        DashTail is awesome friendly Admin Dashboard Template. If you
+                        manage your business in online then “DashTail” is for you. Buy
+                        Now & make user friendly your business today...
+                      </div>
+
+                      <div className=" bg-white overflow-hidden w-full  rounded-3xl rounded-tr-none  relative mt-11 pt-8 pb-7 pl-4">
+                        <div className="h-[72px] w-[72px] rounded-full  bg-white flex justify-center items-center absolute right-0 top-0 z-10">
+
+                          <div className="text-[40px] text-yellow-400"><FaStar /> </div>
+                        </div>
+                        <svg
+                          className="absolute -top-[25px] -right-6 [&>*]:fill-primary"
+                          width="209"
+                          height="162"
+                          viewBox="0 0 209 162"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M62 25H0V0H209V162H185C184.317 129.162 169.576 122.271 158.235 120.921H121.512C100.402 119.676 90.7287 104.351 90.7287 93.7286V57.8571C89.4326 35.64 71.0009 26.7357 62 25Z"
+                            fill="hsl(250,92%,70%)"
+                          />
+                        </svg>
+                        <div className="w-[90%] mx-auto">
+                          <div
+                            className="w-full h-full rounded-2xl "
+                          >
+                            <div>
+                              <div className="ltr:pl-4 rtl:pr-8 pb-10">
+                                <div className="text-lg lg:text-xl  font-semibold text-default-900 pr-10">
+                                  Prantik Chakraborty <br />
+                                  <span className="text-base font-medium text-default-700">
+                                    {" "}
+                                    UI/UX Designer at Codeshaper
+                                  </span>
+                                </div>
+                                <div className="text-lg  text-default-800 mt-4">
+                                  The key metric of whether you've succeeded is what
+                                  fraction of your employees use that dashboard
+                                  everyday.
+                                </div>
+                              </div>
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
         )}
       </div>
 

@@ -73,7 +73,6 @@ function TaskSideBar({
           const projectStaffRefs = doc(db, 'projects', projectId)
 
           const getDocData = (await getDoc(projectStaffRefs)).data()
-          console.log("🚀 ~ fetchData ~ getDocData:", getDocData)
           const staffsData = await Promise.all(getDocData.staffRef.map(async (docRef) => ({
             id: docRef.id,
             ...((await getDoc(docRef)).data())

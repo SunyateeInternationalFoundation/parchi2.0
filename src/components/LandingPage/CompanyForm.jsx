@@ -80,6 +80,9 @@ const CompanyForm = ({ userRef }) => {
 
   return (
     <div className="shadow-md py-5 w-full md:w-1/2 h-auto rounded-lg bg-white p-5 mx-auto">
+      <div className="text-center mb-3 text-3xl font-bold py-3 text-[hsl(250,92%,70%)]">
+        Sunya
+      </div>
       <div className="flex justify-between items-center mb-8">
         <div
           className={`flex-1 border-t-2 ${isActive === "user" || isActive === "company"
