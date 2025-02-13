@@ -39,6 +39,7 @@ function UserSidebar({ isOpen, onClose, projectId, projectDetails, Refresh }) {
   const handleTabClick = (tab) => {
     setActiveNavSideBar(tab);
   };
+
   useEffect(() => {
     const fetch_Cus_Vend_Staff_data = async (collectionName) => {
       setLoading(true);
@@ -125,7 +126,7 @@ function UserSidebar({ isOpen, onClose, projectId, projectDetails, Refresh }) {
         phoneNum = [...customersNumbers, ...vendersNumbers];
       }
 
-      selectedDataSet.forEach((fieldId) => {
+      selectedDataSet.forEach(async (fieldId) => {
         const ref = doc(db, field.collectionName, fieldId);
 
         const data = dataSet[activeNav].find((item) => fieldId === item.id);
@@ -140,6 +141,18 @@ function UserSidebar({ isOpen, onClose, projectId, projectDetails, Refresh }) {
         [field.name]: field.data,
       };
       await updateDoc(projectDocRef, payload);
+
+      // const notificationPayload = {
+      //   date: Timestamp.fromDate(new Date()),
+      //   from: userDetails.phone,
+      //   to: companyDetails.phone,
+      //   subject: "Approval",
+      //   description: `Your ${project.name} project ${data.name} approval status has been updated to ${value}.`,
+      //   companyName: companyDetails.name,
+      //   ref: approvalRef,
+      //   seen: false,
+      // }
+      // await addDoc(collection(db, field.collectionName, fieldId, "notifications"), notificationPayload)
 
       await addDoc(collection(db, "companies", companyId, "audit"), {
         ref: projectDocRef,
@@ -158,15 +171,13 @@ function UserSidebar({ isOpen, onClose, projectId, projectDetails, Refresh }) {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={onClose}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform  ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`bg-white  pt-2 transform transition-transform  ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -194,25 +205,22 @@ function UserSidebar({ isOpen, onClose, projectId, projectDetails, Refresh }) {
           <div className="flex justify-around mb-4">
             <button
               onClick={() => handleTabClick("customers")}
-              className={`btn-outline-black ${
-                activeNav === "customers" && "bg-black text-white"
-              }`}
+              className={`btn-outline-black ${activeNav === "customers" && "bg-black text-white"
+                }`}
             >
               Customers
             </button>
             <button
               onClick={() => handleTabClick("vendors")}
-              className={`btn-outline-black ${
-                activeNav === "vendors" && "bg-black text-white"
-              }`}
+              className={`btn-outline-black ${activeNav === "vendors" && "bg-black text-white"
+                }`}
             >
               Vendors
             </button>
             <button
               onClick={() => handleTabClick("staff")}
-              className={`btn-outline-black ${
-                activeNav === "staff" && "bg-black text-white"
-              }`}
+              className={`btn-outline-black ${activeNav === "staff" && "bg-black text-white"
+                }`}
             >
               Staff
             </button>

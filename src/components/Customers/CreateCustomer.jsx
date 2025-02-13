@@ -19,14 +19,14 @@ import {
 
 const CreateCustomer = ({ isOpen, onClose, customerData, refresh }) => {
   const userDetails = useSelector((state) => state.users);
-  let companyId;
+  let companyDetails;
   if (userDetails.selectedDashboard === "staff") {
-    companyId =
+    companyDetails =
       userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
-        .companyDetails.companyId;
+        .companyDetails;
   } else {
-    companyId =
-      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+    companyDetails =
+      userDetails.companies[userDetails.selectedCompanyIndex];
   }
 
   const [isUploading, setIsUploading] = useState(false);
@@ -93,7 +93,7 @@ const CreateCustomer = ({ isOpen, onClose, customerData, refresh }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const companyRef = doc(db, "companies", companyId);
+      const companyRef = doc(db, "companies", companyDetails.companyId);
       let customersRef = "";
       let customerLogs = {
         ref: customersRef,
@@ -131,9 +131,21 @@ const CreateCustomer = ({ isOpen, onClose, customerData, refresh }) => {
           createdAt: JSON.stringify(Timestamp.fromDate(new Date())),
         };
         dispatch(setCustomerDetails(payload));
+
+        const notificationPayload = {
+          date: Timestamp.fromDate(new Date()),
+          from: userDetails.phone,
+          to: formData.phone,
+          subject: companyDetails.name,
+          description: `You have been added as a customer to ${companyDetails.name}.`,
+          companyName: companyDetails.name,
+          ref: newCustomer,
+          seen: false,
+        }
+        await addDoc(collection(db, "customers", newCustomer.id, "notifications"), notificationPayload)
       }
       await addDoc(
-        collection(db, "companies", companyId, "audit"),
+        collection(db, "companies", companyDetails.companyId, "audit"),
         customerLogs
       );
       refresh();
@@ -146,15 +158,13 @@ const CreateCustomer = ({ isOpen, onClose, customerData, refresh }) => {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={onClose}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform  ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`bg-white  pt-2 transform transition-transform  ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >

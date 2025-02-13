@@ -3,6 +3,7 @@ import {
   collection,
   doc,
   serverTimestamp,
+  Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -15,14 +16,14 @@ import { db, storage } from "../../firebase";
 const CreateVendor = ({ isOpen, onClose, onVendorAdded, vendorData }) => {
   const userDetails = useSelector((state) => state.users);
 
-  let companyId;
+  let companyDetails;
   if (userDetails.selectedDashboard === "staff") {
-    companyId =
+    companyDetails =
       userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]
-        .companyDetails.companyId;
+        .companyDetails;
   } else {
-    companyId =
-      userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+    companyDetails =
+      userDetails.companies[userDetails.selectedCompanyIndex];
   }
 
   const [isUploading, setIsUploading] = useState(false);
@@ -108,13 +109,25 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded, vendorData }) => {
       } else {
         const ref = await addDoc(collection(db, "vendors"), {
           ...formData,
-          companyRef: doc(db, "companies", companyId),
+          companyRef: doc(db, "companies", companyDetails.companyId),
           createdAt: serverTimestamp(),
         });
         vendorLogs.ref = ref;
+
+        const notificationPayload = {
+          date: Timestamp.fromDate(new Date()),
+          from: userDetails.phone,
+          to: formData.phone,
+          subject: companyDetails.name,
+          description: `You have been added as a vendor to ${companyDetails.name}.`,
+          companyName: companyDetails.name,
+          ref: ref,
+          seen: false,
+        }
+        await addDoc(collection(db, "customers", ref.id, "notifications"), notificationPayload)
       }
 
-      await addDoc(collection(db, "companies", companyId, "audit"), vendorLogs);
+      await addDoc(collection(db, "companies", companyDetails.companyId, "audit"), vendorLogs);
       setFileName("");
       onClose();
       onVendorAdded();
@@ -125,15 +138,13 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded, vendorData }) => {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={onClose}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform  ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`bg-white  pt-2 transform transition-transform  ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >

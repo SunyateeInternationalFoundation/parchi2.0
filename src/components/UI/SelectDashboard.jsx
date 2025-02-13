@@ -90,14 +90,14 @@ function SelectDashboard({ isOpen, onClose }) {
     }
     return (
         <div
-            className={`fixed inset-0 z-[999] flex justify-end pt-[8vh] bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+            className={`fixed inset-0 z-[999] flex justify-end pt-[6vh] bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
                 }`}
             onClick={onClose}
         >
             <div
                 className={`bg-white w-1/3 p-3 pt-2 transform transition-transform overflow-y-auto ${isOpen ? "translate-x-0" : "translate-x-full"
                     }`}
-                style={{ maxHeight: "92vh" }}
+                style={{ maxHeight: "94vh" }}
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex justify-between border-b">

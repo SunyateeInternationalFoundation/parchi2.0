@@ -1,12 +1,16 @@
 import {
+  addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   query,
+  Timestamp,
   updateDoc,
-  where,
+  where
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { FaRegFilePdf } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import FormatTimestamp from "../../constants/FormatTimestamp";
@@ -19,7 +23,7 @@ import {
   SelectValue,
 } from "../UI/select";
 
-const Approval = () => {
+const Approval = ({ project }) => {
   const { id } = useParams();
   const projectId = id;
   const [approvals, setApprovals] = useState([]);
@@ -46,10 +50,23 @@ const Approval = () => {
     fetchApprovals();
   }, [projectId]);
 
-  const handleStatusChange = async (id, value) => {
+  const handleStatusChange = async (data, value) => {
     try {
-      const approvalRef = doc(db, `projects/${projectId}/approvals`, id);
+      const approvalRef = doc(db, `projects/${projectId}/approvals`, data.id);
+      const companyDetails = (await getDoc(doc(db, "companies", project.companyRef))).data()
       await updateDoc(approvalRef, { status: value });
+
+      const notificationPayload = {
+        date: Timestamp.fromDate(new Date()),
+        from: userDetails.phone,
+        to: companyDetails.phone,
+        subject: "Approval",
+        description: `Your ${project.name} project ${data.name} approval status has been updated to ${value}.`,
+        companyName: companyDetails.name,
+        ref: approvalRef,
+        seen: false,
+      }
+      await addDoc(collection(db, "companies", project.companyRef, "notifications"), notificationPayload)
     } catch (error) {
       console.error("Error updating status:", error);
     }
@@ -86,13 +103,15 @@ const Approval = () => {
                       <FormatTimestamp timestamp={approval.createdAt} />
                     </td>
                     <td className="px-5 py-3 text-start flex items-center">
-                      <img
-                        src={
-                          approval.imageUrl || "https://via.placeholder.com/50"
-                        }
-                        alt={approval.name}
-                        className="w-12 h-12 rounded-full mr-4"
-                      />
+                      {approval.typeOfFile == "Image" ? (
+                        <img
+                          src={approval.file.image}
+                          alt={approval.name}
+                          className="w-12 h-12 rounded-full mr-4"
+                        />
+                      ) : (
+                        <FaRegFilePdf size={36} className="mr-4" />
+                      )}
                       {approval.name}
                     </td>
 
@@ -101,7 +120,7 @@ const Approval = () => {
                         <Select
                           defaultValue={approval.status}
                           onValueChange={(val) => {
-                            handleStatusChange(val, approval.id);
+                            handleStatusChange(approval, val);
                           }}
                         >
                           <SelectTrigger>

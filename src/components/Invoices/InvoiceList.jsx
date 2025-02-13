@@ -6,6 +6,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -53,39 +54,7 @@ const InvoiceList = () => {
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.invoice;
   const navigate = useNavigate();
-  useEffect(() => {
-    const fetchInvoices = async () => {
-      setLoading(true);
-      try {
-        const invoiceRef = collection(db, "companies", companyId, "invoices");
 
-        const q = query(invoiceRef, orderBy("date", "desc"));
-        const querySnapshot = await getDocs(q);
-        const invoicesData = querySnapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            ...DateTimeFormate(data.date),
-            invoiceNo: data.prefix + "-" + data.invoiceNo,
-            customerName: data.customerDetails.name,
-            customerPhone: data.customerDetails.phone,
-            total: data.total,
-            paymentStatus: data.paymentStatus,
-            createdBy: data.createdBy.who,
-            mode: data.mode,
-          };
-        });
-        setTotalPages(Math.ceil(invoicesData.length / 10));
-        setInvoicePaginationData(invoicesData.slice(0, 10));
-        setInvoices(invoicesData);
-      } catch (error) {
-        console.error("Error fetching invoices:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchInvoices();
-  }, [companyId]);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -95,6 +64,16 @@ const InvoiceList = () => {
     try {
       const invoiceDoc = doc(db, "companies", companyId, "invoices", invoiceId);
       const data = invoices.find((d) => d.id === invoiceId);
+      const notificationPayload = {
+        date: Timestamp.fromDate(new Date()),
+        from: data.companyPhone,
+        to: data.customerPhone,
+        subject: "Invoice",
+        description: `Your invoice ${data.invoiceNo} status has been updated to ${newStatus}.`,
+        companyName: data.companyName,
+        ref: invoiceDoc,
+        seen: false,
+      }
 
       await updateDoc(invoiceDoc, { paymentStatus: newStatus });
       await addDoc(collection(db, "companies", companyId, "audit"), {
@@ -104,6 +83,8 @@ const InvoiceList = () => {
         action: "Update",
         description: `${data.invoiceNo} status updated by ${data.createdBy}`,
       });
+      await addDoc(collection(db, "customers", data.customerId, "notifications"), notificationPayload)
+
       setInvoices((prevInvoices) =>
         prevInvoices.map((invoice) =>
           invoice.id === invoiceId
@@ -125,31 +106,6 @@ const InvoiceList = () => {
   const pendingAmount = invoices
     .filter((invoice) => invoice.paymentStatus === "Pending")
     .reduce((sum, invoice) => sum + invoice.total, 0);
-
-  useEffect(() => {
-    const filteredInvoices = invoices.filter((invoice) => {
-      const { customerName, customerPhone, invoiceNo, paymentStatus } = invoice;
-      const matchesSearch =
-        customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        invoiceNo
-          ?.toString()
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        customerPhone
-          .toString()
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
-
-      const matchesStatus =
-        filterStatus === "All" || paymentStatus === filterStatus;
-
-      return matchesSearch && matchesStatus;
-    });
-
-    setInvoicePaginationData(
-      filteredInvoices.slice(currentPage * 10, currentPage * 10 + 10)
-    );
-  }, [currentPage, invoices, searchTerm, filterStatus]);
 
   const columns = [
     {
@@ -260,6 +216,69 @@ const InvoiceList = () => {
       width: 80,
     },
   ];
+
+  useEffect(() => {
+    const filteredInvoices = invoices.filter((invoice) => {
+      const { customerName, customerPhone, invoiceNo, paymentStatus } = invoice;
+      const matchesSearch =
+        customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        invoiceNo
+          ?.toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        customerPhone
+          .toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+
+      const matchesStatus =
+        filterStatus === "All" || paymentStatus === filterStatus;
+
+      return matchesSearch && matchesStatus;
+    });
+
+    setInvoicePaginationData(
+      filteredInvoices.slice(currentPage * 10, currentPage * 10 + 10)
+    );
+  }, [currentPage, invoices, searchTerm, filterStatus]);
+
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      setLoading(true);
+      try {
+        const invoiceRef = collection(db, "companies", companyId, "invoices");
+
+        const q = query(invoiceRef, orderBy("date", "desc"));
+        const querySnapshot = await getDocs(q);
+        const invoicesData = querySnapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...DateTimeFormate(data.date),
+            invoiceNo: data.prefix + "-" + data.invoiceNo,
+            customerName: data.customerDetails.name,
+            customerPhone: data.customerDetails.phone,
+            customerId: data.customerDetails.customerRef.id,
+            companyPhone: data.createdBy.phoneNo,
+            companyName: data.createdBy.name,
+            companyId: data.createdBy.companyRef.id,
+            total: data.total,
+            paymentStatus: data.paymentStatus,
+            createdBy: data.createdBy.who,
+            mode: data.mode,
+          };
+        });
+        setTotalPages(Math.ceil(invoicesData.length / 10));
+        setInvoicePaginationData(invoicesData.slice(0, 10));
+        setInvoices(invoicesData);
+      } catch (error) {
+        console.error("Error fetching invoices:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInvoices();
+  }, [companyId]);
 
   return (
     <div className="main-container" style={{ height: "92vh" }}>

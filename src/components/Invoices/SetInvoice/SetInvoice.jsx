@@ -236,7 +236,6 @@ const SetInvoice = () => {
       const payload = {
         ...restForm,
         ...rest,
-
         invoiceNo: no,
         prefix,
         createdBy,
@@ -280,6 +279,18 @@ const SetInvoice = () => {
         );
         payloadLog.ref = invoiceRef;
       }
+      const notificationPayload = {
+        date: Timestamp.fromDate(new Date()),
+        from: userDetails.phone,
+        to: selectedCustomerData.phone,
+        subject: "Invoice",
+        description: `${companyDetails.name} company ${payloadLog.action} invoice ${payload.prefix}-${payload.invoiceNo}.`,
+        companyName: companyDetails.name,
+        ref: invoiceRef,
+        seen: false,
+      }
+      await addDoc(collection(db, "customers", customerRef.id, "notifications"), notificationPayload)
+
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "audit"),
         payloadLog

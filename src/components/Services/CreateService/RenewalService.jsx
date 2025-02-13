@@ -168,6 +168,20 @@ function RenewalService() {
         collection(db, "companies", companyDetails.companyId, "services"),
         payload
       );
+
+      const notificationPayload = {
+        date: Timestamp.fromDate(new Date()),
+        from: userDetails.phone,
+        to: selectedCustomerData.phone,
+        subject: "Subscription",
+        description: `${companyDetails.name} company Renewal Subscription ${prefix}-${payload.serviceNo}.`,
+        companyName: companyDetails.name,
+        ref: serviceRef,
+        seen: false,
+      }
+
+      await addDoc(collection(db, "customers", customerRef.id, "notifications"), notificationPayload)
+
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "audit"),
         {

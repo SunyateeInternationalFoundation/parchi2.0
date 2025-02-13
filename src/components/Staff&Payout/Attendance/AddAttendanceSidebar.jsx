@@ -1,13 +1,11 @@
 import {
   addDoc,
   collection,
-  deleteDoc,
   doc,
+  getDoc,
   serverTimestamp,
   setDoc,
-  Timestamp,
-  query,
-  getDocs,
+  Timestamp
 } from "firebase/firestore";
 import { CalendarIcon } from "lucide-react";
 import PropTypes from "prop-types";
@@ -29,24 +27,17 @@ function AddAttendanceSidebar({
   onUpdateAttendance,
 }) {
   const [open, setOpen] = useState(false);
-  const [markedDates, setMarkedDates] = useState([]);
   const userDetails = useSelector((state) => state.users);
   const [activePaymentDeductionsStaff, setActivePaymentDeductionsStaff] =
     useState("");
   const companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
 
+  const [date, setDate] = useState(Timestamp.fromDate(new Date()))
   const [attendanceForm, setAttendanceForm] = useState({
-    date: Timestamp.fromDate(new Date()),
     staffs: [],
   });
 
-  useEffect(() => {
-    if (!onUpdateAttendance.id) {
-      return;
-    }
-    setAttendanceForm(onUpdateAttendance);
-  }, [onUpdateAttendance.id]);
 
   function getAttendanceStaffData(id) {
     return attendanceForm.staffs.find((ele) => ele.id === id);
@@ -70,8 +61,6 @@ function AddAttendanceSidebar({
     }));
   }
 
-  const today = new Date().toISOString().split("T")[0];
-
   function setDateAsId(timestamp) {
     if (!timestamp) {
       return;
@@ -88,7 +77,7 @@ function AddAttendanceSidebar({
   async function AddAttendance(e) {
     e.preventDefault();
     try {
-      const attendanceId = setDateAsId(attendanceForm.date);
+      const attendanceId = setDateAsId(date);
       if (!attendanceId) {
         alert("please Select Date");
         return;
@@ -105,27 +94,13 @@ function AddAttendanceSidebar({
       });
       let payload = {
         ...attendanceForm,
+        date,
         present,
         absent,
         createdAt: Timestamp.fromDate(new Date()),
       };
 
-      if (onUpdateAttendance.id) {
-        delete payload.id;
-        payload.createdAt = onUpdateAttendance.createdAt;
 
-        if (onUpdateAttendance.id != attendanceId) {
-          await deleteDoc(
-            doc(
-              db,
-              "companies",
-              companyId,
-              "staffAttendance",
-              onUpdateAttendance.id
-            )
-          );
-        }
-      }
 
       const ref = doc(
         db,
@@ -134,6 +109,7 @@ function AddAttendanceSidebar({
         "staffAttendance",
         attendanceId
       );
+
       await setDoc(ref, payload);
       await addDoc(collection(db, "companies", companyId, "audit"), {
         ref: ref,
@@ -155,6 +131,7 @@ function AddAttendanceSidebar({
       console.log("🚀 ~ AddAttendance ~ error:", error);
     }
   }
+
   function addPaymentDeductionToStaff(staffId, data) {
     const updatedAttendance = attendanceForm.staffs.map((ele) => {
       if (staffId === ele.id) {
@@ -165,17 +142,46 @@ function AddAttendanceSidebar({
     setAttendanceForm((val) => ({ ...val, staffs: updatedAttendance }));
   }
 
+  async function fetchingAttendance() {
+    const selectedDate = new Date(
+      date?.seconds * 1000 +
+      date?.nanoseconds / 1000000
+    )
+    const day = String(selectedDate.getDate()).padStart(2, '0');
+    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+    const year = selectedDate.getFullYear();
+    const attendanceId = `${day}${month}${year}`;
+    const attendanceData = await getDoc(doc(db, "companies", companyId, "staffAttendance", attendanceId))
+    if (!attendanceData.exists()) {
+      setAttendanceForm({
+        staffs: [],
+      })
+      return
+    }
+    setAttendanceForm(attendanceData.data());
+  }
+
+  useEffect(() => {
+    if (!onUpdateAttendance?.id) {
+      return;
+    }
+    setAttendanceForm(onUpdateAttendance);
+    setDate(onUpdateAttendance.date)
+  }, [onUpdateAttendance?.id]);
+
+  useEffect(() => {
+    fetchingAttendance()
+  }, [date])
+
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={onClose}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform  ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`bg-white  pt-2 transform transition-transform  ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -196,19 +202,19 @@ function AddAttendanceSidebar({
             <div>
               <label className="text-sm block font-semibold mt-2">Date</label>
 
-              <Popover open={open} onOpenChange={setOpen}>
+              <Popover open={open} onOpenChange={setOpen} >
                 <PopoverTrigger asChild>
                   <button
                     className={cn(
                       "w-full flex justify-between items-center input-tag ",
-                      !attendanceForm.date?.seconds && "text-muted-foreground"
+                      !date?.seconds && "text-muted-foreground"
                     )}
                   >
-                    {attendanceForm.date?.seconds ? (
+                    {date?.seconds ? (
                       formatDate(
                         new Date(
-                          attendanceForm.date?.seconds * 1000 +
-                            attendanceForm.date?.nanoseconds / 1000000
+                          date?.seconds * 1000 +
+                          date?.nanoseconds / 1000000
                         ),
                         "PPP"
                       )
@@ -223,21 +229,17 @@ function AddAttendanceSidebar({
                     mode="single"
                     selected={
                       new Date(
-                        attendanceForm.date?.seconds * 1000 +
-                          attendanceForm.date?.nanoseconds / 1000000
+                        date?.seconds * 1000 +
+                        date?.nanoseconds / 1000000
                       )
                     }
                     onSelect={(val) => {
                       if (val <= new Date()) {
-                        // Allow only past and present dates
-                        setAttendanceForm((pre) => ({
-                          ...pre,
-                          date: Timestamp.fromDate(new Date(val)),
-                        }));
-                        setOpen(false); // Close the calendar after selecting a date
+                        setDate(Timestamp.fromDate(new Date(val)));
+                        setOpen(false);
                       }
                     }}
-                    disabled={{ after: new Date() }} // Disable future dates
+                    disabled={{ after: new Date() }}
                     initialFocus
                     required
                   />
@@ -254,8 +256,8 @@ function AddAttendanceSidebar({
                     staffJoiningDate.setHours(0, 0, 0, 0); // Reset time to 00:00:00
 
                     const selectedDate = new Date(
-                      attendanceForm.date?.seconds * 1000 +
-                        attendanceForm.date?.nanoseconds / 1000000
+                      date?.seconds * 1000 +
+                      date?.nanoseconds / 1000000
                     );
                     selectedDate.setHours(0, 0, 0, 0); // Reset time to 00:00:00
 
@@ -305,20 +307,19 @@ function AddAttendanceSidebar({
                                 />
                                 <label
                                   htmlFor={attendance + staff.id}
-                                  className={`inline-block px-5 py-2 cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow ${
-                                    getAttendanceStaffData(staff.id)?.status ===
+                                  className={`inline-block px-5 py-2 cursor-pointer border rounded-lg transition-all ease-in-out text-sm m-1 shadow ${getAttendanceStaffData(staff.id)?.status ===
                                     attendance
-                                      ? " border text-white" +
-                                        ((attendance === "present" &&
-                                          " bg-green-700 ") ||
-                                          (attendance === "absent" &&
-                                            " bg-red-700 ") ||
-                                          (attendance === "leave" &&
-                                            " bg-gray-500 ") ||
-                                          (attendance === "holiday" &&
-                                            " bg-purple-800 "))
-                                      : " bg-white text-gray-600 border "
-                                  }`}
+                                    ? " border text-white" +
+                                    ((attendance === "present" &&
+                                      " bg-green-700 ") ||
+                                      (attendance === "absent" &&
+                                        " bg-red-700 ") ||
+                                      (attendance === "leave" &&
+                                        " bg-gray-500 ") ||
+                                      (attendance === "holiday" &&
+                                        " bg-purple-800 "))
+                                    : " bg-white text-gray-600 border "
+                                    }`}
                                 >
                                   {attendance}
                                 </label>

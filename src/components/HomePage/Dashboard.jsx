@@ -1,5 +1,5 @@
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Business from "../../assets/dashboard/Business.png";
@@ -45,7 +45,6 @@ const Dashboard = () => {
   const userDetails = useSelector((state) => state.users);
   const companyDetails = userDetails.companies[userDetails.selectedCompanyIndex];
   const dispatch = useDispatch();
-  const createOptionsRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const icons = {
@@ -210,19 +209,6 @@ const Dashboard = () => {
     navigate(option.link);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (createOptionsRef.current && !createOptionsRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
   async function fetchCountData() {
     try {
       const companyRef = doc(db, "companies", companyDetails.companyId);
@@ -286,6 +272,7 @@ const Dashboard = () => {
       console.log("🚀 ~ fetchDashboardData ~ error:", error);
     }
   }
+
   async function fetchExpenseData() {
     try {
       const expenseRef = collection(
@@ -442,42 +429,46 @@ const Dashboard = () => {
   }, [companyDetails]);
 
   return (
-    <div className="flex bg-white h-full">
+    <div className="flex bg-white h-full" onClick={() => {
+      if (isOpen) {
+        setIsOpen(false);
+      }
+    }}>
       <main className="flex w-full overflow-y-auto">
         <div className="w-full">
           <div className="px-6 py-2 border-b shadow">
             <div className="font-semibold flex items-center space-x-2">
-              <img src={hello} width="50px" height="46px" />
+              <img src={hello} width="40px" height="36px" />
               <div className="text-[20px]">Hey, {userDetails.name}</div>
             </div>
             <div className="shadow border rounded-2xl">
               <div className="flex items-center justify-between border px-6 py-2 rounded-t-2xl">
                 <div className="flex items-center w-3/4 space-x-4">
-                  <div className="border  w-[89px] h-[89px] shadow flex items-center justify-center">
+                  <div className="border  w-[70px] h-[70px] shadow flex items-center justify-center">
                     {companyDetails.companyLogo ? (
                       <img
                         src={companyDetails.companyLogo}
-                        className="rounded-md object-contain w-[89px] h-[89px]"
+                        className="rounded-md object-contain w-[70px] h-[70px]"
                       />
                     ) : (
                       <img
                         src={man}
-                        className="rounded-full object-contain w-[89px] h-[89px]"
+                        className="rounded-full object-contain w-[70px] h-[70px]"
                       />
                     )}
                   </div>
                   <div className="space-y-2">
                     <div>
-                      <div className="text-[24px] font-semibold">
+                      <div className="text-[20px] font-semibold">
                         {companyDetails.name}
                       </div>
-                      <div className="text-[16px]">
+                      <div className="text-[14px]">
                         {companyDetails.address}
                       </div>
                     </div>
-                    <div className="flex items-center space-x-8 text-[14px]">
+                    <div className="flex items-center space-x-8 text-[12px]">
                       <div>Plan</div>
-                      <div className="rounded-2xl px-4 py-1 bg-[#0060E6] text-white">
+                      <div className="rounded-2xl px-3 py-1 bg-[#0060E6] text-white">
                         Free
                       </div>
                     </div>
@@ -486,8 +477,8 @@ const Dashboard = () => {
                 <div className="flex items-center justify-around w-full space-x-3">
                   <div className="border-r w-full flex justify-between pe-2">
                     <div>
-                      <div className="text-[16px]">Expense</div>
-                      <div className="text-[24px] font-bold">
+                      <div className="text-[14px]">Expense</div>
+                      <div className="text-[20px] font-bold">
                         Rs {expenseAmount.expense.toFixed(1)}
                       </div>
                     </div>
@@ -498,8 +489,8 @@ const Dashboard = () => {
                   <div className="border-r w-full">
                     <div className="border-r w-full flex justify-between pe-2">
                       <div>
-                        <div className="text-[16px]">Income</div>
-                        <div className="text-[24px] font-bold">
+                        <div className="text-[14px]">Income</div>
+                        <div className="text-[20px] font-bold">
                           Rs {expenseAmount.income.toFixed(1)}
                         </div>
                       </div>
@@ -509,36 +500,36 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <div className="w-full">
-                    <div className="text-[16px]">Balance</div>
-                    <div className="text-[24px] font-bold">
+                    <div className="text-[14px]">Balance</div>
+                    <div className="text-[20px] font-bold">
                       Rs {expenseAmount.balance.toFixed(1)}
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="flex bg-gradient-to-r from-[#2788FF] via-[#0059D5] to-[#0570F3] px-6 py-2 rounded-b-2xl h-[87px]">
+              <div className="flex bg-gradient-to-r from-[#2788FF] via-[#0059D5] to-[#0570F3] px-6 py-2 rounded-b-2xl h-[70px]">
                 <div className="flex items-center justify-between text-center w-full text-white font-bold">
                   <div>
-                    <div className="text-[14px]">Customers</div>
-                    <div className="text-[40px]">{countItems.customers}</div>
+                    <div className="text-[12px]">Customers</div>
+                    <div className="text-[30px]">{countItems.customers}</div>
                   </div>
                   <div>
-                    <div className="text-[14px]">Vendors</div>
-                    <div className="text-[40px]">{countItems.vendors}</div>
+                    <div className="text-[12px]">Vendors</div>
+                    <div className="text-[30px]">{countItems.vendors}</div>
                   </div>
                   <div>
-                    <div className="text-[14px]">Staff</div>
-                    <div className="text-[40px]">{countItems.staff}</div>
+                    <div className="text-[12px]">Staff</div>
+                    <div className="text-[30px]">{countItems.staff}</div>
                   </div>
                   <div>
-                    <div className="text-[14px]">Projects</div>
-                    <div className="text-[40px]">{countItems.projects}</div>
+                    <div className="text-[12px]">Projects</div>
+                    <div className="text-[30px]">{countItems.projects}</div>
                   </div>
                 </div>
                 <div className="w-3/5 flex items-center justify-end">
-                  <div className="relative cursor-pointer" ref={createOptionsRef}>
+                  <div className="relative cursor-pointer">
                     <div
-                      className="bg-white px-4 py-2 rounded-lg flex items-center justify-between w-[200px] text-[#0366E6] text-[14px]"
+                      className="bg-white px-4 py-2 rounded-xl flex items-center justify-between w-[200px] text-[#0366E6] text-[14px]"
                       onClick={() => setIsOpen(!isOpen)}
                     >
                       <span>Create</span>
@@ -579,10 +570,10 @@ const Dashboard = () => {
                   <div className="flex items-center justify-center">
                     <img
                       src={item.img}
-                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-contain w-[60px] h-[60px]"
+                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-contain w-[50px] h-[50px]"
                     />
                   </div>
-                  <div className="text-center font-inria-sans text-[16px] py-2">
+                  <div className="text-center text-[12px]">
                     {item.name}
                   </div>
                 </div>
@@ -600,10 +591,10 @@ const Dashboard = () => {
                   <div className="flex items-center justify-center">
                     <img
                       src={item.img}
-                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-contain w-[60px] h-[60px]"
+                      className="bg-[#F0F4F8] p-3 rounded-2xl hover:shadow object-contain w-[50px] h-[50px]"
                     />
                   </div>
-                  <div className="text-center">{item.name}</div>
+                  <div className="text-center text-[12px]">{item.name}</div>
                 </div>
               ))}
             </div>
@@ -611,17 +602,17 @@ const Dashboard = () => {
         </div>
         <div className="w-1/3 border px-4 py-2">
           <div>
-            <div className="font-inria-sans bg-gradient-to-r from-[#3FC2C9] to-[#0C9DA0] rounded-t-2xl py-2 text-white h-[220px] relative">
-              <div className="text-6xl font-bold pt-5 px-4">₹199</div>
-              <div className="text-[15px] px-4">per month</div>
-              <div className="text-center bottom-6 absolute w-full text-[16px]">
+            <div className="font-inria-sans bg-gradient-to-r from-[#3FC2C9] to-[#0C9DA0] rounded-t-2xl py-2 text-white h-[200px] relative">
+              <div className="text-4xl font-bold pt-5 px-4">₹199</div>
+              <div className="text-[12px] px-4">per month</div>
+              <div className="text-center bottom-6 absolute w-full text-[12px]">
                 Choose best plan for you!
               </div>
             </div>
-            <div className="border-2 border-dashed rounded-b-2xl flex justify-between items-center px-4 py-2">
+            <div className="border-2 border-dashed rounded-b-2xl flex justify-between items-center px-4 py-2 text-[12px]">
               <div>Details</div>
               <div
-                className="bg-black rounded-full py-2 px-4 text-white cursor-pointer text-[16px]"
+                className="bg-black rounded-full py-2 px-4 text-white cursor-pointer "
                 onClick={() => navigate("/settings/subscription-plan")}
               >
                 Upgrade
@@ -633,16 +624,16 @@ const Dashboard = () => {
             {icons.more.map((item) => (
               <div
                 key={item.name}
-                className="shadow border rounded-2xl h-[140px] cursor-pointer"
+                className="shadow border rounded-2xl h-[110px] cursor-pointer"
                 onClick={() => navigate(item.link)}
               >
-                <div className="bg-[#F0F4F8] rounded-t-2xl text-white flex justify-center items-center h-[99px]">
+                <div className="bg-[#F0F4F8] rounded-t-2xl text-white flex justify-center items-center h-[80px]">
                   <img
                     src={item.img}
-                    className="object-contain w-[56px] h-[56px]"
+                    className="object-contain w-[50px] h-[50px]"
                   />
                 </div>
-                <div className="rounded-b-2xl text-center px-4 py-2 text-[14px]">
+                <div className="rounded-b-2xl text-center px-4 py-1 text-[12px]">
                   {item.name}
                 </div>
               </div>

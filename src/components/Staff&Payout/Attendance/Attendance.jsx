@@ -23,7 +23,7 @@ function Attendance() {
   const [loading, setLoading] = useState(false);
   const [staffData, setStaffData] = useState([]);
   const [staffAttendance, setStaffAttendance] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState(currentMonthYear());
   const [overallSalary, setOverallSalary] = useState(0);
   const [onUpdateAttendance, setOnUpdateAttendance] = useState({});
   const [currentPage, setCurrentPage] = useState(0);
@@ -33,6 +33,13 @@ function Attendance() {
   const userDetails = useSelector((state) => state.users);
   const companyId =
     userDetails.companies[userDetails.selectedCompanyIndex].companyId;
+
+  function currentMonthYear() {
+    const date = new Date();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${year}-${month}`;
+  }
 
   async function fetchStaffData() {
     setLoading(true);
@@ -98,6 +105,8 @@ function Attendance() {
       setLoading(false);
     }
   }
+
+
   useEffect(() => {
     fetchStaffData();
     fetchStaffAttendance();

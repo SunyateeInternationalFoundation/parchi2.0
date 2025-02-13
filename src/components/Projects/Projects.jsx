@@ -1,6 +1,8 @@
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineHome } from "react-icons/ai";
+import { CiGrid41 } from "react-icons/ci";
+import { IoMdList } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -13,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../UI/select";
-import { IoMdList } from "react-icons/io";
 
 function Projects() {
   const userDetails = useSelector((state) => state.users);
@@ -195,14 +196,12 @@ function Projects() {
       </div>
       <div className="py-5 ">
         <nav className="flex mb-1 bg-white rounded-lg shadow items-center py-3 px-5">
-          <div className="mr-3 flex justify-center items-center border rounded-lg">
+          <div className="mr-3 flex justify-center items-center border border-gray-300 rounded-lg">
             <button
               onClick={handleListView}
-              className={`p-2 rounded-md hover:bg-gray-400 ${
-                listView ? "bg-gray-500 text-white" : "bg-white text-black"
-              }`}
+              className={`p-2 rounded-md  hover:bg-black hover:text-white text-2xl`}
             >
-              <IoMdList className="size-8" />
+              {!listView ? <CiGrid41 /> : <IoMdList />}
             </button>
           </div>
 
@@ -266,8 +265,8 @@ function Projects() {
                               (item.status === "Delay"
                                 ? " bg-rose-100"
                                 : item.status === "Completed"
-                                ? " bg-green-100"
-                                : " bg-[hsl(250deg_92%_70%_/10%)]")
+                                  ? " bg-green-100"
+                                  : " bg-[hsl(250deg_92%_70%_/10%)]")
                             }
                           >
                             {item.status}
@@ -319,7 +318,7 @@ function Projects() {
                             Description
                           </th>
                           <th className="py-4 px-6 text-center font-bold text-gray-600">
-                            Team Size
+                            Status
                           </th>
                           <th className="py-4 px-6 text-center font-bold text-gray-600">
                             Assigned Date
@@ -328,7 +327,7 @@ function Projects() {
                             Due Date
                           </th>
                           <th className="py-4 px-6 text-center font-bold text-gray-600">
-                            Status
+                            Team Size
                           </th>
                         </tr>
                       </thead>
@@ -343,8 +342,17 @@ function Projects() {
                             <td className="py-4 px-6 text-left">
                               {item.description}
                             </td>
-                            <td className="py-4 px-6 text-center">
-                              {item.staffRef?.length || 0}
+                            <td className="py-4 px-6 text-center flex justify-center items-center">
+                              <div
+                                className={`rounded-md w-fit py-1 px-3  text-sm text-center  ${item.status === "Delay"
+                                  ? "bg-rose-100 text-rose-600"
+                                  : item.status === "Completed"
+                                    ? "bg-green-100 text-green-600"
+                                    : "bg-blue-100 text-blue-600"
+                                  }`}
+                              >
+                                {item.status}
+                              </div>
                             </td>
                             <td className="py-4 px-6 text-center">
                               {item.startDate}
@@ -353,17 +361,7 @@ function Projects() {
                               {item.dueDate}
                             </td>
                             <td className="py-4 px-6 text-center">
-                              <div
-                                className={`rounded-full w-fit py-1 px-3  text-sm text-center ${
-                                  item.status === "Delay"
-                                    ? "bg-rose-100 text-rose-600"
-                                    : item.status === "Completed"
-                                    ? "bg-green-100 text-green-600"
-                                    : "bg-blue-100 text-blue-600"
-                                }`}
-                              >
-                                {item.status}
-                              </div>
+                              {item.staffRef?.length || 0}
                             </td>
                           </tr>
                         ))}

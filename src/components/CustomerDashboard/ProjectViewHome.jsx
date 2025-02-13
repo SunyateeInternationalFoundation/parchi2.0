@@ -62,7 +62,7 @@ function ProjectViewHome() {
     {
       name: "Approvals",
       icon: <BsFileEarmarkCheck />,
-      component: <Approval />,
+      component: <Approval project={project} />,
     },
   ];
 

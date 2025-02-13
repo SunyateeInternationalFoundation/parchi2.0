@@ -42,19 +42,20 @@ function Sidebar2() {
   ];
   return (
     <aside
-      className="relative w-[120px] 
-   bg-[#182238] border-r border-[#D9D9D9] text-white font-inter text-xs font-normal leading-4 text-left underline-offset-auto decoration-slice"
+      className="relative w-[70px] 
+   bg-[#182238] border-r border-[#D9D9D9] text-white font-inter text-[10px] font-normal leading-4 text-left underline-offset-auto decoration-slice"
+
     >
       <div
-        className="space-y-3 mt-3 cursor-pointer"
+        className="space-y-3 mt-3 mb-5 cursor-pointer"
         onClick={() => navigate("/")}
       >
         <div className="flex items-center justify-center">
-          <AiOutlineHome size={35} />
+          <AiOutlineHome size={25} />
         </div>
         <div className="text-center">Home</div>
       </div>
-      <ul className="flex flex-col p-4 space-y-9">
+      <ul className="flex flex-col space-y-5">
         {navbar.map((item) => (
           <li
             className="font-semibold cursor-pointer"
@@ -63,7 +64,7 @@ function Sidebar2() {
           >
             <div className="space-y-3 ">
               <div className="flex items-center justify-center">
-                <img src={item.img} width="35px" height="35px" />
+                <img src={item.img} width="25px" height="25px" />
               </div>
               <div className="text-center">{item.name}</div>
             </div>
@@ -78,7 +79,7 @@ function Sidebar2() {
         }}
       >
         <div className="flex items-center justify-center ">
-          <img src={signOut} width="35px" height="35px" />
+          <img src={signOut} width="25px" height="25px" />
         </div>
         <div className="text-center">Logout</div>
       </div>

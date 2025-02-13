@@ -354,6 +354,20 @@ function SetService() {
         );
         payloadLog.ref = serviceRef;
       }
+
+      const notificationPayload = {
+        date: Timestamp.fromDate(new Date()),
+        from: userDetails.phone,
+        to: selectedCustomerData.phone,
+        subject: "Subscription",
+        description: `${companyDetails.name} company ${payloadLog.action} Subscription ${prefix}-${payload.serviceNo}.`,
+        companyName: companyDetails.name,
+        ref: serviceRef,
+        seen: false,
+      }
+      await addDoc(collection(db, "customers", customerRef.id, "notifications"), notificationPayload)
+
+
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "audit"),
         payloadLog

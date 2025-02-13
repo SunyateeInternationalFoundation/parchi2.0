@@ -278,7 +278,7 @@ const LandingPage = () => {
                                     {isOtpStage && (
                                       <button
                                         type="button"
-                                        className="px-3 py-2 border border-l-0 rounded-r-md text-gray-700"
+                                        className="px-3 py-3 border border-l-0 rounded-r-md text-gray-700"
                                         onClick={() => setIsOtpStage(false)}
                                       >
                                         Edit

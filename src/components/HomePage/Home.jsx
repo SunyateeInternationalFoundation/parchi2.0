@@ -100,13 +100,13 @@ const Home = () => {
   return (
     <div>
       {!noSideBarNavbar && (
-        <div style={{ height: "8vh" }}>
+        <div style={{ height: "6vh" }}>
           {/* {location.pathname !== "/home" && <Navbar />} */}
 
           <Navbar />
         </div>
       )}
-      <div className="flex" style={{ height: "92vh" }}>
+      <div className="flex" style={{ height: "94vh" }}>
         {!noSideBarNavbar && <Sidebar2 />}
         {/* <Sidebar2 /> */}
         {/* {!noSideBarPagesList ? (
@@ -123,7 +123,7 @@ const Home = () => {
           </div>
         )}
 
-        <div style={{ width: "100%", height: "92vh" }} className="bg-gray-100">
+        <div style={{ width: "100%", height: "94vh" }} className="bg-gray-100">
           <Routes>
             <Route path="/" element={<Dashboard />}></Route>
             <Route path="/invoice" element={<InvoiceList />}></Route>
@@ -242,8 +242,8 @@ const Home = () => {
               path="/staff-payout/attendance"
               element={<Attendance />}
             ></Route> */}
-            <Route path = "/staff-payout/payout" element = {<Payout />} />
-           
+            <Route path="/staff-payout/payout" element={<Payout />} />
+
 
             <Route path="/subscriptions" element={<Services />}></Route>
             <Route

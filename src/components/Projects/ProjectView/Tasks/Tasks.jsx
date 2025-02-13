@@ -151,6 +151,7 @@ function Tasks({ projectName }) {
       };
 
       await addDoc(collection(taskRef, "taskMessages"), payloadTaskMSG);
+
       if (progressRange !== 0 && !isProgressOpen) {
         await updateDoc(taskRef, {
           progressPercentage: +(
@@ -167,6 +168,7 @@ function Tasks({ projectName }) {
         setTasksDetails(updatedTaskData);
         setProgressPercent((val) => val + ProgressPercentage1);
       }
+
       setProgressRange(0);
       setTaskMessage("");
       alert("successfully Sended The MSG");
@@ -196,7 +198,6 @@ function Tasks({ projectName }) {
           id: doc.id,
           ...doc.data(),
         }));
-        console.log("🚀 ~ fetchTaskMessages ~ fetchTaskMessages:", fetchTaskMessages)
         setTaskMessagesData((val) => ({
           ...val,
           [selectedTask.id]: fetchTaskMessages,
