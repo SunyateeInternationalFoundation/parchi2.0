@@ -522,7 +522,7 @@ function RenewalService() {
   }, [membershipStartDate, membershipPeriod]);
 
   return (
-    <div className="bg-gray-100 overflow-y-auto" style={{ height: "92vh" }}>
+    <div className="bg-gray-100 overflow-y-auto" style={{ height: "94vh" }}>
       <div className="px-5 pb-5">
         <header className="flex items-center space-x-3  my-2">
           <Link className="flex items-center" to={"./../"}>

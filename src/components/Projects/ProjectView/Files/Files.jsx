@@ -217,7 +217,7 @@ const Files = ({ projectName }) => {
             </button>
           )}
         </div>
-        <div className=" overflow-hidden " style={{ minHeight: "92vh" }}>
+        <div className=" overflow-hidden " style={{ minHeight: "94vh" }}>
           <table className="w-full border-collapse text-start">
             <thead className=" bg-white">
               <tr className="border-b">

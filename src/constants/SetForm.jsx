@@ -16,7 +16,7 @@ import {
   uploadBytes,
 } from "firebase/storage";
 import { CalendarIcon } from "lucide-react";
-import { useEffect, useState,useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -647,7 +647,7 @@ function SetForm(props) {
   }, [productSearch, selectedCategory]);
 
   return (
-    <div className="bg-gray-100 overflow-y-auto" style={{ height: "92vh" }}>
+    <div className="bg-gray-100 overflow-y-auto" style={{ height: "94vh" }}>
       <div className="px-5 pb-5">
         <header className="flex items-center space-x-3  my-2">
           <Link className="flex items-center" to={"./../"}>
@@ -1204,10 +1204,10 @@ function SetForm(props) {
                 </div>
                 <div className="w-full text-gray-500 space-y-2">
                   <div>Sign</div>
-          <div className="relative" ref={signDropdownRef}>
+                  <div className="relative" ref={signDropdownRef}>
                     <div
                       className="border h-12 rounded-md cursor-pointer"
-              onClick={() => setIsSignOpen(!isSignOpen)}
+                      onClick={() => setIsSignOpen(!isSignOpen)}
                     >
                       {formData.sign ? (
                         <div className="flex items-center">

@@ -115,7 +115,7 @@ function Projects() {
   }, [filterStatus, searchInput, projectsList]);
 
   return (
-    <div className="main-container" style={{ height: "92vh" }}>
+    <div className="main-container" style={{ height: "94vh" }}>
       <div className="flex items-center text-lg font-bold space-x-3">
         <AiOutlineHome
           className="cursor-pointer"
@@ -176,8 +176,8 @@ function Projects() {
                             (item.status === "Delay"
                               ? " bg-rose-100"
                               : item.status === "Completed"
-                              ? " bg-green-100"
-                              : " bg-[hsl(250deg_92%_70%_/10%)]")
+                                ? " bg-green-100"
+                                : " bg-[hsl(250deg_92%_70%_/10%)]")
                           }
                         >
                           {item.status}

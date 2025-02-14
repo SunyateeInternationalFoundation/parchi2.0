@@ -123,7 +123,7 @@ const CompanyProfile = () => {
   };
 
   return (
-    <div className="main-container overflow-y-auto" style={{ height: "92vh" }}>
+    <div className="main-container overflow-y-auto" style={{ height: "94vh" }}>
       <h1 className="text-2xl font-bold text-gray-800 px-5">Settings</h1>
 
       <div className="container2 px-6 pb-5">

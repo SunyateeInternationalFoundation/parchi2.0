@@ -12,7 +12,7 @@ function VendorHome() {
       <div style={{ height: "8vh" }}>
         <Navbar />
       </div>
-      <div style={{ width: "100%", height: "92vh" }} className="bg-gray-100">
+      <div style={{ width: "100%", height: "94vh" }} className="bg-gray-100">
         <Routes>
           <Route path="/" element={<VendorDashboard />}></Route>
           <Route path="/purchase" element={<Purchase />}></Route>

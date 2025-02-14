@@ -54,7 +54,7 @@ function Invoice({ invoices }) {
   }, [currentPage, invoices?.length, searchTerm, filterStatus]);
 
   return (
-    <div className="main-container" style={{ height: "92vh" }}>
+    <div className="main-container" style={{ height: "94vh" }}>
       <div className="flex items-center text-lg font-bold space-x-3">
         <AiOutlineHome
           className="cursor-pointer"
@@ -99,7 +99,7 @@ function Invoice({ invoices }) {
             </div>
           </div>
         </nav>
-        <div style={{ height: "92vh" }}>
+        <div style={{ height: "94vh" }}>
           <table className="w-full border-collapse text-start">
             <thead className=" bg-white">
               <tr className="border-b">
@@ -156,21 +156,20 @@ function Invoice({ invoices }) {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div
-                        className={`px-1 text-center py-2 rounded-lg text-xs  ${
-                          invoice.paymentStatus === "Paid"
+                        className={`px-1 text-center py-2 rounded-lg text-xs  ${invoice.paymentStatus === "Paid"
                             ? "bg-green-100 "
                             : invoice.paymentStatus === "Pending"
-                            ? "bg-yellow-100 "
-                            : "bg-red-100"
-                        }`}
+                              ? "bg-yellow-100 "
+                              : "bg-red-100"
+                          }`}
                       >
                         <div
                           className={
                             invoice.paymentStatus === "Paid"
                               ? "bg-green-100 "
                               : invoice.paymentStatus === "Pending"
-                              ? "bg-yellow-100 "
-                              : "bg-red-100"
+                                ? "bg-yellow-100 "
+                                : "bg-red-100"
                           }
                         >
                           {invoice.paymentStatus}

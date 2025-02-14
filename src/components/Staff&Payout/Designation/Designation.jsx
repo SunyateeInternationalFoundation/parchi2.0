@@ -176,7 +176,7 @@ const Designation = () => {
           {loading ? (
             <div className="text-center">Loading...</div>
           ) : (
-            <div className="py-3" style={{ height: "92vh" }}>
+            <div className="py-3" style={{ height: "94vh" }}>
               <table className="w-full border-collapse text-start">
                 <thead className="bg-white">
                   <tr className="border-b">
@@ -343,10 +343,10 @@ const AddDesignationModal = ({
 
       const q = editDes?.id
         ? query(
-            collection(db, "staff"),
-            where("companyRef", "==", companyRef),
-            where("designation", "==", editDes.designationName)
-          )
+          collection(db, "staff"),
+          where("companyRef", "==", companyRef),
+          where("designation", "==", editDes.designationName)
+        )
         : query(collection(db, "staff"), where("companyRef", "==", companyRef));
 
       const getData = await getDocs(q);
@@ -454,8 +454,8 @@ const AddDesignationModal = ({
                 ? "Adding..."
                 : "Editing"
               : !editDes.id
-              ? "Add Designation"
-              : "Edit Designation"}
+                ? "Add Designation"
+                : "Edit Designation"}
           </button>
         </div>
       </div>

@@ -175,7 +175,7 @@ function CreateProject() {
   }, [id]);
 
   return (
-    <div className="main-container" style={{ width: "100%", height: "92vh" }}>
+    <div className="main-container" style={{ width: "100%", height: "94vh" }}>
       <header className="items-center my-2">
         <div className="flex space-x-3">
           <Link className="flex items-center " to={"./../"}>
@@ -216,14 +216,14 @@ function CreateProject() {
                         className={cn(
                           "w-full flex justify-between items-center input-tag ",
                           !projectForm.startDate?.seconds &&
-                            "text-muted-foreground"
+                          "text-muted-foreground"
                         )}
                       >
                         {projectForm.startDate?.seconds ? (
                           formatDate(
                             new Date(
                               projectForm.startDate?.seconds * 1000 +
-                                projectForm.startDate?.nanoseconds / 1000000
+                              projectForm.startDate?.nanoseconds / 1000000
                             ),
                             "PPP"
                           )
@@ -239,7 +239,7 @@ function CreateProject() {
                         selected={
                           new Date(
                             projectForm.startDate?.seconds * 1000 +
-                              projectForm.startDate?.nanoseconds / 1000000
+                            projectForm.startDate?.nanoseconds / 1000000
                           )
                         }
                         onSelect={(val) => {
@@ -263,14 +263,14 @@ function CreateProject() {
                         className={cn(
                           "w-full flex justify-between items-center input-tag ",
                           !projectForm.dueDate?.seconds &&
-                            "text-muted-foreground"
+                          "text-muted-foreground"
                         )}
                       >
                         {projectForm.dueDate?.seconds ? (
                           formatDate(
                             new Date(
                               projectForm.dueDate?.seconds * 1000 +
-                                projectForm.dueDate?.nanoseconds / 1000000
+                              projectForm.dueDate?.nanoseconds / 1000000
                             ),
                             "PPP"
                           )
@@ -286,7 +286,7 @@ function CreateProject() {
                         selected={
                           new Date(
                             projectForm.dueDate?.seconds * 1000 +
-                              projectForm.dueDate?.nanoseconds / 1000000
+                            projectForm.dueDate?.nanoseconds / 1000000
                           )
                         }
                         onSelect={(val) => {

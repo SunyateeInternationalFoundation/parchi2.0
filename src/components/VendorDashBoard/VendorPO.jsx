@@ -94,7 +94,7 @@ const VendorPO = () => {
   }, [currentPage, po, searchTerm, filterStatus]);
 
   return (
-    <div className="main-container" style={{ height: "92vh" }}>
+    <div className="main-container" style={{ height: "94vh" }}>
       <div className="flex items-center text-lg font-bold space-x-3">
         <AiOutlineHome
           className="cursor-pointer"
@@ -139,7 +139,7 @@ const VendorPO = () => {
         {loading ? (
           <div className="text-center py-6">Loading po...</div>
         ) : (
-          <div style={{ height: "92vh" }}>
+          <div style={{ height: "94vh" }}>
             <table className="w-full border-collapse text-start">
               <thead className=" bg-white">
                 <tr className="border-b">
@@ -197,18 +197,16 @@ const VendorPO = () => {
                       >
                         {" "}
                         <div
-                          className={`px-1 text-center py-2 rounded-lg text-xs  ${
-                            po.orderStatus !== "Pending"
+                          className={`px-1 text-center py-2 rounded-lg text-xs  ${po.orderStatus !== "Pending"
                               ? "bg-green-200 "
                               : "bg-red-200 "
-                          }`}
+                            }`}
                         >
                           <div
-                            className={` ${
-                              po.orderStatus !== "Pending"
+                            className={` ${po.orderStatus !== "Pending"
                                 ? "bg-green-200 "
                                 : "bg-red-200 "
-                            }`}
+                              }`}
                           >
                             {po.orderStatus}
                           </div>

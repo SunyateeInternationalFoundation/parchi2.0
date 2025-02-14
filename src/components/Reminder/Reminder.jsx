@@ -170,16 +170,15 @@ function Reminder() {
   }, [currentPage, reminders]);
 
   return (
-    <div className="main-container " style={{ height: "92vh" }}>
+    <div className="main-container " style={{ height: "94vh" }}>
       <h1 className="text-2xl font-bold  mt-4 py-3">Reminder</h1>
       <div className="container2">
         <nav className="flex space-x-4  px-5">
           {["Reminder", "Completed"].map((tab) => (
             <button
               key={tab}
-              className={`btn-outline-black ${
-                activeTab === tab && " bg-black text-white "
-              }`}
+              className={`btn-outline-black ${activeTab === tab && " bg-black text-white "
+                }`}
               onClick={() => setActiveTab(tab)}
             >
               {tab}
@@ -231,7 +230,7 @@ function Reminder() {
         {loading ? (
           <div className="text-center py-6">Loading...</div>
         ) : (
-          <div className="py-3" style={{ height: "92vh" }}>
+          <div className="py-3" style={{ height: "94vh" }}>
             <table className="w-full border-collapse text-start ">
               <thead className=" bg-white">
                 <tr className="border-b">

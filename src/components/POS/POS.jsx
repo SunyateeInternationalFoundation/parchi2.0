@@ -218,8 +218,8 @@ const POS = () => {
           (value === "Paid"
             ? "bg-green-100"
             : value === "Pending"
-            ? "bg-yellow-100"
-            : "bg-red-100");
+              ? "bg-yellow-100"
+              : "bg-red-100");
         select.onchange = async (e) => {
           const newStatus = e.target.value;
           await handleStatusChange(
@@ -252,7 +252,7 @@ const POS = () => {
     },
   ];
   return (
-    <div className="main-container" style={{ height: "92vh" }}>
+    <div className="main-container" style={{ height: "94vh" }}>
       <div className="mt-4 py-3">
         <div className="text-2xl font-bold pb-3 flex items-center space-x-3">
           {userDetails.selectedDashboard === "staff" && (
@@ -340,12 +340,12 @@ const POS = () => {
         </nav>
 
         {loading ? (
-          <div className="text-center py-6" style={{ height: "92vh" }}>
+          <div className="text-center py-6" style={{ height: "94vh" }}>
             Loading pos...
           </div>
         ) : (
           <div
-            style={{ minHeight: "92vh", width: "100%" }}
+            style={{ minHeight: "94vh", width: "100%" }}
             className="overflow-hidden"
           >
             <div className="py-2">

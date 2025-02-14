@@ -154,7 +154,7 @@ function Projects() {
   }
 
   return (
-    <div className="main-container" style={{ height: "92vh" }}>
+    <div className="main-container" style={{ height: "94vh" }}>
       <div className=" mt-4 py-3">
         <div className="text-2xl font-bold pb-3 flex items-center space-x-3">
           {userDetails.selectedDashboard === "staff" && (

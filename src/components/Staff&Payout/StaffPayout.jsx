@@ -3,6 +3,7 @@ import { GrDocumentUser } from "react-icons/gr";
 import { HiOutlineClipboardList } from "react-icons/hi";
 import { IoMdTime } from "react-icons/io";
 import { IoCalendarOutline } from "react-icons/io5";
+import { MdAddCard } from "react-icons/md";
 import {
   RiShieldUserLine,
   RiUserAddLine,
@@ -15,11 +16,10 @@ import Attendance from "./Attendance/Attendance";
 import Branches from "./Branches/Branches";
 import Designation from "./Designation/Designation";
 import Holidays from "./Hoildays/Holidays";
+import Payout from "./Payout/Payout";
 import Roles from "./Roles/Roles";
 import Staff from "./Staff/Staff";
 import WeekOff from "./WeekOff/WeekOff";
-import { MdAddCard } from "react-icons/md";
-import Payout from "./Payout/Payout";
 
 import LoansDeductions from "./Loans&Deductions/LoansDeductions";
 
@@ -52,7 +52,7 @@ function StaffPayout() {
       name: "Payouts",
       totalLabelName: "Total Staff",
       component: <Payout />,
-      onClick: () => {},
+      onClick: () => { },
     },
     {
       icon: <GrDocumentUser />,
@@ -126,8 +126,8 @@ function StaffPayout() {
     }
   }, []);
   return (
-    <div className="w-full" style={{ width: "100%", height: "92vh" }}>
-      <div className="bg-gray-100" style={{ width: "100%", height: "92vh" }}>
+    <div className="w-full" style={{ width: "100%", height: "94vh" }}>
+      <div className="bg-gray-100" style={{ width: "100%", height: "94vh" }}>
         <div className="flex px-8 gap-2 bg-white border-b">
           {ManageStaff.map((item) => (
             <div key={item.name}>
@@ -137,7 +137,7 @@ function StaffPayout() {
                   (tab === item.name && " border-b-4 border-blue-500 ")
                 }
                 onClick={() => navigate("?tab=" + item.name)}
-                // onClick={item.onClick}
+              // onClick={item.onClick}
               >
                 <div className="pe-2">{item.icon}</div>
                 <p className="text-lg ">{item.name}</p>

@@ -99,7 +99,7 @@ const ServicesList = () => {
   }, [currentPage, services]);
 
   return (
-    <div className="main-container" style={{ height: "92vh" }}>
+    <div className="main-container" style={{ height: "94vh" }}>
       <div className="text-2xl font-bold  flex items-center space-x-3 mt-8">
         {userDetails.selectedDashboard === "staff" && (
           <AiOutlineHome

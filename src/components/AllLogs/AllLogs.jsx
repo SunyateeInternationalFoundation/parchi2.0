@@ -68,7 +68,7 @@ const AllLogs = () => {
   }, [currentPage, allLogs, searchTerm]);
   console.log("logs", allLogs);
   return (
-    <div className="main-container" style={{ height: "92vh" }}>
+    <div className="main-container" style={{ height: "94vh" }}>
       <header className="mt-4  py-3">
         <h1 className="text-2xl font-bold">All Logs</h1>
       </header>

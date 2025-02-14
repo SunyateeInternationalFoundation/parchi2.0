@@ -264,7 +264,7 @@ function PO() {
 
   return (
     <div className="w-full">
-      <div className="main-container" style={{ height: "92vh" }}>
+      <div className="main-container" style={{ height: "94vh" }}>
         <div className="mt-4 py-3">
           <div className="text-2xl font-bold pb-3 flex items-center space-x-3">
             {userDetails.selectedDashboard === "staff" && (
@@ -352,12 +352,12 @@ function PO() {
           </nav>
 
           {loading ? (
-            <div className="text-center py-6" style={{ height: "92vh" }}>
+            <div className="text-center py-6" style={{ height: "94vh" }}>
               Loading po...
             </div>
           ) : (
             <div
-              style={{ height: "92vh", width: "100%" }}
+              style={{ height: "94vh", width: "100%" }}
               className="overflow-hidden"
             >
               <div className="py-2">
@@ -372,13 +372,13 @@ function PO() {
                     <div className="w-full flex justify-center">
                       {(userDetails.selectedDashboard === "" ||
                         role?.create) && (
-                        <Link
-                          className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-                          to="create-po"
-                        >
-                          + Create Po
-                        </Link>
-                      )}
+                          <Link
+                            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                            to="create-po"
+                          >
+                            + Create Po
+                          </Link>
+                        )}
                     </div>
                   </div>
                 )}

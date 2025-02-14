@@ -176,7 +176,7 @@ function Users() {
             <div className="text-center py-6">Loading...</div>
           ) : (
             <div style={{ height: "96vh" }}>
-              <div style={{ height: "92vh" }}>
+              <div style={{ height: "94vh" }}>
                 <table className="w-full border-collapse text-start">
                   <thead className="bg-white">
                     <tr className="border-b">

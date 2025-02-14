@@ -6,6 +6,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -95,8 +96,19 @@ function Services() {
     try {
       const serviceDoc = doc(db, "companies", companyId, "services", id);
       const data = services.find((d) => d.id === id);
-      await updateDoc(serviceDoc, { status: newStatus });
 
+      const notificationPayload = {
+        date: Timestamp.fromDate(new Date()),
+        from: data.companyPhone,
+        to: data.customerPhone,
+        subject: "Subscription",
+        description: `Your Subscription ${data.serviceNo} status has been updated to ${newStatus}.`,
+        companyName: data.companyName,
+        ref: serviceDoc,
+        seen: false,
+      }
+      await updateDoc(serviceDoc, { status: newStatus });
+      await addDoc(collection(db, "customers", data.customerId, "notifications"), notificationPayload)
       await addDoc(collection(db, "companies", companyId, "audit"), {
         ref: serviceDoc,
         date: serverTimestamp(),
@@ -300,7 +312,7 @@ function Services() {
     });
   }
   return (
-    <div className="main-container " style={{ height: "92vh" }}>
+    <div className="main-container " style={{ height: "94vh" }}>
       <div className="mt-4 py-3">
         <div className="text-2xl font-bold pb-3 flex items-center space-x-3">
           {userDetails.selectedDashboard === "staff" && (
@@ -387,12 +399,12 @@ function Services() {
         </nav>
 
         {loading ? (
-          <div className="text-center py-6" style={{ height: "92vh" }}>
+          <div className="text-center py-6" style={{ height: "94vh" }}>
             Loading subscriptions...
           </div>
         ) : (
           <div
-            style={{ minHeight: "92vh", width: "100%" }}
+            style={{ minHeight: "94vh", width: "100%" }}
             className="overflow-hidden"
           >
             <div className="py-2">

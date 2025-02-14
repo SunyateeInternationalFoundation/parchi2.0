@@ -154,7 +154,7 @@ const VendorList = () => {
     );
   }, [currentPage, vendors, searchQuery]);
   return (
-    <div className="main-container" style={{ height: "92vh" }}>
+    <div className="main-container" style={{ height: "94vh" }}>
       <div className="text-2xl font-bold flex items-center space-x-3 mt-8">
         {userDetails.selectedDashboard === "staff" && (
           <AiOutlineHome
@@ -198,7 +198,7 @@ const VendorList = () => {
         {loading ? (
           <div className="text-center py-6">Loading vendors...</div>
         ) : (
-          <div style={{ height: "92vh" }}>
+          <div style={{ height: "94vh" }}>
             <table className="w-full border-collapse text-start">
               <thead className=" bg-white">
                 <tr className="border-b">

@@ -111,8 +111,8 @@ const StaffHome = () => {
       <div style={{ height: "8vh" }}>
         <Navbar />
       </div>
-      <div className="flex" style={{ height: "92vh" }}>
-        <div style={{ width: "100%", height: "92vh" }} className="bg-gray-100">
+      <div className="flex" style={{ height: "94vh" }}>
+        <div style={{ width: "100%", height: "94vh" }} className="bg-gray-100">
           <Routes>
             {staffDetails?.length > 0 && (
               <Route

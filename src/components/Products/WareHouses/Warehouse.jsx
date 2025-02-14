@@ -144,7 +144,7 @@ const Warehouse = () => {
           </div>
           <div
             className=" rounded-lg py-3 overflow-hidden"
-            style={{ minHeight: "92vh" }}
+            style={{ minHeight: "94vh" }}
           >
             <table className="w-full border-collapse text-start  ">
               <thead className=" bg-white">

@@ -186,7 +186,7 @@ function Expense() {
   }
   return (
     <div className="w-full">
-      <div className="main-container" style={{ height: "92vh" }}>
+      <div className="main-container" style={{ height: "94vh" }}>
         <div className=" mt-4 py-3">
           <div className="flex items-center pb-3">
             <Link className="flex items-center" to={"./../"}>

@@ -30,6 +30,8 @@ function CustomerHome() {
   const [loading, setLoading] = useState(false);
   const userDetails = useSelector((state) => state.users);
   const asCustomerDetails = userDetails.userAsOtherCompanies.customer;
+
+
   const [icons, setIcons] = useState([
     {
       name: "Estimate",
@@ -144,7 +146,7 @@ function CustomerHome() {
         <Navbar />
       </div>
       <div
-        style={{ width: "100%", height: "92vh" }}
+        style={{ width: "100%", height: "94vh" }}
         className="bg-gray-100 relative"
       >
         <Routes>
@@ -177,7 +179,7 @@ function CustomerHome() {
         {loading && (
           <div
             className="w-full absolute  top-0 "
-            style={{ width: "100%", height: "92vh", backgroundColor: "#0009" }}
+            style={{ width: "100%", height: "94vh", backgroundColor: "#0009" }}
           >
             <div className="flex items-center justify-center text-white h-full text-2xl ">
               Loading...

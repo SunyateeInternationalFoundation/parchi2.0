@@ -249,7 +249,7 @@ function Attendance() {
           {loading ? (
             <div className="text-center">Loading...</div>
           ) : paginationData.length > 0 ? (
-            <div className="py-3" style={{ minHeight: "92vh" }}>
+            <div className="py-3" style={{ minHeight: "94vh" }}>
               <table className="w-full border-collapse text-start">
                 <thead className="bg-white">
                   <tr className="border-b">

@@ -38,7 +38,7 @@ const Pricing = () => {
   return (
     <div
       className="overflow-y-auto text-blue-600 py-6"
-      style={{ height: "92vh" }}
+      style={{ height: "94vh" }}
     >
       <div className="max-w-7xl mx-auto px-4">
         <h2 className="text-3xl font-semibold text-blue-900 text-center mb-6">
@@ -52,11 +52,10 @@ const Pricing = () => {
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`h-[500px] transform transition duration-300 ${
-                plan.featured
+              className={`h-[500px] transform transition duration-300 ${plan.featured
                   ? "bg-yellow-400 text-white hover:scale-105 hover:shadow-xl"
                   : "bg-white text-blue-800 hover:scale-105 hover:shadow-lg hover:bg-blue-50"
-              } p-6 rounded-lg shadow-md`}
+                } p-6 rounded-lg shadow-md`}
             >
               <h3 className="text-xl font-bold w-48 h-10 text-left pl-3 pt-2 rounded-br-lg rounded-tl-lg bg-red-100 text-red-800 mt-[-25px] ml-[-25px]">
                 {plan.name}
@@ -73,11 +72,10 @@ const Pricing = () => {
                 <p className="text-sm">/month</p>
               )}
               <button
-                className={`w-full transform transition duration-300 ${
-                  plan.featured
+                className={`w-full transform transition duration-300 ${plan.featured
                     ? "bg-white text-yellow-400"
                     : "bg-blue-600 text-white"
-                } py-2 mt-6 rounded`}
+                  } py-2 mt-6 rounded`}
               >
                 {plan.buttonText}
               </button>

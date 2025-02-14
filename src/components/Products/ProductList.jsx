@@ -209,7 +209,7 @@ const ProductList = () => {
               <p className="text-gray-500">Loading products...</p>
             </div>
           ) : (
-            <div className="overflow-hidden pt-8" style={{ minHeight: "92vh" }}>
+            <div className="overflow-hidden pt-8" style={{ minHeight: "94vh" }}>
               <table className="w-full border-collapse ">
                 <thead className="bg-white">
                   <tr className="border-b">

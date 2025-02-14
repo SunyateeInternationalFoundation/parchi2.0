@@ -39,7 +39,7 @@ function ProductReturns({ returns }) {
         <div>
           <div
             className="border-b overflow-y-auto py-5"
-            style={{ height: "92vh" }}
+            style={{ height: "94vh" }}
           >
             <table className="w-full border-collapse ">
               <thead className="bg-white">

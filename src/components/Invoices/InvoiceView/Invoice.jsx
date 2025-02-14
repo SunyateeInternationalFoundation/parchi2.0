@@ -170,8 +170,8 @@ function Invoice({ invoice, bankDetails, selectTemplate }) {
                 Authorization: `Bearer ${token}`,
               },
               body: JSON.stringify({
-                template_name: "invoice_pdf",
-                broadcast_name: "invoice_pdf",
+                template_name: "share_invoice_pdf",
+                broadcast_name: "share_invoice_pdf",
                 parameters: [
                   {
                     name: "pdflink",

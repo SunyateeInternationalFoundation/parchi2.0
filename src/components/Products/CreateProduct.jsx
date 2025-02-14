@@ -271,7 +271,7 @@ function CreateProduct() {
   };
 
   return (
-    <div className="bg-gray-100 overflow-y-auto" style={{ height: "92vh" }}>
+    <div className="bg-gray-100 overflow-y-auto" style={{ height: "94vh" }}>
       <header className="flex items-center   my-2">
         <Link className="flex items-center" to={"/products"}>
           <IoMdArrowRoundBack className="w-7 h-7 ms-3 mr-2 hover:text-blue-500  text-gray-500" />

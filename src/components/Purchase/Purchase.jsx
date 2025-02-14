@@ -261,7 +261,7 @@ const Purchase = () => {
     },
   ];
   return (
-    <div className="main-container" style={{ height: "92vh" }}>
+    <div className="main-container" style={{ height: "94vh" }}>
       <div className="mt-4 py-3">
         <div className="text-2xl font-bold pb-3 flex items-center space-x-3">
           {userDetails.selectedDashboard === "staff" && (
@@ -349,12 +349,12 @@ const Purchase = () => {
         </nav>
 
         {loading ? (
-          <div className="text-center py-6" style={{ height: "92vh" }}>
+          <div className="text-center py-6" style={{ height: "94vh" }}>
             Loading purchases...
           </div>
         ) : (
           <div
-            style={{ minHeight: "92vh", width: "100%" }}
+            style={{ minHeight: "94vh", width: "100%" }}
             className="overflow-hidden"
           >
             <div className="py-2">
