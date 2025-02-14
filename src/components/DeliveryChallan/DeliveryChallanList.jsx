@@ -6,6 +6,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -108,8 +109,19 @@ const DeliveryChallanList = () => {
         deliveryChallanId
       );
       const data = deliveryChallan.find((d) => d.id === deliveryChallanId);
+      const notificationPayload = {
+        date: Timestamp.fromDate(new Date()),
+        from: data.companyPhone,
+        to: data.customerPhone,
+        subject: "DeliveryChallan",
+        description: `Your DeliveryChallan ${data.deliveryChallanNo} status has been updated to ${newStatus}.`,
+        companyName: data.companyName,
+        ref: deliveryChallanDoc,
+        seen: false,
+      }
 
       await updateDoc(deliveryChallanDoc, { paymentStatus: newStatus });
+      await addDoc(collection(db, "customers", data.customerId, "notifications"), notificationPayload)
       await addDoc(collection(db, "companies", companyId, "audit"), {
         ref: deliveryChallanDoc,
         date: serverTimestamp(),
@@ -241,8 +253,8 @@ const DeliveryChallanList = () => {
           (value === "Paid"
             ? "bg-green-100"
             : value === "Pending"
-            ? "bg-yellow-100"
-            : "bg-red-100");
+              ? "bg-yellow-100"
+              : "bg-red-100");
         select.onchange = async (e) => {
           const newStatus = e.target.value;
           await handleStatusChange(
@@ -386,13 +398,13 @@ const DeliveryChallanList = () => {
                     <div className="w-full flex justify-center">
                       {(userDetails.selectedDashboard === "" ||
                         role?.create) && (
-                        <Link
-                          className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-                          to="create-deliverychallan"
-                        >
-                          + Create DeliveryChallan
-                        </Link>
-                      )}
+                          <Link
+                            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                            to="create-deliverychallan"
+                          >
+                            + Create DeliveryChallan
+                          </Link>
+                        )}
                     </div>
                   </div>
                 )}

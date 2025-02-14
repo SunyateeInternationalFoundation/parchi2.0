@@ -6,6 +6,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -107,8 +108,19 @@ function Quotation() {
         quotationId
       );
       const data = quotations.find((d) => d.id === quotationId);
+      const notificationPayload = {
+        date: Timestamp.fromDate(new Date()),
+        from: data.companyPhone,
+        to: data.customerPhone,
+        subject: "Quotation",
+        description: `Your Quotation ${data.quotationNo} status has been updated to ${newStatus}.`,
+        companyName: data.companyName,
+        ref: quotationDoc,
+        seen: false,
+      }
 
       await updateDoc(quotationDoc, { paymentStatus: newStatus });
+      await addDoc(collection(db, "customers", data.customerId, "notifications"), notificationPayload)
       await addDoc(collection(db, "companies", companyId, "audit"), {
         ref: quotationDoc,
         date: serverTimestamp(),
@@ -164,6 +176,7 @@ function Quotation() {
       filteredQuotations.slice(currentPage * 10, currentPage * 10 + 10)
     );
   }, [currentPage, quotations, searchTerm, filterStatus]);
+
   const columns = [
     {
       title: "Date",
@@ -239,8 +252,8 @@ function Quotation() {
           (value === "Paid"
             ? "bg-green-100"
             : value === "Pending"
-            ? "bg-yellow-100"
-            : "bg-red-100");
+              ? "bg-yellow-100"
+              : "bg-red-100");
         select.onchange = async (e) => {
           const newStatus = e.target.value;
           await handleStatusChange(
@@ -383,13 +396,13 @@ function Quotation() {
                     <div className="w-full flex justify-center">
                       {(userDetails.selectedDashboard === "" ||
                         role?.create) && (
-                        <Link
-                          className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
-                          to="create-quotation"
-                        >
-                          + Create Quotation
-                        </Link>
-                      )}
+                          <Link
+                            className="bg-[#442799] text-white text-center  px-5  py-3 font-semibold rounded-md"
+                            to="create-quotation"
+                          >
+                            + Create Quotation
+                          </Link>
+                        )}
                     </div>
                   </div>
                 )}

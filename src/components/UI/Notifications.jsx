@@ -35,7 +35,6 @@ function Notifications({ isOpen, onClose, dataSet, onSeenNotification }) {
                     ))}
                 </ul>
             </div>
-
         </div>
     )
 }

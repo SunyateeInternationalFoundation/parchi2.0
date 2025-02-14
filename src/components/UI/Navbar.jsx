@@ -165,7 +165,7 @@ const Navbar = () => {
   }
 
   function navigationPath(notification) {
-    const basePath = userDetails.selectedDashboard;
+    const basePath = userDetails.selectedDashboard !== "" ? ("/" + userDetails.selectedDashboard) : "";
     switch (notification.subject) {
       case "Invoice":
         return `${basePath}/invoice/${notification.ref.id}`;
@@ -179,8 +179,6 @@ const Navbar = () => {
   async function onSeenNotification(notification) {
     try {
       const path = navigationPath(notification)
-
-
       if (notification.seen) {
         navigate(path)
         return
@@ -299,7 +297,6 @@ const Navbar = () => {
           </div>
         </div>
       </header>
-
       <SelectDashboard
         isOpen={isSidebarOpen == "company"}
         onClose={() => setIsSidebarOpen("")}

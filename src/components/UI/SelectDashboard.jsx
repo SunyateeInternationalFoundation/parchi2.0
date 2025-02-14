@@ -31,6 +31,7 @@ function SelectDashboard({ isOpen, onClose }) {
             })
         );
     }
+
     const fetchStaffAsCompanyDetails = async () => {
         if (staffDetails?.length > 0) {
             return
@@ -88,6 +89,7 @@ function SelectDashboard({ isOpen, onClose }) {
 
         return `${getDate}/${getMonth}/${getFullYear}`;
     }
+
     return (
         <div
             className={`fixed inset-0 z-[999] flex justify-end pt-[6vh] bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -106,8 +108,6 @@ function SelectDashboard({ isOpen, onClose }) {
                         <IoMdClose size={24} />
                     </button>
                 </div>
-
-
                 <div className="flex flex-wrap rounded-md bg-white border mt-3  w-full shadow-sm">
                     {["business", "staff", "vendor_customer"].map((option) => (
                         <label key={option} className="flex-1 text-center">
@@ -131,14 +131,6 @@ function SelectDashboard({ isOpen, onClose }) {
                 {activeTab == "business" &&
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
-                            {/* <tr>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Logo
-                                </th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Name
-                                </th>
-                            </tr> */}
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                             {companiesList?.length > 0 &&

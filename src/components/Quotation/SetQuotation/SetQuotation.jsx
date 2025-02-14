@@ -216,9 +216,9 @@ const SetQuotation = () => {
       const createdBy = quotationId
         ? { ...baseCreatedBy, who: formData.createdBy.who }
         : {
-            ...baseCreatedBy,
-            who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
-          };
+          ...baseCreatedBy,
+          who: userDetails.selectedDashboard === "staff" ? "staff" : "owner",
+        };
       const payload = {
         ...restForm,
         ...rest,
@@ -264,10 +264,22 @@ const SetQuotation = () => {
         );
         payloadLog.ref = quotationRef;
       }
+      const notificationPayload = {
+        date: Timestamp.fromDate(new Date()),
+        from: userDetails.phone,
+        to: selectedCustomerData.phone,
+        subject: "Quotation",
+        description: `${companyDetails.name} company ${payloadLog.action} Quotation ${payload.prefix}-${payload.quotationNo}.`,
+        companyName: companyDetails.name,
+        ref: quotationRef,
+        seen: false,
+      }
+      await addDoc(collection(db, "customers", customerRef.id, "notifications"), notificationPayload)
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "audit"),
         payloadLog
       );
+
       // for (const item of items) {
       //   if (item.quantity === 0) {
       //     continue;
@@ -289,8 +301,8 @@ const SetQuotation = () => {
 
       alert(
         "Successfully " +
-          (quotationId ? "Updated" : "Created") +
-          " the quotation"
+        (quotationId ? "Updated" : "Created") +
+        " the quotation"
       );
       const redirect =
         (userDetails.selectedDashboard === "staff"
