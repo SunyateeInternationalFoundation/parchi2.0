@@ -1,6 +1,11 @@
-import { IoMdClose } from "react-icons/io"
-
+import { formatDistanceToNowStrict } from "date-fns";
+import { IoMdClose } from "react-icons/io";
 function Notifications({ isOpen, onClose, dataSet, onSeenNotification }) {
+    const RelativeTime = (timestamp) => {
+        const date = new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1e6);
+        const relativeTime = formatDistanceToNowStrict(date, { addSuffix: true });
+        return relativeTime;
+    };
     return (
         <div
             className={`fixed inset-0 z-[999] flex justify-end pt-[6vh] bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -24,10 +29,7 @@ function Notifications({ isOpen, onClose, dataSet, onSeenNotification }) {
                         <li key={index} className={`py-2 px-3 border-b cursor-pointer hover:bg-blue-100  ${notification.seen ? "bg-white" : "bg-gray-100"}`} onClick={() => onSeenNotification(notification)}>
                             <div className="flex justify-between text-gray-500 text-sm ">
                                 <p className="font-semibold">{notification.from}</p>
-                                <p className=""> {new Date(
-                                    notification.date.seconds * 1000 +
-                                    notification.date.nanoseconds / 1000000
-                                ).toLocaleString()}</p>
+                                <p className=""> {RelativeTime(notification.date)}</p>
                             </div>
                             <p className="font-semibold">{notification.subject}</p>
                             <p>{notification.description}</p>

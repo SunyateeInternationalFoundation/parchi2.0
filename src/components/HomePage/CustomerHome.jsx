@@ -1,12 +1,13 @@
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, Route, Routes } from "react-router-dom";
 import Estimate from "../../assets/dashboard/Estimate.png";
 import InvoicePng from "../../assets/dashboard/Invoice.png";
 import ProjectsPng from "../../assets/dashboard/Projects.png";
 import SubscriptionsPng from "../../assets/dashboard/Subscriptions.png";
 import { db } from "../../firebase";
+import { setUserAsOtherCompanies } from "../../store/UserSlice";
 import Invoice from "../CustomerDashboard/Invoice";
 import Projects from "../CustomerDashboard/Projects";
 import ProjectViewHome from "../CustomerDashboard/ProjectViewHome";
@@ -28,10 +29,9 @@ function CustomerHome() {
     pending: 0,
   });
   const [loading, setLoading] = useState(false);
+  const [asCustomerDetails, setAsCustomerDetails] = useState([]);
   const userDetails = useSelector((state) => state.users);
-  const asCustomerDetails = userDetails.userAsOtherCompanies.customer;
-
-
+  const dispatch = useDispatch()
   const [icons, setIcons] = useState([
     {
       name: "Estimate",
@@ -62,6 +62,30 @@ function CustomerHome() {
       collectionName: "projects",
     },
   ]);
+
+  async function fetchCustomerCompany() {
+    try {
+      const customersRef = collection(db, "customers");
+      const customersQ = query(
+        customersRef,
+        where("phone", "==", userDetails.phone)
+      );
+      const asCustomer = await getDocs(customersQ);
+      const asCustomerData = asCustomer.docs.map((doc) => {
+        const { companyRef } = doc.data();
+        return { companyId: companyRef.id, customerId: doc.id };
+      });
+      const payload = {
+        customer: asCustomerData,
+        vendor: userDetails.userAsOtherCompanies,
+      }
+      setAsCustomerDetails(asCustomerData)
+      dispatch(setUserAsOtherCompanies(payload))
+    } catch (error) {
+      console.log("🚀 ~ fetchCustomerCompany ~ error:", error)
+    }
+  }
+
   async function fetchCountData() {
     try {
       const asCustomersList = asCustomerDetails.map((ele) =>
@@ -138,8 +162,15 @@ function CustomerHome() {
 
   useEffect(() => {
     setLoading(true);
-    fetchCountData();
+    fetchCustomerCompany();
   }, []);
+  useEffect(() => {
+    if (asCustomerDetails.length > 0) {
+      fetchCountData();
+    }
+  }, [asCustomerDetails]);
+
+
   return (
     <div>
       <div style={{ height: "6vh" }}>

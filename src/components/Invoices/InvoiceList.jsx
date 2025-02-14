@@ -76,6 +76,7 @@ const InvoiceList = () => {
       }
 
       await updateDoc(invoiceDoc, { paymentStatus: newStatus });
+      await addDoc(collection(db, "customers", data.customerId, "notifications"), notificationPayload)
       await addDoc(collection(db, "companies", companyId, "audit"), {
         ref: invoiceDoc,
         date: serverTimestamp(),
@@ -83,7 +84,7 @@ const InvoiceList = () => {
         action: "Update",
         description: `${data.invoiceNo} status updated by ${data.createdBy}`,
       });
-      await addDoc(collection(db, "customers", data.customerId, "notifications"), notificationPayload)
+
 
       setInvoices((prevInvoices) =>
         prevInvoices.map((invoice) =>

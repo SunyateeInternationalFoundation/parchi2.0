@@ -6,6 +6,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -84,6 +85,10 @@ function PO() {
             poNo: res.prefix + "-" + res.poNo,
             vendorName: res.vendorDetails.name,
             vendorPhone: res.vendorDetails.phone,
+            vendorId: data.vendorDetails.vendorRef.id,
+            companyPhone: data.createdBy.phoneNo,
+            companyName: data.createdBy.name,
+            companyId: data.createdBy.companyRef.id,
             total: res.total,
             orderStatus: res.orderStatus,
             createdBy: res.createdBy.who,
@@ -110,7 +115,20 @@ function PO() {
     try {
       const docRef = doc(db, "companies", companyId, "po", poId);
       const data = POList.find((d) => d.id === poId);
+
+      const notificationPayload = {
+        date: Timestamp.fromDate(new Date()),
+        from: data.companyPhone,
+        to: data.vendorPhone,
+        subject: "PO",
+        description: `Your Purchase-Order ${data.poNo} status has been updated to ${value}.`,
+        companyName: data.companyName,
+        ref: docRef,
+        seen: false,
+      }
+
       await updateDoc(docRef, { orderStatus: value });
+      await addDoc(collection(db, "vendors", data.vendorId, "notifications"), notificationPayload)
       await addDoc(collection(db, "companies", companyId, "audit"), {
         ref: docRef,
         date: serverTimestamp(),

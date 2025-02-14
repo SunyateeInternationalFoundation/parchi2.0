@@ -6,6 +6,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -53,6 +54,7 @@ const Purchase = () => {
   let role =
     userDetails.asAStaffCompanies[userDetails.selectedStaffCompanyIndex]?.roles
       ?.purchase;
+
   useEffect(() => {
     const fetchPurchases = async () => {
       setLoading(true);
@@ -68,6 +70,10 @@ const Purchase = () => {
             purchaseNo: data.prefix + "-" + data.purchaseNo,
             vendorName: data.vendorDetails.name,
             vendorPhone: data.vendorDetails.phone,
+            vendorId: data.vendorDetails.vendorRef.id,
+            companyPhone: data.createdBy.phoneNo,
+            companyName: data.createdBy.name,
+            companyId: data.createdBy.companyRef.id,
             total: data.total,
             orderStatus: data.orderStatus,
             createdBy: data.createdBy.who,
@@ -100,8 +106,18 @@ const Purchase = () => {
         purchaseId
       );
       const data = purchases.find((d) => d.id === purchaseId);
-
+      const notificationPayload = {
+        date: Timestamp.fromDate(new Date()),
+        from: data.companyPhone,
+        to: data.vendorPhone,
+        subject: "Purchase",
+        description: `Your Purchase ${data.purchaseNo} status has been updated to ${newStatus}.`,
+        companyName: data.companyName,
+        ref: purchaseDoc,
+        seen: false,
+      }
       await updateDoc(purchaseDoc, { orderStatus: newStatus });
+      await addDoc(collection(db, "vendors", data.vendorId, "notifications"), notificationPayload)
       await addDoc(collection(db, "companies", companyId, "audit"), {
         ref: purchaseDoc,
         date: serverTimestamp(),
@@ -132,6 +148,7 @@ const Purchase = () => {
   const pendingAmount = purchases
     .filter((purchase) => purchase.orderStatus === "Pending")
     .reduce((sum, purchase) => sum + purchase.total, 0);
+
   useEffect(() => {
     const filteredPurchases = purchases.filter((purchase) => {
       const { vendorName, vendorPhone, purchaseNo, orderStatus } = purchase;

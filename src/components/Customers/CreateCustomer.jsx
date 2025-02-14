@@ -143,6 +143,7 @@ const CreateCustomer = ({ isOpen, onClose, customerData, refresh }) => {
           seen: false,
         }
         await addDoc(collection(db, "customers", newCustomer.id, "notifications"), notificationPayload)
+        // await addDoc(collection(db, "company", customerCompanyId, "notifications"), notificationPayload)
       }
       await addDoc(
         collection(db, "companies", companyDetails.companyId, "audit"),

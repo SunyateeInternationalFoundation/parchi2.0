@@ -65,10 +65,10 @@ import SubscriptionPlan from "../Settings/SubscriptionPlan";
 import UserProfile from "../Settings/UserProfile";
 import Designation from "../Staff&Payout/Designation/Designation";
 import DesignationView from "../Staff&Payout/Designation/DesignationView";
+import Payout from "../Staff&Payout/Payout/Payout";
 import Sidebar2 from "../UI/Sidebar2";
 import VendorPO from "../VendorDashBoard/VendorPO";
 import Dashboard from "./Dashboard";
-import Payout from "../Staff&Payout/Payout/Payout";
 
 const Home = () => {
   const location = useLocation();
@@ -263,7 +263,6 @@ const Home = () => {
             <Route path="/po/:id" element={<PoView />}></Route>
             <Route path="/po/create-po" element={<SetPO />}></Route>
             <Route path="/po/:poId/edit-po" element={<SetPO />}></Route>
-            {/* <Route path="/create-po" element={<CreatePo />}></Route> */}
             <Route path="/documents" element={<Documents />}></Route>
             <Route path="/reminder" element={<Reminder />}></Route>
             <Route path="/expense" element={<BookList />}></Route>

@@ -1,12 +1,13 @@
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import man from "../../assets/dashboard/man.png";
 import Po from "../../assets/dashboard/Po.png";
 import Projects from "../../assets/dashboard/Projects.png";
 import Purchase from "../../assets/dashboard/Purchase.png";
 import { db } from "../../firebase";
+import { setUserAsOtherCompanies } from "../../store/UserSlice";
 
 const VendorDashboard = () => {
   const navigate = useNavigate();
@@ -14,9 +15,11 @@ const VendorDashboard = () => {
     received: 0,
     pending: 0,
   });
+  const [asVendorDetails, setAsVendorDetails] = useState([]);
 
   const userDetails = useSelector((state) => state.users);
-  const asVendorDetails = userDetails.userAsOtherCompanies.vendor;
+  const dispatch = useDispatch()
+
   const [icons, setIcons] = useState([
     {
       name: "Purchases",
@@ -40,6 +43,29 @@ const VendorDashboard = () => {
       collectionName: "projects",
     },
   ]);
+
+  async function fetchVendorCompany() {
+    try {
+      const customersRef = collection(db, "customers");
+      const customersQ = query(
+        customersRef,
+        where("phone", "==", userDetails.phone)
+      );
+      const asCustomer = await getDocs(customersQ);
+      const asCustomerData = asCustomer.docs.map((doc) => {
+        const { companyRef } = doc.data();
+        return { companyId: companyRef.id, customerId: doc.id };
+      });
+      const payload = {
+        customer: asCustomerData,
+        vendor: userDetails.userAsOtherCompanies,
+      }
+      setAsVendorDetails(asCustomerData)
+      dispatch(setUserAsOtherCompanies(payload))
+    } catch (error) {
+      console.log("🚀 ~ fetchCustomerCompany ~ error:", error)
+    }
+  }
 
   async function fetchCountData() {
     try {
@@ -102,7 +128,13 @@ const VendorDashboard = () => {
   }
 
   useEffect(() => {
-    fetchCountData();
+    if (asVendorDetails.length > 0) {
+      fetchCountData();
+    }
+  }, [asVendorDetails]);
+
+  useEffect(() => {
+    fetchVendorCompany();
   }, []);
 
   return (
@@ -114,14 +146,6 @@ const VendorDashboard = () => {
               <div className="flex items-center justify-between border px-6 py-4 rounded-2xl shadow">
                 <div className="flex items-center w-3/4 space-x-4">
                   <div className="border  w-[89px] h-[89px] shadow flex items-center justify-center">
-                    {/* {userDetails.companyLogo ? (
-                      <img
-                        src={userDetails.companyLogo}
-                        width="89px"
-                        height="89px"
-                        className="rounded-full"
-                      />
-                    ) : ( */}
                     <img
                       src={man}
                       width="89px"

@@ -213,6 +213,7 @@ function SetForm(props) {
   }
 
   function handleActionQty(op, productId) {
+
     let countOfSelect = 0;
     let updatedProducts = products.map((product) => {
       if (product.id === productId) {
@@ -220,7 +221,7 @@ function SetForm(props) {
           if (product.quantity > product.actionQty) {
             ++product.actionQty;
           }
-          if (purchaseList.includes(formName)) {
+          else if (purchaseList.includes(formName)) {
             ++product.actionQty;
           }
         } else {

@@ -19,13 +19,13 @@ function SelectProductSide({
   customActionQty,
   categories,
   setProductsData,
-  from,
+  from
 }) {
   const [Products, setProducts] = useState(productList);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
-
+  const purchaseList = ["Purchase", "PO", "DebitNote"];
   const filteredProducts = Products.filter(
     (ele) =>
       ele.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -37,15 +37,13 @@ function SelectProductSide({
   }, [productList]);
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${
-        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-50 flex justify-end bg-black bg-opacity-25 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       onClick={onClose}
     >
       <div
-        className={`bg-white  pt-2 transform transition-transform overflow-y-auto ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`bg-white  pt-2 transform transition-transform overflow-y-auto ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ maxHeight: "100vh", width: "500px" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -101,7 +99,7 @@ function SelectProductSide({
               key={product.id}
               className={
                 "border  rounded-lg px-4 py-2 flex justify-between my-2  cursor-pointer " +
-                (product.quantity === 0 ? "bg-gray-100" : "")
+                (!purchaseList.includes(from) && (product.quantity === 0) ? "bg-gray-100" : "")
               }
             >
               <div>
@@ -109,7 +107,7 @@ function SelectProductSide({
                   <span className="font-bold">{product.name} </span>- Quantity:{" "}
                   {product.quantity || "0"}
                 </div>
-                {product.quantity !== 0 && (
+                {(product.quantity !== 0 || purchaseList.includes(from)) && (
                   <div className="border-2 rounded-lg flex justify-between w-24 text-lg mt-2 bg-gray-50">
                     <button
                       onClick={() => handleActionQty("-", product.id)}

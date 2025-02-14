@@ -69,7 +69,6 @@ const userSlice = createSlice({
         isCompanyProfileDone,
         selectedStaffCompanyIndex,
       } = action.payload;
-      console.log("🚀 ~ action.payload:", action.payload)
       localStorage.setItem("user", JSON.stringify(action.payload));
       state.userId = userId;
       state.name = name;
@@ -181,6 +180,10 @@ const userSlice = createSlice({
       };
       localStorage.setItem("user", JSON.stringify(payloadLocalStorageData));
     },
+    setUserAsOtherCompanies: (state, { payload }) => {
+      state.userAsOtherCompanies = payload ?? state.userAsOtherCompanies;
+      localStorage.setItem("user", JSON.stringify(state));
+    },
   },
 });
 
@@ -191,6 +194,7 @@ export const {
   updateCompanyDetails,
   setCompanyData,
   setAsAStaffCompanies,
+  setUserAsOtherCompanies,
 } = userSlice.actions;
 
 export default userSlice.reducer;
