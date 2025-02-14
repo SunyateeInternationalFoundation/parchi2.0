@@ -136,10 +136,8 @@ const Navbar = () => {
         }
         const promises = customerCompanies.map(async (item) => {
           const ref = collection(db, collectionName, item.customerId, "notifications");
-          const q = query(ref, orderBy("date", "desc"));
-
           return new Promise((resolve) => {
-            onSnapshot(q, (snapshot) => {
+            onSnapshot(ref, (snapshot) => {
               const getNotification = snapshot.docs.map((doc) => ({
                 id: doc.id,
                 docId: item.customerId,
@@ -155,7 +153,8 @@ const Navbar = () => {
           });
         });
         await Promise.all(promises);
-        setNotificationData(allNotificationsData);
+        const sortedNotifications = allNotificationsData.sort((a, b) => b.date - a.date);
+        setNotificationData(sortedNotifications);
       }
 
     } catch (error) {

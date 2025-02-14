@@ -171,7 +171,7 @@ function RenewalService() {
 
       const notificationPayload = {
         date: Timestamp.fromDate(new Date()),
-        from: userDetails.phone,
+        from: payload.createdBy.phoneNo,
         to: selectedCustomerData.phone,
         subject: "Subscription",
         description: `${companyDetails.name} company Renewal Subscription ${prefix}-${payload.serviceNo}.`,

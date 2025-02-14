@@ -6,8 +6,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
-  Timestamp,
-  updateDoc,
+  updateDoc
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineHome } from "react-icons/ai";
@@ -108,19 +107,19 @@ const ProFormaProForma = () => {
         invoiceId
       );
       const data = proForma.find((d) => d.id === invoiceId);
-      const notificationPayload = {
-        date: Timestamp.fromDate(new Date()),
-        from: data.companyPhone,
-        to: data.customerPhone,
-        subject: "ProFormaInvoice",
-        description: `Your ProFormaInvoice ${data.proFormaNo} status has been updated to ${newStatus}.`,
-        companyName: data.companyName,
-        ref: invoiceDoc,
-        seen: false,
-      }
+      // const notificationPayload = {
+      //   date: Timestamp.fromDate(new Date()),
+      //   from: data.companyPhone,
+      //   to: data.customerPhone,
+      //   subject: "ProFormaInvoice",
+      //   description: `Your ProFormaInvoice ${data.proFormaNo} status has been updated to ${newStatus}.`,
+      //   companyName: data.companyName,
+      //   ref: invoiceDoc,
+      //   seen: false,
+      // }
 
       await updateDoc(invoiceDoc, { paymentStatus: newStatus });
-      await addDoc(collection(db, "customers", data.customerId, "notifications"), notificationPayload)
+      // await addDoc(collection(db, "customers", data.customerId, "notifications"), notificationPayload)
 
       await addDoc(collection(db, "companies", companyId, "audit"), {
         ref: invoiceDoc,

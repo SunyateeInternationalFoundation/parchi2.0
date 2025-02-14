@@ -357,7 +357,7 @@ function SetService() {
 
       const notificationPayload = {
         date: Timestamp.fromDate(new Date()),
-        from: userDetails.phone,
+        from: payload.createdBy.phoneNo,
         to: selectedCustomerData.phone,
         subject: "Subscription",
         description: `${companyDetails.name} company ${payloadLog.action} Subscription ${prefix}-${payload.serviceNo}.`,

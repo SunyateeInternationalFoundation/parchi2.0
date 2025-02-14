@@ -9,7 +9,7 @@ import VendorDashboard from "./VendorDashboard";
 function VendorHome() {
   return (
     <div>
-      <div style={{ height: "8vh" }}>
+      <div style={{ height: "6vh" }}>
         <Navbar />
       </div>
       <div style={{ width: "100%", height: "94vh" }} className="bg-gray-100">

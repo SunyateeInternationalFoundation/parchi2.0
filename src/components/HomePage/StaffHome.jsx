@@ -108,7 +108,7 @@ const StaffHome = () => {
 
   return (
     <div>
-      <div style={{ height: "8vh" }}>
+      <div style={{ height: "6vh" }}>
         <Navbar />
       </div>
       <div className="flex" style={{ height: "94vh" }}>

@@ -266,7 +266,7 @@ const SetQuotation = () => {
       }
       const notificationPayload = {
         date: Timestamp.fromDate(new Date()),
-        from: userDetails.phone,
+        from: payload.createdBy.phoneNo,
         to: selectedCustomerData.phone,
         subject: "Quotation",
         description: `${companyDetails.name} company ${payloadLog.action} Quotation ${payload.prefix}-${payload.quotationNo}.`,

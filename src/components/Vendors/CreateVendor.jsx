@@ -87,7 +87,6 @@ const CreateVendor = ({ isOpen, onClose, onVendorAdded, vendorData }) => {
       }
     }
   };
-  console.log("vendordata", vendorData);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {

@@ -6,8 +6,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
-  Timestamp,
-  updateDoc,
+  updateDoc
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineHome } from "react-icons/ai";
@@ -109,19 +108,19 @@ const DeliveryChallanList = () => {
         deliveryChallanId
       );
       const data = deliveryChallan.find((d) => d.id === deliveryChallanId);
-      const notificationPayload = {
-        date: Timestamp.fromDate(new Date()),
-        from: data.companyPhone,
-        to: data.customerPhone,
-        subject: "DeliveryChallan",
-        description: `Your DeliveryChallan ${data.deliveryChallanNo} status has been updated to ${newStatus}.`,
-        companyName: data.companyName,
-        ref: deliveryChallanDoc,
-        seen: false,
-      }
+      // const notificationPayload = {
+      //   date: Timestamp.fromDate(new Date()),
+      //   from: data.companyPhone,
+      //   to: data.customerPhone,
+      //   subject: "DeliveryChallan",
+      //   description: `Your DeliveryChallan ${data.deliveryChallanNo} status has been updated to ${newStatus}.`,
+      //   companyName: data.companyName,
+      //   ref: deliveryChallanDoc,
+      //   seen: false,
+      // }
 
       await updateDoc(deliveryChallanDoc, { paymentStatus: newStatus });
-      await addDoc(collection(db, "customers", data.customerId, "notifications"), notificationPayload)
+      // await addDoc(collection(db, "customers", data.customerId, "notifications"), notificationPayload)
       await addDoc(collection(db, "companies", companyId, "audit"), {
         ref: deliveryChallanDoc,
         date: serverTimestamp(),

@@ -281,7 +281,7 @@ const SetInvoice = () => {
       }
       const notificationPayload = {
         date: Timestamp.fromDate(new Date()),
-        from: userDetails.phone,
+        from: payload.createdBy.phoneNo,
         to: selectedCustomerData.phone,
         subject: "Invoice",
         description: `${companyDetails.name} company ${payloadLog.action} invoice ${payload.prefix}-${payload.invoiceNo}.`,
